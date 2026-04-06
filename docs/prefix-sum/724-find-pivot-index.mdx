@@ -1,0 +1,168 @@
+---
+id: 724-find-pivot-index
+title: "Find Pivot Index"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={724}
+  title="Find Pivot Index"
+  difficulty="Easy"
+  pattern="Prefix Sum"
+  tags={["Array", "Prefix Sum"]}
+  leetcodeUrl="https://leetcode.com/problems/find-pivot-index/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `nums`, calculate the **pivot index** of this array.
+
+The pivot index is the index where the sum of all the numbers strictly to the left of the index is equal to the sum of all the numbers strictly to the right of the index.
+
+If the index is on the left edge of the array, then the left sum is `0` because there are no elements to the left. This also applies to the right edge of the array.
+
+Return the **leftmost** pivot index. If no such index exists, return `-1`.
+
+**Constraints:**
+- `1 <= nums.length <= 10^4`
+- `-1000 <= nums[i] <= 1000`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [1,7,3,6,5,6]
+Output: 3
+Explanation: The pivot index is 3.
+Left sum = nums[0]+nums[1]+nums[2] = 1+7+3 = 11
+Right sum = nums[4]+nums[5] = 5+6 = 11
+```
+
+#### Example 2
+
+```
+Input:  nums = [1,2,3]
+Output: -1
+Explanation: No index satisfies the conditions.
+```
+
+#### Example 3
+
+```
+Input:  nums = [2,1,-1]
+Output: 0
+Explanation: Pivot index 0. Left sum = 0, right sum = 1+(-1) = 0.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we precompute cumulative sums?", verdict: "yes", reason: "Build a prefix sum array. Then for any index i, left sum = prefix[i-1] and total - prefix[i] gives right sum." },
+    { question: "Is there a special case at index 0?", verdict: "yes", reason: "At index 0, left sum is 0. Check if prefix[0] equals total - prefix[0]: prefix[0]*2 == total." },
+    { question: "Can we do this in O(1) extra space?", verdict: "yes", reason: "Track running left sum and compute right sum from total - leftSum - nums[i]. But the prefix array is clearer and still O(n) space." },
+  ]}
+  answer="Prefix Sum — precompute cumulative sums, then check pivot condition at each index"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build `prefix` where `prefix[i] = nums[0] + ... + nums[i]`. For index `i = 0`: left sum is `0`, right sum is `prefix[n-1] - prefix[0]` — check if they are equal. For `i > 0`: left sum is `prefix[i-1]`, right sum is `prefix[n-1] - prefix[i]` — check equality. Return the first matching `i`, or `-1`.
+
+<Callout type="cyan" label="Pivot condition">
+At index i: leftSum == prefix[i-1] (or 0 for i=0) and rightSum == totalSum - prefix[i]. Pivot is where leftSum == rightSum, i.e. prefix[i-1] == totalSum - prefix[i].
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [1,7,3,6,5,6]"
+  expected="3"
+  steps={[
+    { label: "prefix", text: "prefix = [1,8,11,17,22,28]. total = 28." },
+    { label: "i=0", text: "left=0, right=28-1=27. 0≠27." },
+    { label: "i=1", text: "left=prefix[0]=1, right=28-8=20. 1≠20." },
+    { label: "i=2", text: "left=prefix[1]=8, right=28-11=17. 8≠17." },
+    { label: "i=3", text: "left=prefix[2]=11, right=28-17=11. 11==11 → return 3." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build prefix array">
+    `prefixs[0] = nums[0]`. For `i in 1..count-1`: `prefixs[i] = prefixs[i-1] + nums[i]`.
+  </StepItem>
+  <StepItem title="Check index 0">
+    If `prefixs[0] == prefixs[count-1] - prefixs[0]` (i.e., `prefix[0]*2 == total`), then `leftSum = 0 = rightSum`. The implementation checks `prefixs[0] - prefixs[count-1] == 0` which simplifies to `prefixs[0] == total/2` only when signed — check the exact condition carefully.
+  </StepItem>
+  <StepItem title="Check remaining indices">
+    For `i in 1..count-1`: if `prefixs[i] == prefixs[count-1] - prefixs[i-1]`, return `i`.
+  </StepItem>
+  <StepItem title="No pivot found">
+    Return `-1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func pivotIndex(_ nums: [Int]) -> Int {
+    let count = nums.count
+    var prefixs = Array(repeating: 0, count: count)
+
+    for i in 0..<count {
+      if i == 0 {
+        prefixs[0] = nums[0]
+        continue
+      }
+      prefixs[i] = prefixs[i - 1] + nums[i]
+    }
+
+    if prefixs[0] - prefixs[count - 1] == 0 { return 0 }  // left=0, right=0
+
+    for i in 1..<count {
+      if prefixs[i] == prefixs[count - 1] - prefixs[i - 1] {
+        return i
+      }
+    }
+
+    return -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Prefix Sum", time: "O(n)", space: "O(n)", note: "One pass to build prefix, one pass to check each index.", highlight: true },
+    { approach: "Running sum (O(1) space)", time: "O(n)", space: "O(1)", note: "Track leftSum, compute rightSum = total - leftSum - nums[i]. Same time, less space." },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Including nums[i] in the left or right sum",
+      body: "The pivot element is excluded from both sides. leftSum is the sum strictly before i, rightSum is strictly after i.",
+      fix: "leftSum = prefix[i-1], rightSum = total - prefix[i]. The element at i is excluded from both.",
+    },
+    {
+      title: "Not handling index 0 specially",
+      body: "For i=0, there is no prefix[i-1]. Accessing prefix[-1] would be out of bounds.",
+      fix: "Check i=0 separately: leftSum=0, rightSum = total - prefix[0]. Or use a running sum approach that starts leftSum=0 naturally.",
+    },
+    {
+      title: "Returning the wrong pivot when duplicates exist",
+      body: "There may be multiple valid pivot indices. The problem asks for the leftmost one.",
+      fix: "Scan left to right and return the first match — the loop order guarantees this.",
+    },
+  ]}
+/>

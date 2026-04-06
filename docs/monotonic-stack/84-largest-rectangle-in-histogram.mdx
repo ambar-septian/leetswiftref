@@ -1,0 +1,166 @@
+---
+id: 84-largest-rectangle-in-histogram
+title: "Largest Rectangle in Histogram"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import LargestRectangleDiagram from '@site/src/components/DSA/LargestRectangleDiagram';
+
+<ProblemHeader
+  number={84}
+  title="Largest Rectangle in Histogram"
+  difficulty="Hard"
+  pattern="Monotonic Stack"
+  tags={["Array", "Stack", "Monotonic Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/largest-rectangle-in-histogram/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `heights` representing the histogram's bar height where the width of each bar is `1`, return the area of the largest rectangle in the histogram.
+
+A rectangle must be formed by consecutive bars and its height is limited by the shortest bar in the span. You must find the maximum area over all possible contiguous spans.
+
+**Constraints**
+- `1 <= heights.length <= 10^5`
+- `0 <= heights[i] <= 10^4`
+
+<Callout type="green" label="Core Insight">
+Maintain a monotonically increasing stack of (startIndex, height) pairs. When a shorter bar arrives, every taller bar on the stack can no longer extend rightward — pop each one and compute its rectangle. The popped bar's startIndex also becomes the new bar's leftward reach, since the new shorter bar could have started there.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  heights = [2,1,5,6,2,3]
+Output: 10
+```
+
+#### Example 2
+```
+Input:  heights = [2,4]
+Output: 4
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does a taller bar block a shorter bar from extending rightward?", verdict: "yes", reason: "A rectangle capped at height h can only span as far right as bars remain >= h." },
+    { question: "When is it safe to compute a bar's maximum area?", verdict: "yes", reason: "When a shorter bar is seen — the taller bar can go no further right. Pop and compute." },
+    { question: "Can a popped bar's left boundary extend the new bar's reach?", verdict: "yes", reason: "When bar A is popped by a shorter bar B, B could have started where A started — update B's start index." },
+  ]}
+  answer="Monotonic stack (increasing) — pop taller bars on smaller arrival, track extendable start index"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate left to right. Maintain a stack of `(startIndex, height)` pairs in strictly increasing height order. For each bar at index `i` with height `h`:
+
+- Set `start = i`.
+- While the stack top has `height > h`: pop it, compute `area = popped.height * (i - popped.index)`, update `maxArea`, and set `start = popped.index` (the new bar can reach back to where the taller bar started).
+- Push `(start, h)` onto the stack.
+
+After the loop, drain remaining stack entries: each spans from its `index` to the end of the array, so `area = item.height * (heights.count - item.index)`.
+
+<LargestRectangleDiagram />
+
+<Callout type="cyan" label="Why start is updated when popping">
+When bar at index 2 (height=5) is popped because bar at index 4 (height=2) arrived, the height-2 bar could have extended all the way back to index 2 — because everything from index 2 onward was at least height 2. By setting start=2, the new entry (2, 2) correctly represents this wider rectangle.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="heights = [2,1,5,6,2,3]"
+  expected="10"
+  steps={[
+    { label: "i=0, h=2", text: "Stack empty. Push (0,2). stack=[(0,2)].", state: "maxArea=0" },
+    { label: "i=1, h=1", text: "Top h=2 > 1. Pop (0,2). area=2*(1-0)=2. start=0. Push (0,1). stack=[(0,1)].", state: "maxArea=2" },
+    { label: "i=2,3, h=5,6", text: "Both larger than top. Push (2,5) then (3,6). stack=[(0,1),(2,5),(3,6)].", state: "maxArea=2" },
+    { label: "i=4, h=2", text: "Pop (3,6): area=6*(4-3)=6. start=3. Pop (2,5): area=5*(4-2)=10. start=2. Top h=1<=2. Push (2,2).", state: "maxArea=10" },
+    { label: "i=5, h=3", text: "Top h=2 <= 3. Push (5,3). stack=[(0,1),(2,2),(5,3)].", state: "maxArea=10" },
+    { label: "drain stack", text: "Pop (5,3): 3*(6-5)=3. Pop (2,2): 2*(6-2)=8. Pop (0,1): 1*(6-0)=6. All less than 10.", state: "maxArea=10" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack and maxArea">
+    `var maxArea = 0`, `var stack = [(index: Int, height: Int)]()`.
+  </StepItem>
+  <StepItem title="Iterate bars, pop taller entries">
+    For each `i`: set `start = i`. While `stack.last.height > heights[i]`: pop, compute area, update `maxArea`, set `start = popped.index`. Push `(start, heights[i])`.
+  </StepItem>
+  <StepItem title="Drain remaining stack">
+    After the loop, for each entry in stack: `area = item.height * (heights.count - item.index)`. Update `maxArea`.
+  </StepItem>
+  <StepItem title="Return maxArea">
+    Return the accumulated maximum.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func largestRectangleArea(_ heights: [Int]) -> Int {
+    var maxArea = 0
+    var stack = [(index: Int, height: Int)]()
+
+    for i in 0..<heights.count {
+      var start = i
+      let height = heights[i]
+
+      while let top = stack.last, top.height > height {
+        let (index, h) = stack.removeLast()
+        maxArea = max(maxArea, h * (i - index))
+        start = index   // new bar can extend back to popped bar's start
+      }
+
+      stack.append((start, height))
+    }
+
+    // Drain: remaining bars extend to the right edge
+    for item in stack {
+      maxArea = max(maxArea, item.height * (heights.count - item.index))
+    }
+
+    return maxArea
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (all pairs)", time: "O(n²)", space: "O(1)", note: "Check every (l, r) span" },
+    { approach: "Monotonic stack", time: "O(n)", space: "O(n)", note: "Each bar pushed and popped at most once", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting to drain the stack after the loop",
+      body: "Bars that were never popped during the loop (because no shorter bar arrived to their right) represent rectangles that extend all the way to the right edge. Skipping the drain misses these.",
+      fix: "After the main loop, iterate remaining stack entries and compute area = item.height * (heights.count - item.index).",
+    },
+    {
+      title: "Not updating start when popping",
+      body: "When a taller bar is popped, the current (shorter) bar can extend back to where the taller bar originated. Forgetting to update start leaves the new bar's left boundary too narrow.",
+      fix: "Inside the while-pop loop, set start = popped.index after each pop, then push (start, height) at the end.",
+    },
+    {
+      title: "Computing area as height * i instead of height * (i - index)",
+      body: "The width of the rectangle is not i itself but the distance from the bar's (possibly extended) start index to the current index.",
+      fix: "Area = popped.height * (i - popped.index). For drain: area = item.height * (heights.count - item.index).",
+    },
+  ]}
+/>

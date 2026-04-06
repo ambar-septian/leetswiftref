@@ -1,0 +1,164 @@
+---
+id: 290-word-pattern
+title: "Word Pattern"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={290}
+  title="Word Pattern"
+  difficulty="Easy"
+  pattern="Bijective Hash Map"
+  tags={["Hash Table", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/word-pattern/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a `pattern` and a string `s`, find if `s` follows the same pattern.
+
+Here **follows** means a full match, such that there is a bijection between a letter in `pattern` and a non-empty word in `s`. Specifically:
+- Every letter maps to exactly one unique word.
+- Every word maps back to exactly one unique letter.
+
+**Constraints:**
+- `1 <= pattern.length <= 300`
+- `pattern` contains only lowercase English letters.
+- `1 <= s.length <= 3000`
+- `s` contains only lowercase English letters and spaces, with no leading or trailing spaces, and no two consecutive spaces.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: pattern = "abba", s = "dog cat cat dog"
+Output: true
+```
+
+#### Example 2
+
+```
+Input: pattern = "abba", s = "dog cat cat fish"
+Output: false
+```
+
+#### Example 3
+
+```
+Input: pattern = "aaaa", s = "dog cat cat dog"
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is a one-directional map sufficient?", verdict: "no", reason: "Pattern 'abba' with s='dog dog dog dog' would falsely match if only char→word is tracked. Both directions must be enforced." },
+    { question: "Should we enforce bijection (one-to-one correspondence)?", verdict: "yes", reason: "Each pattern char maps to exactly one word AND each word maps back to exactly one char." },
+    { question: "Can we check both maps simultaneously?", verdict: "yes", reason: "Maintain charSet (char→word) and wordSet (word→char); both must agree at every position." },
+  ]}
+  answer="Two hash maps (char→word, word→char) — bijection check at each position"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Split `s` into words. Guard that the number of words equals the pattern length. For each position, check `charSet[char]` and `wordSet[word]`:
+- If neither exists: add both mappings.
+- If both exist and agree: continue.
+- Otherwise: return false (inconsistency found).
+
+<Callout type="cyan" label="Why two maps">
+A single char→word map allows two chars to map to the same word (e.g. 'a'→"dog" and 'b'→"dog"). The reverse map wordSet catches this: when 'b' arrives and "dog" is already mapped to 'a', return false.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='pattern = "abba", s = "dog cat cat dog"'
+  expected="true"
+  steps={[
+    { label: "i=0", text: "char='a', word='dog'; both maps empty → add a→dog, dog→a" },
+    { label: "i=1", text: "char='b', word='cat'; both maps empty → add b→cat, cat→b" },
+    { label: "i=2", text: "char='b', word='cat'; charSet[b]=cat ✓, wordSet[cat]=b ✓ → continue" },
+    { label: "i=3", text: "char='a', word='dog'; charSet[a]=dog ✓, wordSet[dog]=a ✓ → continue" },
+    { label: "done", text: "no mismatch → return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Split and length-check">
+    `let words = s.components(separatedBy: " ")`. Return `false` if `words.count != pattern.count`.
+  </StepItem>
+  <StepItem title="Initialise two maps">
+    `var charSet = [String: String]()`, `var wordSet = [String: String]()`.
+  </StepItem>
+  <StepItem title="Iterate and check bijection">
+    For each `(char, word)` pair: if both mappings are absent, add them. If both exist and agree, continue. Otherwise return `false`.
+  </StepItem>
+  <StepItem title="Return true">
+    All positions consistent → return `true`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func wordPattern(_ pattern: String, _ s: String) -> Bool {
+    let chars = pattern.map { String($0) }
+    let words = s.components(separatedBy: " ")
+    guard chars.count == words.count else { return false }
+
+    var charSet = [String: String]()
+    var wordSet = [String: String]()
+
+    for i in 0..<chars.count {
+      let char = chars[i], word = words[i]
+      if charSet[char] == nil, wordSet[word] == nil {
+        charSet[char] = word
+        wordSet[word] = char
+      } else if charSet[char] == word, wordSet[word] == char {
+        continue
+      } else {
+        return false
+      }
+    }
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Bijective hash maps", time: "O(n)", space: "O(k)", note: "n = pattern length; k = number of distinct char/word pairs (at most min(26, n))", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using a single char→word map only",
+      body: "pattern='ab', s='dog dog' — 'a'→'dog' and 'b'→'dog' would both pass a single map since neither conflicts with itself.",
+      fix: "Also maintain wordSet (word→char). When 'b' tries to map to 'dog' and wordSet already has dog→'a', return false.",
+    },
+    {
+      title: "Not checking length equality up front",
+      body: "If words.count differs from pattern.count, iterating the shorter one silently ignores the extra elements.",
+      fix: "<code>guard chars.count == words.count else { return false }</code> before the loop.",
+    },
+    {
+      title: "Only checking one map in the consistency branch",
+      body: "Checking <code>charSet[char] == word</code> but not <code>wordSet[word] == char</code> misses cases where char and word are each already mapped to something else.",
+      fix: "Both conditions must hold in the else-if branch: <code>charSet[char] == word && wordSet[word] == char</code>.",
+    },
+  ]}
+/>

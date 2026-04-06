@@ -1,0 +1,192 @@
+---
+id: 71-simplify-path
+title: "Simplify Path"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={71}
+  title="Simplify Path"
+  difficulty="Medium"
+  pattern="Stack"
+  tags={["String", "Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/simplify-path/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an absolute path for a Unix-style file system, which begins with a slash `'/'`, transform it into its **simplified canonical path**.
+
+In a Unix-style file system:
+- A single period `'.'` refers to the current directory.
+- A double period `'..'` refers to the parent directory (go up one level).
+- Multiple consecutive slashes such as `'//'` or `'///'` are treated as a single slash `'/'`.
+- Any other sequence of characters is a valid directory or file name.
+
+The simplified canonical path must:
+- Start with a single slash `'/'`.
+- Separate directories with a single slash.
+- Not end with a trailing slash (unless it is the root `/`).
+- Not contain any `.` or `..` components.
+
+**Constraints**
+- `1 <= path.length <= 3000`
+- `path` consists of English letters, digits, period `.`, slash `/`, or underscore `_`.
+- `path` is a valid absolute Unix path.
+
+<Callout type="green" label="Core Insight">
+Scan the path character by character. When a slash is encountered, process the accumulated token: push valid directory names onto a stack, pop on '..', and ignore '.' and empty tokens. Reconstruct the canonical path from the stack with '/' separators.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  path = "/home/"
+Output: "/home"
+```
+
+#### Example 2
+```
+Input:  path = "/home//foo/"
+Output: "/home/foo"
+```
+
+#### Example 3
+```
+Input:  path = "/home/user/Documents/../Pictures"
+Output: "/home/user/Pictures"
+```
+
+#### Example 4
+```
+Input:  path = "/../"
+Output: "/"
+```
+
+#### Example 5
+```
+Input:  path = "/.../a/../b/c/../d/./"
+Output: "/.../b/d"
+Explanation: "..." is a valid directory name.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does '..' mean undo the most recent directory push?", verdict: "yes", reason: "'..' pops the last entry — a stack naturally supports this last-in-first-out undo." },
+    { question: "Do we need to process tokens between slashes?", verdict: "yes", reason: "Accumulate characters between '/' separators and decide what to do when a '/' is hit." },
+    { question: "Can we reconstruct the result from the stack?", verdict: "yes", reason: "The stack holds exactly the valid directory components in order — join with '/' and prepend '/'." },
+  ]}
+  answer="Stack — push directory names, pop on '..', ignore '.' and empty tokens"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate through each character. If the character is not `'/'`, accumulate it into `current`. When a `'/'` is hit (or at the end of the string), call `process(&current, &stack)`:
+- `'..'` → pop the stack if non-empty
+- `'.'` or empty → do nothing
+- anything else → push onto the stack
+
+After the loop, call `process` once more for the final accumulated token. Reconstruct: `"/" + stack.joined(separator: "/")`.
+
+<Callout type="cyan" label="Why process is called both on '/' and after the loop">
+The final token (e.g., "foo" in "/home/foo") is not followed by a slash, so the loop exits with the last token still in current. A final process call handles it. This is simpler than checking the last character separately.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='path = "/home/user/../docs"'
+  expected='"/home/docs"'
+  steps={[
+    { label: "'/home'", text: "Scan 'h','o','m','e'. Hit '/'. process('home') → push. stack=['home'].", state: "stack=['home']" },
+    { label: "'/user'", text: "Scan 'u','s','e','r'. Hit '/'. process('user') → push. stack=['home','user'].", state: "stack=['home','user']" },
+    { label: "'..'", text: "Scan '.','.'. Hit '/'. process('..') → pop. stack=['home'].", state: "stack=['home']" },
+    { label: "'docs'", text: "Scan 'd','o','c','s'. End of string. process('docs') → push.", state: "stack=['home','docs']" },
+    { label: "result", text: "'/' + stack.joined('/') = '/home/docs'.", state: "'/home/docs'" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack and current accumulator">
+    `var stack = [String]()`, `var current = ""`.
+  </StepItem>
+  <StepItem title="Scan character by character">
+    For each `char` in `path`: if `char == "/"`, call `process(&current, &stack)`. Else `current.append(char)`.
+  </StepItem>
+  <StepItem title="Flush the last token">
+    Call `process(&current, &stack)` after the loop to handle the final segment.
+  </StepItem>
+  <StepItem title="Reconstruct">
+    Return `"/" + stack.joined(separator: "/")`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func simplifyPath(_ path: String) -> String {
+    var stack = [String]()
+    var current = ""
+
+    for char in path {
+      if char == "/" {
+        process(&current, &stack)
+      } else {
+        current.append(char)
+      }
+    }
+
+    process(&current, &stack)
+    return "/" + stack.joined(separator: "/")
+  }
+
+  func process(_ current: inout String, _ stack: inout [String]) {
+    if current == ".." {
+      if !stack.isEmpty {
+        stack.removeLast()
+      }
+    } else if !current.isEmpty, current != "." {
+      stack.append(current)
+    }
+    current.removeAll()
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack + character scan", time: "O(n)", space: "O(n)", note: "n = path length; stack holds at most n/2 components", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Popping an empty stack on '..'",
+      body: "When '..' appears at the root level (e.g., '/../'), there is no parent to go to. Popping an empty stack will crash.",
+      fix: "Guard the pop: only call stack.removeLast() when !stack.isEmpty.",
+    },
+    {
+      title: "Not clearing current after processing",
+      body: "If current is not cleared after each process call, the next token accumulates on top of the previous one, corrupting the directory name.",
+      fix: "Call current.removeAll() at the end of every process invocation.",
+    },
+    {
+      title: "Treating '...' (three dots) as a parent-navigation command",
+      body: "Only exactly '..' (two dots) means go-to-parent. Three or more dots is a valid directory name (e.g., '...') and should be pushed onto the stack.",
+      fix: "The condition current == \"..\" is an exact match — '...' passes through to the push branch correctly.",
+    },
+  ]}
+/>

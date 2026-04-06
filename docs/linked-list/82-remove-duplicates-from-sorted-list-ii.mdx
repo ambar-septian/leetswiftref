@@ -1,0 +1,172 @@
+---
+id: 82-remove-duplicates-from-sorted-list-ii
+title: "Remove Duplicates from Sorted List II"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import RemoveDuplicatesIIDiagram from '@site/src/components/DSA/RemoveDuplicatesIIDiagram';
+
+<ProblemHeader
+  number={82}
+  title="Remove Duplicates from Sorted List II"
+  difficulty="Medium"
+  pattern="Linked List"
+  tags={["Linked List", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the head of a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list. Return the linked list sorted as well.
+
+Unlike problem 83 (which keeps one copy of each duplicate), this problem removes **all** occurrences of any value that appears more than once.
+
+**Constraints**
+- The number of nodes in the list is in the range `[0, 300]`.
+- `-100 <= Node.val <= 100`
+- The list is guaranteed to be **sorted** in ascending order.
+
+<Callout type="green" label="Core Insight">
+Use a dummy head and a fast pointer. When a consecutive pair of equal values is detected, record the duplicate value. Skip the fast pointer forward past all nodes with that value. Only nodes whose value does not match the recorded duplicate value are appended to the result list.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+<RemoveDuplicatesIIDiagram />
+
+#### Example 1
+```
+Input:  1 → 1 → 2 → 3 → 3 → null
+Output: 2 → null
+```
+
+#### Example 2
+```
+Input:  1 → 2 → 3 → 3 → 4 → 4 → 5 → null
+Output: 1 → 2 → 5 → null
+```
+
+#### Example 3
+```
+Input:  1 → 1 → 1 → 2 → 3 → null
+Output: 2 → 3 → null
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to remove all occurrences of duplicate values?", verdict: "yes", reason: "Unlike keeping-one-copy, any value that appears more than once must be eliminated entirely." },
+    { question: "Can we detect duplicates in a single pass?", verdict: "yes", reason: "Sorted list: consecutive equal values identify a duplicate run. Record the value and skip ahead." },
+    { question: "Do we need a dummy head?", verdict: "yes", reason: "The original head itself may be a duplicate (e.g., 1 → 1 → 2) — a dummy node before head simplifies edge cases." },
+  ]}
+  answer="Single pass — dummy head, record duplicate value, skip all nodes with that value"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a `dummy` node pointing to `head` and a `result` pointer tracking the tail of the output list. Advance `fast` one node at a time:
+
+- If `fast.val == fast.next.val`, record `duplValue = fast.val` and advance `fast` (skipping this duplicate run).
+- If `fast.val == duplValue`, skip this node too (it is part of the duplicate run).
+- Otherwise, create a new node with `fast.val` and attach to `result`.
+
+Return `dummy.next`.
+
+<Callout type="cyan" label="Why a new node is built rather than re-linking">
+Building new nodes avoids mutating the original list's next pointers mid-traversal, which can cause cycles or skipped nodes. For competitive coding a re-link approach also works, but new-node construction is easier to reason about.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="1 → 1 → 2 → 3 → 3 → null"
+  expected="2 → null"
+  steps={[
+    { label: "fast=1, next=1", text: "fast.val==fast.next.val. Set duplValue=1. fast=fast.next (advance past first 1).", state: "duplValue=1, fast=node(1)" },
+    { label: "fast=1 (2nd)", text: "duplValue==fast.val. Skip. fast=fast.next.", state: "fast=node(2)" },
+    { label: "fast=2", text: "No match with duplValue(1). fast.next.val=3 != 2. Append 2 to result.", state: "result=[2]" },
+    { label: "fast=3, next=3", text: "fast.val==fast.next.val. Set duplValue=3. fast=fast.next.", state: "duplValue=3" },
+    { label: "fast=3 (2nd)", text: "duplValue==fast.val. Skip. fast=null. Loop ends.", state: "done" },
+    { label: "return", text: "dummy.next = node(2) → null. Return 2.", state: "[2]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Create dummy head">
+    `dummy = ListNode(0)`, `result = dummy`, `fast = head`, `duplValue: Int? = nil`.
+  </StepItem>
+  <StepItem title="Detect duplicate run">
+    If `fast.val == fast.next.val`, record `duplValue = fast.val` and advance `fast` without appending.
+  </StepItem>
+  <StepItem title="Skip nodes matching duplValue">
+    If `fast.val == duplValue`, advance `fast` without appending.
+  </StepItem>
+  <StepItem title="Append unique node">
+    Otherwise, create `ListNode(fast.val)`, attach to `dummy.next`, advance both `dummy` and `fast`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func deleteDuplicates(_ head: ListNode?) -> ListNode? {
+    var fast = head
+    var dummy: ListNode? = ListNode(0)
+    var result = dummy
+    var duplValue: Int?
+
+    while fast != nil {
+      if let f = fast?.val, let f2 = fast?.next?.val, f2 == f {
+        duplValue = f
+        fast = fast?.next
+        continue
+      }
+
+      if duplValue == fast?.val {
+        fast = fast?.next
+      } else {
+        dummy?.next = ListNode(fast!.val)
+        dummy = dummy?.next
+        fast = fast?.next
+      }
+    }
+
+    return result?.next
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Single pass with dummy head", time: "O(n)", space: "O(n)", note: "O(n) for new nodes; O(1) extra pointers", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not resetting duplValue between duplicate runs",
+      body: "If duplValue retains the value from a previous duplicate run (e.g., after processing 1→1, it stays 1), subsequent nodes with unrelated values may be incorrectly skipped.",
+      fix: "duplValue is set inside the detection block. Once a non-duplicate run begins, the else branch appends the node — duplValue only applies when the current node still matches it.",
+    },
+    {
+      title: "Forgetting to handle the head being a duplicate",
+      body: "If the list starts with duplicates (e.g., 1→1→2), the head itself should be removed. Without a dummy node, you would need special-case logic for the head.",
+      fix: "Use a dummy node so the result always has a stable starting pointer, regardless of whether the head is removed.",
+    },
+    {
+      title: "Advancing fast only once when detecting a duplicate pair",
+      body: "When fast.val == fast.next.val, advancing fast by one still leaves fast pointing at a duplicate. The outer continue re-checks the condition on the next iteration, eventually advancing past the full run. But if the loop structure advances fast twice inadvertently, nodes are skipped.",
+      fix: "Advance fast by exactly one inside the duplicate-detection branch and rely on continue to re-evaluate the condition on the next iteration.",
+    },
+  ]}
+/>

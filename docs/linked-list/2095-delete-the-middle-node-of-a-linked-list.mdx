@@ -1,0 +1,154 @@
+---
+id: 2095-delete-the-middle-node-of-a-linked-list
+title: "Delete the Middle Node of a Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, DeleteMiddleNodeDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2095}
+  title="Delete the Middle Node of a Linked List"
+  difficulty="Medium"
+  pattern="Linked List — Fast/Slow Pointers"
+  tags={["Linked List", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given the `head` of a linked list. **Delete** the **middle node**, and return the `head` of the modified linked list.
+
+The middle node of a linked list of size `n` is the `floor(n/2)`-th node (**0-indexed**), where `floor` is the floor function.
+
+- For `n = 1`: middle is index 0.
+- For `n = 2`: middle is index 1.
+- For `n = 3`: middle is index 1.
+- For `n = 4`: middle is index 2.
+- For `n = 5`: middle is index 2.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[1, 10^5]`.
+- `1 <= Node.val <= 10^5`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  head = [1,3,4,7,1,2,6]
+Output: [1,3,4,1,2,6]
+Explanation: n=7, middle=index 3 (val=7). Remove it.
+```
+
+#### Example 2
+
+```
+Input:  head = [1,2,3,4]
+Output: [1,2,4]
+Explanation: n=4, middle=index 2 (val=3). Remove it.
+```
+
+#### Example 3
+
+```
+Input:  head = [2,1]
+Output: [2]
+Explanation: n=2, middle=index 1 (val=1). Remove it.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we find the node before the middle in one pass?", verdict: "yes", reason: "Fast pointer advances 2 nodes per step, slow advances 1. When fast reaches nil, slow is one node before the middle — perfect for splice." },
+    { question: "Do we need to handle a single-node list?", verdict: "yes", reason: "If head.next is nil, the only node is the middle — return nil." },
+  ]}
+  answer="Fast/slow pointer — stop slow one node before the middle"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start `slow = head`, `fast = head.next`. Advance `fast` by 2 and `slow` by 1 each iteration. When `fast` becomes `nil`, `slow` is exactly one node before the middle. Splice: `slow.next = slow.next?.next`.
+
+<Callout type="green" label="Why fast starts at head.next">
+Starting fast one step ahead of slow means when fast exhausts, slow is at the node BEFORE the middle rather than at the middle itself. This gives us the previous pointer needed for deletion without backtracking.
+</Callout>
+
+<Callout type="yellow" label="Single-node edge case">
+If `fast` (= `head.next`) is `nil` on entry, the list has one node. That node IS the middle — return `nil`.
+</Callout>
+
+<SectionHeader n={5} title="Examples" />
+
+<DeleteMiddleNodeDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Handle single-node list">
+    If `head.next == nil`, return `nil` (only node is the middle).
+  </StepItem>
+  <StepItem title="Initialise pointers">
+    `slow = head`, `fast = head.next`.
+  </StepItem>
+  <StepItem title="Advance until fast is nil">
+    While `fast != nil`: advance `fast = fast.next?.next`. If `fast` becomes nil, splice `slow.next = slow.next?.next`. Otherwise advance `slow = slow.next`.
+  </StepItem>
+  <StepItem title="Return head">
+    The middle node is removed; return `head`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func deleteMiddle(_ head: ListNode?) -> ListNode? {
+    var slow = head
+    var fast = slow?.next
+    guard fast != nil else { return nil }
+
+    while fast != nil {
+      fast = fast?.next?.next
+      if fast == nil {
+        slow?.next = slow?.next?.next
+      } else {
+        slow = slow?.next
+      }
+    }
+    return head
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pass (count then walk)", time: "O(n)", space: "O(1)", note: "First pass counts n, second walks to n/2 - 1" },
+    { approach: "Fast/slow pointer (one pass)", time: "O(n)", space: "O(1)", note: "Single traversal; fast pointer visits each node at most once", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Stopping slow AT the middle instead of before it",
+      body: "To delete a node you need its predecessor. Stopping slow at the middle gives you no way to update the previous node's next pointer.",
+      fix: "Start fast at head.next so slow naturally stops one before the middle.",
+    },
+    {
+      title: "Not handling a single-node list",
+      body: "If head.next is nil, fast initialises to nil and the while loop never runs. Without the guard, we return head — but the answer should be nil (the only node is the middle).",
+      fix: "Guard fast != nil immediately after initialisation and return nil.",
+    },
+    {
+      title: "Advancing slow before splicing",
+      body: "In the loop, the splice must happen when fast becomes nil, before advancing slow. Advancing slow first loses the reference to the predecessor.",
+      fix: "Check fast == nil after advancing fast. If nil, splice immediately. Only advance slow in the else branch.",
+    },
+  ]}
+/>

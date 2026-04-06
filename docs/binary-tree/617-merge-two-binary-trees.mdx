@@ -1,0 +1,152 @@
+---
+id: 617-merge-two-binary-trees
+title: "Merge Two Binary Trees"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import MergeTreesDiagram from '@site/src/components/DSA/MergeTreesDiagram';
+
+<ProblemHeader
+  number={617}
+  title="Merge Two Binary Trees"
+  difficulty="Easy"
+  pattern="Simultaneous DFS"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/merge-two-binary-trees/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given two binary trees `root1` and `root2`.
+
+Imagine that when you put one of them to cover the other, some nodes of the two trees are overlapped while the others are not. You need to merge the two trees into a new binary tree. The merge rule is that if two nodes overlap, then sum their values together as the new value of the merged node. Otherwise, the non-null node will be used as the node of the new tree.
+
+Return the merged tree.
+
+**Note:** The merging process must start from the root nodes of both trees.
+
+**Constraints:**
+- The number of nodes in both trees is in the range `[0, 2000]`.
+- `-10^4 <= Node.val <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]
+Output: [3,4,5,5,4,null,7]
+Explanation: Overlapping nodes are summed; lone nodes are kept as-is.
+```
+
+#### Example 2
+
+```
+Input:  root1 = [1], root2 = [1,2]
+Output: [2,2]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we traverse both trees simultaneously, one node at a time?", verdict: "yes", reason: "At each recursive call, we have corresponding nodes from both trees. We decide what to do based on nil/non-nil status." },
+    { question: "Can we reuse root1 nodes instead of allocating a new tree?", verdict: "yes", reason: "Modify root1 in-place: root1.val += root2.val, then recurse. This avoids allocating O(n) new nodes." },
+    { question: "Are there only three cases per node pair?", verdict: "yes", reason: "root1 nil → return root2; root2 nil → return root1; both non-nil → sum and recurse." },
+  ]}
+  answer="Simultaneous DFS — recurse both trees in parallel, sum overlapping nodes"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Recurse with both root1 and root2. If either is nil, return the other (no merge needed). When both exist, add root2's value into root1, then recurse left and right, rewiring root1's children to the merged subtrees. Return root1 as the merged node.
+
+<MergeTreesDiagram />
+
+<Callout type="cyan" label="In-place modification of root1">
+The solution mutates root1's values and child pointers. This is efficient (no new allocations for overlapping nodes) but means root1 is no longer a valid standalone tree after the call. If the original trees must be preserved, allocate new TreeNode instances instead.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]"
+  expected="[3,4,5,5,4,null,7]"
+  steps={[
+    { label: "roots",    text: "Both non-nil: root1.val=1+2=3; recurse left and right." },
+    { label: "left",     text: "root1.left=3, root2.left=1: both non-nil; 3+1=4; recurse: left(5,nil)→5; right(nil,4)→4; node=4[5,4]" },
+    { label: "right",    text: "root1.right=2, root2.right=3: both non-nil; 2+3=5; recurse: left(nil,nil)→nil; right(nil,7)→7; node=5[nil,7]" },
+    { label: "done",     text: "Merged root = 3[4[5,4], 5[nil,7]] → [3,4,5,5,4,null,7]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base cases">
+    If `root1 == nil`, return `root2`. If `root2 == nil`, return `root1`.
+  </StepItem>
+  <StepItem title="Sum overlapping values">
+    `root1.val = root1.val + root2.val`.
+  </StepItem>
+  <StepItem title="Recurse left and right">
+    `root1.left = dfs(root1.left, root2.left)`. `root1.right = dfs(root1.right, root2.right)`.
+  </StepItem>
+  <StepItem title="Return merged node">
+    `return root1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func mergeTrees(_ root1: TreeNode?, _ root2: TreeNode?) -> TreeNode? {
+    func dfs(_ root1: TreeNode?, _ root2: TreeNode?) -> TreeNode? {
+      if root1 == nil { return root2 }
+      if root2 == nil { return root1 }
+
+      guard let root1, let root2 else { return nil }
+
+      root1.val  = root1.val + root2.val
+      root1.left  = dfs(root1.left,  root2.left)
+      root1.right = dfs(root1.right, root2.right)
+
+      return root1
+    }
+
+    return dfs(root1, root2)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Simultaneous DFS", time: "O(min(m, n))", space: "O(min(h1, h2))", note: "Traverse only the overlapping portion of both trees; call stack = min of both heights", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning nil when only one root is nil",
+      body: "If root1 is nil and root2 is not, the merged result should be root2 (the lone subtree). Returning nil discards root2's entire subtree.",
+      fix: "Check each nil case separately: if root1 == nil return root2; if root2 == nil return root1.",
+    },
+    {
+      title: "Allocating new nodes unnecessarily",
+      body: "For non-overlapping positions, the existing node from the non-nil tree can be returned directly — no new allocation needed.",
+      fix: "Return root2 (or root1) directly when the other is nil. The returned node and its subtree are already correctly structured.",
+    },
+    {
+      title: "Forgetting to rewire child pointers",
+      body: "Updating root1.val without setting root1.left and root1.right to the merged subtrees means the merged tree only has the correct value at the root, not throughout.",
+      fix: "After updating root1.val, assign root1.left = dfs(root1.left, root2.left) and root1.right = dfs(root1.right, root2.right).",
+    },
+  ]}
+/>

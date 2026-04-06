@@ -1,0 +1,160 @@
+---
+id: 3105-longest-strictly-increasing-or-strictly-decreasing-subarray
+title: "Longest Strictly Increasing or Strictly Decreasing Subarray"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={3105}
+  title="Longest Strictly Increasing or Strictly Decreasing Subarray"
+  difficulty="Easy"
+  pattern="Linear Scan — Dual Streak Counters"
+  tags={["Array"]}
+  leetcodeUrl="https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an array of integers `nums`.
+
+Return the length of the **longest subarray** of `nums` which is either **strictly increasing** or **strictly decreasing**.
+
+**Constraints:**
+- `1 <= nums.length <= 50`
+- `1 <= nums[i] <= 50`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [1,4,3,3,2]
+Output: 2
+Explanation:
+  Strictly increasing subarrays: [1,4] (length 2).
+  Strictly decreasing subarrays: [4,3], [3,2] (length 2).
+  Maximum is 2.
+```
+
+#### Example 2
+
+```
+Input:  nums = [3,3,3,3]
+Output: 1
+Explanation: All elements equal — no adjacent pair is strictly increasing or decreasing.
+```
+
+#### Example 3
+
+```
+Input:  nums = [3,2,1]
+Output: 3
+Explanation: The whole array is strictly decreasing.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we track increasing and decreasing streaks independently?", verdict: "yes", reason: "Maintain two counters: currentInc and currentDec. Extend the relevant one when the direction holds; reset the other." },
+    { question: "What happens on a tie (equal elements)?", verdict: "reset both", reason: "Equal adjacent elements break both strictly increasing and strictly decreasing — reset both counters to 1." },
+  ]}
+  answer="Dual streak counters — extend on the matching direction, reset the other"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Initialise `currentInc = 1`, `currentDec = 1`, `maxInc = 1`, `maxDec = 1`. Iterate from index 1. For each pair `(prev, curr)`:
+- If `curr > prev`: extend `currentInc`, reset `currentDec = 1`.
+- If `curr < prev`: extend `currentDec`, reset `currentInc = 1`.
+- If `curr == prev`: reset both to 1.
+
+Update the running maxima. Return `max(maxInc, maxDec)`.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [1,4,3,3,2]"
+  expected="2"
+  steps={[
+    { label: "Init",  text: "currentInc=1, currentDec=1, maxInc=1, maxDec=1.",           state: "inc=1 dec=1" },
+    { label: "i=1",   text: "4 > 1 → inc. currentInc=2, maxInc=2. Reset currentDec=1.", state: "inc=2 dec=1 maxInc=2" },
+    { label: "i=2",   text: "3 < 4 → dec. currentDec=2, maxDec=2. Reset currentInc=1.", state: "inc=1 dec=2 maxDec=2" },
+    { label: "i=3",   text: "3 == 3 → equal. Reset both to 1.",                          state: "inc=1 dec=1" },
+    { label: "i=4",   text: "2 < 3 → dec. currentDec=2, maxDec=2. Reset currentInc=1.", state: "inc=1 dec=2 maxDec=2" },
+    { label: "Done",  text: "max(maxInc=2, maxDec=2) = 2. Return 2.",                    state: "return 2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise counters">
+    `var currentInc = 1, currentDec = 1, maxInc = 1, maxDec = 1`.
+  </StepItem>
+  <StepItem title="Iterate from index 1">
+    For each `i` in `1..<nums.count`: compare `nums[i]` with `nums[i-1]`.
+    - Greater: `currentInc += 1`, `maxInc = max(maxInc, currentInc)`, `currentDec = 1`.
+    - Less: `currentDec += 1`, `maxDec = max(maxDec, currentDec)`, `currentInc = 1`.
+    - Equal: `currentInc = 1`, `currentDec = 1`.
+  </StepItem>
+  <StepItem title="Return max">
+    Return `max(maxInc, maxDec)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func longestMonotonicSubarray(_ nums: [Int]) -> Int {
+    var currentInc = 1, currentDec = 1
+    var maxInc = 1, maxDec = 1
+
+    for i in 1..<nums.count {
+      let curr = nums[i], prev = nums[i - 1]
+      if curr > prev {
+        currentInc += 1
+        maxInc = max(maxInc, currentInc)
+        currentDec = 1
+      } else if curr < prev {
+        currentDec += 1
+        maxDec = max(maxDec, currentDec)
+        currentInc = 1
+      } else {
+        currentInc = 1
+        currentDec = 1
+      }
+    }
+
+    return max(maxInc, maxDec)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Dual streak counters", time: "O(n)", space: "O(1)", note: "Single pass with constant extra variables", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not resetting the opposite counter",
+      body: "When curr > prev, the decreasing streak is broken. Failing to reset currentDec to 1 inflates the decreasing streak incorrectly.",
+      fix: "On every direction change, reset the opposite counter to 1.",
+    },
+    {
+      title: "Treating equal elements as increasing or decreasing",
+      body: "Equal adjacent elements satisfy neither strict condition. Including them in either streak would overcount.",
+      fix: "Add an explicit else branch that resets both counters to 1 when curr == prev.",
+    },
+  ]}
+/>

@@ -1,0 +1,167 @@
+---
+id: 1926-nearest-exit-from-entrance-in-maze
+title: "Nearest Exit from Entrance in Maze"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, NearestExitDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1926}
+  title="Nearest Exit from Entrance in Maze"
+  difficulty="Medium"
+  pattern="BFS — Shortest Path in Grid"
+  tags={["Array", "Breadth-First Search", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an `m x n` matrix `maze` (0-indexed) with empty cells (represented as `'.'`) and walls (represented as `'+'`). You are also given the `entrance` of the maze, where `entrance = [entranceRow, entranceCol]` denotes the row and column of the cell you are initially standing at.
+
+In one step, you can move one cell **up, down, left, or right**. You cannot step into a wall cell, and you cannot step outside the maze. Your goal is to find the **nearest exit** from the entrance. An exit is an **empty cell at the border** of the maze. The entrance does not count as an exit.
+
+Return the **number of steps** in the shortest path from the entrance to the nearest exit, or `-1` if no such path exists.
+
+**Constraints:**
+- `maze.length == m`
+- `maze[i].length == n`
+- `1 <= m, n <= 100`
+- `maze[i][j]` is either `'.'` or `'+'`.
+- `entrance.length == 2`
+- `0 <= entrance[0] < m`
+- `0 <= entrance[1] < n`
+- `entrance` will always be an empty cell.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  maze = [["+","+",".","+"],[".",".",".","+"],["+","+","+","."]], entrance = [1,2]
+Output: 1
+```
+
+#### Example 2
+
+```
+Input:  maze = [["+","+","+"],[".",".","."],["+","+","+"]], entrance = [1,2]
+Output: 2
+```
+
+#### Example 3
+
+```
+Input:  maze = [[".","+"]], entrance = [0,0]
+Output: -1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need the minimum number of steps (shortest path)?", verdict: "yes", reason: "BFS guarantees the shortest path — the first time a border cell is reached, that is the minimum step count." },
+    { question: "How do we detect an exit?", verdict: "yes", reason: "A border cell is one where at least one 4-directional neighbour is out-of-bounds. When BFS reaches out-of-bounds from a non-entrance cell, return the current level." },
+    { question: "Can we mark visited in-place?", verdict: "yes", reason: "Overwrite visited cells with '+' to avoid a separate visited set." },
+  ]}
+  answer="BFS — level-order, detect exit when a border cell goes out of bounds"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Encode each cell as a single integer `r * cols + c`. BFS from the entrance. For each cell, check all 4 directions. If a direction goes out of bounds AND the current cell is not the entrance, the current cell is a border exit — return the current level count.
+
+If a direction is in bounds and free (`'.'`), mark it `'+'` and enqueue. After each full level, increment the step counter.
+
+<Callout type="yellow" label="Exit detection detail">
+The exit check triggers when a direction goes out-of-bounds. This means the current cell (not the neighbour) is on the border. The check `entranceIndex != evidict` ensures we skip this exit trigger when processing the entrance itself.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<NearestExitDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Encode entrance and initialise BFS">
+    Encode `entranceIndex = entrance[0] * cols + entrance[1]`. Push it into the queue. Set `results = 0`.
+  </StepItem>
+  <StepItem title="Process level by level">
+    Snapshot `count = queue.count`. Dequeue exactly `count` cells. For each cell, decode `(r, c)`.
+  </StepItem>
+  <StepItem title="Check 4 directions">
+    For each direction: if out-of-bounds and current cell is not the entrance, return `results`. If in-bounds and `maze[rD][cD] == "."`, mark `'+'` and enqueue `rD * cols + cD`.
+  </StepItem>
+  <StepItem title="Increment step count">
+    After finishing the level, `results += 1`. Continue until queue is empty.
+  </StepItem>
+  <StepItem title="No exit found">
+    If queue empties, return -1.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func nearestExit(_ maze: [[Character]], _ entrance: [Int]) -> Int {
+    var maze = maze
+    let dirs = [(0,1),(0,-1),(1,0),(-1,0)]
+    let rows = maze.count, cols = maze[0].count
+    let entranceIndex = entrance[0] * cols + entrance[1]
+    var queue = [entranceIndex]
+    var results = 0
+
+    while !queue.isEmpty {
+      let count = queue.count
+      for _ in 0..<count {
+        let evidict = queue.removeFirst()
+        let r = evidict / cols, c = evidict % cols
+
+        for dir in dirs {
+          let rD = r + dir.0, cD = c + dir.1
+          if rD < 0 || rD >= rows || cD < 0 || cD >= cols {
+            if entranceIndex != evidict { return results }
+          } else if maze[rD][cD] == "." {
+            maze[rD][cD] = "+"
+            queue.append(rD * cols + cD)
+          }
+        }
+      }
+      results += 1
+    }
+    return -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS — in-place marking", time: "O(m·n)", space: "O(m·n)", note: "Each cell visited at most once; queue holds at most O(m·n) entries", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Counting the entrance as a valid exit",
+      body: "The entrance is a border cell but must not be returned as an exit. The out-of-bounds check fires when we expand from the entrance, but we skip it.",
+      fix: "Guard with if entranceIndex != evidict before returning results.",
+    },
+    {
+      title: "Incrementing results before the level is processed",
+      body: "The step count after processing level k is k+1 (since we start at 0). Incrementing before the inner loop shifts all answers by one.",
+      fix: "Increment results after the inner for loop that processes all cells in the current level.",
+    },
+    {
+      title: "Marking cells visited on dequeue instead of enqueue",
+      body: "Marking after dequeue allows multiple copies of the same cell to queue up before any is processed, inflating the step count.",
+      fix: "Set maze[rD][cD] = '+' immediately before appending to the queue.",
+    },
+  ]}
+/>

@@ -1,0 +1,155 @@
+---
+id: 2300-successful-pairs-of-spells-and-potions
+title: "Successful Pairs of Spells and Potions"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2300}
+  title="Successful Pairs of Spells and Potions"
+  difficulty="Medium"
+  pattern="Binary Search — Leftmost Threshold"
+  tags={["Array", "Two Pointers", "Binary Search", "Sorting"]}
+  leetcodeUrl="https://leetcode.com/problems/successful-pairs-of-spells-and-potions/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given two positive integer arrays `spells` and `potions`, of length `n` and `m` respectively, where `spells[i]` represents the strength of the `i`-th spell and `potions[j]` represents the strength of the `j`-th potion.
+
+You are also given an integer `success`. A spell and potion pair is considered **successful** if the **product** of their strengths is **at least** `success`.
+
+Return an integer array `pairs` of length `n` where `pairs[i]` is the number of **potions** that will form a successful pair with the `i`-th spell.
+
+**Constraints:**
+- `n == spells.length`
+- `m == potions.length`
+- `1 <= n, m <= 10^5`
+- `1 <= spells[i], potions[j] <= 10^5`
+- `1 <= success <= 10^10`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  spells = [5,1,3], potions = [1,2,3,4,5], success = 7
+Output: [4,0,3]
+Explanation:
+  spell 5: 5*1=5<7, 5*2=10>=7 → 4 potions work (indices 1..4)
+  spell 1: 1*5=5<7 → 0 potions
+  spell 3: 3*3=9>=7 → 3 potions (indices 2..4)
+```
+
+#### Example 2
+
+```
+Input:  spells = [3,1,2], potions = [8,5,8], success = 16
+Output: [2,0,2]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "For each spell, do we need to find the smallest valid potion?", verdict: "yes", reason: "Sort potions. Binary search for the leftmost index where spell * potion >= success. All potions from that index onward are valid." },
+    { question: "Can we avoid comparing every spell-potion pair?", verdict: "yes", reason: "Sorting potions + binary search per spell = O(m log m + n log m), far better than O(n*m)." },
+  ]}
+  answer="Sort potions + binary search leftmost valid index per spell"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Sort `potions` ascending. For each spell, binary search for the leftmost index `l` where `spell * potions[l] >= success`. The count of valid potions is `m - l`.
+
+Use a standard left-boundary binary search: if `power < success`, move `l = mid + 1`; otherwise move `r = mid`. After the loop, `l` is the first valid index.
+
+<Callout type="yellow" label="Integer overflow risk">
+`spell * potions[m]` can reach 10^5 * 10^5 = 10^10, which exceeds Int32 range. Swift's `Int` is 64-bit on modern platforms (up to ~9.2 * 10^18), so no overflow here — but always verify platform integer size.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="spells = [5,1,3], potions = [1,2,3,4,5], success = 7"
+  expected="[4,0,3]"
+  steps={[
+    { label: "Sort",      text: "sortedPotions = [1,2,3,4,5] (already sorted).", state: "sortedPotions=[1,2,3,4,5]" },
+    { label: "spell=5",   text: "Need potion >= 7/5 = 1.4, so >= 2. Binary search: l=0,r=5. mid=2: 5*3=15>=7 → r=2. mid=1: 5*2=10>=7 → r=1. mid=0: 5*1=5<7 → l=1. l=1. count=5-1=4.", state: "result[0]=4" },
+    { label: "spell=1",   text: "Need potion >= 7. Binary search finds l=5 (none qualify). count=5-5=0.", state: "result[1]=0" },
+    { label: "spell=3",   text: "Need potion >= 7/3 = 2.33, so >= 3. Binary search: l=2. count=5-2=3.", state: "result[2]=3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Sort potions">
+    `let sortedPotions = potions.sorted()`
+  </StepItem>
+  <StepItem title="Binary search per spell">
+    For each spell, initialise `l = 0`, `r = m`. While `l < r`: compute `mid = l + (r-l)/2`. If `spell * sortedPotions[mid] < success`, set `l = mid + 1`; else set `r = mid`.
+  </StepItem>
+  <StepItem title="Count valid potions">
+    `result[i] = m - l`. All potions from index `l` onward are valid.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func successfulPairs(_ spells: [Int], _ potions: [Int], _ success: Int) -> [Int] {
+    var result = Array(repeating: 0, count: spells.count)
+    let sorted = potions.sorted()
+
+    for i in 0..<spells.count {
+      let spell = spells[i]
+      var l = 0, r = sorted.count
+
+      while l < r {
+        let m = l + (r - l) / 2
+        if spell * sorted[m] < success { l = m + 1 }
+        else { r = m }
+      }
+
+      result[i] = sorted.count - l
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (nested loops)", time: "O(n·m)", space: "O(1)", note: "Check all spell-potion pairs" },
+    { approach: "Sort + binary search", time: "O((n+m) log m)", space: "O(m)", note: "Sort O(m log m) + n binary searches O(n log m)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using r = m-1 instead of r = m",
+      body: "The left-boundary binary search needs r initialised to m (one past the last index) so that if no potion qualifies, l ends at m and the count is 0.",
+      fix: "Initialise r = sorted.count (not sorted.count - 1).",
+    },
+    {
+      title: "Wrong boundary update direction",
+      body: "For leftmost-valid binary search: when the current mid qualifies (power >= success), move r = mid to narrow down. When it doesn't, move l = mid + 1.",
+      fix: "if power < success: l = mid + 1. else: r = mid.",
+    },
+    {
+      title: "Not sorting potions before searching",
+      body: "Binary search requires a sorted array. Searching unsorted potions gives wrong results.",
+      fix: "Sort potions once before the loop: let sorted = potions.sorted().",
+    },
+  ]}
+/>

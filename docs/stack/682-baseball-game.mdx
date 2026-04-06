@@ -1,0 +1,181 @@
+---
+id: 682-baseball-game
+title: "Baseball Game"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={682}
+  title="Baseball Game"
+  difficulty="Easy"
+  pattern="Stack Simulation"
+  tags={["Array", "Stack", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/baseball-game/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are keeping the scores for a baseball game with strange rules. At the beginning of the game, you start with an empty record.
+
+You are given a list of strings `operations`, where `operations[i]` is the `i`-th operation you must apply to the record and is one of the following:
+
+- An integer `x` — Record a new score of `x`.
+- `"+"` — Record a new score that is the sum of the previous two scores.
+- `"D"` — Record a new score that is the double of the previous score.
+- `"C"` — Invalidate the previous score, removing it from the record.
+
+Return the sum of all the scores on the record after applying all the operations.
+
+The test cases are generated such that the answer and all intermediate calculations fit in a 32-bit integer and that it is possible to perform all operations.
+
+**Constraints:**
+- `1 <= operations.length <= 1000`
+- `operations[i]` is `"C"`, `"D"`, `"+"`, or a string representing an integer in the range `[-3 * 10^4, 3 * 10^4]`.
+- For operation `"+"`, there will always be at least two previous scores on the record.
+- For operations `"C"` and `"D"`, there will always be at least one previous score on the record.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  ops = ["5","2","C","D","+"]
+Output: 30
+Explanation:
+  "5"  → record [5]
+  "2"  → record [5, 2]
+  "C"  → invalidate 2, record [5]
+  "D"  → double last (5), record [5, 10]
+  "+"  → sum last two (5+10=15), record [5, 10, 15]
+  Total = 5 + 10 + 15 = 30
+```
+
+#### Example 2
+
+```
+Input:  ops = ["5","-2","4","C","D","9","+","+"]
+Output: 27
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each operation modify only the most recent score(s)?", verdict: "yes", reason: "C removes the last; D reads the last; + reads the last two. All operations are LIFO — a stack is the natural structure." },
+    { question: "Can we simulate the process directly?", verdict: "yes", reason: "No look-ahead needed — process operations left to right, applying each rule to the stack." },
+    { question: "Is the final answer just the sum of all remaining stack elements?", verdict: "yes", reason: "After all operations, every remaining entry is a valid score. Sum them all." },
+  ]}
+  answer="Stack Simulation — apply each operation, sum the final stack"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain an integer stack. For each operation:
+- Integer string → parse with `Int()` and push.
+- `"+"` → push `stack[last] + stack[last-1]`.
+- `"D"` → push `stack[last] * 2`.
+- `"C"` → pop the last element.
+
+After all operations, return the sum of the stack.
+
+<Callout type="cyan" label="Force-unwrapping is safe here">
+The problem guarantees C and D always have a prior score, and + always has two. Force-unwrapping stack.last! is safe because the input is always valid per the constraints.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='ops = ["5","2","C","D","+"]'
+  expected="30"
+  steps={[
+    { label: '"5"',  text: 'Push 5 → stack=[5]' },
+    { label: '"2"',  text: 'Push 2 → stack=[5,2]' },
+    { label: '"C"',  text: 'Pop last → stack=[5]' },
+    { label: '"D"',  text: 'Push 5*2=10 → stack=[5,10]' },
+    { label: '"+"',  text: 'Push 10+5=15 → stack=[5,10,15]' },
+    { label: 'sum',  text: '5+10+15 = 30' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack and result">
+    `var stack = [Int]()`, `var result = 0`.
+  </StepItem>
+  <StepItem title="Process each operation">
+    Switch on the operation string.
+  </StepItem>
+  <StepItem title="Handle + — sum last two">
+    `stack.append(stack[stack.count - 1] + stack[stack.count - 2])`.
+  </StepItem>
+  <StepItem title="Handle D — double last">
+    `stack.append(stack.last! * 2)`.
+  </StepItem>
+  <StepItem title="Handle C — remove last">
+    `stack.removeLast()`.
+  </StepItem>
+  <StepItem title="Handle integer — push">
+    `stack.append(Int(operation)!)`.
+  </StepItem>
+  <StepItem title="Sum the stack">
+    `return stack.reduce(0, +)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func calPoints(_ operations: [String]) -> Int {
+    var stack = [Int]()
+
+    for operation in operations {
+      switch operation {
+      case "+":
+        stack.append(stack[stack.count - 1] + stack[stack.count - 2])
+      case "D":
+        stack.append(stack.last! * 2)
+      case "C":
+        stack.removeLast()
+      default:
+        stack.append(Int(operation)!)
+      }
+    }
+
+    return stack.reduce(0, +)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack Simulation", time: "O(n)", space: "O(n)", note: "One pass; stack holds at most n elements", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Wrong index for the + operation",
+      body: "The two most recent scores are at stack[count-1] and stack[count-2]. Using stack.last twice or wrong indices returns the wrong sum.",
+      fix: "Use stack[stack.count - 1] + stack[stack.count - 2] — the last element plus the second-to-last.",
+    },
+    {
+      title: "Summing as you go instead of at the end",
+      body: "The C operation removes a score that may already have been added to a running total, making the incremental sum incorrect.",
+      fix: "Accumulate all scores in the stack first, then sum at the end with stack.reduce(0, +).",
+    },
+    {
+      title: "Forgetting that operation strings can be negative integers",
+      body: "Operations like '-3' are valid score entries. Checking only for non-negative digits would miss negative scores.",
+      fix: "Use the default case with Int(operation)! — Swift's Int initialiser handles negative strings like '-3' correctly.",
+    },
+  ]}
+/>

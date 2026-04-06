@@ -1,0 +1,152 @@
+---
+id: 345-reverse-vowels-of-a-string
+title: "Reverse Vowels of a String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={345}
+  title="Reverse Vowels of a String"
+  difficulty="Easy"
+  pattern="Two Pointers"
+  tags={["Two Pointers", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/reverse-vowels-of-a-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s`, reverse only all the vowels in the string and return it.
+
+The vowels are `'a'`, `'e'`, `'i'`, `'o'`, `'u'`, and they can appear in both lower and upper cases.
+
+**Constraints:**
+- `1 <= s.length <= 3 * 10^5`
+- `s` consists of printable ASCII characters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "IceCreAm"
+Output: "AceCreIm"
+Explanation: The vowels are I, e, e, A. Reversed: A, e, e, I.
+```
+
+#### Example 2
+
+```
+Input:  s = "leetcode"
+Output: "leotcede"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we only swap vowels and leave consonants in place?", verdict: "yes", reason: "Classic two-pointer inward scan — advance left past consonants, advance right past consonants, swap only vowel pairs." },
+    { question: "Does the vowel set need to include uppercase?", verdict: "yes", reason: "Both 'A' and 'a' are vowels — the set must include all 10 variants." },
+    { question: "Can we do this in-place?", verdict: "yes", reason: "Convert to character array, swap in-place, convert back." },
+  ]}
+  answer="Two pointers — advance each past consonants, swap when both point to vowels"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Convert `s` to a `[Character]` array. `left` starts at 0, `right` at the last index. Advance `left` right while it points to a consonant; advance `right` left while it points to a consonant. When both point to vowels, swap and move both inward. Repeat until `left >= right`.
+
+<Callout type="cyan" label="Four cases per iteration">
+Each iteration handles one of: (1) both are vowels — swap and advance both; (2) only left is a vowel — advance right; (3) only right is a vowel — advance left; (4) neither is a vowel — advance both. All cases converge correctly.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "hello"'
+  expected='"holle"'
+  steps={[
+    { label: "init",   text: "chars=['h','e','l','l','o']; left=0, right=4" },
+    { label: "step 1", text: "chars[0]='h' not vowel → advance left to 1; chars[4]='o' is vowel" },
+    { label: "step 2", text: "left=1: 'e' is vowel; right=4: 'o' is vowel → swap → chars=['h','o','l','l','e']; left=2, right=3" },
+    { label: "step 3", text: "left=2: 'l' not vowel → advance left to 3; right=3: 'l' not vowel → advance right to 2" },
+    { label: "done",   text: "left(3) >= right(2) → exit; return 'holle'" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert to character array">
+    `var chars = s.map { $0 }`. Define `let vowels: Set = ["a","A","e","E","i","I","o","O","u","U"]`.
+  </StepItem>
+  <StepItem title="Initialise two pointers">
+    `var left = 0`, `var right = chars.count - 1`.
+  </StepItem>
+  <StepItem title="Advance past consonants and swap vowels">
+    While `left less than right`: handle all four vowel/consonant combinations — swap when both are vowels.
+  </StepItem>
+  <StepItem title="Return result">
+    `return String(chars)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func reverseVowels(_ s: String) -> String {
+    var chars  = s.map { $0 }
+    var left   = 0
+    var right  = chars.count - 1
+    let vowels: Set<Character> = ["a","A","e","E","i","I","o","O","u","U"]
+
+    while left < right {
+      let l = chars[left], r = chars[right]
+      if vowels.contains(l), vowels.contains(r) {
+        chars.swapAt(left, right)
+        left += 1; right -= 1
+      } else if vowels.contains(l) {
+        right -= 1
+      } else if vowels.contains(r) {
+        left += 1
+      } else {
+        left += 1; right -= 1
+      }
+    }
+
+    return String(chars)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two pointers", time: "O(n)", space: "O(n)", note: "O(n) for the character array copy; swaps are O(1) each", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Missing uppercase vowels in the set",
+      body: "If only lowercase vowels are included, uppercase vowels like 'A' or 'I' are treated as consonants and not swapped.",
+      fix: "Include all 10 vowels in the set: <code>[\"a\",\"A\",\"e\",\"E\",\"i\",\"I\",\"o\",\"O\",\"u\",\"U\"]</code>.",
+    },
+    {
+      title: "Advancing only one pointer when neither is a vowel",
+      body: "If only left or only right advances when both are consonants, the loop makes no progress when two consecutive consonants meet in the middle.",
+      fix: "When neither is a vowel, advance both: <code>left += 1; right -= 1</code>.",
+    },
+    {
+      title: "Modifying the original string directly",
+      body: "Swift strings are value types and not index-subscriptable like arrays. Directly modifying String indices requires String.Index arithmetic which is error-prone.",
+      fix: "Convert to <code>[Character]</code> first with <code>s.map { $0 }</code>, swap in-place, then convert back with <code>String(chars)</code>.",
+    },
+  ]}
+/>

@@ -1,0 +1,168 @@
+---
+id: 42-trapping-rain-water
+title: "Trapping Rain Water"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import TrappingRainWaterDiagram from '@site/src/components/DSA/TrappingRainWaterDiagram';
+
+<ProblemHeader
+  number={42}
+  title="Trapping Rain Water"
+  difficulty="Hard"
+  pattern="Two Pointers"
+  tags={["Array", "Two Pointers", "Dynamic Programming", "Stack", "Monotonic Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/trapping-rain-water/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.
+
+The amount of water trapped above position `i` is determined by the minimum of the tallest bar to its left and the tallest bar to its right, minus the height at `i`.
+
+**Constraints**
+- `n == height.length`
+- `1 <= n <= 2 * 10^4`
+- `0 <= height[i] <= 10^5`
+
+<Callout type="green" label="Core Insight">
+Maintain a left pointer and a right pointer with their respective running maximums. The side with the smaller maximum is the bottleneck — advance that pointer inward and accumulate `max - height[pointer]` as trapped water. No extra arrays needed.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+```
+
+#### Example 2
+```
+Input:  height = [4,2,0,3,2,5]
+Output: 9
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the answer determined by left and right boundaries?", verdict: "yes", reason: "Water at each position is bounded by min(leftMax, rightMax) — boundary values drive the result." },
+    { question: "Can we process from both ends simultaneously?", verdict: "yes", reason: "Two pointers let us advance the weaker side inward, guaranteeing the other side is already safe." },
+    { question: "Do we need extra space for prefix/suffix arrays?", verdict: "no", reason: "Running max variables replace the O(n) prefix/suffix arrays from the DP approach." },
+  ]}
+  answer="Two Pointers — advance weaker side, accumulate trapped water in O(1) space"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<TrappingRainWaterDiagram />
+
+Initialize `l=0`, `r=n-1`, `leftMax=height[0]`, `rightMax=height[n-1]`, `result=0`.
+
+While `l < r`:
+- If `leftMax < rightMax`, the left side is the bottleneck. Advance `l` inward, update `leftMax`, and add `leftMax - height[l]` to `result`.
+- Otherwise, the right side is the bottleneck. Advance `r` inward, update `rightMax`, and add `rightMax - height[r]`.
+
+The key invariant: when processing the left pointer, we know `rightMax >= leftMax`, so the water level is capped by `leftMax` and the right side is guaranteed to hold it.
+
+<Callout type="cyan" label="Why leftMax - height[l] is always non-negative">
+We update leftMax before computing the difference: `leftMax = max(leftMax, height[l])`. This means leftMax is always at least height[l], so the subtraction is always >= 0. We only add to result — never subtract.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="height = [4,2,0,3,2,5]"
+  expected="9"
+  steps={[
+    { label: "init", text: "l=0, r=5, leftMax=4, rightMax=5, result=0.", state: "l=0, r=5" },
+    { label: "step 1", text: "leftMax(4) < rightMax(5). l=1. leftMax=max(4,2)=4. result += 4-2=2. result=2.", state: "l=1, result=2" },
+    { label: "step 2", text: "leftMax(4) < rightMax(5). l=2. leftMax=max(4,0)=4. result += 4-0=4. result=6.", state: "l=2, result=6" },
+    { label: "step 3", text: "leftMax(4) < rightMax(5). l=3. leftMax=max(4,3)=4. result += 4-3=1. result=7.", state: "l=3, result=7" },
+    { label: "step 4", text: "leftMax(4) < rightMax(5). l=4. leftMax=max(4,2)=4. result += 4-2=2. result=9.", state: "l=4, result=9" },
+    { label: "done", text: "l=4, r=5, l < r but next step l==r so loop ends. Return 9.", state: "result=9" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard empty input">
+    Return 0 immediately if `height` is empty.
+  </StepItem>
+  <StepItem title="Initialize two pointers and running maxima">
+    `l=0`, `r=height.count-1`, `leftMax=height[0]`, `rightMax=height[r]`, `result=0`.
+  </StepItem>
+  <StepItem title="Advance the weaker side">
+    While `l < r`: if `leftMax < rightMax`, increment `l`, update `leftMax`, add `leftMax - height[l]`. Else decrement `r`, update `rightMax`, add `rightMax - height[r]`.
+  </StepItem>
+  <StepItem title="Return result">
+    The accumulated `result` is the total trapped water.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func trap(_ height: [Int]) -> Int {
+    guard !height.isEmpty else { return 0 }
+
+    var l = 0
+    var r = height.count - 1
+    var leftMax = height[l]
+    var rightMax = height[r]
+    var result = 0
+
+    while l < r {
+      if leftMax < rightMax {
+        l += 1
+        leftMax = max(leftMax, height[l])
+        result += leftMax - height[l]
+        
+      } else {
+        r -= 1
+        rightMax = max(rightMax, height[r])
+        result += rightMax - height[r]
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute Force", time: "O(n²)", space: "O(1)", note: "For each position scan left and right for max" },
+    { approach: "DP prefix/suffix arrays", time: "O(n)", space: "O(n)", note: "Precompute leftMax[] and rightMax[] arrays" },
+    { approach: "Two Pointers", time: "O(n)", space: "O(1)", note: "Single pass, running max variables only", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Updating max after computing water instead of before",
+      body: "If you compute result += leftMax - height[l] before updating leftMax, you may subtract a height larger than the old leftMax and get a negative contribution.",
+      fix: "Always update the running max first: leftMax = max(leftMax, height[l]), then result += leftMax - height[l].",
+    },
+    {
+      title: "Advancing the pointer before updating the max",
+      body: "The pointer is advanced first (l += 1 / r -= 1), so the max update and water computation must reference the new pointer position, not the old one.",
+      fix: "The order is: advance pointer, update max, accumulate water — all referring to the same new index.",
+    },
+    {
+      title: "Using leftMax >= rightMax condition instead of leftMax < rightMax",
+      body: "The weaker (smaller) side is the bottleneck. If the condition is reversed, you advance the wrong pointer and compute water against the wrong max.",
+      fix: "Advance left when leftMax strictly less than rightMax; advance right otherwise (including equal case — either side works when equal).",
+    },
+  ]}
+/>

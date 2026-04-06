@@ -1,0 +1,166 @@
+---
+id: 234-palindrome-linked-list
+title: "Palindrome Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import PalindromeLinkedListDiagram from '@site/src/components/DSA/PalindromeLinkedListDiagram';
+
+<ProblemHeader
+  number={234}
+  title="Palindrome Linked List"
+  difficulty="Easy"
+  pattern="Fast/Slow Pointer + In-Place Reversal"
+  tags={["Linked List", "Two Pointers", "Stack", "Recursion"]}
+  leetcodeUrl="https://leetcode.com/problems/palindrome-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `head` of a singly linked list, return `true` if it is a palindrome or `false` otherwise.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[1, 10^5]`.
+- `0 <= Node.val <= 9`
+
+<SectionHeader n={2} title="Examples" />
+
+<PalindromeLinkedListDiagram />
+
+#### Example 1
+
+```
+Input: head = [1,2,2,1]
+Output: true
+```
+
+#### Example 2
+
+```
+Input: head = [1,2]
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we check palindrome without extra O(n) space?", verdict: "yes", reason: "Reverse the second half in-place and compare with the first half — O(1) extra space." },
+    { question: "How do we find the midpoint?", verdict: "yes", reason: "Fast/slow pointers: when fast reaches the end, slow is at the middle." },
+    { question: "Does the reversal mutate the original list?", verdict: "yes", reason: "The list is mutated — this is acceptable given the problem does not require preservation, but restoration is possible if needed." },
+  ]}
+  answer="Fast/slow to find mid → reverse second half in-place → walk both halves simultaneously"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Three phases:
+1. **Find the midpoint** — move `slow` one step and `fast` two steps until `fast.next == nil` or `fast.next.next == nil`. `slow` ends at the last node of the first half.
+2. **Reverse the second half** — iterative three-pointer reversal starting from `slow`, producing a reversed chain (`prev`).
+3. **Compare both halves** — walk `p1` from `head` and `p2` from `prev` simultaneously; if any values differ, return `false`.
+
+<Callout type="cyan" label="Odd vs even length">
+For odd-length lists the middle node is skipped — only the nodes after it form the second half. The fast/slow condition <code>fast?.next != nil and fast?.next?.next != nil</code> correctly positions slow at the end of the first half in both cases.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,2,1]"
+  expected="true"
+  steps={[
+    { label: "find mid",  text: "slow=1,fast=1 → slow=2,fast=2 → fast.next=1, fast.next.next=nil → stop; slow=node(2) at index 1" },
+    { label: "reverse",   text: "reverse from slow=2: prev=nil,curr=2; step: 2.next=nil,prev=2,curr=2(next); step: 2.next=2,prev=1,curr=nil; reversed=[1,2]" },
+    { label: "compare",   text: "p1=head(1), p2=prev(1): 1==1 ✓; p1=2, p2=2: 2==2 ✓; p2=nil → loop ends" },
+    { label: "done",      text: "no mismatch → return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Find the midpoint with fast/slow pointers">
+    Move `slow` one step and `fast` two steps each iteration until `fast?.next == nil` or `fast?.next?.next == nil`.
+  </StepItem>
+  <StepItem title="Reverse the second half">
+    Starting from `slow` (inclusive), apply the iterative reversal: save `next`, redirect `curr.next = prev`, advance both.
+  </StepItem>
+  <StepItem title="Compare first and second halves">
+    Walk `p1` from `head` and `p2` from `prev`. Return `false` on any value mismatch.
+  </StepItem>
+  <StepItem title="Return true">
+    If `p2` is exhausted without a mismatch, the list is a palindrome.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isPalindrome(_ head: ListNode?) -> Bool {
+    var slow = head
+    var fast = head
+
+    while fast?.next != nil && fast?.next?.next != nil {
+      slow = slow?.next
+      fast = fast?.next?.next
+    }
+
+    // Reverse second half starting from slow
+    var prev: ListNode? = nil
+    var curr = slow
+
+    while curr != nil {
+      let next = curr?.next
+      curr?.next = prev
+      prev = curr
+      curr = next
+    }
+
+    // Compare both halves
+    var p1 = head
+    var p2 = prev
+
+    while p1 != nil, p2 != nil {
+      if p1?.val != p2?.val { return false }
+      p1 = p1?.next
+      p2 = p2?.next
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fast/slow + in-place reversal", time: "O(n)", space: "O(1)", note: "Three linear passes; no extra data structures", highlight: true },
+    { approach: "Copy to array, two pointers", time: "O(n)", space: "O(n)", note: "Simpler implementation but requires O(n) extra space" },
+    { approach: "Recursive", time: "O(n)", space: "O(n)", note: "Elegant but O(n) call stack depth" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Wrong fast/slow stopping condition",
+      body: "Using <code>fast != nil and fast?.next != nil</code> moves slow one step too far for even-length lists, leaving the second half with one extra node that skews the comparison.",
+      fix: "Use <code>fast?.next != nil and fast?.next?.next != nil</code> to stop slow at the last node of the first half.",
+    },
+    {
+      title: "Starting the reversal from slow.next instead of slow",
+      body: "For even-length lists the midpoint has two equal middle nodes. Starting from slow.next skips one and causes a false negative.",
+      fix: "Start the reversal from slow (inclusive). The comparison will naturally stop when p2 is exhausted.",
+    },
+    {
+      title: "Using p1 == nil as the termination condition",
+      body: "The first half may be longer than the reversed second half (for odd-length lists). p2 is exhausted first — that is the correct termination.",
+      fix: "Loop while <code>p1 != nil and p2 != nil</code>. When p2 runs out the check passes.",
+    },
+  ]}
+/>

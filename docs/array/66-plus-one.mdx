@@ -1,0 +1,162 @@
+---
+id: 66-plus-one
+title: "Plus One"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={66}
+  title="Plus One"
+  difficulty="Easy"
+  pattern="Array Traversal"
+  tags={["Array", "Math"]}
+  leetcodeUrl="https://leetcode.com/problems/plus-one/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a **large integer** represented as an integer array `digits`, where each `digits[i]` is the `i`-th digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading zeros.
+
+Increment the large integer by one and return the resulting array of digits.
+
+**Constraints**
+- `1 <= digits.length <= 100`
+- `0 <= digits[i] <= 9`
+- `digits` does not contain any leading zeros.
+
+<Callout type="green" label="Core Insight">
+Walk backward through the digits. If the last digit is not 9, simply increment it and stop. If it is 9, set it to 0 and carry — keep going left while digits are 9. If all digits were 9, every digit is now 0 and we need to insert a leading 1.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  digits = [1,2,3]
+Output: [1,2,4]
+```
+
+#### Example 2
+```
+Input:  digits = [4,3,2,1]
+Output: [4,3,2,2]
+```
+
+#### Example 3
+```
+Input:  digits = [9]
+Output: [1,0]
+```
+
+#### Example 4
+```
+Input:  digits = [9,9,9]
+Output: [1,0,0,0]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does carry propagate from the least significant digit?", verdict: "yes", reason: "Adding 1 to a 9 produces a 0 with carry-1; that carry may cascade left through consecutive 9s." },
+    { question: "Can we stop early?", verdict: "yes", reason: "As soon as we encounter a digit less than 9 we increment it and return — no carry to propagate." },
+    { question: "Is a new array length ever needed?", verdict: "yes", reason: "Only when all digits are 9 (e.g., [9,9,9] → [1,0,0,0]). This is the only edge case requiring an extra digit." },
+  ]}
+  answer="Backward linear scan — increment or propagate carry, insert leading 1 only when all nines"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate from the last index down to 0. If `digits[last] != 9`, increment it and immediately return. If it is 9, set it to 0 and continue left (carry propagates). After the loop exits — which means we fell off the left end, i.e., all digits were 9 — every digit is now 0, so insert a 1 at index 0.
+
+<Callout type="cyan" label="Why insert(1, at: 0) is only reached in the all-nines case">
+The loop only finishes without returning when every iteration sets a digit to 0 (all were 9). In that case digits is now all zeros and we need a new most-significant digit of 1. For any other input the early return fires before the loop ends.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="digits = [9,9,9]"
+  expected="[1,0,0,0]"
+  steps={[
+    { label: "last=2", text: "digits[2]=9. Set to 0, last=1. digits=[9,9,0].", state: "[9,9,0]" },
+    { label: "last=1", text: "digits[1]=9. Set to 0, last=0. digits=[9,0,0].", state: "[9,0,0]" },
+    { label: "last=0", text: "digits[0]=9. Set to 0, last=-1. digits=[0,0,0].", state: "[0,0,0]" },
+    { label: "last<0", text: "Loop exits. All digits were 9. Insert 1 at front.", state: "[1,0,0,0]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Copy the array (Swift arrays are value types — mutate in place)">
+    `var digits = digits`. Initialise `last = digits.count - 1`.
+  </StepItem>
+  <StepItem title="Walk backward">
+    While `last >= 0`: if `digits[last] != 9`, increment and `break`. Else set `digits[last] = 0` and `last -= 1`.
+  </StepItem>
+  <StepItem title="Handle all-nines edge case">
+    If `last < 0` after the loop, insert 1 at index 0: `digits.insert(1, at: 0)`.
+  </StepItem>
+  <StepItem title="Return">
+    Return `digits`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func plusOne(_ digits: [Int]) -> [Int] {
+    var digits = digits
+    var last = digits.count - 1
+
+    while last >= 0 {
+      if digits[last] != 9 {
+        digits[last] += 1
+        break
+      }
+      digits[last] = 0
+      last -= 1
+
+      if last < 0 {
+        digits.insert(1, at: 0)
+      }
+    }
+
+    return digits
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backward scan", time: "O(n)", space: "O(1)", note: "O(n) only for the all-nines case when a new digit is inserted; otherwise O(1) time", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Converting to Int and adding 1",
+      body: "digits can represent numbers with up to 100 digits — far beyond Int64 range. Converting to a numeric type will overflow.",
+      fix: "Operate digit-by-digit with carry propagation. Never convert the entire array to an integer.",
+    },
+    {
+      title: "Forgetting the all-nines edge case",
+      body: "If every digit is 9 the result needs one extra digit (e.g., [9,9] → [1,0,0]). A simple digits[last] += 1 at the end misses this.",
+      fix: "After the backward loop, check if last < 0 and insert a leading 1 if so.",
+    },
+    {
+      title: "Using a modular arithmetic approach without break",
+      body: "Some implementations compute (digit+1) % 10 and continue the loop even when no carry is needed, wasting iterations.",
+      fix: "Break immediately as soon as you increment a non-9 digit — no further digits need updating.",
+    },
+  ]}
+/>

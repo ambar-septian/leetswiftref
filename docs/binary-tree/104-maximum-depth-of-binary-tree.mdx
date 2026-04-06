@@ -1,0 +1,143 @@
+---
+id: 104-maximum-depth-of-binary-tree
+title: "Maximum Depth of Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import MaxDepthDiagram from '@site/src/components/DSA/MaxDepthDiagram';
+
+<ProblemHeader
+  number={104}
+  title="Maximum Depth of Binary Tree"
+  difficulty="Easy"
+  pattern="DFS"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/maximum-depth-of-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return its **maximum depth**.
+
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+**Constraints**
+- The number of nodes in the tree is in the range `[0, 10^4]`.
+- `-100 <= Node.val <= 100`
+
+<Callout type="green" label="Core Insight">
+The maximum depth is 1 (for the current node) plus the greater of the depths of its left and right subtrees. Base case: a nil node has depth 0.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  root = [3,9,20,null,null,15,7]
+Output: 3
+```
+
+#### Example 2
+```
+Input:  root = [1,null,2]
+Output: 2
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the depth of a node depend on its children's depths?", verdict: "yes", reason: "depth(node) = 1 + max(depth(left), depth(right)) — classic post-order DFS." },
+    { question: "Is the base case a nil node?", verdict: "yes", reason: "A nil node has no depth — return 0." },
+    { question: "Can we compute depth bottom-up?", verdict: "yes", reason: "Post-order: compute left and right depths first, then combine at the current node." },
+  ]}
+  answer="Recursive post-order DFS — 1 + max(left depth, right depth)"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Recursive DFS `dfs(_ node: TreeNode?) -> Int`. If node is nil return 0. Recursively compute `left = dfs(node.left)` and `right = dfs(node.right)`. Return `1 + max(left, right)`.
+
+<MaxDepthDiagram />
+
+<Callout type="cyan" label="BFS alternative">
+Level-order BFS also works: count how many levels are processed. Each completed level increments a depth counter. This is O(n) time and O(n) space (queue can hold a full level).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [3,9,20,null,null,15,7]"
+  expected="3"
+  steps={[
+    { label: "dfs(nil)", text: "Base case. Return 0.", state: "0" },
+    { label: "dfs(9)", text: "left=dfs(nil)=0, right=dfs(nil)=0. Return 1+max(0,0)=1.", state: "1" },
+    { label: "dfs(15)", text: "Both children nil. Return 1.", state: "1" },
+    { label: "dfs(7)", text: "Both children nil. Return 1.", state: "1" },
+    { label: "dfs(20)", text: "left=dfs(15)=1, right=dfs(7)=1. Return 1+max(1,1)=2.", state: "2" },
+    { label: "dfs(3)", text: "left=dfs(9)=1, right=dfs(20)=2. Return 1+max(1,2)=3.", state: "3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    If node is nil, return 0.
+  </StepItem>
+  <StepItem title="Recurse both subtrees">
+    `let left = dfs(node.left)`, `let right = dfs(node.right)`.
+  </StepItem>
+  <StepItem title="Return combined depth">
+    Return `1 + max(left, right)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func maxDepth(_ root: TreeNode?) -> Int {
+    guard let root else { return 0 }
+    return dfs(root)
+
+    func dfs(_ node: TreeNode?) -> Int {
+      guard let node else { return 0 }
+      let left = dfs(node.left)
+      let right = dfs(node.right)
+      return 1 + max(left, right)
+    }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive DFS", time: "O(n)", space: "O(h)", note: "Every node visited once; O(h) call stack (h = height, O(n) for skewed trees)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning 1 instead of 0 for nil nodes",
+      body: "If nil returns 1, every non-existent child adds 1 to the depth, making the result double the correct answer.",
+      fix: "Nil nodes have no depth — return 0 from the base case.",
+    },
+    {
+      title: "Using + instead of max",
+      body: "depth(node) = 1 + left + right would sum both subtree depths instead of taking the longer path.",
+      fix: "Use 1 + max(left, right) to take the deeper of the two subtrees.",
+    },
+    {
+      title: "Confusing depth with height",
+      body: "Depth of a node = distance from root. Height of a node = longest path to a leaf. maxDepth asks for the tree's height (longest root-to-leaf path), which equals the height of the root.",
+      fix: "The recursive formula 1 + max(left, right) computes height, which is what the problem calls max depth. The naming is consistent with LeetCode's definition.",
+    },
+  ]}
+/>

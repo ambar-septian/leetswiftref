@@ -1,0 +1,155 @@
+---
+id: 1456-maximum-number-of-vowels-in-a-substring-of-given-length
+title: "Maximum Number of Vowels in a Substring of Given Length"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1456}
+  title="Maximum Number of Vowels in a Substring of Given Length"
+  difficulty="Medium"
+  pattern="Sliding Window — Fixed Size"
+  tags={["String", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s` and an integer `k`, return the **maximum number of vowel letters** in any substring of `s` with length `k`.
+
+Vowel letters in English are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`.
+
+**Constraints:**
+- `1 <= s.length <= 10^5`
+- `s` consists of lowercase English letters.
+- `1 <= k <= s.length`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "abciiidef", k = 3
+Output: 3
+Explanation: The substring "iii" contains 3 vowels.
+```
+
+#### Example 2
+
+```
+Input:  s = "aeiou", k = 2
+Output: 2
+```
+
+#### Example 3
+
+```
+Input:  s = "leetcode", k = 3
+Output: 2
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window size fixed?", verdict: "yes", reason: "Every window is exactly k characters — fixed-size sliding window." },
+    { question: "Can we update the count in O(1) per slide?", verdict: "yes", reason: "Add 1 if the new character is a vowel. Subtract 1 if the leaving character is a vowel." },
+    { question: "Do we need to track the window contents?", verdict: "no", reason: "Only the vowel count matters, not which specific vowels are present." },
+  ]}
+  answer="Fixed-size sliding window — O(1) update per slide"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Slide a window of size `k` across the string. When a new character enters (index `i`), add 1 to `curr` if it is a vowel. When a character leaves (index `i - k`), subtract 1 if it was a vowel. Update `result = max(result, curr)` at each position.
+
+<Callout type="green" label="No need to build initial window separately">
+By guarding `if i >= k` before subtracting the leaving character, a single loop handles both the initial fill and subsequent slides.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "abciiidef", k = 3'
+  expected="3"
+  steps={[
+    { label: "i=0 (a)", text: "'a' is vowel → curr=1. i<3 no removal. result=1.", state: "window=[a], curr=1" },
+    { label: "i=1 (b)", text: "'b' not vowel → curr=1. i<3 no removal. result=1.", state: "window=[a,b], curr=1" },
+    { label: "i=2 (c)", text: "'c' not vowel → curr=1. i<3 no removal. result=1.", state: "window=[a,b,c], curr=1" },
+    { label: "i=3 (i)", text: "'i' vowel → curr=2. Remove arr[0]='a' (vowel) → curr=1. result=1.", state: "window=[b,c,i], curr=1" },
+    { label: "i=4 (i)", text: "'i' vowel → curr=2. Remove 'b' (not) → curr=2. result=2.", state: "window=[c,i,i], curr=2" },
+    { label: "i=5 (i)", text: "'i' vowel → curr=3. Remove 'c' (not) → curr=3. result=3.", state: "window=[i,i,i], curr=3" },
+    { label: "i=6..8",  text: "Remaining windows [i,i,d],[i,d,e],[d,e,f] have at most 2 vowels. result stays 3.", state: "result=3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build a vowel set">
+    `let vowels: Set = ["a","e","i","o","u"]`
+  </StepItem>
+  <StepItem title="Convert string to character array">
+    `let chars = Array(s)` for O(1) index access.
+  </StepItem>
+  <StepItem title="Slide the window">
+    For each `i` in `0..<count`: add 1 to `curr` if `chars[i]` is a vowel. If `i >= k`, subtract 1 if `chars[i-k]` is a vowel.
+  </StepItem>
+  <StepItem title="Track maximum">
+    `result = max(result, curr)` at each step.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func maxVowels(_ s: String, _ k: Int) -> Int {
+    let vowels: Set<Character> = ["a", "e", "i", "o", "u"]
+    let chars = Array(s)
+    var result = 0
+    var curr = 0
+
+    for i in 0..<chars.count {
+      if vowels.contains(chars[i]) { curr += 1 }
+      if i >= k && vowels.contains(chars[i - k]) { curr -= 1 }
+      result = max(result, curr)
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (recompute each window)", time: "O(n·k)", space: "O(1)", note: "Count vowels from scratch for each starting position" },
+    { approach: "Fixed-size sliding window", time: "O(n)", space: "O(1)", note: "O(1) update per position; Set lookup is O(1)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Wrong removal index",
+      body: "When the window has slid to position i, the element leaving is chars[i-k], not chars[i-k-1] or chars[i-1].",
+      fix: "Use chars[i-k] for the leaving element when i >= k.",
+    },
+    {
+      title: "Not converting String to Array",
+      body: "In Swift, indexing a String with an integer is O(n) due to Unicode. Accessing chars[i] on the Array is O(1).",
+      fix: "Convert with Array(s) before the loop.",
+    },
+    {
+      title: "Missing result update",
+      body: "Updating result only at the end of the loop misses intermediate maxima.",
+      fix: "Call result = max(result, curr) inside the loop, after every slide.",
+    },
+  ]}
+/>

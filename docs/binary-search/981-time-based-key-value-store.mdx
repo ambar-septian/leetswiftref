@@ -1,0 +1,176 @@
+---
+id: 981-time-based-key-value-store
+title: "Time Based Key-Value Store"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={981}
+  title="Time Based Key-Value Store"
+  difficulty="Medium"
+  pattern="Binary Search"
+  tags={["Hash Table", "String", "Binary Search", "Design"]}
+  leetcodeUrl="https://leetcode.com/problems/time-based-key-value-store/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Design a time-based key-value data structure that can store multiple values for the same key at different time stamps and retrieve the key's value at a certain timestamp.
+
+Implement the `TimeMap` class:
+- `TimeMap()` — Initializes the object of the data structure.
+- `void set(String key, String value, int timestamp)` — Stores the key `key` with the value `value` at the given time `timestamp`.
+- `String get(String key, int timestamp)` — Returns a value such that `set` was called previously with `key = key`, `value = value`, and `timestamp_prev <= timestamp`. If there are multiple such values, it returns the value associated with the **largest** `timestamp_prev`. If there are no values, it returns `""`.
+
+It is guaranteed that, for all calls to `set`, the timestamps are strictly increasing.
+
+**Constraints:**
+- `1 <= key.length, value.length <= 100`
+- `key` and `value` consist of lowercase English letters and digits.
+- `1 <= timestamp <= 10^7`
+- All the timestamps of `set` are strictly increasing.
+- At most `2 * 10^5` calls will be made to `set` and `get`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+["TimeMap","set","get","get","set","get","get"]
+[[],["foo","bar",1],["foo",1],["foo",3],["foo","bar2",4],["foo",4],["foo",5]]
+
+Output: [null,null,"bar","bar",null,"bar2","bar2"]
+
+Explanation:
+  set("foo","bar",1)  → entries["foo"] = [{value:"bar",timestamp:1}]
+  get("foo",1)        → ts<=1: "bar"
+  get("foo",3)        → ts<=3: largest is 1 → "bar"
+  set("foo","bar2",4) → entries["foo"] = [{1,"bar"},{4,"bar2"}]
+  get("foo",4)        → ts<=4: largest is 4 → "bar2"
+  get("foo",5)        → ts<=5: largest is 4 → "bar2"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are timestamps for a given key stored in sorted order?", verdict: "yes", reason: "set() guarantees strictly increasing timestamps — entries are always appended in order, forming a naturally sorted list." },
+    { question: "Do we need the largest timestamp that does not exceed the query?", verdict: "yes", reason: "Binary search finds the rightmost entry with timestamp <= query in O(log n) per get()." },
+    { question: "Is O(1) per set() achievable?", verdict: "yes", reason: "Always append to the key's list. Sorted order is maintained for free by the strictly-increasing timestamp guarantee." },
+  ]}
+  answer="Binary search on the sorted timestamp list per key — find largest timestamp less than or equal to query"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+`set`: append `Entry(value, timestamp)` to `entries[key]`. `get`: retrieve the entry list for `key`. Binary search: maintain `l = 0`, `r = count - 1`, `result = ""`. Each iteration: compute `mid`. If `entries[mid].timestamp <= timestamp`, save `result = entries[mid].value` and move `l = mid + 1`. Else move `r = mid - 1`. Return `result`.
+
+<Callout type="cyan" label="Upper bound binary search">
+This is the classic find-last-less-than-or-equal pattern: when the midpoint's timestamp is valid (within range), save the value and try to find a later entry by moving left forward. When the midpoint is too large, move right backward.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='set("foo","bar",1), set("foo","bar2",4), get("foo",3)'
+  expected='"bar"'
+  steps={[
+    { label: "after sets", text: 'entries["foo"] = [(1,"bar"),(4,"bar2")]. Timestamps sorted.' },
+    { label: "get(3)",     text: "l=0, r=1. mid=0, ts=1<=3 → result='bar', l=1." },
+    { label: "iter 2",     text: "l=1, r=1. mid=1, ts=4>3 → r=0." },
+    { label: "done",       text: "l=1 > r=0 → exit. Return 'bar'." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Define Entry struct">
+    `struct Entry { let value: String; let timestamp: Int }`.
+  </StepItem>
+  <StepItem title="set()">
+    `entries[key, default: []].append(Entry(value: value, timestamp: timestamp))`.
+  </StepItem>
+  <StepItem title="get() — binary search">
+    `var l = 0, r = existingEntries.count - 1, result = ""`.
+  </StepItem>
+  <StepItem title="Upper-bound search">
+    While `l <= r`: `mid = (l+r)/2`. If `entries[mid].timestamp <= timestamp`: `result = entries[mid].value; l = mid + 1`. Else `r = mid - 1`.
+  </StepItem>
+  <StepItem title="Return">
+    Return `result` (`""` if no valid timestamp found).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class TimeMap {
+  struct Entry {
+    let value: String
+    let timestamp: Int
+  }
+
+  var entries: [String: [Entry]] = [:]
+
+  init() {}
+
+  func set(_ key: String, _ value: String, _ timestamp: Int) {
+    entries[key, default: []].append(Entry(value: value, timestamp: timestamp))
+  }
+
+  func get(_ key: String, _ timestamp: Int) -> String {
+    guard let existingEntries = entries[key] else { return "" }
+
+    var l = 0
+    var r = existingEntries.count - 1
+    var result = ""
+
+    while l <= r {
+      let mid = (l + r) / 2
+      if existingEntries[mid].timestamp <= timestamp {
+        result = existingEntries[mid].value
+        l = mid + 1
+      } else {
+        r = mid - 1
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "set()", time: "O(1)", space: "O(n)", note: "Append to the end of the key's list. n = total entries across all keys." },
+    { approach: "get()", time: "O(log m)", space: "O(1)", note: "m = number of entries for the given key. Binary search on the sorted timestamp list.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning empty string when no entry exists for the key",
+      body: "If the key was never set, entries[key] is nil. Accessing it crashes.",
+      fix: "Guard with guard let existingEntries = entries[key] else { return '' } before binary search.",
+    },
+    {
+      title: "Using lower-bound instead of upper-bound binary search",
+      body: "Lower bound finds the first entry >= timestamp. We need the last entry <= timestamp (upper bound on the valid side).",
+      fix: "When entries[mid].timestamp <= timestamp, save the result and advance l to look for an even later valid entry.",
+    },
+    {
+      title: "Assuming entries are in sorted order without the guarantee",
+      body: "If set() could be called with out-of-order timestamps, the list would need explicit sorting or a sorted structure.",
+      fix: "This solution relies on the problem guarantee of strictly increasing timestamps per key. If the guarantee changes, sort on insert or use a sorted tree.",
+    },
+  ]}
+/>

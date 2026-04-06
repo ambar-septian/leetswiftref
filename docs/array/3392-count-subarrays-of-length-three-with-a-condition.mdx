@@ -1,0 +1,137 @@
+---
+id: 3392-count-subarrays-of-length-three-with-a-condition
+title: "Count Subarrays of Length Three With a Condition"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={3392}
+  title="Count Subarrays of Length Three With a Condition"
+  difficulty="Easy"
+  pattern="Fixed Window — Triple Check"
+  tags={["Array"]}
+  leetcodeUrl="https://leetcode.com/problems/count-subarrays-of-length-three-with-a-condition/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums`, return the number of subarrays of length 3 such that the **sum of the first and third numbers equals exactly half** of the second number.
+
+Formally, for subarray `[a, b, c]`: the condition is `a + c == b / 2`.
+
+**Constraints:**
+- `3 <= nums.length <= 100`
+- `-100 <= nums[i] <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [1,2,1,4,1]
+Output: 1
+Explanation:
+  [1,2,1]: a+c = 1+1 = 2, b/2 = 2/2 = 1. 2 ≠ 1 → no.
+  [2,1,4]: a+c = 2+4 = 6, b/2 = 1/2 = 0. 6 ≠ 0 → no.
+  [1,4,1]: a+c = 1+1 = 2, b/2 = 4/2 = 2. 2 == 2 → yes!
+  Count = 1.
+```
+
+#### Example 2
+
+```
+Input:  nums = [1,1,1]
+Output: 0
+Explanation:
+  [1,1,1]: a+c = 1+1 = 2, b/2 = 1/2 = 0. 2 ≠ 0 → no.
+  Count = 0.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window always exactly size 3?", verdict: "yes", reason: "Fixed-size window of 3. Slide it across the array with a simple for loop: i from 0 to n-3." },
+    { question: "Is the condition checkable in O(1)?", verdict: "yes", reason: "For triple (a,b,c): check (a+c)*2 == b to avoid floating-point division." },
+  ]}
+  answer="Fixed window of 3 — slide and count qualifying triples"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate index `i` from `0` to `nums.count - 3` inclusive. For each triple `(a, b, c) = (nums[i], nums[i+1], nums[i+2])`: check if `(a + c) * 2 == b`. Increment count on match.
+
+<Callout type="yellow" label="Avoid float comparison">
+The condition is `a + c == b / 2`. Using floating-point (`Float(b) / 2 == Float(a+c)`) works but risks precision issues. Prefer the integer form: `(a + c) * 2 == b`. This is exact for all integer inputs.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [1,2,1,4,1]"
+  expected="1"
+  steps={[
+    { label: "i=0", text: "triple (1,2,1): (1+1)*2=4, b=2. 4 != 2 → no.",  state: "count=0" },
+    { label: "i=1", text: "triple (2,1,4): (2+4)*2=12, b=1. 12 != 1 → no.", state: "count=0" },
+    { label: "i=2", text: "triple (1,4,1): (1+1)*2=4, b=4. 4 == 4 → yes!",  state: "count=1" },
+    { label: "Done", text: "Return 1.",                                       state: "return 1" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Iterate triples">
+    For `i` in `0..<nums.count - 2`: extract `a = nums[i]`, `b = nums[i+1]`, `c = nums[i+2]`.
+  </StepItem>
+  <StepItem title="Check condition">
+    If `(a + c) * 2 == b`, increment `result`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func countSubarrays(_ nums: [Int]) -> Int {
+    var result = 0
+    for i in 0..<nums.count - 2 {
+      let a = nums[i], b = nums[i + 1], c = nums[i + 2]
+      if (a + c) * 2 == b {
+        result += 1
+      }
+    }
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fixed window scan", time: "O(n)", space: "O(1)", note: "Single pass over n-2 triples", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using float division for the half check",
+      body: "Float(b) / 2 == Float(a + c) can produce precision errors for certain integer values.",
+      fix: "Use integer arithmetic: (a + c) * 2 == b.",
+    },
+    {
+      title: "Off-by-one in the loop bound",
+      body: "The last valid triple starts at index n-3. Loop bound should be i less than n-2 (i.e., 0..<count-2), not n-1 or n.",
+      fix: "for i in 0..<nums.count - 2.",
+    },
+  ]}
+/>

@@ -1,0 +1,164 @@
+---
+id: 334-increasing-triplet-subsequence
+title: "Increasing Triplet Subsequence"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={334}
+  title="Increasing Triplet Subsequence"
+  difficulty="Medium"
+  pattern="Greedy Two-Variable"
+  tags={["Array", "Greedy"]}
+  leetcodeUrl="https://leetcode.com/problems/increasing-triplet-subsequence/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums`, return `true` if there exists a triple of indices `(i, j, k)` such that `i < j < k` and `nums[i] < nums[j] < nums[k]`. If no such indices exist, return `false`.
+
+You must solve it in O(n) time and O(1) space.
+
+**Constraints:**
+- `1 <= nums.length <= 5 * 10^5`
+- `-2^31 <= nums[i] <= 2^31 - 1`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: nums = [1,2,3,4,5]
+Output: true
+Explanation: Any triplet where i < j < k works.
+```
+
+#### Example 2
+
+```
+Input: nums = [5,4,3,2,1]
+Output: false
+```
+
+#### Example 3
+
+```
+Input: nums = [2,1,5,0,4,6]
+Output: true
+Explanation: (1,4,6) with indices (1,4,5).
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we track just two candidates instead of the full subsequence?", verdict: "yes", reason: "We only need to know: what is the smallest first element, and what is the smallest valid second element given that first. If a third element exceeds both, we have a triplet." },
+    { question: "Does updating first to a smaller value invalidate a previously found second?", verdict: "no", reason: "Even if first updates to something smaller (logically before second), the fact that second was reached means a valid pair existed. A new third element larger than second still forms a triplet." },
+    { question: "Must we find the actual indices?", verdict: "no", reason: "Only existence matters — the greedy variables track the smallest achievable pair, not the actual indices." },
+  ]}
+  answer="Greedy — maintain first (smallest seen) and second (smallest valid second given first); return true when a third exceeds both"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain `first = Int.max` and `second = Int.max`. For each `num`:
+- If `num` is less than `first`, update `first`.
+- Else if `num` is greater than `first` but less than `second`, update `second`.
+- Else if `num` is greater than both `first` and `second`, a triplet exists — return `true`.
+
+<Callout type="cyan" label="The subtle invariant">
+When first gets updated to a smaller value, second still holds a value that was legitimately larger than an even earlier first. So if any subsequent number is larger than second, a valid triplet (old_first, second, num) exists — even if old_first's index is before the current first's index.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [2,1,5,0,4,6]"
+  expected="true"
+  steps={[
+    { label: "n=2", text: "2 < first(INF) → first=2; state: first=2, second=INF" },
+    { label: "n=1", text: "1 < first(2) → first=1; state: first=1, second=INF" },
+    { label: "n=5", text: "5 > first(1) and 5 < second(INF) → second=5; state: first=1, second=5" },
+    { label: "n=0", text: "0 < first(1) → first=0; state: first=0, second=5" },
+    { label: "n=4", text: "4 > first(0) and 4 < second(5) → second=4; state: first=0, second=4" },
+    { label: "n=6", text: "6 > first(0) and 6 > second(4) → return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise two sentinels">
+    `var first = Int.max`, `var second = Int.max`.
+  </StepItem>
+  <StepItem title="Scan the array">
+    For each `num`: check in order — update first, then second, then check for triplet.
+  </StepItem>
+  <StepItem title="Update first">
+    If `num less than first`: `first = num`.
+  </StepItem>
+  <StepItem title="Update second">
+    Else if `num greater than first and num less than second`: `second = num`.
+  </StepItem>
+  <StepItem title="Return true">
+    Else if `num greater than first and num greater than second`: a triplet exists — return `true`.
+  </StepItem>
+  <StepItem title="Return false">
+    After the loop, no triplet found — return `false`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func increasingTriplet(_ nums: [Int]) -> Bool {
+    var first  = Int.max
+    var second = Int.max
+
+    for num in nums {
+      if num > first, num < second {
+        second = num
+      } else if num < first {
+        first = num
+      } else if num > first, num > second {
+        return true
+      }
+    }
+
+    return false
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Greedy two-variable", time: "O(n)", space: "O(1)", note: "Single pass; only two scalar variables regardless of input length", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning true when num equals first or second",
+      body: "The triplet requires strictly increasing values. A value equal to first or second does not extend the subsequence.",
+      fix: "Use strict inequalities: <code>num > first</code> and <code>num > second</code> — never >=.",
+    },
+    {
+      title: "Misunderstanding first after it updates to a smaller value",
+      body: "When first is updated to a smaller value, second's original pair partner is 'lost' as far as indices go — but the invariant guarantees a valid (old first, second) pair still exists somewhere earlier in the array.",
+      fix: "Trust the greedy invariant: if any num is greater than second, a valid triplet exists regardless of what first currently holds.",
+    },
+    {
+      title: "Checking num less than or equal to second before num less than first",
+      body: "Order of the conditions matters. Checking num less than first after the second check means an element that should update first might accidentally update second instead.",
+      fix: "Check the second update condition first (num > first and num less than second), then the first update (num less than first), then the triplet check (num > second). Or arrange conditions as mutually exclusive branches.",
+    },
+  ]}
+/>

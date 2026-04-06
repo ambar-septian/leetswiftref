@@ -1,0 +1,174 @@
+---
+id: 200-number-of-islands
+title: "Number of Islands"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import NumberOfIslandsDiagram from '@site/src/components/DSA/NumberOfIslandsDiagram';
+
+<ProblemHeader
+  number={200}
+  title="Number of Islands"
+  difficulty="Medium"
+  pattern="DFS Flood Fill"
+  tags={["Array", "Depth-First Search", "Breadth-First Search", "Union-Find", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/number-of-islands/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an `m x n` 2D binary grid which represents a map of `'1'`s (land) and `'0'`s (water), return the **number of islands**.
+
+An **island** is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+**Constraints:**
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `grid[i][j]` is `'0'` or `'1'`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+```
+
+#### Example 2
+
+```
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does visiting all connected cells of one island constitute a sub-problem?", verdict: "yes", reason: "DFS from any land cell sinks the entire connected island — the outer scan just counts how many times a new island is found." },
+    { question: "Do we need a separate visited set?", verdict: "no", reason: "Overwriting land cells with '0' as we visit them serves as the visited marker, avoiding a separate data structure." },
+    { question: "Do we need all four directions?", verdict: "yes", reason: "Islands connect horizontally and vertically — up, down, left, right must all be explored." },
+  ]}
+  answer="DFS sink-the-island — overwrite '1' with '0' during flood-fill; increment count each time a new '1' is found in the outer scan"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<NumberOfIslandsDiagram />
+
+Scan every cell. When a `'1'` is found, increment the island count and launch a DFS that overwrites all connected `'1'`s with `'0'` (sinking the island). The DFS explores all four directions and stops at water, out-of-bounds, or already-sunk cells. The outer scan then continues to find the next unvisited island.
+
+<Callout type="cyan" label="Why sink instead of a visited set">
+Overwriting with '0' avoids allocating a Set of coordinates. It is O(1) per cell instead of O(1) amortised with hash overhead, and keeps the logic minimal.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="2"
+  input='grid = [["1","1","0"],["0","0","0"],["0","0","1"]]'
+  steps={[
+    { label: "r=0,c=0", text: "grid[0][0]='1' → island found, count=1; DFS sinks connected cells" },
+    { label: "DFS",     text: "sink (0,0)→'0'; explore right (0,1)='1' → sink; explore down (1,0)='0' → stop" },
+    { label: "DFS",     text: "from (0,1): explore right (0,2)='0' → stop; explore down (1,1)='0' → stop" },
+    { label: "scan",    text: "continue scan: all remaining (0,x),(1,x) are '0'" },
+    { label: "r=2,c=2", text: "grid[2][2]='1' → island found, count=2; DFS sinks single cell" },
+    { label: "done",    text: "scan complete → return 2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Scan every cell">
+    Double loop over rows and columns. When `grid[r][c] == '1'`, increment `results` and call `dfs(r, c)`.
+  </StepItem>
+  <StepItem title="DFS guard conditions">
+    Return immediately if out of bounds, or `grid[r][c] == '0'`.
+  </StepItem>
+  <StepItem title="Sink the cell">
+    Set `grid[r][c] = '0'` and optionally add to `visited` (the sink serves as the visited marker).
+  </StepItem>
+  <StepItem title="Explore four directions">
+    Recurse into `(r-1,c)`, `(r+1,c)`, `(r,c-1)`, `(r,c+1)`.
+  </StepItem>
+  <StepItem title="Return count">
+    Return `results` after the full scan.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func numIslands(_ grid: [[Character]]) -> Int {
+    guard !grid.isEmpty else { return 0 }
+
+    var grid = grid
+    var results = 0
+    let rows = grid.count, cols = grid[0].count
+    let dirs = [(-1,0),(1,0),(0,1),(0,-1)]
+
+    func dfs(_ r: Int, _ c: Int) {
+      guard r >= 0, c >= 0, r < rows, c < cols, grid[r][c] == "1" else { return }
+      grid[r][c] = "0"
+      for (dr, dc) in dirs { dfs(r + dr, c + dc) }
+    }
+
+    for r in 0..<rows {
+      for c in 0..<cols {
+        if grid[r][c] == "1" {
+          results += 1
+          dfs(r, c)
+        }
+      }
+    }
+
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS sink-the-island", time: "O(m×n)", space: "O(m×n)", note: "Every cell visited at most once; O(m×n) stack depth in worst case (all land)", highlight: true },
+    { approach: "BFS with queue", time: "O(m×n)", space: "O(min(m,n))", note: "Queue holds at most the perimeter of the island at any time" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting to make grid mutable",
+      body: "Swift function parameters are constants by default. Assigning to <code>grid[r][c]</code> inside the function without <code>var grid = grid</code> at the call site causes a compile error.",
+      fix: "Shadow the parameter with <code>var grid = grid</code> at the start of <code>numIslands</code>.",
+    },
+    {
+      title: "Using a visited set but also sinking cells",
+      body: "Double-tracking with both a Set and cell overwrite is redundant — either approach alone is sufficient.",
+      fix: "Choose one strategy: either sink (overwrite with '0') or use a visited Set. The sink approach is simpler and avoids extra allocation.",
+    },
+    {
+      title: "Missing a direction in the DFS",
+      body: "Islands connect in four directions. Omitting any one direction (e.g. up or left) can leave part of an island unsunk and produce a count that is too high.",
+      fix: "Always include all four offsets: (-1,0), (1,0), (0,1), (0,-1).",
+    },
+  ]}
+/>

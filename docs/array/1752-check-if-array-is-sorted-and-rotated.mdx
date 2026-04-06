@@ -1,0 +1,164 @@
+---
+id: 1752-check-if-array-is-sorted-and-rotated
+title: "Check if Array Is Sorted and Rotated"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1752}
+  title="Check if Array Is Sorted and Rotated"
+  difficulty="Easy"
+  pattern="Array — Rotation Detection"
+  tags={["Array"]}
+  leetcodeUrl="https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array `nums`, return `true` if the array was originally sorted in non-decreasing order and then **rotated** some number of positions (including zero). Otherwise, return `false`.
+
+There may be **duplicates** in the original array.
+
+Note: An array `A` rotated by `x` positions results in an array `B` where `A[i] == B[(i+x) % A.length]`.
+
+**Constraints:**
+- `1 <= nums.length <= 100`
+- `1 <= nums[i] <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [3,4,5,1,2]
+Output: true
+Explanation: [1,2,3,4,5] rotated 3 positions.
+```
+
+#### Example 2
+
+```
+Input:  nums = [2,1,3,4]
+Output: false
+Explanation: Not a rotation of any sorted array.
+```
+
+#### Example 3
+
+```
+Input:  nums = [1,2,3]
+Output: true
+Explanation: Already sorted — rotated 0 positions.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "How many descents (nums[i] < nums[i-1]) can a valid rotation have?", verdict: "yes", reason: "Exactly one descent — the rotation point where the end wraps back to the beginning." },
+    { question: "What constraint applies at the wrap-around?", verdict: "yes", reason: "At the descent at position i, nums[i] must also be <= nums[0] (the wraparound must be non-decreasing too)." },
+    { question: "What about the last element?", verdict: "yes", reason: "If the descent is at the last position (i == n-1), verify nums[n-1] <= nums[0]." },
+  ]}
+  answer="Linear scan — allow at most one descent, verify wrap-around"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Scan for descents (positions where `nums[i] < nums[i-1]`). A valid sorted-and-rotated array has at most one such descent. Additionally, at any descent point, `nums[i]` must be less than or equal to `nums[0]` to maintain the circular non-decreasing property.
+
+After the rotation point, the sequence must remain non-decreasing AND each element must be less than or equal to `nums[0]`.
+
+<Callout type="cyan" label="Simpler alternative">
+Count the number of descents (positions where nums[i] greater than nums[i+1], treating the array as circular). A valid result has at most 1 such descent in the circular sense.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [3,4,5,1,2]"
+  expected="true"
+  steps={[
+    { label: "i=1 (4)", text: "4 >= 3 — non-decreasing. No reset. reset=false.", state: "reset=false" },
+    { label: "i=2 (5)", text: "5 >= 4 — non-decreasing. reset=false.", state: "reset=false" },
+    { label: "i=3 (1)", text: "1 < 5 — descent! i=3 != last (4). 1 <= nums[0]=3 ✓. Set reset=true.", state: "reset=true" },
+    { label: "i=4 (2)", text: "2 >= 1 — non-decreasing. reset=true so check: 2 <= nums[0]=3 ✓. Continue.", state: "reset=true, valid" },
+    { label: "Done", text: "One descent found, all post-rotation values <= nums[0]. Return true.", state: "true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Handle edge cases">
+    If `count <= 2`, any array of 1 or 2 elements is valid.
+  </StepItem>
+  <StepItem title="Scan for descents">
+    For each `i` from 1 to n-1: if `nums[i] >= nums[i-1]`, check the post-rotation constraint (`!reset` means not yet past the rotation point); if `!reset`, continue. If `reset` is already true and the current value exceeds `nums[0]`, return false.
+  </StepItem>
+  <StepItem title="Handle descent">
+    If `nums[i] < nums[i-1]` and `reset` is already true, return false (two descents). Check that the last element satisfies `nums[i] <= nums[0]`. Set `reset = true`.
+  </StepItem>
+  <StepItem title="Return true">
+    If the loop completes, return true.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func check(_ nums: [Int]) -> Bool {
+    let count = nums.count
+    if count <= 2 { return true }
+    var reset = false
+
+    for i in 1..<count {
+      let curr = nums[i]
+      let prev = nums[i - 1]
+
+      if curr >= prev {
+        if !reset { continue }
+        if curr > nums[0] { return false }  // post-rotation value exceeds start
+      } else {
+        if reset { return false }           // second descent
+        if i == count - 1 && curr > nums[0] { return false }
+        reset = true
+      }
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Linear scan — descent counting", time: "O(n)", space: "O(1)", note: "Single pass, two variables", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not checking the wrap-around constraint",
+      body: "After the rotation point, every element must still be <= nums[0]. Just counting one descent is not sufficient — e.g., [3,5,1,4,2] has one descent but is invalid.",
+      fix: "After reset=true, verify each subsequent element is <= nums[0].",
+    },
+    {
+      title: "Missing the last-element wrap check",
+      body: "If the descent occurs at the last index (i == n-1), nums[n-1] must still be <= nums[0] for the circular ordering to hold.",
+      fix: "Add the check if i == count - 1 && curr > nums[0] { return false } inside the descent branch.",
+    },
+    {
+      title: "Returning false for arrays of size 1 or 2",
+      body: "Any array of size 1 or 2 is trivially a valid sorted rotation.",
+      fix: "Guard with if count <= 2 { return true } at the top.",
+    },
+  ]}
+/>

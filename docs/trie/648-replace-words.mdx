@@ -1,0 +1,182 @@
+---
+id: 648-replace-words
+title: "Replace Words"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { ReplaceWordsDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={648}
+  title="Replace Words"
+  difficulty="Medium"
+  pattern="Trie"
+  tags={["Array", "Hash Table", "String", "Trie"]}
+  leetcodeUrl="https://leetcode.com/problems/replace-words/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+In English, a **root** can be followed by another word to form a longer word — called a **successor**. For example, "an" followed by "other" makes "another". A **successor** is said to be **replaced** by a root if the root is a prefix of the successor.
+
+You are given a `dictionary` of strings (the roots) and a `sentence` string. Replace every word in the sentence with its **shortest** root from the dictionary. If a word has multiple roots in the dictionary, replace it with the shortest one. If no root is found, the word remains unchanged.
+
+Return the sentence after all replacements.
+
+**Constraints:**
+- `1 <= dictionary.length <= 1000`
+- `1 <= dictionary[i].length <= 100`
+- `dictionary[i]` consists only of lowercase English letters.
+- `1 <= sentence.length <= 10^6`
+- `sentence` consists of only lowercase English letters and spaces.
+- The number of words in `sentence` is in the range `[1, 1000]`.
+- The length of each word in `sentence` is in the range `[1, 1000]`.
+- Every two consecutive words in `sentence` will be separated by exactly one space.
+- `sentence` does not have leading or trailing spaces.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  dictionary = ["cat","bat","rat"], sentence = "the cattle was rattled by the cat"
+Output: "the cat was rat by the cat"
+Explanation: "cattle" is replaced by "cat", "rattled" is replaced by "rat".
+```
+
+#### Example 2
+
+```
+Input:  dictionary = ["a","b","c"], sentence = "aadsfasf absbs bbab cadsfafs"
+Output: "a a b c"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need fast prefix lookups across many words?", verdict: "yes", reason: "A trie stores all dictionary roots so prefix lookup for each sentence word is O(word length) — no hash collision, no linear scan." },
+    { question: "Do we want the shortest matching root?", verdict: "yes", reason: "Trie traversal stops at the first isEndOfWord node encountered, which is guaranteed to be the shortest prefix match." },
+    { question: "Could we use a hash set instead?", verdict: "no", reason: "A hash set would require checking every prefix of each word (O(L^2) per word). The trie naturally stops at the first root match." },
+  ]}
+  answer="Trie — build from dictionary, then traverse each sentence word stopping at the first end-of-word marker"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build a trie from all dictionary roots. For each word in the sentence, traverse the trie character by character. If `isEndOfWord` is true at any node, the current accumulated prefix is the shortest root — use it. If the trie path breaks (character not in children) before an end-of-word is reached, keep the original word. Join the results with spaces.
+
+<ReplaceWordsDiagram />
+
+<Callout type="cyan" label="Shortest root guaranteed">
+Because dictionary roots are inserted in full, the first isEndOfWord flag encountered during trie traversal is always the shortest matching prefix. No need to compare lengths — just stop at the first end marker.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='dictionary = ["cat","bat","rat"], sentence = "the cattle was rattled"'
+  expected='"the cat was rat"'
+  steps={[
+    { label: '"the"', text: 'Trie: t→h→e — no isEndOfWord before path breaks at "t". Keep "the".' },
+    { label: '"cattle"', text: 'Trie: c→a→t — isEndOfWord=true at "t". Shortest root = "cat". Replace.' },
+    { label: '"was"', text: 'Trie: w — not in trie children. Keep "was".' },
+    { label: '"rattled"', text: 'Trie: r→a→t — isEndOfWord=true at "t". Shortest root = "rat". Replace.' },
+    { label: 'join', text: 'Join results: "the cat was rat".' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build the trie">
+    For each word in `dictionary`, traverse/create nodes character by character. Set `isEndOfWord = true` and store the `word` string on the final node.
+  </StepItem>
+  <StepItem title="Split sentence into words">
+    `var words = sentence.components(separatedBy: " ")`.
+  </StepItem>
+  <StepItem title="Traverse trie for each word">
+    For each word, walk the trie. If `current.isEndOfWord` is true, replace the word with `current.word` and break. If the next character is not in `current.children`, break (no root found, keep original).
+  </StepItem>
+  <StepItem title="Join and return">
+    `return words.joined(separator: " ")`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func replaceWords(_ dictionary: [String], _ sentence: String) -> String {
+    let root: Node = Node()
+    var current: Node?
+    var newSentences = sentence.components(separatedBy: " ")
+
+    for dict in dictionary {
+      current = root
+      for char in dict {
+        if current?.children[char] == nil {
+          current?.children[char] = Node()
+        }
+        current = current?.children[char]
+      }
+      current?.isEndOfWord = true
+      current?.word = dict
+    }
+
+    for (index, word) in newSentences.enumerated() {
+      current = root
+      for char in word {
+        if current?.isEndOfWord == true {
+          newSentences[index] = current?.word ?? ""
+          break
+        } else if current?.children[char] != nil {
+          current = current?.children[char]
+        } else {
+          break
+        }
+      }
+    }
+
+    return newSentences.joined(separator: " ")
+  }
+
+  class Node {
+    var children = [Character: Node]()
+    var isEndOfWord = false
+    var word = ""
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Trie build", time: "O(D)", space: "O(D)", note: "D = total characters across all dictionary words" },
+    { approach: "Sentence replacement", time: "O(S)", space: "O(1) extra", note: "S = total characters in sentence; each character visited at most once per word during trie traversal", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Checking isEndOfWord after reading the character",
+      body: "If you advance the trie pointer before checking isEndOfWord, you will miss the root and over-read into the successor.",
+      fix: "Check isEndOfWord at the start of the loop iteration (before consuming the next character), not after.",
+    },
+    {
+      title: "Not handling words shorter than any dictionary root",
+      body: "If a sentence word ends before any trie root is reached, the original word should be kept — the loop exits naturally without a replacement.",
+      fix: "The inner for-loop over characters ends when the word is exhausted. If isEndOfWord was never true, the word remains unchanged.",
+    },
+    {
+      title: "Storing the full word on the trie node",
+      body: "Computing the matched root from the traversal depth requires careful index tracking. It is simpler to store the root string directly on the end-of-word node.",
+      fix: "Set current.word = dict on the final node during insertion so retrieval is O(1).",
+    },
+  ]}
+/>

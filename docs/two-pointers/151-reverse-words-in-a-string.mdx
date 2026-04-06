@@ -1,0 +1,172 @@
+---
+id: 151-reverse-words-in-a-string
+title: "Reverse Words in a String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={151}
+  title="Reverse Words in a String"
+  difficulty="Medium"
+  pattern="Two Pointers"
+  tags={["Two Pointers", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/reverse-words-in-a-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an input string `s`, reverse the order of the **words**.
+
+A **word** is defined as a sequence of non-space characters. The words in `s` will be separated by at least one space.
+
+Return a string of the words in reverse order concatenated by a single space.
+
+**Note:** `s` may contain leading or trailing spaces or multiple spaces between two words. The returned string should have only a single space separating the words. Do not include any extra spaces.
+
+**Constraints:**
+- `1 <= s.length <= 10^4`
+- `s` contains English letters (upper-case and lower-case), digits, and spaces.
+- There is at least one word in `s`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "the sky is blue"
+Output: "blue is sky the"
+```
+
+#### Example 2
+
+```
+Input:  s = "  hello world  "
+Output: "world hello"
+Explanation: Leading and trailing spaces are stripped; single space between words.
+```
+
+#### Example 3
+
+```
+Input:  s = "a good   example"
+Output: "example good a"
+Explanation: Multiple spaces between words are reduced to a single space.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to collect words while skipping spaces?", verdict: "yes", reason: "Two index pointers scan each word start and end, skipping any leading spaces." },
+    { question: "Can we reverse by collecting into an array and reversing?", verdict: "yes", reason: "Accumulate Substrings into an array during the scan, then join reversed." },
+    { question: "Can we use built-in split?", verdict: "yes", reason: "components(separatedBy:).filter{!empty}.reversed().joined(separator:\" \") works too — but the manual scan avoids multiple passes." },
+  ]}
+  answer="Two-pointer scan — skip spaces with i, find word end with j, collect Substrings, join reversed"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Walk the string with index `i`. Skip all spaces to find the start of a word, then advance `j` until the next space or end of string. Collect `s[i..<j]` as a `Substring`. After all words are collected, reverse the array and join with a single space.
+
+<Callout type="cyan" label="Using Substring for efficiency">
+Swift's <code>Substring</code> is a view into the original string — no copying until the final <code>joined</code>. This makes the scan allocation-free until the output is built.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected='"world hello"'
+  input='s = "  hello world  "'
+  steps={[
+    { label: "i=0,1",   text: 's[0]=space, s[1]=space — skip' },
+    { label: "i=2",     text: 's[2]="h" — word start; j advances to 7' },
+    { label: "collect", text: 'words = ["hello"]' },
+    { label: "i=7",     text: 's[7]=space — skip to 8' },
+    { label: "i=8",     text: 's[8]="w" — word start; j advances to 13' },
+    { label: "collect", text: 'words = ["hello","world"]' },
+    { label: "done",    text: 'reversed = ["world","hello"]; joined = "world hello"' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise collector and index">
+    `var words: [Substring] = []`, `var i = s.startIndex`.
+  </StepItem>
+  <StepItem title="Outer loop: skip leading spaces">
+    While `i less than s.endIndex` and `s[i] == " "`, advance `i`.
+  </StepItem>
+  <StepItem title="Inner loop: find word end">
+    Let `j = i`. While `j less than s.endIndex` and `s[j] != " "`, advance `j`.
+  </StepItem>
+  <StepItem title="Collect word">
+    `words.append(s[i..<j])`. Set `i = j` and repeat the outer loop.
+  </StepItem>
+  <StepItem title="Return reversed and joined">
+    `words.reversed().joined(separator: " ")`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func reverseWords(_ s: String) -> String {
+    var words: [Substring] = []
+    var i = s.startIndex
+
+    while i < s.endIndex {
+      // Skip spaces
+      while i < s.endIndex, s[i] == " " {
+        i = s.index(after: i)
+      }
+      if i == s.endIndex { break }
+
+      // Find word end
+      var j = i
+      while j < s.endIndex, s[j] != " " {
+        j = s.index(after: j)
+      }
+
+      words.append(s[i..<j])
+      i = j
+    }
+
+    return words.reversed().joined(separator: " ")
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pointer scan + reverse join", time: "O(n)", space: "O(n)", note: "Single scan to collect words; O(n) for Substring array and output string", highlight: true },
+    { approach: "split + filter + reverse + join", time: "O(n)", space: "O(n)", note: "components(separatedBy:\" \").filter{!$0.isEmpty}.reversed().joined — concise but multiple passes" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not skipping spaces between words",
+      body: "If the inner loop only finds the word end but the outer loop does not skip consecutive spaces, the next iteration tries to start a word at a space index — collecting an empty substring.",
+      fix: "Always advance past all consecutive spaces before checking for the word start.",
+    },
+    {
+      title: "Off-by-one at the end of the string",
+      body: "If <code>i == s.endIndex</code> after skipping trailing spaces, breaking without appending is correct. Forgetting the break causes an index out-of-bounds error.",
+      fix: "Check <code>if i == s.endIndex { break }</code> immediately after the space-skipping inner loop.",
+    },
+    {
+      title: "Using integer indices on Swift Strings",
+      body: "Swift Strings are not integer-indexed. Using an Int offset like <code>s[i]</code> where <code>i: Int</code> does not compile.",
+      fix: "Use <code>s.index(after:)</code> to advance String.Index values, not integer arithmetic.",
+    },
+  ]}
+/>

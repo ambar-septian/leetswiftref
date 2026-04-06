@@ -1,0 +1,175 @@
+---
+id: 438-find-all-anagrams-in-a-string
+title: "Find All Anagrams in a String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={438}
+  title="Find All Anagrams in a String"
+  difficulty="Medium"
+  pattern="Fixed-Size Sliding Window"
+  tags={["Hash Table", "String", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/find-all-anagrams-in-a-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two strings `s` and `p`, return an array of all the start indices of `p`'s anagrams in `s`. You may return the answer in any order.
+
+An anagram is a string that contains the same characters, only the order of characters can be different.
+
+**Constraints:**
+- `1 <= s.length, p.length <= 3 * 10^4`
+- `s` and `p` consist of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "cbaebabacd", p = "abc"
+Output: [0, 6]
+Explanation:
+  Substring s[0..2] = "cba" is an anagram of "abc".
+  Substring s[6..8] = "bac" is an anagram of "abc".
+```
+
+#### Example 2
+
+```
+Input:  s = "abab", p = "ab"
+Output: [0, 1, 2]
+Explanation: "ab", "ba", "ab" are all anagrams.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window size fixed (always p.length)?", verdict: "yes", reason: "An anagram must have the same length as p — every candidate window is exactly p.length wide." },
+    { question: "Can we compare windows efficiently without rehashing from scratch?", verdict: "yes", reason: "A 26-slot frequency array can be updated in O(1) per slide by adding the new right character and removing the old left character." },
+    { question: "Is comparing two 26-slot arrays O(1)?", verdict: "yes", reason: "The alphabet is fixed at 26 characters — array comparison is O(26) = O(1)." },
+  ]}
+  answer="Fixed-Size Sliding Window — 26-slot frequency arrays, slide by one each step"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build two 26-element frequency arrays: `countP` for all characters in `p`, and `countS` for the first `p.count` characters of `s`. If they match, record index `0`. Then slide the window one character at a time: add `s[i]` to `countS` and remove `s[i - p.count]`. After each slide, compare `countS == countP`; if equal, record the start index `i - p.count + 1`.
+
+<Callout type="cyan" label="26-slot array vs hash map">
+Using an array of size 26 (indexed by `char.asciiValue - 'a'.asciiValue`) is faster than a hash map and allows direct array equality comparison with `==`. For an alphabet-bounded problem, this is the preferred approach.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "cbaebabacd", p = "abc"'
+  expected="[0, 6]"
+  steps={[
+    { label: "init",  text: "countP: a=1,b=1,c=1. Initial window s[0..2]='cba': countS: a=1,b=1,c=1 → match → result=[0]" },
+    { label: "i=3",   text: "add s[3]='e'; remove s[0]='c' → countS: a=1,b=1,e=1 → no match" },
+    { label: "i=4",   text: "add s[4]='b'; remove s[1]='b' → countS: a=1,b=1,e=1 → no match" },
+    { label: "i=5",   text: "add s[5]='a'; remove s[2]='a' → countS: b=1,e=1,a=1 → no match" },
+    { label: "i=6",   text: "add s[6]='b'; remove s[3]='e' → countS: b=2,a=1 → no match" },
+    { label: "i=7",   text: "add s[7]='a'; remove s[4]='b' → countS: b=1,a=2 → no match" },
+    { label: "i=8",   text: "add s[8]='c'; remove s[5]='a' → countS: b=1,a=1,c=1 → match → result=[0,6]" },
+    { label: "done",  text: "return [0, 6]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard length">
+    Return `[]` if `s.count less than p.count`.
+  </StepItem>
+  <StepItem title="Build initial frequency arrays">
+    Initialise `countP` and `countS` as `[Int]` of size 26. Populate both for the first `p.count` characters.
+  </StepItem>
+  <StepItem title="Check initial window">
+    If `countP == countS`, append `0` to `result`.
+  </StepItem>
+  <StepItem title="Slide the window">
+    For `i` from `p.count` to `s.count - 1`: add `sArray[i]`, remove `sArray[i - p.count]`.
+  </StepItem>
+  <StepItem title="Record match">
+    After each slide, if `countS == countP`, append `i - p.count + 1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findAnagrams(_ s: String, _ p: String) -> [Int] {
+    let sArray = Array(s)
+    let pArray = Array(p)
+    let sCount = sArray.count
+    let pCount = pArray.count
+
+    guard sCount >= pCount else { return [] }
+
+    var result = [Int]()
+    var countP = Array(repeating: 0, count: 26)
+    var countS = countP
+
+    func idx(_ c: Character) -> Int {
+      Int(c.asciiValue! - Character("a").asciiValue!)
+    }
+
+    for i in 0..<pCount {
+      countP[idx(pArray[i])] += 1
+      countS[idx(sArray[i])] += 1
+    }
+
+    if countP == countS {
+      result.append(0)
+    }
+
+    for i in pCount..<sCount {
+      countS[idx(sArray[i])] += 1
+      countS[idx(sArray[i - pCount])] -= 1
+
+      if countS == countP {
+        result.append(i - pCount + 1)
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fixed-Size Sliding Window", time: "O(n)", space: "O(1)", note: "n = s.length; two fixed-size 26-element arrays; array comparison is O(26) = O(1)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting to check the initial window before the sliding loop",
+      body: "The loop starts at index p.count, so s[0..p.count-1] is never checked inside the loop.",
+      fix: "Compare countP == countS once before the loop and append 0 if they match.",
+    },
+    {
+      title: "Wrong start index formula inside the loop",
+      body: "When slide index i adds s[i], the window spans s[i-p.count+1..i], so the start index is i - p.count + 1, not i.",
+      fix: "Use result.append(i - pCount + 1) inside the loop.",
+    },
+    {
+      title: "Using a hash map and comparing with ==",
+      body: "Dictionary equality comparison in Swift works but is O(keys) per comparison, which for variable-frequency maps may have higher constant factors than 26-slot array comparison.",
+      fix: "Prefer two [Int] arrays of size 26 for alphabet-bounded problems — comparison is always O(26).",
+    },
+  ]}
+/>

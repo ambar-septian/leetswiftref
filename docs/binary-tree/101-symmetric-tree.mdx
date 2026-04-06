@@ -1,0 +1,152 @@
+---
+id: 101-symmetric-tree
+title: "Symmetric Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import SymmetricTreeDiagram from '@site/src/components/DSA/SymmetricTreeDiagram';
+
+<ProblemHeader
+  number={101}
+  title="Symmetric Tree"
+  difficulty="Easy"
+  pattern="BFS"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/symmetric-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+
+A tree is symmetric if the left subtree is a mirror reflection of the right subtree. Two trees are mirrors of each other if:
+- Their roots have the same value.
+- The right subtree of each tree is a mirror of the left subtree of the other tree.
+
+**Constraints**
+- The number of nodes in the tree is in the range `[1, 1000]`.
+- `-100 <= Node.val <= 100`
+
+<Callout type="green" label="Core Insight">
+Use BFS with a queue that stores mirror pairs. Start with (root.left, root.right). At each step dequeue two nodes (l1, l2) that should mirror each other. Verify their values match, then enqueue the next mirror pairs: (l1.left, l2.right) and (l1.right, l2.left).
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  root = [1,2,2,3,4,4,3]
+Output: true
+```
+
+#### Example 2
+```
+Input:  root = [1,2,2,null,3,null,3]
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we compare mirrored node pairs across the axis of symmetry?", verdict: "yes", reason: "Symmetry means l1.left mirrors l2.right and l1.right mirrors l2.left at every level." },
+    { question: "Can BFS process mirror pairs level by level?", verdict: "yes", reason: "Queue pairs of mirrored nodes — dequeue two at a time, validate, enqueue their children as new mirror pairs." },
+    { question: "How do we handle nil nodes in a pair?", verdict: "yes", reason: "Both nil → symmetric (continue). One nil, one non-nil → asymmetric (return false)." },
+  ]}
+  answer="BFS mirror-pair queue — enqueue (l1.left, l2.right) and (l1.right, l2.left)"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Initialise the queue with `[root.left, root.right]`. While the queue is not empty: dequeue `l1` and `l2` (always in pairs). If both nil, continue. If one is nil or values differ, return `false`. Enqueue `l1.left, l2.right` and `l1.right, l2.left` — the next level's mirror pairs.
+
+<SymmetricTreeDiagram />
+
+<Callout type="cyan" label="Why enqueue l1.left with l2.right (not l2.left)">
+For the tree to be symmetric, l1 and l2 are reflections of each other across the vertical axis. l1's left child should match l2's right child (they are on opposite sides of the axis at the next level). Enqueueing l1.left with l2.left would check the wrong pairing.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [1,2,2,3,4,4,3]"
+  expected="true"
+  steps={[
+    { label: "init", text: "queue = [node(2), node(2)].", state: "queue size=2" },
+    { label: "pair (2,2)", text: "l1=2, l2=2. Values match. Enqueue (3,3) and (4,4).", state: "queue=[3,3,4,4]" },
+    { label: "pair (3,3)", text: "l1=3, l2=3. Values match. Both have no children. Enqueue (nil,nil),(nil,nil).", state: "queue=[4,4,nil,nil,nil,nil]" },
+    { label: "pair (4,4)", text: "l1=4, l2=4. Values match. Enqueue nils.", state: "all pairs matched" },
+    { label: "nil pairs", text: "All remaining pairs are (nil,nil). Continue past them.", state: "queue drains" },
+    { label: "return", text: "Queue empty, no mismatches found. Return true.", state: "true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise queue with root's children">
+    `var queue = [root?.left, root?.right]`.
+  </StepItem>
+  <StepItem title="Dequeue mirror pairs">
+    While queue not empty: `let l1 = queue.removeFirst()`, `let l2 = queue.removeFirst()`.
+  </StepItem>
+  <StepItem title="Validate pair">
+    Both nil → `continue`. One nil → `return false`. Values differ → `return false`.
+  </StepItem>
+  <StepItem title="Enqueue children as mirror pairs">
+    `queue.append(contentsOf: [l1.left, l2.right, l1.right, l2.left])`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isSymmetric(_ root: TreeNode?) -> Bool {
+    var queue = [root?.left, root?.right]
+
+    while !queue.isEmpty {
+      let l1 = queue.removeFirst()
+      let l2 = queue.removeFirst()
+
+      if l1 == nil && l2 == nil { continue }
+      if l1?.val != l2?.val { return false }
+
+      queue.append(contentsOf: [l1?.left, l2?.right, l1?.right, l2?.left])
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS mirror-pair queue", time: "O(n)", space: "O(n)", note: "Each node enqueued and dequeued once; queue holds at most one full level", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Enqueuing l1.left with l2.left instead of l2.right",
+      body: "Checking l1.left against l2.left compares the same side of the tree, not mirror sides. This incorrectly validates asymmetric trees.",
+      fix: "Enqueue (l1.left, l2.right) and (l1.right, l2.left) — always pair nodes that should be reflections of each other.",
+    },
+    {
+      title: "Not handling both-nil early with continue",
+      body: "When both l1 and l2 are nil, enqueueing their children (nil.left etc.) will crash. The both-nil case must be detected and skipped before the children enqueue step.",
+      fix: "Add if l1 == nil && l2 == nil { continue } before any child access.",
+    },
+    {
+      title: "Checking values before nil",
+      body: "l1?.val != l2?.val is true when one is nil and the other is not (Optional(val) != nil). This works in Swift but relying on it silently can be confusing. It is cleaner to handle one-nil explicitly.",
+      fix: "Rely on optional comparison for the one-nil case: l1?.val != l2?.val covers it. Just ensure the both-nil continue fires first.",
+    },
+  ]}
+/>

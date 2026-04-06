@@ -1,0 +1,189 @@
+---
+id: 13-roman-to-integer
+title: "Roman to Integer"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={13}
+  title="Roman to Integer"
+  difficulty="Easy"
+  pattern="Linear Scan"
+  tags={["Hash Table", "Math", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/roman-to-integer/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Roman numerals are represented by seven symbols:
+
+| Symbol | Value |
+|--------|-------|
+| I | 1 |
+| V | 5 |
+| X | 10 |
+| L | 50 |
+| C | 100 |
+| D | 500 |
+| M | 1000 |
+
+Roman numerals are usually written largest to smallest from left to right. However, there are six subtractive cases:
+- `IV` = 4, `IX` = 9
+- `XL` = 40, `XC` = 90
+- `CD` = 400, `CM` = 900
+
+Given a roman numeral string `s`, convert it to an integer.
+
+**Constraints**
+- `1 <= s.length <= 15`
+- `s` contains only the characters `I`, `V`, `X`, `L`, `C`, `D`, `M`.
+- It is guaranteed that `s` is a valid Roman numeral in the range `[1, 3999]`.
+
+<Callout type="green" label="Core Insight">
+Scan left to right, tracking the previous value. When the current value is greater than the previous, a subtractive pair has just been completed — the previous value was added once too many, so subtract it twice to correct. Otherwise just add the current value.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  s = "III"
+Output: 3
+Explanation: III = 1 + 1 + 1 = 3
+```
+
+#### Example 2
+```
+Input:  s = "LVIII"
+Output: 58
+Explanation: L = 50, V = 5, III = 3 → 58
+```
+
+#### Example 3
+```
+Input:  s = "MCMXCIV"
+Output: 1994
+Explanation: M = 1000, CM = 900, XC = 90, IV = 4 → 1994
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each character map directly to a value?", verdict: "yes", reason: "A switch/map from symbol to integer value handles all seven numerals." },
+    { question: "Are there exceptions to simple addition?", verdict: "yes", reason: "Six subtractive pairs (IV, IX, XL, XC, CD, CM) require special handling." },
+    { question: "Can we detect subtraction without lookahead?", verdict: "yes", reason: "If the current value exceeds the previous value, the previous was a subtractive prefix — subtract it twice to undo the earlier over-addition." },
+  ]}
+  answer="Linear scan — subtract twice the previous value when a larger numeral follows"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate through each character, mapping it to its integer value via a switch. Maintain `temp` (the previous character's value). If `current > temp` and `temp != 0`, a subtractive pair is complete: add `current - 2 * temp` (effectively undoing the +temp from the previous step and applying the correct subtraction). Otherwise just add `current`. Update `temp` and continue.
+
+<Callout type="cyan" label="Why subtract twice">
+When we processed the previous character, we added its value to the result optimistically. Now we learn it should have been subtracted. We need to remove it (+temp → 0) and then subtract it (-temp), which is -2*temp net. So: result += current - 2*temp.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "MCMXCIV"'
+  expected="1994"
+  steps={[
+    { label: "M", text: "current=1000, temp=0. No prev. result += 1000.", state: "result=1000, temp=1000" },
+    { label: "C", text: "current=100, temp=1000. 100 < 1000 → add. result += 100.", state: "result=1100, temp=100" },
+    { label: "M", text: "current=1000, temp=100. 1000 > 100 → subtract. result += 1000 - 2*100 = 800.", state: "result=1900, temp=1000" },
+    { label: "X", text: "current=10, temp=1000. Add. result += 10.", state: "result=1910, temp=10" },
+    { label: "C", text: "current=100, temp=10. 100 > 10 → subtract. result += 100 - 2*10 = 80.", state: "result=1990, temp=100" },
+    { label: "I", text: "current=1, temp=100. Add. result += 1.", state: "result=1991, temp=1" },
+    { label: "V", text: "current=5, temp=1. 5 > 1 → subtract. result += 5 - 2*1 = 3.", state: "result=1994, temp=5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Map each character to its value">
+    Use a switch on the current character to get its integer value (I=1, V=5, X=10, L=50, C=100, D=500, M=1000).
+  </StepItem>
+  <StepItem title="Check for subtractive pair">
+    If `current > temp` and `temp != 0`, add `current - 2 * temp` to result to correct the over-addition from the previous step.
+  </StepItem>
+  <StepItem title="Normal addition">
+    Otherwise add `current` to result directly.
+  </StepItem>
+  <StepItem title="Update previous value">
+    Set `temp = current` and continue to the next character.
+  </StepItem>
+  <StepItem title="Return result">
+    After processing all characters, `result` holds the integer value.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func romanToInt(_ s: String) -> Int {
+    var result = 0
+    var temp = 0
+
+    for char in s {
+      let number: Int
+      switch char {
+      case "I": number = 1
+      case "V": number = 5
+      case "X": number = 10
+      case "L": number = 50
+      case "C": number = 100
+      case "D": number = 500
+      case "M": number = 1000
+      default:  number = 0
+      }
+
+      if number > temp, temp != 0 {
+        result += (number - (temp * 2))
+      } else {
+        result += number
+      }
+
+      temp = number
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Linear scan with previous-value tracking", time: "O(n)", space: "O(1)", note: "n = string length; at most 15 chars", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the temp != 0 guard",
+      body: "On the very first character temp is 0. If the first character happened to be larger than 0 (always true), without the guard we would incorrectly subtract twice.",
+      fix: "Add temp != 0 to the subtractive condition so the first character is always added normally.",
+    },
+    {
+      title: "Using lookahead instead of lookbehind",
+      body: "A common approach compares s[i] with s[i+1]. This requires bounds checking and is slightly more complex. The lookbehind (compare with previous) avoids that.",
+      fix: "Track temp (the previous value) and react when the current value is larger — no lookahead needed.",
+    },
+    {
+      title: "Handling the default case in the switch",
+      body: "Swift requires switch statements to be exhaustive. Without a default case the code won't compile, but assigning 0 for unknown characters silently skips them.",
+      fix: "Include a default: number = 0 case. The problem guarantees only valid characters, so it will never be hit.",
+    },
+  ]}
+/>

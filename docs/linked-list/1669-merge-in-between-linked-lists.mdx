@@ -1,0 +1,159 @@
+---
+id: 1669-merge-in-between-linked-lists
+title: "Merge In Between Linked Lists"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, MergeInBetweenDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1669}
+  title="Merge In Between Linked Lists"
+  difficulty="Medium"
+  pattern="Linked List — Pointer Splice"
+  tags={["Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/merge-in-between-linked-lists/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given two linked lists: `list1` and `list2` of sizes `n` and `m` respectively.
+
+Remove `list1`'s nodes from the `a`-th node to the `b`-th node, and put `list2` in their place.
+
+Build the result list and return its head.
+
+**Constraints:**
+- `3 <= list1.length <= 10^4`
+- `1 <= a <= b < list1.length - 1`
+- `1 <= list2.length <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  list1 = [10,1,13,6,9,5], a=3, b=4, list2 = [1000000,1000001,1000002]
+Output: [10,1,13,1000000,1000001,1000002,5]
+```
+
+#### Example 2
+
+```
+Input:  list1 = [0,1,2,3,4,5,6], a=2, b=5, list2 = [1000000,1000001,1000002]
+Output: [0,1,1000000,1000001,1000002,6]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need two specific nodes from list1?", verdict: "yes", reason: "Walk to index a-1 (nodeBeforeA) and to index b+1 (nodeAfterB). These are the splice connection points." },
+    { question: "Do we need the tail of list2?", verdict: "yes", reason: "Walk list2 to its tail, then connect tail.next to nodeAfterB." },
+  ]}
+  answer="Pointer traversal — find splice points, connect"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Walk list1 to index `a-1` to get `nodeBeforeA`. Continue walking from there to index `b+1` to get `nodeAfterB`. Walk list2 to its tail. Connect: `nodeBeforeA.next = list2.head` and `list2Tail.next = nodeAfterB`.
+
+<Callout type="green" label="Reuse the same pointer">
+After reaching `nodeBeforeA` at index `a-1`, keep walking the same pointer `temp` forward `b - (a-1) + 1` steps to land at `nodeAfterB`. This avoids a separate second traversal from the head.
+</Callout>
+
+<SectionHeader n={5} title="Examples" />
+
+<MergeInBetweenDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Walk to nodeBeforeA">
+    Traverse list1 until `index == a - 1`. Store this node as `temp` (nodeBeforeA).
+  </StepItem>
+  <StepItem title="Walk to nodeAfterB">
+    Continue advancing `temp` one step at a time, incrementing index, until `index > b`. Now `temp` is `nodeAfterB`.
+  </StepItem>
+  <StepItem title="Find list2 tail">
+    Walk `temp2` from `list2` until `temp2.next == nil`.
+  </StepItem>
+  <StepItem title="Splice">
+    `temp2.next = temp` (list2 tail points to nodeAfterB). `curr.next = list2` (nodeBeforeA points to list2 head).
+  </StepItem>
+  <StepItem title="Return head">
+    Return the original `head` of list1.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func mergeInBetween(_ list1: ListNode?, _ a: Int, _ b: Int, _ list2: ListNode?) -> ListNode? {
+    let head = list1
+    var curr = list1
+    var index = 0
+    var nodeBeforeA: ListNode?
+
+    // Walk to index a-1
+    while curr?.next != nil {
+      if index == a - 1 {
+        nodeBeforeA = curr
+        break
+      }
+      curr = curr?.next
+      index += 1
+    }
+
+    // Walk to nodeAfterB (index b+1)
+    var nodeAfterB = nodeBeforeA
+    while index <= b {
+      nodeAfterB = nodeAfterB?.next
+      index += 1
+    }
+
+    // Find list2 tail
+    var list2Tail = list2
+    while list2Tail?.next != nil {
+      list2Tail = list2Tail?.next
+    }
+
+    // Splice
+    list2Tail?.next = nodeAfterB
+    curr?.next = list2  // curr is still nodeBeforeA
+
+    return head
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Pointer traversal", time: "O(n + m)", space: "O(1)", note: "Walk list1 to b+1, walk list2 to tail — no extra allocation", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Off-by-one on nodeBeforeA",
+      body: "nodeBeforeA must be at index a-1, not index a. Stopping at index a would leave the a-th node connected.",
+      fix: "Stop the first walk at index == a-1.",
+    },
+    {
+      title: "Off-by-one on nodeAfterB",
+      body: "nodeAfterB must be at index b+1. Walking to index b lands on the last node to remove, not the first to keep.",
+      fix: "Continue walking while index <= b, stopping when index == b+1.",
+    },
+    {
+      title: "Not walking to list2 tail before splicing",
+      body: "Connecting nodeBeforeA.next = list2 without setting list2Tail.next = nodeAfterB leaves the rest of list1 detached.",
+      fix: "Find list2 tail first, then perform both pointer assignments.",
+    },
+  ]}
+/>

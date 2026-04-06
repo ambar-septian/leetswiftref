@@ -1,0 +1,145 @@
+---
+id: 643-maximum-average-subarray-i
+title: "Maximum Average Subarray I"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={643}
+  title="Maximum Average Subarray I"
+  difficulty="Easy"
+  pattern="Fixed-Size Sliding Window"
+  tags={["Array", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/maximum-average-subarray-i/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an integer array `nums` consisting of `n` elements, and an integer `k`.
+
+Find a contiguous subarray whose length is equal to `k` that has the maximum average value and return this value. Any answer with a calculation error less than `10^-5` will be accepted.
+
+**Constraints:**
+- `n == nums.length`
+- `1 <= k <= n <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [1,12,-5,-6,50,3], k = 4
+Output: 12.75000
+Explanation: Maximum average is (12 - 5 - 6 + 50) / 4 = 51 / 4 = 12.75
+```
+
+#### Example 2
+
+```
+Input:  nums = [5], k = 1
+Output: 5.00000
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window size fixed at k?", verdict: "yes", reason: "Every candidate subarray must be exactly length k — classic fixed-size sliding window." },
+    { question: "Can we update the sum in O(1) per slide?", verdict: "yes", reason: "Add the incoming right element and subtract the outgoing left element — no need to recompute the full sum each step." },
+    { question: "Should we track average or sum?", verdict: "yes", reason: "Track the running sum. Convert to average (divide by k) only when updating the result — avoids repeated floating-point conversion." },
+  ]}
+  answer="Fixed-Size Sliding Window — maintain running sum, update max average each slide"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build the initial sum over the first `k` elements. Initialise `result` as `sum / k`. Slide the window: for each new position `i` from `k` to `nums.count - 1`, add `nums[i]` and subtract `nums[i - k]`. Update `result = max(result, Double(sum) / Double(k))`. Return `result`.
+
+<Callout type="cyan" label="Avoid recomputing the sum from scratch">
+Recomputing the sum by iterating all k elements on each slide costs O(n*k) total. The sliding window maintains the sum in O(1) per step for O(n) overall — just one addition and one subtraction.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [1,12,-5,-6,50,3], k = 4"
+  expected="12.75"
+  steps={[
+    { label: "init",  text: "sum = 1+12+(-5)+(-6) = 2; result = 2/4 = 0.5" },
+    { label: "i=4",   text: "add nums[4]=50, remove nums[0]=1 → sum=2-1+50=51; avg=51/4=12.75; result=12.75" },
+    { label: "i=5",   text: "add nums[5]=3, remove nums[1]=12 → sum=51-12+3=42; avg=42/4=10.5; result stays 12.75" },
+    { label: "done",  text: "return 12.75" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build initial window sum">
+    Sum the first `k` elements. `result = Double(sum) / Double(k)`.
+  </StepItem>
+  <StepItem title="Slide the window">
+    For `i` in `k ..&lt; nums.count`: `sum = sum - nums[i - k] + nums[i]`.
+  </StepItem>
+  <StepItem title="Update result">
+    `result = max(result, Double(sum) / Double(k))`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return `result` after the loop.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findMaxAverage(_ nums: [Int], _ k: Int) -> Double {
+    var sum = 0
+    for i in 0..<k {
+      sum += nums[i]
+    }
+
+    var result = Double(sum) / Double(k)
+
+    for i in k..<nums.count {
+      sum = sum - nums[i - k] + nums[i]
+      result = max(result, Double(sum) / Double(k))
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fixed-Size Sliding Window", time: "O(n)", space: "O(1)", note: "Single pass; only two scalar variables beyond the input", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Recomputing the sum from scratch on each slide",
+      body: "Iterating k elements at each of the n-k positions costs O(n*k) total, which can be up to O(n²) when k is large.",
+      fix: "Maintain a running sum: sum = sum - nums[i - k] + nums[i]. One subtract and one add per step — O(1).",
+    },
+    {
+      title: "Initialising result to 0",
+      body: "If all elements are negative, the maximum average is negative and initialising result to 0 returns the wrong answer.",
+      fix: "Initialise result from the first window: result = Double(sum) / Double(k) before the sliding loop.",
+    },
+    {
+      title: "Integer division when computing the average",
+      body: "sum / k in Swift performs integer division, truncating the fractional part.",
+      fix: "Use Double(sum) / Double(k) to get the floating-point average.",
+    },
+  ]}
+/>

@@ -1,0 +1,135 @@
+---
+id: 237-delete-node-in-a-linked-list
+title: "Delete Node in a Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import DeleteNodeDiagram from '@site/src/components/DSA/DeleteNodeDiagram';
+
+<ProblemHeader
+  number={237}
+  title="Delete Node in a Linked List"
+  difficulty="Medium"
+  pattern="Value Copy"
+  tags={["Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/delete-node-in-a-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There is a singly-linked list and you are given access to **only** a specific node to delete (not the head). You are guaranteed that the node to delete is not the tail.
+
+Delete the given node such that:
+- The value of the given node is no longer in the linked list.
+- The number of nodes in the linked list decreases by one.
+- All values before the given node remain in the same order.
+- All values after the given node remain in the same order.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[2, 1000]`.
+- `-1000 <= Node.val <= 1000`
+- The value of each node in the list is unique.
+- The node to be deleted is in the list and is not a tail node.
+
+<SectionHeader n={2} title="Examples" />
+
+<DeleteNodeDiagram />
+
+#### Example 1
+
+```
+Input: head = [4,5,1,9], node = 5
+Output: [4,1,9]
+```
+
+#### Example 2
+
+```
+Input: head = [4,5,1,9], node = 1
+Output: [4,5,9]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we have access to the previous node?", verdict: "no", reason: "Only the node to delete is given — no head, no predecessor. Classic pointer reassignment is impossible." },
+    { question: "Can we make the node look deleted without removing it?", verdict: "yes", reason: "Copy the next node's value into this node and skip the next node — effectively erasing this node's identity." },
+    { question: "Is there a tail constraint we rely on?", verdict: "yes", reason: "The problem guarantees node is not the tail, so node.next always exists." },
+  ]}
+  answer="Value copy — overwrite node.val with node.next.val, then node.next = node.next.next"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Since we cannot access the previous node, we cannot redirect a predecessor's `next` pointer. Instead, copy the value of `node.next` into `node`, then set `node.next = node.next.next`. The current node now impersonates its successor, and the real successor is unlinked.
+
+<Callout type="cyan" label="Why this works">
+Observers of the list see the node's value as whatever is stored in its memory. By overwriting the value and re-linking, the node physically remains in the list but logically represents the next node. The old next node is skipped and garbage-collected.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [4,5,1,9], node = 5"
+  expected="[4,1,9]"
+  steps={[
+    { label: "given",  text: "node = list node containing 5; node.next = list node containing 1" },
+    { label: "copy",   text: "node.val = node.next.val → node.val becomes 1" },
+    { label: "skip",   text: "node.next = node.next.next → node.next now points to 9" },
+    { label: "done",   text: "list = [4, 1, 9]; original node(5) is now node(1); old node(1) is unlinked" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Copy successor value">
+    `node.val = node.next.val` — overwrite this node's value with the next node's value.
+  </StepItem>
+  <StepItem title="Skip the successor">
+    `node.next = node.next.next` — unlink the now-duplicate successor node.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func deleteNode(_ node: ListNode?) {
+    node?.val  = node?.next?.val ?? 0
+    node?.next = node?.next?.next
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Value copy", time: "O(1)", space: "O(1)", note: "Two pointer operations; no traversal needed", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Trying to find the previous node by traversing from head",
+      body: "The head is not provided. Attempting to traverse from head is not possible with the given function signature.",
+      fix: "Use the value-copy trick: copy node.next.val into node.val, then skip node.next.",
+    },
+    {
+      title: "Forgetting to skip node.next after copying its value",
+      body: "Copying the value without updating node.next leaves a duplicate value in the list.",
+      fix: "Both steps must happen: copy the value first, then set <code>node.next = node.next.next</code>.",
+    },
+    {
+      title: "Worrying about the tail case",
+      body: "The problem guarantees node is never the tail, so node.next always exists. No nil-check for node.next is required.",
+      fix: "Trust the constraint — node.next is always non-nil.",
+    },
+  ]}
+/>

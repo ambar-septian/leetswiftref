@@ -1,0 +1,211 @@
+---
+id: 79-word-search
+title: "Word Search"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import WordSearchDiagram from '@site/src/components/DSA/WordSearchDiagram';
+
+<ProblemHeader
+  number={79}
+  title="Word Search"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["Array", "String", "Backtracking", "Depth-First Search", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/word-search/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an `m x n` grid of characters `board` and a string `word`, return `true` if `word` exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+**Constraints**
+- `m == board.length`
+- `n == board[0].length`
+- `1 <= m, n <= 6`
+- `1 <= word.length <= 15`
+- `board` and `word` consist of only lowercase and uppercase English letters.
+
+<Callout type="green" label="Core Insight">
+DFS from every starting cell. At each step check bounds, character match, and whether the cell has already been visited. Mark a visited cell by replacing it with '#' in-place, then restore after backtracking — no separate visited set needed.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Board:  [["A","B","C","E"],
+          ["S","F","C","S"],
+          ["A","D","E","E"]]
+word = "ABCCED"
+Output: true
+```
+
+#### Example 2
+```
+Board:  same as above
+word = "SEE"
+Output: true
+```
+
+#### Example 3
+```
+Board:  same as above
+word = "ABCB"
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we explore all 4-directional paths from each starting cell?", verdict: "yes", reason: "The word path can go in any direction at each step — DFS explores all branches." },
+    { question: "Can we mark visited cells without extra space?", verdict: "yes", reason: "Replace board[r][c] with '#' to mark as visited; restore after backtracking." },
+    { question: "Can we prune early?", verdict: "yes", reason: "Return false immediately on bounds violation, character mismatch, or already-visited cell." },
+  ]}
+  answer="Backtracking DFS — in-place '#' visited marker, prune on mismatch or bounds"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Find all cells where `board[r][c] == word[0]`. For each starting cell call `dfs(r, c, 0)`. The DFS:
+1. If `charIndex == word.count` — all characters matched, return `true`.
+2. If out of bounds, or `board[r][c] != word[charIndex]` — return `false`.
+3. Mark: `board[r][c] = "#"`.
+4. Recurse in four directions with `charIndex + 1`. If any returns `true`, propagate `true`.
+5. Restore: `board[r][c] = original`.
+
+An optional frequency pruning step verifies that the board contains at least as many of each character as the word requires, eliminating hopeless inputs before DFS begins.
+
+<WordSearchDiagram />
+
+<Callout type="cyan" label="Why '#' works as a visited marker">
+'#' is not a letter and will never match any character in word. So if DFS reaches a cell already in the current path, the character check board[r][c] != chars[charIndex] will fail immediately, preventing reuse — without any extra data structure.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='board=[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word="ABCCED"'
+  expected="true"
+  steps={[
+    { label: "start (0,0)", text: "board[0][0]='A'==word[0]. Mark '#'. Recurse right (0,1) with index 1.", state: "board[0][0]='#'" },
+    { label: "(0,1) 'B'", text: "board[0][1]='B'==word[1]. Mark '#'. Recurse right (0,2) with index 2.", state: "board[0][1]='#'" },
+    { label: "(0,2) 'C'", text: "board[0][2]='C'==word[2]. Mark '#'. Try down (1,2).", state: "board[0][2]='#'" },
+    { label: "(1,2) 'C'", text: "board[1][2]='C'==word[3]. Mark '#'. Try down (2,2).", state: "board[1][2]='#'" },
+    { label: "(2,2) 'E'", text: "board[2][2]='E'==word[4]. Mark '#'. Try left (2,1).", state: "board[2][2]='#'" },
+    { label: "(2,1) 'D'", text: "board[2][1]='D'==word[5]. charIndex+1==6==count. Return true!", state: "true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Frequency pruning (optional optimisation)">
+    Count character frequencies in word and board. If any word character is more frequent than in the board, return false immediately.
+  </StepItem>
+  <StepItem title="Find starting positions">
+    Collect all (r, c) where board[r][c] == word.first.
+  </StepItem>
+  <StepItem title="DFS with in-place marking">
+    For each start: call dfs(r, c, 0). Base case: charIndex == count → return true. Guard: out of bounds, mismatch, or '#' → return false. Mark, recurse 4 directions, restore.
+  </StepItem>
+  <StepItem title="Return false if no path found">
+    If no starting position leads to a full match, return false.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func exist(_ board: [[Character]], _ word: String) -> Bool {
+    var chars = Array(word)
+    var board = board
+    let row = board.count
+    let col = board[0].count
+    let count = chars.count
+
+    guard row * col >= count else { return false }
+
+    let firstCharPositions = firstCharInGrid(board, word)
+    guard !firstCharPositions.isEmpty else { return false }
+
+    func dfs(_ r: Int, _ c: Int, _ charIndex: Int) -> Bool {
+      if charIndex == count { return true }
+
+      if r < 0 || c < 0 || r >= row || c >= col || board[r][c] != chars[charIndex] {
+        return false
+      }
+
+      let temp = board[r][c]
+      board[r][c] = "#"          // mark visited
+
+      let next = charIndex + 1
+      let result = dfs(r+1,c,next) || dfs(r-1,c,next) || dfs(r,c+1,next) || dfs(r,c-1,next)
+
+      board[r][c] = temp         // restore
+
+      return result
+    }
+
+    for (r, c) in firstCharPositions {
+      if dfs(r, c, 0) { return true }
+    }
+    return false
+  }
+
+  func firstCharInGrid(_ board: [[Character]], _ word: String) -> [(Int, Int)] {
+    var freq = [Character: Int]()
+    var positions = [(Int, Int)]()
+
+    for char in word { freq[char, default: 0] += 1 }
+
+    for i in 0..<board.count {
+      for j in 0..<board[0].count {
+        let char = board[i][j]
+        if char == word.first { positions.append((i, j)) }
+        if freq[char] != nil {
+          freq[char]! -= 1
+          if freq[char]! <= 0 { freq[char] = nil }
+        }
+      }
+    }
+
+    return freq.isEmpty ? positions : []
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking DFS", time: "O(N * 3^L)", space: "O(N + L)", note: "N=rows*cols cells; L=word length; 3 directions after first step (can't go back)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not restoring the board cell after backtracking",
+      body: "If board[r][c] stays '#' after DFS returns, other paths starting from different positions will incorrectly treat that cell as visited.",
+      fix: "Always restore board[r][c] = temp after the four recursive calls return.",
+    },
+    {
+      title: "Checking bounds before character match causes index confusion",
+      body: "When charIndex == count, all characters have been matched and we should return true immediately — before checking bounds on the current cell (which may be out of bounds).",
+      fix: "Place the charIndex == count base case as the very first check, before any bounds or character checks.",
+    },
+    {
+      title: "Using a separate visited Set instead of in-place marking",
+      body: "A visited Set of (row, col) tuples works but requires hashing and uses O(L) extra space per recursion frame. The '#' trick is faster and uses no extra space.",
+      fix: "Use the in-place '#' marker — it is equivalent and constant-space per level.",
+    },
+  ]}
+/>

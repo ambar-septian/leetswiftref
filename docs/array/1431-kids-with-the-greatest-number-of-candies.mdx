@@ -1,0 +1,135 @@
+---
+id: 1431-kids-with-the-greatest-number-of-candies
+title: "Kids With the Greatest Number of Candies"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1431}
+  title="Kids With the Greatest Number of Candies"
+  difficulty="Easy"
+  pattern="Array — Linear Scan"
+  tags={["Array"]}
+  leetcodeUrl="https://leetcode.com/problems/kids-with-the-greatest-number-of-candies/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are `n` kids with candies. You are given an integer array `candies`, where each `candies[i]` represents the number of candies the `i`-th kid has, and an integer `extraCandies`, denoting the number of extra candies that you have.
+
+Return a boolean array `result` of length `n`, where `result[i]` is `true` if, after giving the `i`-th kid all the `extraCandies`, they will have the **greatest** number of candies among all the kids, or `false` otherwise.
+
+Note that **multiple** kids can have the greatest number of candies.
+
+**Constraints:**
+- `n == candies.length`
+- `2 <= n <= 100`
+- `1 <= candies[i] <= 100`
+- `1 <= extraCandies <= 50`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  candies = [2,3,5,1,3], extraCandies = 3
+Output: [true,true,true,false,true]
+Explanation:
+  Kid 0: 2+3=5 >= 5 → true
+  Kid 1: 3+3=6 >= 5 → true
+  Kid 2: 5+3=8 >= 5 → true
+  Kid 3: 1+3=4 < 5  → false
+  Kid 4: 3+3=6 >= 5 → true
+```
+
+#### Example 2
+
+```
+Input:  candies = [4,2,1,1,2], extraCandies = 1
+Output: [true,false,false,false,false]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need the current maximum?", verdict: "yes", reason: "Find max once in O(n), then compare each kid against it." },
+    { question: "Is one pass enough after finding the max?", verdict: "yes", reason: "For each kid: candies[i] + extraCandies >= max → true. Single linear scan." },
+  ]}
+  answer="Two-pass linear scan — find max, then compare"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Find the current maximum with `candies.max()!`. Then for each kid, check if `candies[i] + extraCandies >= max`. If so, they can have the greatest number of candies.
+
+<Callout type="green" label="Key insight">
+We do not change other kids' candy counts. Only one kid receives the extra at a time. So the only comparison needed is against the current overall maximum.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="candies = [2,3,5,1,3], extraCandies = 3"
+  expected="[true,true,true,false,true]"
+  steps={[
+    { label: "max",   text: "Find max candies = 5 (kid 2).", state: "max=5" },
+    { label: "kid 0", text: "2 + 3 = 5 >= 5 → true.", state: "result=[true]" },
+    { label: "kid 1", text: "3 + 3 = 6 >= 5 → true.", state: "result=[true,true]" },
+    { label: "kid 2", text: "5 + 3 = 8 >= 5 → true.", state: "result=[true,true,true]" },
+    { label: "kid 3", text: "1 + 3 = 4 < 5 → false.", state: "result=[true,true,true,false]" },
+    { label: "kid 4", text: "3 + 3 = 6 >= 5 → true.", state: "result=[true,true,true,false,true]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Find the current maximum">
+    `let max = candies.max()!`
+  </StepItem>
+  <StepItem title="Build result array">
+    For each index `i`, set `result[i] = (candies[i] + extraCandies >= max)`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return the boolean array.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func kidsWithCandies(_ candies: [Int], _ extraCandies: Int) -> [Bool] {
+    let max = candies.max()!
+    return candies.map { $0 + extraCandies >= max }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pass linear scan", time: "O(n)", space: "O(n)", note: "One pass to find max, one to build result array", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Comparing against the updated max",
+      body: "The problem asks whether kid i would have the greatest amount IF they received extraCandies — not whether they already have the most. Do not update the max for each kid.",
+      fix: "Find the current max once before the loop. Never modify it.",
+    },
+    {
+      title: "Using > instead of >=",
+      body: "Multiple kids can tie for the greatest. Using strict greater-than would mark ties as false.",
+      fix: "Use >= max, not > max.",
+    },
+  ]}
+/>

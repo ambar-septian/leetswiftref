@@ -1,0 +1,178 @@
+---
+id: 20-valid-parentheses
+title: "Valid Parentheses"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={20}
+  title="Valid Parentheses"
+  difficulty="Easy"
+  pattern="Stack"
+  tags={["String", "Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/valid-parentheses/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is **valid**.
+
+An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+3. Every close bracket has a corresponding open bracket of the same type.
+
+**Constraints**
+- `1 <= s.length <= 10^4`
+- `s` consists of parentheses only `'()[]{}'`.
+
+<Callout type="green" label="Core Insight">
+Push every opening bracket onto a stack. When a closing bracket is encountered, the top of the stack must be the matching opener — pop it. If the stack is empty at the end, all brackets were matched and nested correctly.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  s = "()"
+Output: true
+```
+
+#### Example 2
+```
+Input:  s = "()[]{}"
+Output: true
+```
+
+#### Example 3
+```
+Input:  s = "(]"
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the problem involve matching pairs in LIFO order?", verdict: "yes", reason: "The most recently opened bracket must be closed first — last-in, first-out is exactly a stack." },
+    { question: "Can we validate on the fly without storing the whole string?", verdict: "yes", reason: "We only ever need to check the last unmatched opener, which is always on the stack top." },
+    { question: "Is the string valid iff the stack is empty at the end?", verdict: "yes", reason: "An empty stack means every opener was matched and popped by a corresponding closer." },
+  ]}
+  answer="Stack — push openers, pop on matching closer, valid if stack empty at end"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate through each character. For opening brackets (`{`, `[`, `(`), push onto the stack. For closing brackets, check if the stack's last element is the matching opener — if so, pop it; otherwise push the closer. After processing all characters, the string is valid if and only if the stack is empty.
+
+<Callout type="cyan" label="Why push the closer on mismatch">
+Pushing a mismatched closer (rather than returning false immediately) ensures the stack ends up non-empty, which correctly returns false at the end. Both approaches are equivalent; the push approach avoids an extra early-return path.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "({[]})"'
+  expected="true"
+  steps={[
+    { label: "(", text: "Opening bracket. Push '('. Stack: ['('].", state: "stack=['(']" },
+    { label: "{", text: "Opening bracket. Push '{'. Stack: ['(', '{'].", state: "stack=['(', '{']" },
+    { label: "[", text: "Opening bracket. Push '['. Stack: ['(', '{', '['].", state: "stack=['(', '{', '[']" },
+    { label: "]", text: "Closing. stack.last='[' matches. Pop. Stack: ['(', '{'].", state: "stack=['(', '{']" },
+    { label: "}", text: "Closing. stack.last='{' matches. Pop. Stack: ['('].", state: "stack=['(']" },
+    { label: ")", text: "Closing. stack.last='(' matches. Pop. Stack: [].", state: "stack=[]" },
+    { label: "Done", text: "Stack is empty → return true.", state: "return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard odd-length strings">
+    A valid bracket string always has even length. Return false immediately if `s.count % 2 != 0` or `s.count < 2`.
+  </StepItem>
+  <StepItem title="Iterate through characters">
+    Use a switch on each character to decide push or pop.
+  </StepItem>
+  <StepItem title="Push opening brackets">
+    For `{`, `[`, `(` — append the character to the stack.
+  </StepItem>
+  <StepItem title="Pop on matching closer">
+    For each closer, if `stack.last` is the corresponding opener, call `stack.removeLast()`. Otherwise push the closer onto the stack.
+  </StepItem>
+  <StepItem title="Return stack.isEmpty">
+    An empty stack means all brackets were matched correctly.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isValid(_ s: String) -> Bool {
+    var stack = [String]()
+    guard s.count > 1, s.count % 2 == 0 else { return false }
+
+    for char in s {
+      switch char {
+      case "{": 
+        stack.append("{")
+        
+      case "}":
+        if !stack.isEmpty && stack.last == "{" { stack.removeLast() }
+        else { stack.append("}") }
+
+      case "[": 
+        stack.append("[")
+      
+      case "]":
+        if !stack.isEmpty && stack.last == "[" { stack.removeLast() }
+        else { stack.append("]") }
+
+      case "(": 
+        stack.append("(")
+
+      case ")":
+        if !stack.isEmpty && stack.last == "(" { stack.removeLast() }
+        else { stack.append(")") }
+
+      default: break
+      }
+    }
+
+    return stack.isEmpty
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack — single pass", time: "O(n)", space: "O(n)", note: "Each character is pushed or popped at most once; worst case all openers on stack", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not checking stack.isEmpty before stack.last",
+      body: "If the stack is empty and a closing bracket arrives, accessing stack.last returns nil. Comparing nil to a string is always false in Swift, but the intent is clearer — and safer — with an explicit isEmpty check.",
+      fix: "Always guard !stack.isEmpty before checking stack.last.",
+    },
+    {
+      title: "The odd-length guard rejects single-character valid inputs",
+      body: "The guard count > 1 returns false for a single character. A single bracket can never be valid (no match), so this is correct — but note it differs from just checking count % 2 == 0.",
+      fix: "No fix needed — a single bracket is inherently invalid. The guard is intentionally strict.",
+    },
+    {
+      title: "Using a counter instead of a stack for mixed bracket types",
+      body: "A simple counter works for a single bracket type but fails for '([)]' — the counts balance but the nesting order is wrong.",
+      fix: "Use a stack to preserve the ordering constraint. Only a stack correctly enforces LIFO matching across multiple bracket types.",
+    },
+  ]}
+/>

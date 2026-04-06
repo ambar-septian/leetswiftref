@@ -1,0 +1,168 @@
+---
+id: 135-candy
+title: "Candy"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={135}
+  title="Candy"
+  difficulty="Hard"
+  pattern="Greedy"
+  tags={["Array", "Greedy"]}
+  leetcodeUrl="https://leetcode.com/problems/candy/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are `n` children standing in a line. Each child is assigned a rating value given in the integer array `ratings`.
+
+You are giving candies to these children subject to the following requirements:
+
+- Each child must have **at least one candy**.
+- Children with a **higher rating** than their immediate neighbors must get **more candies** than those neighbors.
+
+Return the **minimum number of candies** you need to have to distribute the candies to the children.
+
+**Constraints:**
+- `n == ratings.length`
+- `1 <= n <= 2 * 10^4`
+- `0 <= ratings[i] <= 2 * 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: ratings = [1,0,2]
+Output: 5
+Explanation: [2,1,2] — child 0 gets 2 (higher than child 1), child 1 gets 1, child 2 gets 2 (higher than child 1).
+```
+
+#### Example 2
+
+```
+Input: ratings = [1,2,2]
+Output: 4
+Explanation: [1,2,1] — child 1 gets more than child 0 (ascending). Child 2 gets 1; equal rating means no candy constraint.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each constraint only depend on immediate neighbors?", verdict: "yes", reason: "Left-neighbor constraint and right-neighbor constraint are independent — solve each in a separate pass." },
+    { question: "Can we satisfy the left constraint first, then enforce the right?", verdict: "yes", reason: "L→R pass handles ascending runs; R→L pass handles descending runs; take the max at each position." },
+    { question: "Can a greedy one-pass solution work directly?", verdict: "no", reason: "Descending runs require looking ahead. Two greedy passes from opposite directions are simpler and correct." },
+  ]}
+  answer="Greedy two-pass — L-to-R for ascending, R-to-L for descending, max at each position"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Initialise `result` as all `1`s (minimum one candy each).
+
+**Pass 1 (L→R):** For each `i` from 1 to n-1, if `ratings[i] > ratings[i-1]`, set `result[i] = max(result[i], result[i-1] + 1)`.
+
+**Pass 2 (R→L):** For each `i` from n-2 down to 0, if `ratings[i] > ratings[i+1]`, set `result[i] = max(result[i], result[i+1] + 1)`.
+
+Sum all elements of `result`.
+
+<Callout type="cyan" label="Why two passes work">
+The L→R pass ensures every ascending run is satisfied from the left. The R→L pass then ensures descending runs are satisfied from the right. Taking the max at each position satisfies both constraints simultaneously.
+</Callout>
+
+<Callout type="green" label="Equal ratings">
+Children with equal ratings have no candy constraint relative to each other — each can get just 1. The passes only trigger on strict inequality.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="5"
+  input="ratings = [1,0,2]"
+  steps={[
+    { label: "init",        text: "result = [1,1,1]" },
+    { label: "L→R i=1",    text: "ratings[1]=0 not > ratings[0]=1 — skip; result=[1,1,1]" },
+    { label: "L→R i=2",    text: "ratings[2]=2 > ratings[1]=0 → result[2]=max(1,result[1]+1)=2; result=[1,1,2]" },
+    { label: "R→L i=1",    text: "ratings[1]=0 not > ratings[2]=2 — skip; result=[1,1,2]" },
+    { label: "R→L i=0",    text: "ratings[0]=1 > ratings[1]=0 → result[0]=max(1,result[1]+1)=2; result=[2,1,2]" },
+    { label: "sum",         text: "2+1+2 = 5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise with 1s">
+    `var result = Array(repeating: 1, count: ratings.count)`.
+  </StepItem>
+  <StepItem title="Left-to-right pass">
+    For `i` in `1..<result.count`: if `ratings[i] > ratings[i-1]`, set `result[i] = max(result[i], result[i-1] + 1)`.
+  </StepItem>
+  <StepItem title="Right-to-left pass">
+    For `i` in `stride(from: ratings.count - 2, through: 0, by: -1)`: if `ratings[i] > ratings[i+1]`, set `result[i] = max(result[i], result[i+1] + 1)`.
+  </StepItem>
+  <StepItem title="Sum and return">
+    Return `result.reduce(0, +)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func candy(_ ratings: [Int]) -> Int {
+    var result = Array(repeating: 1, count: ratings.count)
+
+    // Left-to-right: enforce ascending constraint
+    for i in 1..<result.count {
+      if ratings[i] > ratings[i - 1] {
+        result[i] = max(result[i], result[i - 1] + 1)
+      }
+    }
+
+    // Right-to-left: enforce descending constraint
+    for i in stride(from: ratings.count - 2, through: 0, by: -1) {
+      if ratings[i] > ratings[i + 1] {
+        result[i] = max(result[i], result[i + 1] + 1)
+      }
+    }
+
+    return result.reduce(0, +)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Greedy two-pass", time: "O(n)", space: "O(n)", note: "Two linear scans; result array of size n", highlight: true },
+    { approach: "Brute force (repeat until stable)", time: "O(n²)", space: "O(n)", note: "Repeatedly adjust until no violations remain" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Only doing one pass",
+      body: "A single L→R pass satisfies ascending runs but fails on descending runs. For <code>[3,2,1]</code> a L→R pass leaves <code>[1,1,1]</code> when the correct answer is <code>[3,2,1]</code>.",
+      fix: "Always do both passes. The R→L pass is essential for handling descending rating sequences.",
+    },
+    {
+      title: "Overwriting instead of taking the max in the second pass",
+      body: "If you assign <code>result[i] = result[i+1] + 1</code> without <code>max</code>, you can overwrite a larger value set by the first pass, breaking the left-neighbor constraint.",
+      fix: "Use <code>result[i] = max(result[i], result[i+1] + 1)</code> in both passes.",
+    },
+    {
+      title: "Triggering on equal ratings",
+      body: "Children with equal ratings have no candy constraint relative to each other. Using <code>>=</code> instead of <code>></code> would add unnecessary candies.",
+      fix: "Use strict greater-than <code>></code> in both passes.",
+    },
+  ]}
+/>

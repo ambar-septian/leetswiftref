@@ -1,0 +1,166 @@
+---
+id: 2336-smallest-number-in-infinite-set
+title: "Smallest Number in Infinite Set"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2336}
+  title="Smallest Number in Infinite Set"
+  difficulty="Medium"
+  pattern="Heap + Hash Set + Counter"
+  tags={["Hash Table", "Design", "Heap (Priority Queue)", "Ordered Set"]}
+  leetcodeUrl="https://leetcode.com/problems/smallest-number-in-infinite-set/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You have a set which contains all positive integers `[1, 2, 3, 4, 5, ...]`.
+
+Implement the `SmallestInfiniteSet` class:
+- `SmallestInfiniteSet()` — initialises the `SmallestInfiniteSet` object to contain **all** positive integers.
+- `int popSmallest()` — **removes** and returns the smallest integer contained in the infinite set.
+- `void addBack(int num)` — **adds** a positive integer `num` back into the infinite set, if it is not already in the set.
+
+**Constraints:**
+- `1 <= num <= 1000`
+- At most `1000` calls will be made in total to `popSmallest` and `addBack`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+SmallestInfiniteSet obj = new SmallestInfiniteSet();
+obj.addBack(2);       // 2 is already in the set, does nothing
+obj.popSmallest();    // returns 1, set = [2, 3, 4, 5, ...]
+obj.popSmallest();    // returns 2, set = [3, 4, 5, ...]
+obj.popSmallest();    // returns 3, set = [4, 5, ...]
+obj.addBack(1);       // adds 1 back, set = [1, 4, 5, ...]
+obj.popSmallest();    // returns 1, set = [4, 5, ...]
+obj.popSmallest();    // returns 4, set = [5, 6, ...]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the set infinite — can we store it directly?", verdict: "no", reason: "Storing all positive integers is impossible. Model the unmodified range with a single counter nextAvailable instead." },
+    { question: "Can elements be added back out of order?", verdict: "yes", reason: "addBack can insert any previously popped number. Use a min-heap to efficiently retrieve the smallest added-back element." },
+    { question: "Do we need O(1) duplicate checks for addBack?", verdict: "yes", reason: "A companion hash set gives O(1) membership tests so we never insert duplicates into the heap." },
+  ]}
+  answer="Min-heap for added-back elements + counter for the unmodified prefix"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Represent the infinite set with two structures:
+
+1. **`nextAvailable`** — an integer pointer to the smallest number in the untouched range `[nextAvailable, ∞)`. Initially `1`.
+2. **Min-heap + hash set** — store only numbers that were popped and then added back, in sorted order.
+
+**`popSmallest`:** If the heap is non-empty, its minimum is smaller than `nextAvailable` (it was previously removed and re-added). Pop and return it, also removing it from the set. Otherwise, return `nextAvailable` and increment it.
+
+**`addBack(num)`:** Skip if `num >= nextAvailable` (it was never removed — still in the unmodified range). Skip if `num` is already in the hash set (already re-added). Otherwise insert into both the heap and the set.
+
+<Callout type="cyan" label="Why the counter approach is efficient">
+The naive approach pre-fills a heap with 1..1000 at init (O(n) space, O(n log n) build). The counter approach uses O(M) space where M is the number of elements currently added back — typically a tiny fraction of 1000.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="addBack(2), popSmallest x4, addBack(1), popSmallest x2"
+  expected="pops: 1, 2, 3, 1, 4"
+  steps={[
+    { label: "Init",        text: "nextAvailable = 1. heap = []. set = {}.", state: "next=1 heap=[] set={}" },
+    { label: "addBack(2)",  text: "2 >= nextAvailable (1)? No — but wait: 2 >= 1, so 2 is still in the unmodified range. Skip (never removed).", state: "next=1 heap=[] set={}" },
+    { label: "pop #1",      text: "Heap empty → return nextAvailable = 1, then next = 2.", state: "next=2 heap=[] set={} → return 1" },
+    { label: "pop #2",      text: "Heap empty → return nextAvailable = 2, then next = 3.", state: "next=3 heap=[] set={} → return 2" },
+    { label: "pop #3",      text: "Heap empty → return nextAvailable = 3, then next = 4.", state: "next=4 heap=[] set={} → return 3" },
+    { label: "addBack(1)",  text: "1 < nextAvailable (4) and 1 not in set → insert into heap and set.", state: "next=4 heap=[1] set={1}" },
+    { label: "pop #4",      text: "Heap non-empty → popMin = 1. Remove 1 from set. Return 1.", state: "next=4 heap=[] set={} → return 1" },
+    { label: "pop #5",      text: "Heap empty → return nextAvailable = 4, then next = 5.", state: "next=5 heap=[] set={} → return 4" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var heap = Heap[Int]()` (min-heap). `var uniqueSet = Set[Int]()`. `var nextAvailable = 1`.
+  </StepItem>
+  <StepItem title="popSmallest">
+    If heap is empty: capture `val = nextAvailable`, increment `nextAvailable`, return `val`. Otherwise: `val = heap.popMin()`, remove `val` from `uniqueSet`, return `val`.
+  </StepItem>
+  <StepItem title="addBack(num)">
+    If `num >= nextAvailable`, return (still in unmodified range). If `uniqueSet.contains(num)`, return (already present). Otherwise: `uniqueSet.insert(num)`, `heap.insert(num)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class SmallestInfiniteSet {
+  var heap: Heap<Int>
+  var uniqueSet: Set<Int>
+  var nextAvailable: Int
+
+  init() {
+    heap = Heap()
+    uniqueSet = Set()
+    nextAvailable = 1
+  }
+
+  func popSmallest() -> Int {
+    if heap.isEmpty {
+      let val = nextAvailable
+      nextAvailable += 1
+      return val
+    }
+    let min = heap.popMin()!
+    uniqueSet.remove(min)
+    return min
+  }
+
+  func addBack(_ num: Int) {
+    guard num < nextAvailable else { return }
+    guard !uniqueSet.contains(num) else { return }
+    uniqueSet.insert(num)
+    heap.insert(num)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Naive (pre-fill heap 1..1000)", time: "O(n log n) init, O(log n) per op", space: "O(n)", note: "n = 1000; wasteful init" },
+    { approach: "Counter + min-heap + set", time: "O(log M) per op", space: "O(M)", note: "M = elements currently added back; O(1) pop when heap empty", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "addBack when num >= nextAvailable",
+      body: "If num >= nextAvailable, the number was never removed — it is already in the unmodified range. Inserting it into the heap would create a phantom duplicate.",
+      fix: "Guard: if num >= nextAvailable, return immediately without touching the heap.",
+    },
+    {
+      title: "Inserting duplicate into the heap",
+      body: "addBack may be called multiple times with the same num. The heap allows duplicates, so without a dedup check the same number appears twice and is returned twice.",
+      fix: "Use a companion hash set. Check uniqueSet.contains(num) before inserting.",
+    },
+    {
+      title: "Not removing from set after popSmallest",
+      body: "If the heap pops a value but uniqueSet still contains it, a later addBack call will see it as already present and refuse to re-insert, even though it was actually removed.",
+      fix: "Always call uniqueSet.remove(min) immediately after heap.popMin().",
+    },
+  ]}
+/>

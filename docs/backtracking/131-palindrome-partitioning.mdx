@@ -1,0 +1,182 @@
+---
+id: 131-palindrome-partitioning
+title: "Palindrome Partitioning"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import PalindromePartitioningDiagram from '@site/src/components/DSA/PalindromePartitioningDiagram';
+
+<ProblemHeader
+  number={131}
+  title="Palindrome Partitioning"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["String", "Dynamic Programming", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/palindrome-partitioning/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s`, partition `s` such that every substring of the partition is a **palindrome**. Return **all possible palindrome partitionings** of `s`.
+
+A **palindrome** is a string that reads the same forward and backward.
+
+**Constraints:**
+- `1 <= s.length <= 16`
+- `s` consists of only lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: s = "aab"
+Output: [["a","a","b"],["aa","b"]]
+```
+
+#### Example 2
+
+```
+Input: s = "a"
+Output: [["a"]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to enumerate all valid partitions?", verdict: "yes", reason: "All palindrome partitionings must be returned — backtracking explores every prefix at each position." },
+    { question: "Can we prune invalid branches early?", verdict: "yes", reason: "Only recurse when the current prefix is a palindrome; non-palindromes are never explored further." },
+    { question: "Is the same substring checked multiple times?", verdict: "yes", reason: "A cache from [i,j] → string avoids repeated palindrome checks and string slicing." },
+  ]}
+  answer="Backtracking — try every prefix from current index, recurse only on palindromes, cache results"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<PalindromePartitioningDiagram />
+
+Use a `dfs(i)` function that tries every substring `s[i...j]` for `j` from `i` to `s.count - 1`. If the substring is a palindrome, append it to the current partition and recurse with `dfs(j + 1)`. On return, remove the last element. When `i >= s.count`, record a copy of the current partition.
+
+A cache `[[Int]: String]` maps `[i, j]` to the precomputed substring so that repeated checks on the same range are O(1).
+
+<Callout type="cyan" label="Why backtracking works here">
+Each position in the string is either a cut point or not. By trying every palindromic prefix and recursing on the remainder, we guarantee that every combination is explored without repetition.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected='[["a","a","b"],["aa","b"]]'
+  input='s = "aab"'
+  steps={[
+    { label: 'dfs(0)',    text: 'try "a"[0..0] — palindrome; append "a", dfs(1)' },
+    { label: 'dfs(1)',    text: 'try "a"[1..1] — palindrome; append "a", dfs(2)' },
+    { label: 'dfs(2)',    text: 'try "b"[2..2] — palindrome; append "b", dfs(3)' },
+    { label: 'dfs(3)',    text: 'i >= 3 — record ["a","a","b"]' },
+    { label: 'backtrack', text: 'remove "b"; try [2..2] done; remove "a"' },
+    { label: 'dfs(1)',    text: 'try "ab"[1..2] — not palindrome; skip' },
+    { label: 'backtrack', text: 'remove "a"; dfs(0) tries "aa"[0..1]' },
+    { label: 'dfs(0)',    text: '"aa" is palindrome; append "aa", dfs(2)' },
+    { label: 'dfs(2)',    text: '"b" palindrome; append "b", dfs(3) — record ["aa","b"]' },
+    { label: 'dfs(0)',    text: 'try "aab"[0..2] — not palindrome; skip. Done.' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert to character array">
+    `var chars = Array(s)` for O(1) index access in the palindrome check.
+  </StepItem>
+  <StepItem title="Define dfs(i)">
+    Base case: if `i >= chars.count`, append a copy of `part` to `results` and return.
+  </StepItem>
+  <StepItem title="Try every ending index j">
+    For `j in i..<chars.count`: check the cache `[[i,j]]` first, else call `isPalindrome(i, j, chars)`.
+  </StepItem>
+  <StepItem title="Append and recurse">
+    If palindrome: build the substring, store in cache, append to `part`, recurse `dfs(j+1)`, then `part.removeLast()`.
+  </StepItem>
+  <StepItem title="isPalindrome helper">
+    Two-pointer check: expand inward from `l` and `r`, return false on the first mismatch.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func partition(_ s: String) -> [[String]] {
+    var results = [[String]]()
+    var part    = [String]()
+    let chars   = Array(s)
+    var cache   = [[Int]: String]()
+
+    func dfs(_ i: Int) {
+      if i >= chars.count {
+        results.append(part)
+        return
+      }
+
+      for j in i..<chars.count {
+        if let exist = cache[[i, j]] {
+          part.append(exist)
+          dfs(j + 1)
+          part.removeLast()
+        } else if isPalindrome(i, j, chars) {
+          let sub = String(chars[i...j])
+          cache[[i, j]] = sub
+          part.append(sub)
+          dfs(j + 1)
+          part.removeLast()
+        }
+      }
+    }
+
+    dfs(0)
+    return results
+  }
+
+  private func isPalindrome(_ l: Int, _ r: Int, _ s: [Character]) -> Bool {
+    var l = l, r = r
+    while l <= r {
+      if s[l] != s[r] { return false }
+      l += 1; r -= 1
+    }
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking + palindrome cache", time: "O(n · 2^n)", space: "O(n²)", note: "2^n possible partitions; O(n) copy per result; cache stores O(n²) substrings", highlight: true },
+    { approach: "Backtracking without cache", time: "O(n² · 2^n)", space: "O(n)", note: "Each palindrome check is O(n) in the worst case without memoisation" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting to removeLast after recursion",
+      body: "Not removing the last element after the recursive call leaves stale substrings in the <code>part</code> array and produces incorrect results.",
+      fix: "Always call <code>part.removeLast()</code> immediately after the recursive <code>dfs(j+1)</code> call — both in the cache branch and the fresh-check branch.",
+    },
+    {
+      title: "Appending part without copying",
+      body: "In Swift, <code>results.append(part)</code> copies the array (value semantics), so this is safe. In Python or Java, you must write <code>results.append(list(part))</code>.",
+      fix: "In Swift no extra step is needed; in reference-semantics languages always copy before appending.",
+    },
+    {
+      title: "Cache key collision for different (i, j) pairs",
+      body: "Using a flat integer key like <code>i * n + j</code> can collide if n is not chosen carefully. The <code>[[Int]: String]</code> dictionary with a two-element array key is unambiguous.",
+      fix: "Use the two-element array key <code>[i, j]</code> as shown, or encode as <code>i * (s.count + 1) + j</code> if using an integer key.",
+    },
+  ]}
+/>

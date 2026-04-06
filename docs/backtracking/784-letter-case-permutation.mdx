@@ -1,0 +1,164 @@
+---
+id: 784-letter-case-permutation
+title: "Letter Case Permutation"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { LetterCasePermutationDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={784}
+  title="Letter Case Permutation"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["String", "Backtracking", "Bit Manipulation"]}
+  leetcodeUrl="https://leetcode.com/problems/letter-case-permutation/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s`, you can transform every letter individually to be lowercase or uppercase to create another string.
+
+Return a list of all possible strings we could create. You may return the output in **any order**.
+
+**Constraints:**
+- `1 <= s.length <= 12`
+- `s` consists of lowercase English letters, uppercase English letters, and digits.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "a1b2"
+Output: ["a1b2","a1B2","A1b2","A1B2"]
+```
+
+#### Example 2
+
+```
+Input:  s = "3z4"
+Output: ["3z4","3Z4"]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each letter independently branch into two choices?", verdict: "yes", reason: "Every letter can be lowercase or uppercase — two independent branches. Digits have exactly one choice (no branch)." },
+    { question: "Is the path length fixed (always = s.length)?", verdict: "yes", reason: "Every permutation is exactly s.length characters. We collect results only when the path is complete." },
+    { question: "Do we need to undo choices?", verdict: "yes", reason: "Classic backtracking — append to path, recurse, then remove to explore the other case branch." },
+  ]}
+  answer="Backtracking — branch at each letter into original and toggled case; digits add only one branch"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+DFS with a `path` array. At each index `i`: append `chars[i]` to path, recurse to `i+1`, then pop. If `chars[i]` is a digit, that is the only branch. If it is a letter, also toggle its case (lower↔upper), append the toggled character, recurse to `i+1`, then pop. Collect results when `path.count == chars.count`.
+
+<LetterCasePermutationDiagram />
+
+<Callout type="cyan" label="Digit branching">
+Digits produce exactly one branch — they are appended as-is and the function proceeds without a second recursive call. Letters always produce two branches (original case and toggled case).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "a1b"'
+  expected='["a1b","a1B","A1b","A1B"]'
+  steps={[
+    { label: "i=0 (a)", text: "Letter. Branch 1: append 'a', recurse. Branch 2: append 'A', recurse." },
+    { label: "i=1 (1)", text: "Digit. Only one branch: append '1', recurse." },
+    { label: "i=2 (b)", text: "Letter. Branch 1: append 'b' → 'a1b' recorded. Branch 2: append 'B' → 'a1B' recorded." },
+    { label: "backtrack", text: "Back at root. Take 'A' branch. Digit '1'. Branch 'b' → 'A1b', branch 'B' → 'A1B'." },
+    { label: "done", text: 'Return ["a1b","a1B","A1b","A1B"].' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert s to character array">
+    `var chars = Array(s)`.
+  </StepItem>
+  <StepItem title="Base case">
+    If `path.count == chars.count`, append `String(path)` to results and return.
+  </StepItem>
+  <StepItem title="Original case branch">
+    Append `chars[i]`, recurse `dfs(i+1)`, pop.
+  </StepItem>
+  <StepItem title="Toggled case branch (letters only)">
+    `guard !chars[i].isNumber`. Toggle case (upper→lower or lower→upper). Append toggled char, recurse `dfs(i+1)`, pop.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func letterCasePermutation(_ s: String) -> [String] {
+    var results = [String]()
+    var path = [Character]()
+    let chars = Array(s)
+
+    func dfs(_ i: Int) {
+      if path.count == chars.count {
+        results.append(String(path))
+        return
+      }
+
+      var char = chars[i]
+      path.append(char)
+      dfs(i + 1)
+      path.removeLast()
+
+      guard !char.isNumber else { return }
+
+      if char.isUppercase {
+        char = Character(char.lowercased())
+      } else {
+        char = Character(char.uppercased())
+      }
+
+      path.append(char)
+      dfs(i + 1)
+      path.removeLast()
+    }
+
+    dfs(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking", time: "O(2^L · n)", space: "O(n)", note: "L = number of letters in s. Each letter doubles the branch count. Building each result string takes O(n). Stack depth is O(n).", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Branching on digits",
+      body: "Digits have only one form — there is no uppercase or lowercase digit. Creating two branches for a digit produces duplicates.",
+      fix: "Guard with char.isNumber before the second recursive branch. Return after the first branch for digits.",
+    },
+    {
+      title: "Mutating chars[i] in place",
+      body: "If you modify the input character array, subsequent iterations see the wrong character.",
+      fix: "Use a local var char = chars[i] and toggle that local copy — never modify the original chars array.",
+    },
+    {
+      title: "Appending before checking the base case",
+      body: "If you append before checking i == length, you may create an off-by-one path.",
+      fix: "Check path.count == chars.count at the very top of dfs, before any append.",
+    },
+  ]}
+/>

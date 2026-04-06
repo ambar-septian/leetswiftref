@@ -1,0 +1,177 @@
+---
+id: 51-n-queens
+title: "N-Queens"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import NQueensDiagram from '@site/src/components/DSA/NQueensDiagram';
+
+<ProblemHeader
+  number={51}
+  title="N-Queens"
+  difficulty="Hard"
+  pattern="Backtracking"
+  tags={["Array", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/n-queens/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+The **n-queens** puzzle is the problem of placing `n` queens on an `n x n` chessboard such that no two queens attack each other.
+
+Given an integer `n`, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.
+
+Each solution contains a distinct board configuration of the n-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty cell, respectively.
+
+A queen attacks any cell in the same row, column, positive diagonal (top-left to bottom-right), or negative diagonal (top-right to bottom-left).
+
+**Constraints**
+- `1 <= n <= 9`
+
+<Callout type="green" label="Core Insight">
+Place exactly one queen per row using DFS row by row. Track three sets — colSet (columns used), posDigSet (r+c values), negDigSet (r-c values) — to check in O(1) whether a column is safe. When row r == n, all queens are placed validly.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  n = 4
+Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+```
+
+#### Example 2
+```
+Input:  n = 1
+Output: [["Q"]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we enumerate all valid queen placements?", verdict: "yes", reason: "All distinct solutions required — backtracking explores every valid column at each row." },
+    { question: "Can we prune positions attacked by existing queens?", verdict: "yes", reason: "Three O(1) set lookups eliminate invalid columns before recursing — avoids entire subtrees." },
+    { question: "Is one queen per row a valid constraint to enforce?", verdict: "yes", reason: "n queens on an n x n board: since two queens in the same row attack each other, exactly one per row is mandatory." },
+  ]}
+  answer="Backtracking DFS row-by-row — colSet + diagonal sets for O(1) conflict detection"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Represent the board as `[[String]]` initialised to `"."`. The recursive function `dfs(_ r: Int)` iterates over all `n` columns for row `r`. For each column `c`, check:
+- `colSet.contains(c)` — column already has a queen
+- `posDigSet.contains(r + c)` — positive diagonal (top-left to bottom-right) occupied
+- `negDigSet.contains(r - c)` — negative diagonal (top-right to bottom-left) occupied
+
+If none fire, place `"Q"`, insert into all three sets, recurse `dfs(r+1)`, then restore.
+
+<NQueensDiagram />
+
+<Callout type="cyan" label="Why r+c and r-c identify diagonals">
+All cells on the same top-left-to-bottom-right diagonal share the same (row - col) value. All cells on the same top-right-to-bottom-left diagonal share the same (row + col) value. These invariants let us check diagonal conflicts with a single integer lookup.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="n = 4"
+  expected='[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]'
+  steps={[
+    { label: "r=0, c=1", text: "colSet={1}, posDigSet={1}, negDigSet={-1}. board[0][1]='Q'. Recurse r=1.", state: "Q at (0,1)" },
+    { label: "r=1, c=3", text: "c=0: negDig 1-0=1? negDigSet has -1 not 1 — wait, col 0: colSet no, posDigSet 1+0=1 yes — skip. c=2: posDigSet 1+2=3 no, negDigSet 1-2=-1 yes — skip. c=3: all clear. Place.", state: "Q at (0,1),(1,3)" },
+    { label: "r=2, c=0", text: "c=0: col no, posDigSet 2+0=2 no, negDigSet 2-0=2 no — place. board[2][0]='Q'.", state: "Q at (0,1),(1,3),(2,0)" },
+    { label: "r=3, c=2", text: "c=2: col no, posDigSet 3+2=5 no, negDigSet 3-2=1 no — place. r==n. Append solution.", state: "Solution 1 found" },
+    { label: "backtrack", text: "Restore, continue exploring. Eventually find Solution 2 with queens at cols [2,0,3,1].", state: "Both solutions returned" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise board and constraint sets">
+    `board = [[String]](repeating: [String](repeating: ".", count: n), count: n)`. Three empty sets: `colSet`, `posDigSet`, `negDigSet`.
+  </StepItem>
+  <StepItem title="Base case">
+    When `r == n`, convert `board` to `[String]` (each row joined) and append to `results`.
+  </StepItem>
+  <StepItem title="Try each column in row r">
+    For `c` in `0..<n`: if any set contains the conflict key, skip. Otherwise place `"Q"`, update sets, recurse `dfs(r+1)`.
+  </StepItem>
+  <StepItem title="Backtrack">
+    Restore `board[r][c] = "."`, remove from all three sets.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func solveNQueens(_ n: Int) -> [[String]] {
+    var results = [[String]]()
+    var board = Array(repeating: Array(repeating: ".", count: n), count: n)
+    var colSet = Set<Int>()
+    var posDigSet = Set<Int>()  // r + c
+    var negDigSet = Set<Int>()  // r - c
+
+    func dfs(_ r: Int) {
+      if r == n {
+        results.append(board.map { $0.joined() })
+        return
+      }
+
+      for c in 0..<n {
+        if colSet.contains(c) || posDigSet.contains(r + c) || negDigSet.contains(r - c) {
+          continue
+        }
+
+        board[r][c] = "Q"
+        colSet.insert(c)
+        posDigSet.insert(r + c)
+        negDigSet.insert(r - c)
+
+        dfs(r + 1)
+
+        board[r][c] = "."
+        colSet.remove(c)
+        posDigSet.remove(r + c)
+        negDigSet.remove(r - c)
+      }
+    }
+
+    dfs(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking with set pruning", time: "O(N!)", space: "O(N²)", note: "N! placements in the worst case; N² for the board; O(N) for sets and recursion stack", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Checking only column conflicts, not diagonals",
+      body: "A column set alone prevents two queens in the same column but allows diagonal attacks. Two queens at (0,0) and (1,1) share the column? No — but they share the negative diagonal (r-c = -1 for both). Without diagonal sets this is missed.",
+      fix: "Maintain all three sets: colSet for columns, posDigSet (r+c) for one diagonal direction, negDigSet (r-c) for the other.",
+    },
+    {
+      title: "Forgetting to remove from sets on backtrack",
+      body: "If the three sets are not restored after the recursive call returns, subsequent branches in the same row see phantom conflicts and skip valid placements.",
+      fix: "After dfs(r+1) returns, remove c from colSet, r+c from posDigSet, and r-c from negDigSet.",
+    },
+    {
+      title: "Joining board rows before the base case",
+      body: "Joining rows inside the recursion (not at the base case) means you may accumulate partial rows. The board must be fully filled (r == n) before converting.",
+      fix: "Only call board.map { $0.joined() } inside the r == n base case branch.",
+    },
+  ]}
+/>

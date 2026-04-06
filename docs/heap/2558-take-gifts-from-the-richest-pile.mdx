@@ -1,0 +1,150 @@
+---
+id: 2558-take-gifts-from-the-richest-pile
+title: "Take Gifts From the Richest Pile"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2558}
+  title="Take Gifts From the Richest Pile"
+  difficulty="Easy"
+  pattern="Max-Heap — Repeated Pop-and-Replace"
+  tags={["Array", "Heap (Priority Queue)", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/take-gifts-from-the-richest-pile/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an integer array `gifts` denoting the number of gifts in various piles. Every second, you do the following:
+
+1. Choose the pile with the **maximum** number of gifts.
+2. **Leave behind** `floor(sqrt(gifts[i]))` gifts in that pile (i.e., replace the pile with its floor square root).
+
+Return the number of gifts remaining after `k` seconds.
+
+**Constraints:**
+- `1 <= gifts.length <= 10^3`
+- `1 <= gifts[i] <= 10^9`
+- `1 <= k <= 10^3`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  gifts = [25,64,9,4,100], k = 4
+Output: 29
+Explanation:
+  Second 1: max=100 → replace with floor(sqrt(100))=10. gifts=[25,64,9,4,10].
+  Second 2: max=64  → replace with floor(sqrt(64))=8.  gifts=[25,8,9,4,10].
+  Second 3: max=25  → replace with floor(sqrt(25))=5.  gifts=[5,8,9,4,10].
+  Second 4: max=10  → replace with floor(sqrt(10))=3.  gifts=[5,8,9,4,3].
+  Sum = 5+8+9+4+3 = 29.
+```
+
+#### Example 2
+
+```
+Input:  gifts = [1,1,1,1], k = 4
+Output: 4
+Explanation: Each pile is already 1. sqrt(1)=1. No change after k rounds.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we repeatedly need the maximum element?", verdict: "yes", reason: "Each round takes from the richest pile — a max-heap gives O(log n) access to the current maximum." },
+    { question: "Does k rounds of pop-and-replace fit a heap simulation?", verdict: "yes", reason: "Pop max, compute floor(sqrt), push back. Repeat k times. Sum the heap at the end." },
+  ]}
+  answer="Max-heap simulation — pop max, push floor(sqrt), repeat k times"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build a max-heap from `gifts`. Run `k` rounds: pop the maximum value, compute `floor(sqrt(max))`, push the result back. After `k` rounds, sum all values remaining in the heap.
+
+<Callout type="green" label="Early exit">
+If the maximum pile is 1, sqrt(1) = 1 — no change. You can stop early once the max is 1.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="gifts = [25,64,9,4,100], k = 4"
+  expected="29"
+  steps={[
+    { label: "Init",   text: "Build max-heap: [100,64,25,9,4]. Sum=202.",                         state: "heap=[100,64,25,9,4]" },
+    { label: "s=1",    text: "Pop 100. floor(sqrt(100))=10. Push 10. heap=[64,25,10,9,4].",       state: "heap=[64,25,10,9,4]" },
+    { label: "s=2",    text: "Pop 64. floor(sqrt(64))=8. Push 8.   heap=[25,10,9,8,4].",         state: "heap=[25,10,9,8,4]" },
+    { label: "s=3",    text: "Pop 25. floor(sqrt(25))=5. Push 5.   heap=[10,9,8,5,4].",          state: "heap=[10,9,8,5,4]" },
+    { label: "s=4",    text: "Pop 10. floor(sqrt(10))=3. Push 3.   heap=[9,8,5,4,3].",           state: "heap=[9,8,5,4,3]" },
+    { label: "Done",   text: "Sum remaining: 9+8+5+4+3 = 29. Return 29.",                        state: "return 29" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build max-heap">
+    Insert all gifts into a max-heap. Track the total sum.
+  </StepItem>
+  <StepItem title="Run k rounds">
+    For each round: pop the maximum value `top`. Subtract `top` from sum. Compute `replacement = floor(sqrt(top))`. Push `replacement`. Add `replacement` to sum.
+  </StepItem>
+  <StepItem title="Return sum">
+    Return the running sum after k rounds.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+import Foundation
+
+class Solution {
+  func pickGifts(_ gifts: [Int], _ k: Int) -> Int {
+    // Use negated values in a min-heap to simulate a max-heap
+    var heap = Heap(gifts.map { -$0 })
+    var total = gifts.reduce(0, +)
+
+    for _ in 0..<k {
+      guard let negMax = heap.popMin() else { break }
+      let maxVal = -negMax
+      let replacement = Int(Double(maxVal).squareRoot())
+      heap.insert(-replacement)
+      total = total - maxVal + replacement
+    }
+
+    return total
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sort each round", time: "O(k · n log n)", space: "O(1)", note: "Re-sort n elements every round — wasteful" },
+    { approach: "Max-heap simulation", time: "O((n + k) log n)", space: "O(n)", note: "Build heap O(n); k pops and pushes each O(log n)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using integer square root naively",
+      body: "Integer division truncates but may not give the floor square root for all values due to floating-point precision. For example, Int(sqrt(Double(x))) can round incorrectly for large perfect squares.",
+      fix: "Use Int(Double(x).squareRoot()) and verify: if (result+1)*(result+1) <= x, use result+1.",
+    },
+    {
+      title: "Summing the heap array instead of tracking the running sum",
+      body: "Iterating the heap array after k rounds is O(n) and correct, but tracking a running sum during the simulation avoids the final pass.",
+      fix: "Maintain total: subtract the popped value and add the replacement each round.",
+    },
+  ]}
+/>

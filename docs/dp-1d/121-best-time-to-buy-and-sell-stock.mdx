@@ -1,0 +1,156 @@
+---
+id: 121-best-time-to-buy-and-sell-stock
+title: "Best Time to Buy and Sell Stock"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={121}
+  title="Best Time to Buy and Sell Stock"
+  difficulty="Easy"
+  pattern="Two Pointers / Sliding Window"
+  tags={["Array", "Dynamic Programming"]}
+  leetcodeUrl="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an array `prices` where `prices[i]` is the price of a given stock on the `i`-th day.
+
+You want to maximise your profit by choosing a **single day to buy** one stock and choosing a **different day in the future to sell** that stock.
+
+Return the **maximum profit** you can achieve from this transaction. If you cannot achieve any profit, return `0`.
+
+**Constraints:**
+- `1 <= prices.length <= 10^5`
+- `0 <= prices[i] <= 10^4`
+- You must buy before you sell (buy on day `i`, sell on day `j > i`).
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: prices = [7,1,5,3,6,4]
+Output: 5
+Explanation: Buy on day 2 (price=1), sell on day 5 (price=6). Profit = 6 - 1 = 5.
+```
+
+#### Example 2
+
+```
+Input: prices = [7,6,4,3,1]
+Output: 0
+Explanation: Prices only decrease; no profitable transaction is possible.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to find a pair (buy, sell) with buy before sell?", verdict: "yes", reason: "Two pointers naturally express this: left tracks the best buy day, right scans future sell days." },
+    { question: "When right finds a price lower than left, is left still the best buy?", verdict: "no", reason: "A lower price is always a better buy candidate — move left to right." },
+    { question: "Do we need only one transaction?", verdict: "yes", reason: "A single pass suffices; no DP state needed beyond a running max profit." },
+  ]}
+  answer="Two Pointers — left=buy candidate, right scans forward; shift left only on a new low"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use two pointers starting at indices 0 and 1. At every step: if `prices[right] > prices[left]`, compute the profit and update the maximum. Otherwise, a cheaper buy day has been found — move `left` to `right`. Advance `right` each iteration.
+
+<Callout type="cyan" label="Why move left to right on a new low">
+Any future sell would yield a higher profit from the new (lower) buy price than from the old one. The old left is now strictly dominated.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="5"
+  input="prices = [7,1,5,3,6,4]"
+  steps={[
+    { label: "l=0, r=1", text: "prices[0]=7 > prices[1]=1 → move left to 1; maxProfit=0" },
+    { label: "l=1, r=2", text: "prices[1]=1 < prices[2]=5 → profit=4; maxProfit=4" },
+    { label: "l=1, r=3", text: "prices[1]=1 < prices[3]=3 → profit=2; maxProfit=4" },
+    { label: "l=1, r=4", text: "prices[1]=1 < prices[4]=6 → profit=5; maxProfit=5" },
+    { label: "l=1, r=5", text: "prices[1]=1 < prices[5]=4 → profit=3; maxProfit=5" },
+    { label: "done",      text: "return 5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise pointers and result">
+    `var left = 0`, `var right = 1`, `var maxProfit = 0`.
+  </StepItem>
+  <StepItem title="Scan with right pointer">
+    While `right less than prices.count`: check if `prices[left] less than prices[right]`.
+  </StepItem>
+  <StepItem title="Profitable window">
+    If yes, compute `profit = prices[right] - prices[left]` and update `maxProfit = max(maxProfit, profit)`.
+  </StepItem>
+  <StepItem title="New low buy day">
+    If `prices[right] less than or equal to prices[left]`, set `left = right` — found a cheaper buy.
+  </StepItem>
+  <StepItem title="Advance right">
+    `right += 1` each iteration. Return `maxProfit` after the loop.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func maxProfit(_ prices: [Int]) -> Int {
+    var left = 0
+    var right = 1
+    var maxProfit = 0
+
+    while right < prices.count {
+      if prices[left] < prices[right] {
+        let profit = prices[right] - prices[left]
+        maxProfit = max(maxProfit, profit)
+      } else {
+        left = right
+      }
+      right += 1
+    }
+
+    return maxProfit
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two Pointers single pass", time: "O(n)", space: "O(1)", note: "One scan; two integer pointers and a running max", highlight: true },
+    { approach: "Brute Force (all pairs)", time: "O(n²)", space: "O(1)", note: "Check every (buy, sell) pair" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Moving left when prices are equal",
+      body: "If <code>prices[left] == prices[right]</code>, the profit would be 0. Moving left to right is safe because it does not reduce the maximum achievable profit.",
+      fix: "Use the <code>else</code> branch (prices[left] >= prices[right]) to move left — equal prices trigger a left move in this implementation.",
+    },
+    {
+      title: "Not returning 0 when no profit exists",
+      body: "Initialising <code>maxProfit = 0</code> naturally handles the all-decreasing case — no update ever happens so 0 is returned.",
+      fix: "Initialise maxProfit to 0, not to a negative sentinel.",
+    },
+    {
+      title: "Attempting multiple transactions",
+      body: "This problem allows only one buy-sell pair. Greedy multi-transaction strategies (like problem 122) are not valid here.",
+      fix: "Use a single pair of pointers and track only one maximum profit across the entire array.",
+    },
+  ]}
+/>

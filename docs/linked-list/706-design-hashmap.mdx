@@ -1,0 +1,207 @@
+---
+id: 706-design-hashmap
+title: "Design HashMap"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { DesignHashMapDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={706}
+  title="Design HashMap"
+  difficulty="Easy"
+  pattern="Chaining Hash Map"
+  tags={["Array", "Hash Table", "Linked List", "Design", "Hash Function"]}
+  leetcodeUrl="https://leetcode.com/problems/design-hashmap/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Design a HashMap without using any built-in hash table libraries.
+
+Implement `MyHashMap`:
+- `MyHashMap()` — Initializes the object with an empty map.
+- `void put(int key, int value)` — Inserts a `(key, value)` pair into the HashMap. If the `key` already exists in the map, update the corresponding `value`.
+- `int get(int key)` — Returns the `value` to which the specified `key` is mapped, or `-1` if this map contains no mapping for the key.
+- `void remove(int key)` — Removes the `key` and its corresponding `value` if the map contains the mapping for the `key`.
+
+**Constraints:**
+- `0 <= key, value <= 10^6`
+- At most `10^4` calls will be made to `put`, `get`, and `remove`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+["MyHashMap","put","put","get","get","put","get","remove","get"]
+[[],[1,1],[2,2],[1],[3],[2,1],[2],[2],[2]]
+
+Output: [null,null,null,1,-1,null,1,null,-1]
+
+Explanation:
+MyHashMap myHashMap = new MyHashMap();
+myHashMap.put(1, 1);  // The map is now [[1,1]]
+myHashMap.put(2, 2);  // The map is now [[1,1], [2,2]]
+myHashMap.get(1);     // return 1
+myHashMap.get(3);     // return -1 (not found)
+myHashMap.put(2, 1);  // update: [[1,1], [2,1]]
+myHashMap.get(2);     // return 1
+myHashMap.remove(2);  // [[1,1]]
+myHashMap.get(2);     // return -1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we use a fixed-size bucket array for O(1) access?", verdict: "yes", reason: "10,000 buckets with hash(key) = key % 10,000 maps every valid key to a bucket. Lookup is O(1) plus chain traversal." },
+    { question: "Do we need key-value pairs at each node?", verdict: "yes", reason: "Unlike a HashSet (which stores only a key), HashMap nodes store both key and value. Updates require finding the key and overwriting its value in place." },
+    { question: "Does the dummy head pattern still apply?", verdict: "yes", reason: "Same as HashSet — a dummy head simplifies add and remove operations by eliminating special-casing for the first node." },
+  ]}
+  answer="Chaining Hash Map — array of key-value linked lists with a dummy head; put updates in place, get and remove scan the chain"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Allocate 10,000 buckets. For `put(key, value)`: hash to bucket, scan chain for an existing node with the same key — if found, update value; otherwise append a new node. For `get(key)`: scan and return the value or -1. For `remove(key)`: find the predecessor and splice out the node.
+
+<DesignHashMapDiagram />
+
+<Callout type="cyan" label="In-place update vs insert">
+When put() finds an existing key in the chain it updates the value in place and returns immediately — no removal and re-insertion needed. This keeps the chain order stable and avoids unnecessary allocations.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="put(1,10), put(7,70), get(1), put(1,20), get(1), remove(7), get(7)"
+  expected="10, 20, -1"
+  steps={[
+    { label: "put(1,10)", text: "hash(1)=1. Bucket 1 empty → dummy→(1:10)." },
+    { label: "put(7,70)", text: "hash(7)=1. Scan: key 7 not found → append → dummy→(1:10)→(7:70)." },
+    { label: "get(1)", text: "hash(1)=1. Scan chain → key=1 found → return 10." },
+    { label: "put(1,20)", text: "hash(1)=1. Scan: key=1 found → update val to 20 in place. Chain: dummy→(1:20)→(7:70)." },
+    { label: "get(1)", text: "hash(1)=1. Scan chain → key=1 → return updated val 20." },
+    { label: "remove(7)", text: "hash(7)=1. Predecessor of key=7 is (1:20). Splice out → dummy→(1:20)." },
+    { label: "get(7)", text: "hash(7)=1. Scan chain → only (1:20) — key 7 not found → return -1." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise buckets">
+    `array = (0..10_000).map { _ in nil }` — 10,000 optional ListNode slots.
+  </StepItem>
+  <StepItem title="put(key, value)">
+    Hash to bucket. If nil, create dummy → node(key, value). Else scan; if `current.next.key == key`, update `current.next.val = value` and return; else advance. Append new node at tail.
+  </StepItem>
+  <StepItem title="get(key)">
+    Hash to bucket. If nil, return `-1`. Walk chain; if `current.key == key`, return `current.val`. Return `-1`.
+  </StepItem>
+  <StepItem title="remove(key)">
+    Hash to bucket. If nil, return. Walk chain; when `current.next.key == key`, set `current.next = current.next.next`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class ListNode {
+  var val: Int?
+  var key: Int?
+  var next: ListNode?
+
+  init(_ key: Int?, _ val: Int?) {
+    self.val = val
+    self.key = key
+  }
+}
+
+class MyHashMap {
+  var array: [ListNode?]
+
+  init() {
+    array = (0..<10_000).map { _ in nil }
+  }
+
+  func put(_ key: Int, _ value: Int) {
+    let hashKey = hash(key)
+    if let listNode = array[hashKey] {
+      var current: ListNode? = listNode
+      while current?.next != nil {
+        if current?.next?.key == key {
+          current?.next?.val = value
+          return
+        }
+        current = current?.next
+      }
+      current?.next = ListNode(key, value)
+    } else {
+      let listNode = ListNode(nil, nil)  // dummy
+      listNode.next = ListNode(key, value)
+      array[hashKey] = listNode
+    }
+  }
+
+  func get(_ key: Int) -> Int {
+    let hashKey = hash(key)
+    guard let listNode = array[hashKey] else { return -1 }
+    var current: ListNode? = listNode
+    while current != nil {
+      if current?.key == key { return current?.val ?? -1 }
+      current = current?.next
+    }
+    return -1
+  }
+
+  func remove(_ key: Int) {
+    let hashKey = hash(key)
+    guard let listNode = array[hashKey] else { return }
+    var current: ListNode? = listNode
+    while current != nil {
+      if current?.next?.key == key {
+        current?.next = current?.next?.next
+        break
+      }
+      current = current?.next
+    }
+    array[hashKey] = listNode
+  }
+
+  private func hash(_ key: Int) -> Int { key % 10_000 }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Chaining Hash Map", time: "O(1) avg", space: "O(B + n)", note: "B = 10,000 buckets; n = number of stored keys. Worst case O(n) per op if all keys hash to the same bucket.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Appending instead of updating on put",
+      body: "If you append a new node without checking whether the key already exists, the map will have duplicate keys. get will return the first match (stale value), not the updated one.",
+      fix: "In put(), scan the chain first. If the key is found, update val in place and return. Only append when the key is not present.",
+    },
+    {
+      title: "get() reading val from the dummy head",
+      body: "The dummy head has key=nil and val=nil. If the chain scan starts from the dummy, comparing current.key == key against an integer will never match nil, but it wastes an iteration.",
+      fix: "Scanning from the dummy is functionally safe (nil != Int), but starting from dummy.next skips the unnecessary comparison.",
+    },
+    {
+      title: "Using two separate node types for HashSet vs HashMap",
+      body: "HashSet and HashMap have similar structures. Using the same ListNode class for both (with an optional key field) leads to confusion about which field to populate.",
+      fix: "Define a separate ListNode per class, or clearly name fields. HashMap nodes need both key and val; HashSet nodes need only val.",
+    },
+  ]}
+/>

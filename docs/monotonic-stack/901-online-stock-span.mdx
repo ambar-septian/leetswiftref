@@ -1,0 +1,146 @@
+---
+id: 901-online-stock-span
+title: "Online Stock Span"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={901}
+  title="Online Stock Span"
+  difficulty="Medium"
+  pattern="Monotonic Stack"
+  tags={["Stack", "Design", "Monotonic Stack", "Data Stream"]}
+  leetcodeUrl="https://leetcode.com/problems/online-stock-span/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Design an algorithm that collects daily price quotes for some stock and returns the **span** of that stock's price for the current day.
+
+The span of the stock's price in one day is the maximum number of consecutive days (starting from that day and going backward) for which the stock price was less than or equal to today's price.
+
+Implement the `StockSpanner` class:
+- `StockSpanner()` — Initializes the object of the class.
+- `int next(int price)` — Returns the span of the stock's price given that today's price is `price`.
+
+**Constraints:**
+- `1 <= price <= 10^5`
+- At most `10^4` calls will be made to `next`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  ["StockSpanner","next","next","next","next","next","next","next"]
+        [[],[100],[80],[60],[70],[60],[75],[85]]
+Output: [null,1,1,1,2,1,4,6]
+
+Explanation:
+  next(100) → 1. next(80) → 1. next(60) → 1. next(70) → 2 (70≥60).
+  next(60) → 1. next(75) → 4 (75≥60,70,60). next(85) → 6.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does a new price absorb all previous prices that are smaller or equal?", verdict: "yes", reason: "When a higher price arrives, it can span over all consecutive days with prices no greater than itself — those days' spans merge into the new span." },
+    { question: "Can we store (price, cumulativeSpan) pairs on a stack?", verdict: "yes", reason: "Instead of re-scanning all past days, store the pre-accumulated span at each stack entry. Pop and add spans when the current price is larger." },
+    { question: "Is this a monotonically decreasing stack?", verdict: "yes", reason: "The stack remains non-increasing in price — we only pop entries whose price is less than or equal to the current price." },
+  ]}
+  answer="Monotonic stack of (price, span) pairs — pop and accumulate spans when current price is greater or equal"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a stack of `(price, span)` tuples. For each new `price`: start `span = 1`. While the stack is not empty and `price >= stack.last.price`: pop and add `stack.last.span` to `span`. Push `(price, span)` and return `span`. The stack acts as a compressed representation — each entry covers the span of all days it absorbed.
+
+<Callout type="cyan" label="Why store cumulative span?">
+When a high price absorbs several lower prices, we do not want to re-examine every individual day. Storing the cumulative span in each stack entry lets us merge O(1) per pop — instead of O(k) where k is the number of absorbed days.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="prices = [100,80,60,70,60,75,85]"
+  expected="[1,1,1,2,1,4,6]"
+  steps={[
+    { label: "100", text: "span=1. Stack empty. Push (100,1). Return 1." },
+    { label: "80",  text: "span=1. 80<100 — no pop. Push (80,1). Return 1." },
+    { label: "60",  text: "span=1. 60<80 — no pop. Push (60,1). Return 1." },
+    { label: "70",  text: "span=1. 70>=60 → pop (60,1), span=2. 70<80 — stop. Push (70,2). Return 2." },
+    { label: "60",  text: "span=1. 60<70 — no pop. Push (60,1). Return 1." },
+    { label: "75",  text: "span=1. 75>=60 → pop (60,1), span=2. 75>=70 → pop (70,2), span=4. 75<80 — stop. Push (75,4). Return 4." },
+    { label: "85",  text: "span=1. 85>=75 → pop (75,4), span=5. 85>=80 → pop (80,1), span=6. 85<100 — stop. Push (85,6). Return 6." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack">
+    `var stack = [(Int, Int)]()` — each element is `(price, span)`.
+  </StepItem>
+  <StepItem title="next(price)">
+    `var span = 1`.
+  </StepItem>
+  <StepItem title="Pop smaller or equal prices">
+    While `!stack.isEmpty` and `price >= stack.last!.0`: `span += stack.removeLast().1`.
+  </StepItem>
+  <StepItem title="Push and return">
+    `stack.append((price, span))`. Return `span`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class StockSpanner {
+  var stack = [(Int, Int)]()  // (price, span)
+
+  init() {}
+
+  func next(_ price: Int) -> Int {
+    var span = 1
+    while !stack.isEmpty, let last = stack.last, price >= last.0 {
+      span += last.1
+      stack.removeLast()
+    }
+    stack.append((price, span))
+    return span
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Monotonic Stack with cumulative span", time: "O(1) amortised", space: "O(n)", note: "Each price is pushed once and popped at most once — O(n) total operations across n calls. O(n) stack space in the worst case.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using strictly greater than for the pop condition",
+      body: "The span includes days with prices strictly less than or equal to today. Using price > stack.last.price misses equal-price days.",
+      fix: "Use price >= stack.last.0 to pop days with equal prices.",
+    },
+    {
+      title: "Not accumulating the popped span",
+      body: "If you pop stack entries but forget to add their span to the running total, you lose the days they represented.",
+      fix: "span += last.1 before (or immediately after) the pop — add the popped entry's span to the running span.",
+    },
+    {
+      title: "Re-scanning all past prices naively",
+      body: "A naive loop over all previous prices to count the span is O(n) per call and O(n^2) total.",
+      fix: "The stack with cumulative spans amortises this to O(1) per call — no re-scanning needed.",
+    },
+  ]}
+/>

@@ -1,0 +1,141 @@
+---
+id: 1047-remove-all-adjacent-duplicates-in-string
+title: "Remove All Adjacent Duplicates In String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1047}
+  title="Remove All Adjacent Duplicates In String"
+  difficulty="Easy"
+  pattern="Stack"
+  tags={["String", "Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a string `s` consisting of lowercase English letters. A **duplicate removal** consists of choosing two **adjacent** and **equal** letters and removing them.
+
+We repeatedly make duplicate removals on `s` until we no longer can.
+
+Return the final string after all such duplicate removals have been made. It can be proven that the answer is **unique**.
+
+**Constraints:**
+- `1 <= s.length <= 10^5`
+- `s` consists of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "abbaca"
+Output: "ca"
+Explanation: "abbaca" → remove "bb" → "aaca" → remove "aa" → "ca".
+```
+
+#### Example 2
+
+```
+Input:  s = "azxxzy"
+Output: "ay"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does removing a pair potentially expose a new adjacent pair?", verdict: "yes", reason: "After 'bb' is removed from 'abbc', 'a' and 'c' become adjacent — but different. After 'aa' is removed from 'baac', 'b' and 'c' become adjacent. A stack naturally handles cascading removals." },
+    { question: "Does the top of the stack represent the most recent unmatched character?", verdict: "yes", reason: "If the incoming character matches the stack top, both cancel. Otherwise, push — the stack always holds the remaining string without adjacent duplicates." },
+    { question: "Is one pass sufficient?", verdict: "yes", reason: "The stack simulates all rounds of removal in a single left-to-right scan." },
+  ]}
+  answer="Stack — push characters; pop (cancel) when a character matches the stack top"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate over each character. If the stack top equals the current character, pop the top (both cancel). Otherwise, push the character. After iteration, the stack contains the final string with no adjacent duplicates.
+
+<Callout type="cyan" label="Why a stack handles cascading?">
+When 'aa' in 'baac' is popped, 'b' is now at the top. The next character 'c' does not match 'b', so no further cancellation happens. The stack naturally represents the "live" prefix of the result — a perfect model for cascading duplicate removal.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "abbaca"'
+  expected='"ca"'
+  steps={[
+    { label: "'a'", text: "Stack empty. Push 'a'. Stack: [a]." },
+    { label: "'b'", text: "'b'≠'a'. Push 'b'. Stack: [a,b]." },
+    { label: "'b'", text: "'b'=='b' — match! Pop 'b'. Stack: [a]." },
+    { label: "'a'", text: "'a'=='a' — match! Pop 'a'. Stack: []." },
+    { label: "'c'", text: "Stack empty. Push 'c'. Stack: [c]." },
+    { label: "'a'", text: "'a'≠'c'. Push 'a'. Stack: [c,a]. Done → 'ca'." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack">
+    `var stack = [Character]()`.
+  </StepItem>
+  <StepItem title="Iterate and match">
+    For each `char` in `s`: if `stack.last == char`, `stack.removeLast()`. Else `stack.append(char)`.
+  </StepItem>
+  <StepItem title="Build result">
+    `return String(stack)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func removeDuplicates(_ s: String) -> String {
+    var stack = [Character]()
+    for char in s {
+      if let top = stack.last, top == char {
+        stack.removeLast()
+      } else {
+        stack.append(char)
+      }
+    }
+    return String(stack)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack", time: "O(n)", space: "O(n)", note: "Each character is pushed and popped at most once — O(n) total stack operations. O(n) stack space in the worst case (no duplicates).", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Running multiple passes instead of one",
+      body: "Repeatedly scanning the string for adjacent duplicates is O(n^2) in the worst case (e.g., 'aabbccdd...').",
+      fix: "One stack pass handles all cascading cancellations in O(n).",
+    },
+    {
+      title: "Not handling an empty stack before checking the top",
+      body: "Accessing stack.last when the stack is empty returns nil in Swift. Using it without guarding crashes in other languages.",
+      fix: "In Swift, stack.last returns an Optional — use if let top = stack.last to safely unwrap before comparing.",
+    },
+    {
+      title: "Forgetting to push when there is no match",
+      body: "If the character does not match the stack top, it must be pushed — not discarded.",
+      fix: "The else branch always pushes the character: stack.append(char).",
+    },
+  ]}
+/>

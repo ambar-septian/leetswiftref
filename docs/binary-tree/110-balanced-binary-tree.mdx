@@ -1,0 +1,164 @@
+---
+id: 110-balanced-binary-tree
+title: "Balanced Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import BalancedBinaryTreeDiagram from '@site/src/components/DSA/BalancedBinaryTreeDiagram';
+
+<ProblemHeader
+  number={110}
+  title="Balanced Binary Tree"
+  difficulty="Easy"
+  pattern="DFS"
+  tags={["Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/balanced-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a binary tree, determine if it is **height-balanced**.
+
+A height-balanced binary tree is one in which the left and right subtrees of **every node** differ in height by no more than `1`.
+
+The check must apply at every node, not just the root. A tree where the root's subtrees have equal height but one subtree is itself unbalanced is **not** height-balanced.
+
+**Constraints**
+- The number of nodes in the tree is in the range `[0, 5000]`.
+- `-10^4 <= Node.val <= 10^4`
+
+<Callout type="green" label="Core Insight">
+Return a (isBalanced, height) tuple from each node. Post-order DFS: compute left and right tuples first. A node is balanced if both subtrees are balanced AND their height difference is at most 1. Short-circuit: if either subtree is already unbalanced, propagate false immediately without further computation.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  root = [3,9,20,null,null,15,7]
+Output: true
+```
+
+#### Example 2
+```
+Input:  root = [1,2,2,3,3,null,null,4,4]
+Output: false
+```
+
+#### Example 3
+```
+Input:  root = []
+Output: true
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we check balance at every node, not just the root?", verdict: "yes", reason: "A subtree can be unbalanced even if the root looks balanced — need bottom-up propagation." },
+    { question: "Can we compute height and balance status in a single pass?", verdict: "yes", reason: "Post-order DFS returns (isBalanced, height) together — no need for two separate traversals." },
+    { question: "Can we short-circuit once imbalance is detected?", verdict: "yes", reason: "Once a subtree returns isBalanced=false, all ancestors propagate false without further work." },
+  ]}
+  answer="Post-order DFS — return (isBalanced, height) tuple, short-circuit on imbalance"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Define `dfs(_ root: TreeNode?) -> (Bool, Int)`. Nil returns `(true, 0)`. Recursively compute `left = dfs(root.left)` and `right = dfs(root.right)`. Compute:
+- `balanced = abs(left.height - right.height) <= 1`
+- `balancedResult = balanced && left.isBalanced && right.isBalanced`
+- `height = 1 + max(left.height, right.height)`
+
+Return `(balancedResult, height)`. Final answer: `dfs(root).0`.
+
+<BalancedBinaryTreeDiagram />
+
+<Callout type="cyan" label="Why the naive two-pass approach is O(n²)">
+A naive approach calls isBalanced(root) which calls height(root.left) and height(root.right), each recursing the full subtree. Then it recurses isBalanced on both children — recomputing heights. For a skewed tree this is O(n) per node → O(n²) total. The tuple approach computes height once per node: O(n).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [3,9,20,null,null,15,7]"
+  expected="true"
+  steps={[
+    { label: "dfs(nil)", text: "Return (true, 0).", state: "(T,0)" },
+    { label: "dfs(9)", text: "left=(T,0), right=(T,0). |0-0|=0<=1. Return (T, 1).", state: "(T,1)" },
+    { label: "dfs(15)", text: "Return (T,1).", state: "(T,1)" },
+    { label: "dfs(7)", text: "Return (T,1).", state: "(T,1)" },
+    { label: "dfs(20)", text: "left=(T,1), right=(T,1). |1-1|=0<=1. Return (T, 2).", state: "(T,2)" },
+    { label: "dfs(3)", text: "left=(T,1), right=(T,2). |1-2|=1<=1. balancedResult=T&&T&&T=true. Return (T, 3). Answer: true.", state: "true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    Nil returns `(true, 0)` — an empty tree is balanced with height 0.
+  </StepItem>
+  <StepItem title="Post-order recursion">
+    Compute `left = dfs(root.left)` and `right = dfs(root.right)` before processing the current node.
+  </StepItem>
+  <StepItem title="Compute balance and height">
+    `balanced = abs(left.1 - right.1) <= 1`. `balancedResult = balanced && left.0 && right.0`. `height = 1 + max(left.1, right.1)`.
+  </StepItem>
+  <StepItem title="Return tuple">
+    Return `(balancedResult, height)`. Extract `.0` at the call site.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isBalanced(_ root: TreeNode?) -> Bool {
+    func dfs(_ root: TreeNode?) -> (Bool, Int) {
+      guard let root else { return (true, 0) }
+
+      let left  = dfs(root.left)
+      let right = dfs(root.right)
+
+      let balanced      = abs(left.1 - right.1) <= 1
+      let balancedResult = balanced && left.0 && right.0
+      let height        = 1 + max(left.1, right.1)
+
+      return (balancedResult, height)
+    }
+    return dfs(root).0
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Naive two-pass (height + isBalanced separately)", time: "O(n²)", space: "O(h)", note: "Recomputes height at every recursive call" },
+    { approach: "Post-order tuple DFS", time: "O(n)", space: "O(h)", note: "Each node visited once; height and balance computed together", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Checking balance only at the root",
+      body: "A tree like [1,2,2,3,3,null,null,4,4] has a balanced root but unbalanced subtrees. Checking only the root height difference incorrectly returns true.",
+      fix: "Check balance at every node: balancedResult = balanced && left.isBalanced && right.isBalanced. Propagate false from any unbalanced subtree.",
+    },
+    {
+      title: "Using a separate height function inside isBalanced",
+      body: "Calling a separate dfs to compute height for each isBalanced check results in O(n) work per node for a total of O(n²). This passes LeetCode's small test cases but is inefficient.",
+      fix: "Return both balance status and height from a single post-order DFS.",
+    },
+    {
+      title: "Not short-circuiting when a subtree is already unbalanced",
+      body: "Even after detecting imbalance, the recursion might continue and overwrite the false result with a true balance check at a higher level.",
+      fix: "Include left.0 && right.0 in the balancedResult. Once either returns false, all ancestors will also return false.",
+    },
+  ]}
+/>

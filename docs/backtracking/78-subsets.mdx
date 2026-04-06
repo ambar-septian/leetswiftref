@@ -1,0 +1,163 @@
+---
+id: 78-subsets
+title: "Subsets"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import SubsetsDiagram from '@site/src/components/DSA/SubsetsDiagram';
+
+<ProblemHeader
+  number={78}
+  title="Subsets"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["Array", "Backtracking", "Bit Manipulation"]}
+  leetcodeUrl="https://leetcode.com/problems/subsets/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums` of **unique** elements, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+A **subset** is any selection of zero or more elements from the array. The empty set and the full array are both valid subsets. For an array of `n` elements there are `2^n` subsets total.
+
+**Constraints**
+- `1 <= nums.length <= 10`
+- `-10 <= nums[i] <= 10`
+- All the numbers of `nums` are **unique**.
+
+<Callout type="green" label="Core Insight">
+At each index make a binary decision: include nums[i] in the current path or exclude it. After deciding for every element (i >= nums.count), the current path is one complete subset. This generates all 2^n subsets exactly once.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+#### Example 2
+```
+Input:  nums = [0]
+Output: [[],[0]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we enumerate all 2^n subsets?", verdict: "yes", reason: "Power set required — every combination of include/exclude decisions produces a unique subset." },
+    { question: "Is there a natural include/exclude structure?", verdict: "yes", reason: "Two recursive calls at each index (include or exclude) form a complete binary decision tree." },
+    { question: "When do we collect a result?", verdict: "yes", reason: "Unlike combination problems, we collect at the leaf (i == nums.count), not when a sum condition is met." },
+  ]}
+  answer="Backtracking — binary include/exclude at each index, collect every leaf"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+The recursive function `backTrack(_ i: Int)` processes one element at a time. When `i >= nums.count` we have processed every element — append a copy of `path` to `results` and return.
+
+Otherwise make two recursive calls:
+1. **Include**: `path.append(nums[i])`, recurse `backTrack(i+1)`, then `path.removeLast()`.
+2. **Exclude**: recurse `backTrack(i+1)` directly without modifying `path`.
+
+<SubsetsDiagram />
+
+<Callout type="cyan" label="Why this is different from combination-sum backtracking">
+Combination-sum collects results only when a target sum is reached. Subsets collects at every leaf — no filtering condition. The structure is a complete binary tree of depth n, and every leaf (all 2^n of them) is a valid result.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [1,2,3]"
+  expected="[[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]"
+  steps={[
+    { label: "incl 1, incl 2", text: "path=[1,2]. recurse i=2.", state: "path=[1,2]" },
+    { label: "incl 3", text: "path=[1,2,3]. i>=count. Append [1,2,3]. Backtrack.", state: "results=[[1,2,3]]" },
+    { label: "excl 3", text: "path=[1,2]. i>=count. Append [1,2]. Backtrack.", state: "results=[[1,2,3],[1,2]]" },
+    { label: "excl 2, incl 3", text: "path=[1,3]. Append [1,3]. Backtrack to path=[1]. Excl 3: append [1].", state: "results include [1,3],[1]" },
+    { label: "excl 1", text: "path=[]. All include/exclude combos for 2 and 3 produce [2,3],[2],[3],[].", state: "8 subsets total" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise shared state">
+    `results = [[Int]]()`, `path = [Int]()`.
+  </StepItem>
+  <StepItem title="Base case — collect leaf">
+    When `i >= nums.count`, append a copy of `path` to `results` and return.
+  </StepItem>
+  <StepItem title="Include branch">
+    `path.append(nums[i])`, call `backTrack(i+1)`, then `path.removeLast()`.
+  </StepItem>
+  <StepItem title="Exclude branch">
+    Call `backTrack(i+1)` without modifying `path`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func subsets(_ nums: [Int]) -> [[Int]] {
+    var results = [[Int]]()
+    var path = [Int]()
+
+    func backTrack(_ i: Int) {
+      if i >= nums.count {
+        results.append(path)
+        return
+      }
+
+      // Include nums[i]
+      path.append(nums[i])
+      backTrack(i + 1)
+
+      // Exclude nums[i]
+      path.removeLast()
+      backTrack(i + 1)
+    }
+
+    backTrack(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking include/exclude", time: "O(N * 2^N)", space: "O(N * 2^N)", note: "2^N subsets each taking O(N) to copy; O(N) recursion depth", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Collecting results only when a condition is met (like combination-sum)",
+      body: "Subsets has no target sum — every leaf of the decision tree is a valid result. Gating on a condition like path.count == nums.count only collects the full-array subset.",
+      fix: "Collect at i >= nums.count unconditionally — every leaf is valid.",
+    },
+    {
+      title: "Not removing the element after the include branch",
+      body: "After the include call returns, path still contains nums[i]. The exclude branch must start with the same path state as the include branch did.",
+      fix: "Call path.removeLast() between the two recursive calls.",
+    },
+    {
+      title: "Using startIndex-based iteration instead of include/exclude",
+      body: "A for-loop with startIndex generates subsets in a different order and requires appending path at each call level (not just leaves), which is a different but valid approach. Mixing the two styles leads to duplicates or missing subsets.",
+      fix: "For the include/exclude approach, always recurse exactly twice per call and collect only at the leaf. For the startIndex approach, collect at every recursive entry point.",
+    },
+  ]}
+/>

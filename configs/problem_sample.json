@@ -1,0 +1,23 @@
+{
+    "problems": [
+        {
+            "id": 547,
+            "title": "Number of Provinces",
+            "slug": "number-of-provinces",
+            "difficulty": "Medium",
+            "category": "graph",
+            "topics": [
+                "dfs",
+                "bfs",
+                "union-find",
+                "graph",
+                "principal"
+            ],
+            "status": "done",
+            "leetcodeUrl": "https://leetcode.com/problems/number-of-provinces/description/",
+            "files": [
+                ""
+            ]
+        }
+    ]
+}

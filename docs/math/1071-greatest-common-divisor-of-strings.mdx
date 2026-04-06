@@ -1,0 +1,152 @@
+---
+id: 1071-greatest-common-divisor-of-strings
+title: "Greatest Common Divisor of Strings"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1071}
+  title="Greatest Common Divisor of Strings"
+  difficulty="Easy"
+  pattern="Math / GCD"
+  tags={["Math", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/greatest-common-divisor-of-strings/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+For two strings `str1` and `str2`, we say `t` divides `str1` if `str1 = t + t + ... + t` for some number of concatenations of `t`. Given two strings `str1` and `str2`, return the largest string `t` that divides both `str1` and `str2`.
+
+**Constraints:**
+- `1 <= str1.length, str2.length <= 1000`
+- `str1` and `str2` consist of English uppercase letters only.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  str1 = "ABCABC", str2 = "ABC"
+Output: "ABC"
+```
+
+#### Example 2
+
+```
+Input:  str1 = "ABABAB", str2 = "ABAB"
+Output: "AB"
+```
+
+#### Example 3
+
+```
+Input:  str1 = "LEET", str2 = "CODE"
+Output: ""
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does a common divisor string always exist?", verdict: "no", reason: "If str1 + str2 != str2 + str1, no common divisor exists — return empty string." },
+    { question: "Can we use number GCD to find the length?", verdict: "yes", reason: "If a common divisor exists, its length must divide both lengths. GCD of lengths gives the longest candidate." },
+    { question: "Do we need to verify the candidate?", verdict: "no", reason: "The commutativity check already guarantees correctness — just take prefix(gcd)." },
+  ]}
+  answer="Math — GCD length prefix"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Two strings share a common divisor if and only if their concatenations commute: `str1 + str2 == str2 + str1`. This is because any repeating unit `t` that tiles both strings must also tile their concatenation regardless of order.
+
+Once we confirm commutativity, the length of the largest divisor must divide both `str1.count` and `str2.count`. The mathematical GCD gives us exactly that length, and `str1.prefix(gcd)` is our answer.
+
+<Callout type="green" label="Key Insight">
+The commutativity check `str1 + str2 == str2 + str1` is both necessary and sufficient. If it passes, the GCD-length prefix of `str1` is guaranteed to divide both strings — no further verification needed.
+</Callout>
+
+<Callout type="cyan" label="Why GCD works">
+If `t` of length `k` tiles both strings, then `k` divides `len(str1)` and `k` divides `len(str2)`, so `k` divides `gcd(len(str1), len(str2))`. The GCD itself gives the maximum valid `k`.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='str1 = "ABABAB", str2 = "ABAB"'
+  expected='"AB"'
+  steps={[
+    { label: "Check", text: 'str1 + str2 = "ABABABABAB". str2 + str1 = "ABABABABAB". Equal — a common divisor exists.', state: "commutativity: true" },
+    { label: "GCD", text: "len(str1)=6, len(str2)=4. gcd(6,4): 6%4=2, 4%2=0. gcd=2.", state: "gcd = 2" },
+    { label: "Result", text: 'Take str1.prefix(2) = "AB". "AB" tiles "ABABAB" (×3) and "ABAB" (×2). Return "AB".', state: 'result = "AB"' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Commutativity check">
+    If `str1 + str2 != str2 + str1`, no common divisor exists — return `""`.
+  </StepItem>
+  <StepItem title="Compute GCD of lengths">
+    Use the Euclidean algorithm: repeatedly compute `result % curr` until `curr == 0`. The final `result` is the GCD.
+  </StepItem>
+  <StepItem title="Return prefix">
+    Return `String(str1.prefix(gcdResult))`. This is the largest string that tiles both inputs.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func gcdOfStrings(_ str1: String, _ str2: String) -> String {
+    guard str1 + str2 == str2 + str1 else { return "" }
+    let gcdResult = gcd(str1.count, str2.count)
+    return String(str1.prefix(gcdResult))
+  }
+
+  func gcd(_ x: Int, _ y: Int) -> Int {
+    var curr = y
+    var result = x
+    while curr != 0 {
+      let temp = curr
+      curr = result % temp
+      result = temp
+    }
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute Force (check all prefixes)", time: "O(min(n,m)²)", space: "O(min(n,m))", note: "Try every prefix length and verify tiling" },
+    { approach: "GCD + commutativity check", time: "O(n + m)", space: "O(n + m)", note: "String concat for check + O(log min) for GCD", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Skipping the commutativity check",
+      body: "Jumping straight to GCD of lengths without verifying will return an incorrect non-empty string for inputs like \"LEET\" and \"CODE\".",
+      fix: "Always verify str1 + str2 == str2 + str1 first and return \"\" immediately if it fails.",
+    },
+    {
+      title: "Wrong GCD implementation",
+      body: "Off-by-one or incorrect loop termination in the Euclidean algorithm produces wrong GCD values.",
+      fix: "Loop while curr != 0 and swap: temp = curr, curr = result % temp, result = temp.",
+    },
+    {
+      title: "Using str2 prefix instead of str1",
+      body: "Both str1.prefix(gcd) and str2.prefix(gcd) are identical when the commutativity check passes, but using str2 can mask subtle bugs.",
+      fix: "Use str1.prefix(gcd) — it is the conventional choice and matches the definition.",
+    },
+  ]}
+/>

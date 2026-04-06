@@ -1,0 +1,166 @@
+---
+id: 116-populating-next-right-pointers-in-each-node
+title: "Populating Next Right Pointers in Each Node"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import NextRightPointersDiagram from '@site/src/components/DSA/NextRightPointersDiagram';
+
+<ProblemHeader
+  number={116}
+  title="Populating Next Right Pointers in Each Node"
+  difficulty="Medium"
+  pattern="Level-by-Level Traversal"
+  tags={["Linked List", "Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/populating-next-right-pointers-in-each-node/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a **perfect binary tree** where all leaves are on the same level and every parent has two children. The tree node has an extra pointer `next` that should be populated to point to its **next right node**. If there is no next right node, `next` should be set to `null`.
+
+Initially all `next` pointers are set to `null`. Populate every `next` pointer to point to its next right node on the same level.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 2^12 - 1]` (a perfect binary tree).
+- `-1000 <= Node.val <= 1000`
+- **Follow-up:** You may only use **constant extra space** (the recursion stack does not count for this purpose).
+
+<SectionHeader n={2} title="Examples" />
+
+<NextRightPointersDiagram />
+
+#### Example 1
+
+```
+Input:  [1,2,3,4,5,6,7]
+Output: [1,#,2,3,#,4,5,6,7,#]
+Explanation: # denotes the end of each level (next=null).
+```
+
+#### Example 2
+
+```
+Input:  []
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the tree guaranteed to be perfect (all leaves at same level)?", verdict: "yes", reason: "A perfect binary tree means every node either has exactly 2 children or is a leaf — we can safely use left.next = right." },
+    { question: "Can we use O(1) extra space (no queue)?", verdict: "yes", reason: "Once the current level's next pointers are set, we can walk the level to connect children using those same next pointers." },
+    { question: "Does each level's connection depend on the previous level?", verdict: "yes", reason: "To link children across subtrees (right child of node to left child of node.next), the parent-level next pointers must already exist." },
+  ]}
+  answer="O(1)-space level-by-level: outer loop descends levels, inner loop links children using existing next pointers"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a `leftMost` pointer that starts at the root and descends one level per outer loop iteration. An inner `curr` pointer walks the current level using `curr.next`:
+
+- `curr.left.next = curr.right` — siblings within the same parent.
+- `curr.right.next = curr.next.left` — cross-parent link using the already-populated `curr.next`.
+
+<Callout type="cyan" label="Why this is O(1) space">
+We never allocate a queue. The next pointers we set on the current level become the traversal links for the next iteration of the outer loop.
+</Callout>
+
+<Callout type="green" label="BFS fallback">
+A BFS solution with a queue is also valid and simpler to reason about, but uses O(n) space. The O(1) solution is preferred for this problem.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="all next pointers populated"
+  input="root = [1,2,3,4,5,6,7]"
+  steps={[
+    { label: "level 0",   text: "leftMost=1; no parent links needed (root is alone)" },
+    { label: "inner: curr=1", text: "1.left(2).next = 1.right(3); 1.right(3).next = null (no 1.next)" },
+    { label: "level 1",   text: "leftMost=2; curr=2" },
+    { label: "inner: curr=2", text: "2.left(4).next = 2.right(5); 2.right(5).next = 2.next.left = 3.left = 6" },
+    { label: "inner: curr=3", text: "3.left(6).next = 3.right(7); 3.right(7).next = null (no 3.next)" },
+    { label: "level 2",   text: "leftMost=4 — leaf level, outer loop stops" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard empty tree">
+    Return nil immediately if root is nil.
+  </StepItem>
+  <StepItem title="Outer loop: descend levels">
+    `var leftMost = root`; loop while `leftMost.left != nil` (not yet at the leaf level).
+  </StepItem>
+  <StepItem title="Inner loop: connect children">
+    `var curr = leftMost`; loop while `curr != nil`: set `curr.left.next = curr.right`, and if `curr.next` exists, set `curr.right.next = curr.next.left`. Advance `curr = curr.next`.
+  </StepItem>
+  <StepItem title="Descend to next level">
+    After the inner loop finishes, `leftMost = leftMost.left` to move down one level.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func connect(_ root: Node?) -> Node? {
+    guard let root else { return nil }
+
+    var leftMost: Node? = root
+
+    while leftMost?.left != nil {
+      var curr = leftMost
+
+      while curr != nil {
+        curr?.left?.next = curr?.right
+
+        if let next = curr?.next {
+          curr?.right?.next = next.left
+        }
+
+        curr = curr?.next
+      }
+
+      leftMost = leftMost?.left
+    }
+
+    return root
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "O(1)-space level walk", time: "O(n)", space: "O(1)", note: "Every node visited once; no auxiliary data structure", highlight: true },
+    { approach: "BFS with queue", time: "O(n)", space: "O(n)", note: "Queue holds up to one full level at a time" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Applying this to an imperfect binary tree",
+      body: "The cross-parent link <code>curr.right.next = curr.next.left</code> assumes every node has two children. For an imperfect tree, <code>curr.next.left</code> may be nil when the actual next node exists elsewhere.",
+      fix: "For problem 117 (imperfect tree), a different approach is needed. This solution is valid only for problem 116 (perfect binary tree guarantee).",
+    },
+    {
+      title: "Forgetting to advance curr after the inner loop body",
+      body: "Without <code>curr = curr.next</code>, the inner loop spins forever on the first node of each level.",
+      fix: "Always advance <code>curr = curr.next</code> at the end of the inner while body.",
+    },
+    {
+      title: "Using leftMost.left instead of leftMost.left != nil as the loop condition",
+      body: "If you check <code>leftMost != nil</code>, the inner loop on a leaf level tries to access <code>leftMost.left</code> which is nil — no children to connect and no descent possible.",
+      fix: "Check <code>leftMost?.left != nil</code> so the outer loop stops before trying to connect leaf-level children.",
+    },
+  ]}
+/>

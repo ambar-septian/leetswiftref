@@ -1,0 +1,3385 @@
+{
+  "problems": [
+    {
+      "id": 1,
+      "leetcodeUrl": "https://leetcode.com/problems/two-sum/description/",
+      "tags": [
+        "Array",
+        "Hash Table"
+      ],
+      "files": [
+        "queue/1.md",
+        "docs/hash-map-set/1-two-sum.mdx"
+      ],
+      "title": "Two Sum",
+      "difficulty": "Easy",
+      "category": "hash-map-set",
+      "status": "done",
+      "slug": "two-sum",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "leetcodeUrl": "https://leetcode.com/problems/add-two-numbers/description/",
+      "tags": [
+        "Linked List",
+        "Math",
+        "Recursion"
+      ],
+      "files": [
+        "queue/2.md",
+        "docs/linked-list/2-add-two-numbers.mdx",
+        "src/components/DSA/AddTwoNumbersDiagram.tsx"
+      ],
+      "title": "Add Two Numbers",
+      "difficulty": "Medium",
+      "category": "linked-list",
+      "status": "done",
+      "slug": "add-two-numbers",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "leetcodeUrl": "https://leetcode.com/problems/longest-substring-without-repeating-characters/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Sliding Window"
+      ],
+      "files": [
+        "queue/3.md",
+        "docs/sliding-window/3-longest-substring-without-repeating-characters.mdx"
+      ],
+      "title": "Longest Substring Without Repeating Characters",
+      "difficulty": "Medium",
+      "category": "sliding-window",
+      "status": "done",
+      "slug": "longest-substring-without-repeating-characters",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "leetcodeUrl": "https://leetcode.com/problems/palindrome-number/description/",
+      "tags": [
+        "Math"
+      ],
+      "files": [
+        "queue/9.md",
+        "docs/math/9-palindrome-number.mdx"
+      ],
+      "title": "Palindrome Number",
+      "category": "math",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "palindrome-number",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 11,
+      "leetcodeUrl": "https://leetcode.com/problems/container-with-most-water/description/",
+      "tags": [
+        "Array",
+        "Two Pointers",
+        "Greedy"
+      ],
+      "files": [
+        "queue/11.md",
+        "docs/two-pointers/11-container-with-most-water.mdx"
+      ],
+      "title": "Container With Most Water",
+      "category": "two-pointers",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "container-with-most-water",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 13,
+      "leetcodeUrl": "https://leetcode.com/problems/roman-to-integer/description/",
+      "tags": [
+        "Hash Table",
+        "Math",
+        "String"
+      ],
+      "files": [
+        "queue/13.md",
+        "docs/hash-map-set/13-roman-to-integer.mdx"
+      ],
+      "title": "Roman to Integer",
+      "category": "hash-map-set",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "roman-to-integer",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 14,
+      "leetcodeUrl": "https://leetcode.com/problems/longest-common-prefix/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Trie"
+      ],
+      "files": [
+        "queue/14.md",
+        "docs/trie/14-longest-common-prefix.mdx"
+      ],
+      "title": "Longest Common Prefix",
+      "category": "trie",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "longest-common-prefix",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 17,
+      "leetcodeUrl": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Backtracking"
+      ],
+      "files": [
+        "queue/17.md",
+        "docs/backtracking/17-letter-combinations-of-a-phone-number.mdx",
+        "src/components/DSA/LetterCombinationsDiagram.tsx"
+      ],
+      "title": "Letter Combinations of a Phone Number",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "letter-combinations-of-a-phone-number",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 19,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "queue/19.md",
+        "docs/linked-list/19-remove-nth-node-from-end-of-list.mdx",
+        "src/components/DSA/RemoveNthNodeDiagram.tsx"
+      ],
+      "title": "Remove Nth Node From End of List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "remove-nth-node-from-end-of-list",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 20,
+      "leetcodeUrl": "https://leetcode.com/problems/valid-parentheses/description/",
+      "tags": [
+        "String",
+        "Stack"
+      ],
+      "files": [
+        "queue/20.md",
+        "docs/stack/20-valid-parentheses.mdx"
+      ],
+      "title": "Valid Parentheses",
+      "category": "stack",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "valid-parentheses",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 21,
+      "leetcodeUrl": "https://leetcode.com/problems/merge-two-sorted-lists/description/",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "files": [
+        "queue/21.md",
+        "docs/linked-list/21-merge-two-sorted-lists.mdx",
+        "src/components/DSA/MergeTwoListsDiagram.tsx"
+      ],
+      "title": "Merge Two Sorted Lists",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "merge-two-sorted-lists",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 22,
+      "leetcodeUrl": "https://leetcode.com/problems/generate-parentheses/description/",
+      "tags": [
+        "String",
+        "Dynamic Programming",
+        "Backtracking"
+      ],
+      "files": [
+        "queue/22.md",
+        "docs/backtracking/22-generate-parentheses.mdx",
+        "src/components/DSA/GenerateParenthesesDiagram.tsx"
+      ],
+      "title": "Generate Parentheses",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "generate-parentheses",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 26,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/",
+      "tags": [
+        "Array",
+        "Two Pointers"
+      ],
+      "files": [
+        "queue/26.md",
+        "docs/two-pointers/26-remove-duplicates-from-sorted-array.mdx"
+      ],
+      "title": "Remove Duplicates from Sorted Array",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "remove-duplicates-from-sorted-array",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 28,
+      "leetcodeUrl": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/",
+      "tags": [
+        "Two Pointers",
+        "String",
+        "String Matching"
+      ],
+      "files": [
+        "queue/28.md",
+        "docs/two-pointers/28-find-the-index-of-the-first-occurrence-in-a-string.mdx"
+      ],
+      "title": "Find the Index of the First Occurrence in a String",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 34,
+      "leetcodeUrl": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description/",
+      "tags": [
+        "Array",
+        "Binary Search"
+      ],
+      "files": [
+        "queue/34.md",
+        "docs/binary-search/34-find-first-and-last-position-of-element-in-sorted-array.mdx"
+      ],
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "category": "binary-search",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "find-first-and-last-position-of-element-in-sorted-array",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 36,
+      "leetcodeUrl": "https://leetcode.com/problems/valid-sudoku/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Matrix"
+      ],
+      "files": [
+        "queue/36.md",
+        "docs/hash-map-set/36-valid-sudoku.mdx",
+        "src/components/DSA/ValidSudokuDiagram.tsx"
+      ],
+      "title": "Valid Sudoku",
+      "category": "hash-map-set",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "valid-sudoku",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 39,
+      "leetcodeUrl": "https://leetcode.com/problems/combination-sum/description/",
+      "tags": [
+        "Array",
+        "Backtracking"
+      ],
+      "files": [
+        "docs/backtracking/39-combination-sum.mdx"
+      ],
+      "title": "Combination Sum",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "combination-sum",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 40,
+      "leetcodeUrl": "https://leetcode.com/problems/combination-sum-ii/description/",
+      "tags": [
+        "Array",
+        "Backtracking"
+      ],
+      "files": [
+        "docs/backtracking/40-combination-sum-ii.mdx"
+      ],
+      "title": "Combination Sum II",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "combination-sum-ii",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 42,
+      "leetcodeUrl": "https://leetcode.com/problems/trapping-rain-water/description/",
+      "tags": [
+        "Array",
+        "Two Pointers",
+        "Dynamic Programming",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "docs/dp-1d/42-trapping-rain-water.mdx"
+      ],
+      "title": "Trapping Rain Water",
+      "category": "dp-1d",
+      "difficulty": "Hard",
+      "status": "done",
+      "slug": "trapping-rain-water",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 46,
+      "leetcodeUrl": "https://leetcode.com/problems/permutations/description/",
+      "tags": [
+        "Array",
+        "Backtracking"
+      ],
+      "files": [
+        "docs/backtracking/46-permutations.mdx"
+      ],
+      "title": "Permutations",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "permutations",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 47,
+      "leetcodeUrl": "https://leetcode.com/problems/permutations-ii/description/",
+      "tags": [
+        "Array",
+        "Backtracking",
+        "Sorting"
+      ],
+      "files": [
+        "docs/backtracking/47-permutations-ii.mdx"
+      ],
+      "title": "Permutations II",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "permutations-ii",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 49,
+      "leetcodeUrl": "https://leetcode.com/problems/group-anagrams/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "String",
+        "Sorting"
+      ],
+      "files": [
+        "docs/hash-map-set/49-group-anagrams.mdx"
+      ],
+      "title": "Group Anagrams",
+      "category": "hash-map-set",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "group-anagrams",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 51,
+      "leetcodeUrl": "https://leetcode.com/problems/n-queens/description/",
+      "tags": [
+        "Array",
+        "Backtracking"
+      ],
+      "files": [
+        "docs/backtracking/51-n-queens.mdx"
+      ],
+      "title": "N-Queens",
+      "category": "backtracking",
+      "difficulty": "Hard",
+      "status": "done",
+      "slug": "n-queens",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 66,
+      "leetcodeUrl": "https://leetcode.com/problems/plus-one/description/",
+      "tags": [
+        "Array",
+        "Math"
+      ],
+      "files": [
+        "docs/array/66-plus-one.mdx"
+      ],
+      "title": "Plus One",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "plus-one",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 70,
+      "leetcodeUrl": "https://leetcode.com/problems/climbing-stairs/description/",
+      "tags": [
+        "Math",
+        "Dynamic Programming",
+        "Memoization"
+      ],
+      "files": [
+        "docs/dp-1d/70-climbing-stairs.mdx"
+      ],
+      "title": "Climbing Stairs",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "climbing-stairs",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 71,
+      "leetcodeUrl": "https://leetcode.com/problems/simplify-path/description/",
+      "tags": [
+        "String",
+        "Stack"
+      ],
+      "files": [
+        "docs/stack/71-simplify-path.mdx"
+      ],
+      "title": "Simplify Path",
+      "category": "stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "simplify-path",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 73,
+      "leetcodeUrl": "https://leetcode.com/problems/set-matrix-zeroes/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Matrix"
+      ],
+      "files": [
+        "docs/hash-map-set/73-set-matrix-zeroes.mdx"
+      ],
+      "title": "Set Matrix Zeroes",
+      "category": "hash-map-set",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "set-matrix-zeroes",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 78,
+      "leetcodeUrl": "https://leetcode.com/problems/subsets/description/",
+      "tags": [
+        "Array",
+        "Backtracking",
+        "Bit Manipulation"
+      ],
+      "files": [
+        "docs/backtracking/78-subsets.mdx"
+      ],
+      "title": "Subsets",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "subsets",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 79,
+      "leetcodeUrl": "https://leetcode.com/problems/word-search/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Backtracking",
+        "Depth-First Search",
+        "Matrix"
+      ],
+      "files": [
+        "docs/backtracking/79-word-search.mdx"
+      ],
+      "title": "Word Search",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "word-search",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 82,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "docs/linked-list/82-remove-duplicates-from-sorted-list-ii.mdx"
+      ],
+      "title": "Remove Duplicates from Sorted List II",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "remove-duplicates-from-sorted-list-ii",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 83,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-duplicates-from-sorted-list/description/",
+      "tags": [
+        "Linked List"
+      ],
+      "files": [
+        "docs/linked-list/83-remove-duplicates-from-sorted-list.mdx"
+      ],
+      "title": "Remove Duplicates from Sorted List",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "remove-duplicates-from-sorted-list",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 84,
+      "leetcodeUrl": "https://leetcode.com/problems/largest-rectangle-in-histogram/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "docs/monotonic-stack/84-largest-rectangle-in-histogram.mdx"
+      ],
+      "title": "Largest Rectangle in Histogram",
+      "category": "monotonic-stack",
+      "difficulty": "Hard",
+      "status": "done",
+      "slug": "largest-rectangle-in-histogram",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 92,
+      "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list-ii/description/",
+      "tags": [
+        "Linked List"
+      ],
+      "files": [
+        "docs/linked-list/92-reverse-linked-list-ii.mdx"
+      ],
+      "title": "Reverse Linked List II",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "reverse-linked-list-ii",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 94,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-inorder-traversal/description/",
+      "tags": [
+        "Stack",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/94-binary-tree-inorder-traversal.mdx"
+      ],
+      "title": "Binary Tree Inorder Traversal",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "binary-tree-inorder-traversal",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 98,
+      "leetcodeUrl": "https://leetcode.com/problems/validate-binary-search-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Search Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-search-tree/98-validate-binary-search-tree.mdx"
+      ],
+      "title": "Validate Binary Search Tree",
+      "category": "binary-search-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "validate-binary-search-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 100,
+      "leetcodeUrl": "https://leetcode.com/problems/same-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/100-same-tree.mdx"
+      ],
+      "title": "Same Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "same-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 101,
+      "leetcodeUrl": "https://leetcode.com/problems/symmetric-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/101-symmetric-tree.mdx"
+      ],
+      "title": "Symmetric Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "symmetric-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 102,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-level-order-traversal/description/",
+      "tags": [
+        "Tree",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/102-binary-tree-level-order-traversal.mdx"
+      ],
+      "title": "Binary Tree Level Order Traversal",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "binary-tree-level-order-traversal",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 104,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-depth-of-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/104-maximum-depth-of-binary-tree.mdx"
+      ],
+      "title": "Maximum Depth of Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "maximum-depth-of-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 105,
+      "leetcodeUrl": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Divide and Conquer",
+        "Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/105-construct-binary-tree-from-preorder-and-inorder-traversal.mdx"
+      ],
+      "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 108,
+      "leetcodeUrl": "https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/",
+      "tags": [
+        "Array",
+        "Divide and Conquer",
+        "Tree",
+        "Binary Search Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-search-tree/108-convert-sorted-array-to-binary-search-tree.mdx"
+      ],
+      "title": "Convert Sorted Array to Binary Search Tree",
+      "category": "binary-search-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "convert-sorted-array-to-binary-search-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 110,
+      "leetcodeUrl": "https://leetcode.com/problems/balanced-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/110-balanced-binary-tree.mdx"
+      ],
+      "title": "Balanced Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "balanced-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 112,
+      "leetcodeUrl": "https://leetcode.com/problems/path-sum/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/112-path-sum.mdx"
+      ],
+      "title": "Path Sum",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "path-sum",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 113,
+      "leetcodeUrl": "https://leetcode.com/problems/path-sum-ii/description/",
+      "tags": [
+        "Backtracking",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/backtracking/113-path-sum-ii.mdx",
+        "src/components/DSA/PathSumIIDiagram.tsx"
+      ],
+      "title": "Path Sum II",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "path-sum-ii",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 114,
+      "leetcodeUrl": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Stack",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/linked-list/114-flatten-binary-tree-to-linked-list.mdx",
+        "src/components/DSA/FlattenBinaryTreeDiagram.tsx"
+      ],
+      "title": "Flatten Binary Tree to Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "flatten-binary-tree-to-linked-list",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 116,
+      "leetcodeUrl": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node/description/",
+      "tags": [
+        "Linked List",
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/linked-list/116-populating-next-right-pointers-in-each-node.mdx",
+        "src/components/DSA/NextRightPointersDiagram.tsx"
+      ],
+      "title": "Populating Next Right Pointers in Each Node",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "populating-next-right-pointers-in-each-node",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 118,
+      "leetcodeUrl": "https://leetcode.com/problems/pascals-triangle/description/",
+      "tags": [
+        "Array",
+        "Dynamic Programming"
+      ],
+      "files": [
+        "docs/dp-1d/118-pascals-triangle.mdx"
+      ],
+      "title": "Pascal's Triangle",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "pascals-triangle",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 121,
+      "leetcodeUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/",
+      "tags": [
+        "Array",
+        "Dynamic Programming"
+      ],
+      "files": [
+        "docs/dp-1d/121-best-time-to-buy-and-sell-stock.mdx"
+      ],
+      "title": "Best Time to Buy and Sell Stock",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 125,
+      "leetcodeUrl": "https://leetcode.com/problems/valid-palindrome/description/",
+      "tags": [
+        "Two Pointers",
+        "String"
+      ],
+      "files": [
+        "docs/two-pointers/125-valid-palindrome.mdx"
+      ],
+      "title": "Valid Palindrome",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "valid-palindrome",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 129,
+      "leetcodeUrl": "https://leetcode.com/problems/sum-root-to-leaf-numbers/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/129-sum-root-to-leaf-numbers.mdx",
+        "src/components/DSA/SumRootToLeafDiagram.tsx"
+      ],
+      "title": "Sum Root to Leaf Numbers",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "sum-root-to-leaf-numbers",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 131,
+      "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning/description/",
+      "tags": [
+        "String",
+        "Dynamic Programming",
+        "Backtracking"
+      ],
+      "files": [
+        "docs/backtracking/131-palindrome-partitioning.mdx",
+        "src/components/DSA/PalindromePartitioningDiagram.tsx"
+      ],
+      "title": "Palindrome Partitioning",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "palindrome-partitioning",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 133,
+      "leetcodeUrl": "https://leetcode.com/problems/clone-graph/description/",
+      "tags": [
+        "Hash Table",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory"
+      ],
+      "files": [
+        "docs/graph/133-clone-graph.mdx",
+        "src/components/DSA/CloneGraphDiagram.tsx"
+      ],
+      "title": "Clone Graph",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "clone-graph",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 135,
+      "leetcodeUrl": "https://leetcode.com/problems/candy/description/",
+      "tags": [
+        "Array",
+        "Greedy"
+      ],
+      "files": [
+        "docs/greedy/135-candy.mdx"
+      ],
+      "title": "Candy",
+      "category": "greedy",
+      "difficulty": "Hard",
+      "status": "done",
+      "slug": "candy",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 138,
+      "leetcodeUrl": "https://leetcode.com/problems/copy-list-with-random-pointer/description/",
+      "tags": [
+        "Hash Table",
+        "Linked List"
+      ],
+      "files": [
+        "docs/linked-list/138-copy-list-with-random-pointer.mdx",
+        "src/components/DSA/CopyRandomListDiagram.tsx"
+      ],
+      "title": "Copy List with Random Pointer",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "copy-list-with-random-pointer",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 141,
+      "leetcodeUrl": "https://leetcode.com/problems/linked-list-cycle/description/",
+      "tags": [
+        "Hash Table",
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "docs/linked-list/141-linked-list-cycle.mdx",
+        "src/components/DSA/LinkedListCycleDiagram.tsx"
+      ],
+      "title": "Linked List Cycle",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "linked-list-cycle",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 144,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-preorder-traversal/description/",
+      "tags": [
+        "Stack",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/144-binary-tree-preorder-traversal.mdx",
+        "src/components/DSA/PreorderTraversalDiagram.tsx"
+      ],
+      "title": "Binary Tree Preorder Traversal",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "binary-tree-preorder-traversal",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 145,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-postorder-traversal/description/",
+      "tags": [
+        "Stack",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "docs/binary-tree/145-binary-tree-postorder-traversal.mdx",
+        "src/components/DSA/PostorderTraversalDiagram.tsx"
+      ],
+      "title": "Binary Tree Postorder Traversal",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "binary-tree-postorder-traversal",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 146,
+      "leetcodeUrl": "https://leetcode.com/problems/lru-cache/description/",
+      "tags": [
+        "Hash Table",
+        "Linked List",
+        "Design",
+        "Doubly-Linked List"
+      ],
+      "files": [
+        "docs/linked-list/146-lru-cache.mdx",
+        "src/components/DSA/LRUCacheDiagram.tsx"
+      ],
+      "title": "LRU Cache",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "lru-cache",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 151,
+      "leetcodeUrl": "https://leetcode.com/problems/reverse-words-in-a-string/description/",
+      "tags": [
+        "Two Pointers",
+        "String"
+      ],
+      "files": [
+        "docs/two-pointers/151-reverse-words-in-a-string.mdx"
+      ],
+      "title": "Reverse Words in a String",
+      "category": "two-pointers",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "reverse-words-in-a-string",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 160,
+      "leetcodeUrl": "https://leetcode.com/problems/intersection-of-two-linked-lists/description/",
+      "tags": [
+        "Hash Table",
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "docs/linked-list/160-intersection-of-two-linked-lists.mdx",
+        "src/components/DSA/IntersectionListDiagram.tsx"
+      ],
+      "title": "Intersection of Two Linked Lists",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "intersection-of-two-linked-lists",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 162,
+      "leetcodeUrl": "https://leetcode.com/problems/find-peak-element/description/",
+      "tags": [
+        "Array",
+        "Binary Search"
+      ],
+      "files": [
+        "docs/binary-search/162-find-peak-element.mdx"
+      ],
+      "title": "Find Peak Element",
+      "category": "binary-search",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "find-peak-element",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 187,
+      "leetcodeUrl": "https://leetcode.com/problems/repeated-dna-sequences/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Bit Manipulation",
+        "Sliding Window",
+        "Rolling Hash",
+        "Hash Function"
+      ],
+      "files": [
+        "docs/sliding-window/187-repeated-dna-sequences.mdx"
+      ],
+      "title": "Repeated DNA Sequences",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "repeated-dna-sequences",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 189,
+      "leetcodeUrl": "https://leetcode.com/problems/rotate-array/description/",
+      "tags": [
+        "Array",
+        "Math",
+        "Two Pointers"
+      ],
+      "files": [
+        "docs/two-pointers/189-rotate-array.mdx"
+      ],
+      "title": "Rotate Array",
+      "category": "two-pointers",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "rotate-array",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 199,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-right-side-view/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/199.md",
+        "docs/binary-tree/199-binary-tree-right-side-view.mdx",
+        "src/components/DSA/RightSideViewDiagram.tsx"
+      ],
+      "title": "Binary Tree Right Side View",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "binary-tree-right-side-view",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 200,
+      "leetcodeUrl": "https://leetcode.com/problems/number-of-islands/description/",
+      "tags": [
+        "Array",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Matrix"
+      ],
+      "files": [
+        "queue/200.md",
+        "docs/graph/200-number-of-islands.mdx",
+        "src/components/DSA/NumberOfIslandsDiagram.tsx"
+      ],
+      "title": "Number of Islands",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "number-of-islands",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 203,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-linked-list-elements/description/",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "files": [
+        "queue/203.md",
+        "docs/linked-list/203-remove-linked-list-elements.mdx",
+        "src/components/DSA/RemoveElementsDiagram.tsx"
+      ],
+      "title": "Remove Linked List Elements",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "remove-linked-list-elements",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 206,
+      "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "files": [
+        "queue/206.md",
+        "docs/linked-list/206-reverse-linked-list.mdx",
+        "src/components/DSA/ReverseLinkedListDiagram.tsx"
+      ],
+      "title": "Reverse Linked List",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "reverse-linked-list",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 207,
+      "leetcodeUrl": "https://leetcode.com/problems/course-schedule/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory",
+        "Topological Sort"
+      ],
+      "files": [
+        "queue/207.md",
+        "docs/graph/207-course-schedule.mdx",
+        "src/components/DSA/CourseScheduleDiagram.tsx"
+      ],
+      "title": "Course Schedule",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "course-schedule",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 208,
+      "leetcodeUrl": "https://leetcode.com/problems/implement-trie-prefix-tree/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Design",
+        "Trie"
+      ],
+      "files": [
+        "queue/208.md",
+        "docs/trie/208-implement-trie-prefix-tree.mdx",
+        "src/components/DSA/ImplementTrieDiagram.tsx"
+      ],
+      "title": "Implement Trie (Prefix Tree)",
+      "category": "trie",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "implement-trie-prefix-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 209,
+      "leetcodeUrl": "https://leetcode.com/problems/minimum-size-subarray-sum/description/",
+      "tags": [
+        "Array",
+        "Binary Search",
+        "Sliding Window",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/209.md",
+        "docs/sliding-window/209-minimum-size-subarray-sum.mdx"
+      ],
+      "title": "Minimum Size Subarray Sum",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "minimum-size-subarray-sum",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 210,
+      "leetcodeUrl": "https://leetcode.com/problems/course-schedule-ii/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory",
+        "Topological Sort"
+      ],
+      "files": [
+        "queue/210.md",
+        "docs/graph/210-course-schedule-ii.mdx",
+        "src/components/DSA/CourseScheduleIIDiagram.tsx"
+      ],
+      "title": "Course Schedule II",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "course-schedule-ii",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 211,
+      "leetcodeUrl": "https://leetcode.com/problems/design-add-and-search-words-data-structure/description/",
+      "tags": [
+        "String",
+        "Depth-First Search",
+        "Design",
+        "Trie"
+      ],
+      "files": [
+        "queue/211.md",
+        "docs/trie/211-design-add-and-search-words-data-structure.mdx",
+        "src/components/DSA/WordDictionaryDiagram.tsx"
+      ],
+      "title": "Design Add and Search Words Data Structure",
+      "category": "trie",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "design-add-and-search-words-data-structure",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 212,
+      "leetcodeUrl": "https://leetcode.com/problems/word-search-ii/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Backtracking",
+        "Trie",
+        "Matrix"
+      ],
+      "files": [
+        "queue/212.md",
+        "docs/trie/212-word-search-ii.mdx",
+        "src/components/DSA/WordSearchIIDiagram.tsx"
+      ],
+      "title": "Word Search II",
+      "category": "trie",
+      "difficulty": "Hard",
+      "status": "done",
+      "slug": "word-search-ii",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 215,
+      "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-an-array/description/",
+      "tags": [
+        "Array",
+        "Divide and Conquer",
+        "Sorting",
+        "Heap (Priority Queue)",
+        "Quickselect"
+      ],
+      "files": [
+        "queue/215.md",
+        "docs/heap/215-kth-largest-element-in-an-array.mdx"
+      ],
+      "title": "Kth Largest Element in an Array",
+      "category": "heap",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "kth-largest-element-in-an-array",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 216,
+      "leetcodeUrl": "https://leetcode.com/problems/combination-sum-iii/description/",
+      "tags": [
+        "Array",
+        "Backtracking"
+      ],
+      "files": [
+        "queue/216.md",
+        "docs/backtracking/216-combination-sum-iii.mdx",
+        "src/components/DSA/CombinationSumIIIDiagram.tsx"
+      ],
+      "title": "Combination Sum III",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "combination-sum-iii",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 222,
+      "leetcodeUrl": "https://leetcode.com/problems/count-complete-tree-nodes/description/",
+      "tags": [
+        "Binary Search",
+        "Bit Manipulation",
+        "Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/222.md",
+        "docs/binary-search/222-count-complete-tree-nodes.mdx"
+      ],
+      "title": "Count Complete Tree Nodes",
+      "category": "binary-search",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "count-complete-tree-nodes",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 226,
+      "leetcodeUrl": "https://leetcode.com/problems/invert-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/226.md",
+        "docs/binary-tree/226-invert-binary-tree.mdx",
+        "src/components/DSA/InvertBinaryTreeDiagram.tsx"
+      ],
+      "title": "Invert Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "invert-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 230,
+      "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Search Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/230.md",
+        "docs/binary-search-tree/230-kth-smallest-element-in-a-bst.mdx",
+        "src/components/DSA/KthSmallestBSTDiagram.tsx"
+      ],
+      "title": "Kth Smallest Element in a BST",
+      "category": "binary-search-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "kth-smallest-element-in-a-bst",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 234,
+      "leetcodeUrl": "https://leetcode.com/problems/palindrome-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "Stack",
+        "Recursion"
+      ],
+      "files": [
+        "queue/234.md",
+        "docs/linked-list/234-palindrome-linked-list.mdx",
+        "src/components/DSA/PalindromeLinkedListDiagram.tsx"
+      ],
+      "title": "Palindrome Linked List",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "palindrome-linked-list",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 236,
+      "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/236.md",
+        "docs/binary-tree/236-lowest-common-ancestor-of-a-binary-tree.mdx",
+        "src/components/DSA/LCADiagram.tsx"
+      ],
+      "title": "Lowest Common Ancestor of a Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "lowest-common-ancestor-of-a-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 237,
+      "leetcodeUrl": "https://leetcode.com/problems/delete-node-in-a-linked-list/description/",
+      "tags": [
+        "Linked List"
+      ],
+      "files": [
+        "queue/237.md",
+        "docs/linked-list/237-delete-node-in-a-linked-list.mdx",
+        "src/components/DSA/DeleteNodeDiagram.tsx"
+      ],
+      "title": "Delete Node in a Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "delete-node-in-a-linked-list",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 238,
+      "leetcodeUrl": "https://leetcode.com/problems/product-of-array-except-self/description/",
+      "tags": [
+        "Array",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/238.md",
+        "docs/prefix-sum/238-product-of-array-except-self.mdx"
+      ],
+      "title": "Product of Array Except Self",
+      "category": "prefix-sum",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "product-of-array-except-self",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 242,
+      "leetcodeUrl": "https://leetcode.com/problems/valid-anagram/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Sorting"
+      ],
+      "files": [
+        "queue/242.md",
+        "docs/hash-map-set/242-valid-anagram.mdx"
+      ],
+      "title": "Valid Anagram",
+      "category": "hash-map-set",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "valid-anagram",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 257,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-tree-paths/description/",
+      "tags": [
+        "String",
+        "Backtracking",
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/257.md",
+        "docs/backtracking/257-binary-tree-paths.mdx",
+        "src/components/DSA/BinaryTreePathsDiagram.tsx"
+      ],
+      "title": "Binary Tree Paths",
+      "category": "backtracking",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "binary-tree-paths",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 283,
+      "leetcodeUrl": "https://leetcode.com/problems/move-zeroes/description/",
+      "tags": [
+        "Array",
+        "Two Pointers"
+      ],
+      "files": [
+        "queue/283.md",
+        "docs/two-pointers/283-move-zeroes.mdx"
+      ],
+      "title": "Move Zeroes",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "move-zeroes",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 290,
+      "leetcodeUrl": "https://leetcode.com/problems/word-pattern/description/",
+      "tags": [
+        "Hash Table",
+        "String"
+      ],
+      "files": [
+        "queue/290.md",
+        "docs/hash-map-set/290-word-pattern.mdx"
+      ],
+      "title": "Word Pattern",
+      "category": "hash-map-set",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "word-pattern",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 328,
+      "leetcodeUrl": "https://leetcode.com/problems/odd-even-linked-list/description/",
+      "tags": [
+        "Linked List"
+      ],
+      "files": [
+        "queue/328.md",
+        "docs/linked-list/328-odd-even-linked-list.mdx",
+        "src/components/DSA/OddEvenLinkedListDiagram.tsx"
+      ],
+      "title": "Odd Even Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "odd-even-linked-list",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 334,
+      "leetcodeUrl": "https://leetcode.com/problems/increasing-triplet-subsequence/description/",
+      "tags": [
+        "Array",
+        "Greedy"
+      ],
+      "files": [
+        "queue/334.md",
+        "docs/greedy/334-increasing-triplet-subsequence.mdx"
+      ],
+      "title": "Increasing Triplet Subsequence",
+      "category": "greedy",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "increasing-triplet-subsequence",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 345,
+      "leetcodeUrl": "https://leetcode.com/problems/reverse-vowels-of-a-string/description/",
+      "tags": [
+        "Two Pointers",
+        "String"
+      ],
+      "files": [
+        "queue/345.md",
+        "docs/two-pointers/345-reverse-vowels-of-a-string.mdx"
+      ],
+      "title": "Reverse Vowels of a String",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "reverse-vowels-of-a-string",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 374,
+      "leetcodeUrl": "https://leetcode.com/problems/guess-number-higher-or-lower/description/",
+      "tags": [
+        "Binary Search",
+        "Interactive"
+      ],
+      "files": [
+        "docs/binary-search/374-guess-number-higher-or-lower.mdx"
+      ],
+      "title": "Guess Number Higher or Lower",
+      "category": "binary-search",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "guess-number-higher-or-lower",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 383,
+      "leetcodeUrl": "https://leetcode.com/problems/ransom-note/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Counting"
+      ],
+      "files": [
+        "docs/hash-map-set/383-ransom-note.mdx"
+      ],
+      "title": "Ransom Note",
+      "category": "hash-map-set",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "ransom-note",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 392,
+      "leetcodeUrl": "https://leetcode.com/problems/is-subsequence/description/",
+      "tags": [
+        "Two Pointers",
+        "String",
+        "Dynamic Programming"
+      ],
+      "files": [
+        "docs/dp-1d/392-is-subsequence.mdx"
+      ],
+      "title": "Is Subsequence",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "is-subsequence",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 394,
+      "leetcodeUrl": "https://leetcode.com/problems/decode-string/description/",
+      "tags": [
+        "String",
+        "Stack",
+        "Recursion"
+      ],
+      "files": [
+        "docs/stack/394-decode-string.mdx"
+      ],
+      "title": "Decode String",
+      "category": "stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "decode-string",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 399,
+      "leetcodeUrl": "https://leetcode.com/problems/evaluate-division/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Graph Theory",
+        "Shortest Path"
+      ],
+      "files": [
+        "src/components/DSA/EvaluateDivisionDiagram.tsx",
+        "docs/graph/399-evaluate-division.mdx"
+      ],
+      "title": "Evaluate Division",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "evaluate-division",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 412,
+      "leetcodeUrl": "https://leetcode.com/problems/fizz-buzz/description/",
+      "tags": [
+        "Math",
+        "String",
+        "Simulation"
+      ],
+      "files": [
+        "docs/math/412-fizz-buzz.mdx"
+      ],
+      "title": "Fizz Buzz",
+      "category": "math",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "fizz-buzz",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 417,
+      "leetcodeUrl": "https://leetcode.com/problems/pacific-atlantic-water-flow/description/",
+      "tags": [
+        "Array",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Matrix"
+      ],
+      "files": [
+        "queue/417.md",
+        "docs/graph/417-pacific-atlantic-water-flow.mdx",
+        "src/components/DSA/PacificAtlanticDiagram.tsx"
+      ],
+      "title": "Pacific Atlantic Water Flow",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "pacific-atlantic-water-flow",
+      "submittedAt": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": 424,
+      "leetcodeUrl": "https://leetcode.com/problems/longest-repeating-character-replacement/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Sliding Window"
+      ],
+      "files": [
+        "docs/sliding-window/424-longest-repeating-character-replacement.mdx"
+      ],
+      "title": "Longest Repeating Character Replacement",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "longest-repeating-character-replacement",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 438,
+      "leetcodeUrl": "https://leetcode.com/problems/find-all-anagrams-in-a-string/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Sliding Window"
+      ],
+      "files": [
+        "docs/sliding-window/438-find-all-anagrams-in-a-string.mdx"
+      ],
+      "title": "Find All Anagrams in a String",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "find-all-anagrams-in-a-string",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 450,
+      "leetcodeUrl": "https://leetcode.com/problems/delete-node-in-a-bst/description/",
+      "tags": [
+        "Tree",
+        "Binary Search Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "src/components/DSA/DeleteNodeBSTDiagram.tsx",
+        "docs/binary-search-tree/450-delete-node-in-a-bst.mdx"
+      ],
+      "title": "Delete Node in a BST",
+      "category": "binary-search-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "delete-node-in-a-bst",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 496,
+      "leetcodeUrl": "https://leetcode.com/problems/next-greater-element-i/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "docs/monotonic-stack/496-next-greater-element-i.mdx"
+      ],
+      "title": "Next Greater Element I",
+      "category": "monotonic-stack",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "next-greater-element-i",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 509,
+      "leetcodeUrl": "https://leetcode.com/problems/fibonacci-number/description/",
+      "tags": [
+        "Math",
+        "Dynamic Programming",
+        "Recursion",
+        "Memoization"
+      ],
+      "files": [
+        "docs/dp-1d/509-fibonacci-number.mdx"
+      ],
+      "title": "Fibonacci Number",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "fibonacci-number",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 515,
+      "leetcodeUrl": "https://leetcode.com/problems/find-largest-value-in-each-tree-row/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "src/components/DSA/FindLargestValueDiagram.tsx",
+        "docs/binary-tree/515-find-largest-value-in-each-tree-row.mdx"
+      ],
+      "title": "Find Largest Value in Each Tree Row",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "find-largest-value-in-each-tree-row",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 543,
+      "leetcodeUrl": "https://leetcode.com/problems/diameter-of-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "src/components/DSA/DiameterBinaryTreeDiagram.tsx",
+        "docs/binary-tree/543-diameter-of-binary-tree.mdx"
+      ],
+      "title": "Diameter of Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "diameter-of-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 547,
+      "leetcodeUrl": "https://leetcode.com/problems/number-of-provinces/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Graph Theory"
+      ],
+      "files": [
+        "docs/graph/547-number-of-provinces.mdx"
+      ],
+      "title": "Number of Provinces",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "number-of-provinces",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 567,
+      "leetcodeUrl": "https://leetcode.com/problems/permutation-in-string/description/",
+      "tags": [
+        "Hash Table",
+        "Two Pointers",
+        "String",
+        "Sliding Window"
+      ],
+      "files": [
+        "docs/sliding-window/567-permutation-in-string.mdx"
+      ],
+      "title": "Permutation in String",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "permutation-in-string",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 572,
+      "leetcodeUrl": "https://leetcode.com/problems/subtree-of-another-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "String Matching",
+        "Binary Tree",
+        "Hash Function"
+      ],
+      "files": [
+        "src/components/DSA/SubtreeOfAnotherTreeDiagram.tsx",
+        "docs/binary-tree/572-subtree-of-another-tree.mdx"
+      ],
+      "title": "Subtree of Another Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "subtree-of-another-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 605,
+      "leetcodeUrl": "https://leetcode.com/problems/can-place-flowers/description/",
+      "tags": [
+        "Array",
+        "Greedy"
+      ],
+      "files": [
+        "docs/greedy/605-can-place-flowers.mdx"
+      ],
+      "title": "Can Place Flowers",
+      "category": "greedy",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "can-place-flowers",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 617,
+      "leetcodeUrl": "https://leetcode.com/problems/merge-two-binary-trees/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "src/components/DSA/MergeTreesDiagram.tsx",
+        "docs/binary-tree/617-merge-two-binary-trees.mdx"
+      ],
+      "title": "Merge Two Binary Trees",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "merge-two-binary-trees",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 622,
+      "leetcodeUrl": "https://leetcode.com/problems/design-circular-queue/description/",
+      "tags": [
+        "Array",
+        "Linked List",
+        "Design",
+        "Queue"
+      ],
+      "files": [
+        "src/components/DSA/CircularQueueDiagram.tsx",
+        "docs/linked-list/622-design-circular-queue.mdx"
+      ],
+      "title": "Design Circular Queue",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "design-circular-queue",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 637,
+      "leetcodeUrl": "https://leetcode.com/problems/average-of-levels-in-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "src/components/DSA/AverageOfLevelsDiagram.tsx",
+        "docs/binary-tree/637-average-of-levels-in-binary-tree.mdx"
+      ],
+      "title": "Average of Levels in Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "average-of-levels-in-binary-tree",
+      "submittedAt": "2026-04-04T00:00:00.000Z"
+    },
+    {
+      "id": 643,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-average-subarray-i/description/",
+      "tags": [
+        "Array",
+        "Sliding Window"
+      ],
+      "files": [
+        "queue/643.md",
+        "docs/sliding-window/643-maximum-average-subarray-i.mdx"
+      ],
+      "title": "Maximum Average Subarray I",
+      "category": "sliding-window",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "maximum-average-subarray-i",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 648,
+      "leetcodeUrl": "https://leetcode.com/problems/replace-words/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "String",
+        "Trie"
+      ],
+      "files": [
+        "queue/648.md",
+        "docs/trie/648-replace-words.mdx",
+        "src/components/DSA/ReplaceWordsDiagram.tsx"
+      ],
+      "title": "Replace Words",
+      "category": "trie",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "replace-words",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 682,
+      "leetcodeUrl": "https://leetcode.com/problems/baseball-game/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Simulation"
+      ],
+      "files": [
+        "queue/682.md",
+        "docs/stack/682-baseball-game.mdx"
+      ],
+      "title": "Baseball Game",
+      "category": "stack",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "baseball-game",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 684,
+      "leetcodeUrl": "https://leetcode.com/problems/redundant-connection/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/684.md",
+        "docs/graph/684-redundant-connection.mdx",
+        "src/components/DSA/RedundantConnectionDiagram.tsx"
+      ],
+      "title": "Redundant Connection",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "redundant-connection",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 695,
+      "leetcodeUrl": "https://leetcode.com/problems/max-area-of-island/description/",
+      "tags": [
+        "Array",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Matrix"
+      ],
+      "files": [
+        "queue/695.md",
+        "docs/graph/695-max-area-of-island.mdx",
+        "src/components/DSA/MaxAreaIslandDiagram.tsx"
+      ],
+      "title": "Max Area of Island",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "max-area-of-island",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 700,
+      "leetcodeUrl": "https://leetcode.com/problems/search-in-a-binary-search-tree/description/",
+      "tags": [
+        "Tree",
+        "Binary Search Tree",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/700.md",
+        "docs/binary-search-tree/700-search-in-a-binary-search-tree.mdx",
+        "src/components/DSA/SearchBSTDiagram.tsx"
+      ],
+      "title": "Search in a Binary Search Tree",
+      "category": "binary-search-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "search-in-a-binary-search-tree",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 704,
+      "leetcodeUrl": "https://leetcode.com/problems/binary-search/description/",
+      "tags": [
+        "Array",
+        "Binary Search"
+      ],
+      "files": [
+        "queue/704.md",
+        "docs/binary-search/704-binary-search.mdx"
+      ],
+      "title": "Binary Search",
+      "category": "binary-search",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "binary-search",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 705,
+      "leetcodeUrl": "https://leetcode.com/problems/design-hashset/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Linked List",
+        "Design",
+        "Hash Function"
+      ],
+      "files": [
+        "queue/705.md",
+        "docs/linked-list/705-design-hashset.mdx",
+        "src/components/DSA/DesignHashSetDiagram.tsx"
+      ],
+      "title": "Design HashSet",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "design-hashset",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 706,
+      "leetcodeUrl": "https://leetcode.com/problems/design-hashmap/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "Linked List",
+        "Design",
+        "Hash Function"
+      ],
+      "files": [
+        "queue/706.md",
+        "docs/linked-list/706-design-hashmap.mdx",
+        "src/components/DSA/DesignHashMapDiagram.tsx"
+      ],
+      "title": "Design HashMap",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "design-hashmap",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 713,
+      "leetcodeUrl": "https://leetcode.com/problems/subarray-product-less-than-k/description/",
+      "tags": [
+        "Array",
+        "Binary Search",
+        "Sliding Window",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/713.md",
+        "docs/sliding-window/713-subarray-product-less-than-k.mdx"
+      ],
+      "title": "Subarray Product Less Than K",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "subarray-product-less-than-k",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 721,
+      "leetcodeUrl": "https://leetcode.com/problems/accounts-merge/description/",
+      "tags": [
+        "Array",
+        "Hash Table",
+        "String",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Sorting"
+      ],
+      "files": [
+        "queue/721.md",
+        "docs/graph/721-accounts-merge.mdx",
+        "src/components/DSA/AccountsMergeDiagram.tsx"
+      ],
+      "title": "Accounts Merge",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "accounts-merge",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 724,
+      "leetcodeUrl": "https://leetcode.com/problems/find-pivot-index/description/",
+      "tags": [
+        "Array",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/724.md",
+        "docs/prefix-sum/724-find-pivot-index.mdx"
+      ],
+      "title": "Find Pivot Index",
+      "category": "prefix-sum",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-pivot-index",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 735,
+      "leetcodeUrl": "https://leetcode.com/problems/asteroid-collision/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Simulation"
+      ],
+      "files": [
+        "queue/735.md",
+        "docs/stack/735-asteroid-collision.mdx"
+      ],
+      "title": "Asteroid Collision",
+      "category": "stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "asteroid-collision",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 739,
+      "leetcodeUrl": "https://leetcode.com/problems/daily-temperatures/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "queue/739.md",
+        "docs/monotonic-stack/739-daily-temperatures.mdx"
+      ],
+      "title": "Daily Temperatures",
+      "category": "monotonic-stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "daily-temperatures",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 784,
+      "leetcodeUrl": "https://leetcode.com/problems/letter-case-permutation/description/",
+      "tags": [
+        "String",
+        "Backtracking",
+        "Bit Manipulation"
+      ],
+      "files": [
+        "queue/784.md",
+        "docs/backtracking/784-letter-case-permutation.mdx",
+        "src/components/DSA/LetterCasePermutationDiagram.tsx"
+      ],
+      "title": "Letter Case Permutation",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "letter-case-permutation",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 797,
+      "leetcodeUrl": "https://leetcode.com/problems/all-paths-from-source-to-target/description/",
+      "tags": [
+        "Backtracking",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/797.md",
+        "docs/backtracking/797-all-paths-from-source-to-target.mdx",
+        "src/components/DSA/AllPathsSourceTargetDiagram.tsx"
+      ],
+      "title": "All Paths From Source to Target",
+      "category": "backtracking",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "all-paths-from-source-to-target",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 841,
+      "leetcodeUrl": "https://leetcode.com/problems/keys-and-rooms/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/841.md",
+        "docs/graph/841-keys-and-rooms.mdx",
+        "src/components/DSA/KeysAndRoomsDiagram.tsx"
+      ],
+      "title": "Keys and Rooms",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "keys-and-rooms",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 853,
+      "leetcodeUrl": "https://leetcode.com/problems/car-fleet/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Sorting",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "queue/853.md",
+        "docs/monotonic-stack/853-car-fleet.mdx"
+      ],
+      "title": "Car Fleet",
+      "category": "monotonic-stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "car-fleet",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 872,
+      "leetcodeUrl": "https://leetcode.com/problems/leaf-similar-trees/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/872.md",
+        "docs/binary-tree/872-leaf-similar-trees.mdx",
+        "src/components/DSA/LeafSimilarTreesDiagram.tsx"
+      ],
+      "title": "Leaf-Similar Trees",
+      "category": "binary-tree",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "leaf-similar-trees",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 876,
+      "leetcodeUrl": "https://leetcode.com/problems/middle-of-the-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "queue/876.md",
+        "docs/linked-list/876-middle-of-the-linked-list.mdx",
+        "src/components/DSA/MiddleLinkedListDiagram.tsx"
+      ],
+      "title": "Middle of the Linked List",
+      "category": "linked-list",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "middle-of-the-linked-list",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 901,
+      "leetcodeUrl": "https://leetcode.com/problems/online-stock-span/description/",
+      "tags": [
+        "Stack",
+        "Design",
+        "Monotonic Stack",
+        "Data Stream"
+      ],
+      "files": [
+        "queue/901.md",
+        "docs/monotonic-stack/901-online-stock-span.mdx"
+      ],
+      "title": "Online Stock Span",
+      "category": "monotonic-stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "online-stock-span",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 933,
+      "leetcodeUrl": "https://leetcode.com/problems/number-of-recent-calls/description/",
+      "tags": [
+        "Design",
+        "Queue",
+        "Data Stream"
+      ],
+      "files": [
+        "queue/933.md",
+        "docs/queue/933-number-of-recent-calls.mdx"
+      ],
+      "title": "Number of Recent Calls",
+      "category": "queue",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "number-of-recent-calls",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 981,
+      "leetcodeUrl": "https://leetcode.com/problems/time-based-key-value-store/description/",
+      "tags": [
+        "Hash Table",
+        "String",
+        "Binary Search",
+        "Design"
+      ],
+      "files": [
+        "queue/981.md",
+        "docs/binary-search/981-time-based-key-value-store.mdx"
+      ],
+      "title": "Time Based Key-Value Store",
+      "category": "binary-search",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "time-based-key-value-store",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 994,
+      "leetcodeUrl": "https://leetcode.com/problems/rotting-oranges/description/",
+      "tags": [
+        "Array",
+        "Breadth-First Search",
+        "Matrix"
+      ],
+      "files": [
+        "queue/994.md",
+        "docs/graph/994-rotting-oranges.mdx",
+        "src/components/DSA/RottingOrangesDiagram.tsx"
+      ],
+      "title": "Rotting Oranges",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "rotting-oranges",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1047,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/description/",
+      "tags": [
+        "String",
+        "Stack"
+      ],
+      "files": [
+        "queue/1047.md",
+        "docs/stack/1047-remove-all-adjacent-duplicates-in-string.mdx"
+      ],
+      "title": "Remove All Adjacent Duplicates In String",
+      "category": "stack",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "remove-all-adjacent-duplicates-in-string",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1071,
+      "leetcodeUrl": "https://leetcode.com/problems/greatest-common-divisor-of-strings/description/",
+      "tags": [
+        "Math",
+        "String"
+      ],
+      "files": [
+        "queue/1071.md",
+        "docs/math/1071-greatest-common-divisor-of-strings.mdx"
+      ],
+      "title": "Greatest Common Divisor of Strings",
+      "category": "math",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "greatest-common-divisor-of-strings",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1091,
+      "leetcodeUrl": "https://leetcode.com/problems/shortest-path-in-binary-matrix/description/",
+      "tags": [
+        "Array",
+        "Breadth-First Search",
+        "Matrix"
+      ],
+      "files": [
+        "queue/1091.md",
+        "docs/graph/1091-shortest-path-in-binary-matrix.mdx",
+        "src/components/DSA/ShortestPathBinaryMatrixDiagram.tsx"
+      ],
+      "title": "Shortest Path in Binary Matrix",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "shortest-path-in-binary-matrix",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1137,
+      "leetcodeUrl": "https://leetcode.com/problems/n-th-tribonacci-number/description/",
+      "tags": [
+        "Math",
+        "Dynamic Programming",
+        "Memoization"
+      ],
+      "files": [
+        "queue/1137.md",
+        "docs/dp-1d/1137-n-th-tribonacci-number.mdx"
+      ],
+      "title": "N-th Tribonacci Number",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "n-th-tribonacci-number",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1161,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/1161.md",
+        "docs/binary-tree/1161-maximum-level-sum-of-a-binary-tree.mdx",
+        "src/components/DSA/MaxLevelSumDiagram.tsx"
+      ],
+      "title": "Maximum Level Sum of a Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "maximum-level-sum-of-a-binary-tree",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1268,
+      "leetcodeUrl": "https://leetcode.com/problems/search-suggestions-system/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Binary Search",
+        "Trie",
+        "Sorting",
+        "Heap (Priority Queue)"
+      ],
+      "files": [
+        "queue/1268.md",
+        "docs/trie/1268-search-suggestions-system.mdx",
+        "src/components/DSA/SearchSuggestionsSystemDiagram.tsx"
+      ],
+      "title": "Search Suggestions System",
+      "category": "trie",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "search-suggestions-system",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1295,
+      "leetcodeUrl": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/description/",
+      "tags": [
+        "Array",
+        "Math"
+      ],
+      "files": [
+        "queue/1295.md",
+        "docs/array/1295-find-numbers-with-even-number-of-digits.mdx"
+      ],
+      "title": "Find Numbers with Even Number of Digits",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-numbers-with-even-number-of-digits",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1342,
+      "leetcodeUrl": "https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/description/",
+      "tags": [
+        "Math",
+        "Bit Manipulation"
+      ],
+      "files": [
+        "queue/1342.md",
+        "docs/bit-manipulation/1342-number-of-steps-to-reduce-a-number-to-zero.mdx"
+      ],
+      "title": "Number of Steps to Reduce a Number to Zero",
+      "category": "bit-manipulation",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "number-of-steps-to-reduce-a-number-to-zero",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1343,
+      "leetcodeUrl": "https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/description/",
+      "tags": [
+        "Array",
+        "Sliding Window"
+      ],
+      "files": [
+        "queue/1343.md",
+        "docs/sliding-window/1343-number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold.mdx"
+      ],
+      "title": "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1431,
+      "leetcodeUrl": "https://leetcode.com/problems/kids-with-the-greatest-number-of-candies/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "queue/1431.md",
+        "docs/array/1431-kids-with-the-greatest-number-of-candies.mdx"
+      ],
+      "title": "Kids With the Greatest Number of Candies",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "kids-with-the-greatest-number-of-candies",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1448,
+      "leetcodeUrl": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/description/",
+      "tags": [
+        "Tree",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Binary Tree"
+      ],
+      "files": [
+        "queue/1448.md",
+        "docs/binary-tree/1448-count-good-nodes-in-binary-tree.mdx",
+        "src/components/DSA/CountGoodNodesDiagram.tsx"
+      ],
+      "title": "Count Good Nodes in Binary Tree",
+      "category": "binary-tree",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "count-good-nodes-in-binary-tree",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1456,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/",
+      "tags": [
+        "String",
+        "Sliding Window"
+      ],
+      "files": [
+        "queue/1456.md",
+        "docs/sliding-window/1456-maximum-number-of-vowels-in-a-substring-of-given-length.mdx"
+      ],
+      "title": "Maximum Number of Vowels in a Substring of Given Length",
+      "category": "sliding-window",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1466,
+      "leetcodeUrl": "https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/1466.md",
+        "docs/graph/1466-reorder-routes-to-make-all-paths-lead-to-the-city-zero.mdx",
+        "src/components/DSA/ReorderRoutesDiagram.tsx"
+      ],
+      "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1475,
+      "leetcodeUrl": "https://leetcode.com/problems/final-prices-with-a-special-discount-in-a-shop/description/",
+      "tags": [
+        "Array",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "queue/1475.md",
+        "docs/monotonic-stack/1475-final-prices-with-a-special-discount-in-a-shop.mdx"
+      ],
+      "title": "Final Prices With a Special Discount in a Shop",
+      "category": "monotonic-stack",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "final-prices-with-a-special-discount-in-a-shop",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1480,
+      "leetcodeUrl": "https://leetcode.com/problems/running-sum-of-1d-array/description/",
+      "tags": [
+        "Array",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/1480.md",
+        "docs/prefix-sum/1480-running-sum-of-1d-array.mdx"
+      ],
+      "title": "Running Sum of 1d Array",
+      "category": "prefix-sum",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "running-sum-of-1d-array",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1550,
+      "leetcodeUrl": "https://leetcode.com/problems/three-consecutive-odds/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "queue/1550.md",
+        "docs/array/1550-three-consecutive-odds.mdx"
+      ],
+      "title": "Three Consecutive Odds",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "three-consecutive-odds",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1557,
+      "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-vertices-to-reach-all-nodes/description/",
+      "tags": [
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/1557.md",
+        "docs/graph/1557-minimum-number-of-vertices-to-reach-all-nodes.mdx",
+        "src/components/DSA/MinVerticesDiagram.tsx"
+      ],
+      "title": "Minimum Number of Vertices to Reach All Nodes",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "minimum-number-of-vertices-to-reach-all-nodes",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1669,
+      "leetcodeUrl": "https://leetcode.com/problems/merge-in-between-linked-lists/description/",
+      "tags": [
+        "Linked List"
+      ],
+      "files": [
+        "queue/1669.md",
+        "docs/linked-list/1669-merge-in-between-linked-lists.mdx",
+        "src/components/DSA/MergeInBetweenDiagram.tsx"
+      ],
+      "title": "Merge In Between Linked Lists",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "merge-in-between-linked-lists",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1672,
+      "leetcodeUrl": "https://leetcode.com/problems/richest-customer-wealth/description/",
+      "tags": [
+        "Array",
+        "Matrix"
+      ],
+      "files": [
+        "queue/1672.md",
+        "docs/matrix/1672-richest-customer-wealth.mdx",
+        "src/components/DSA/RichestCustomerWealthDiagram.tsx"
+      ],
+      "title": "Richest Customer Wealth",
+      "category": "matrix",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "richest-customer-wealth",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1732,
+      "leetcodeUrl": "https://leetcode.com/problems/find-the-highest-altitude/description/",
+      "tags": [
+        "Array",
+        "Prefix Sum"
+      ],
+      "files": [
+        "queue/1732.md",
+        "docs/prefix-sum/1732-find-the-highest-altitude.mdx"
+      ],
+      "title": "Find the Highest Altitude",
+      "category": "prefix-sum",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-the-highest-altitude",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1752,
+      "leetcodeUrl": "https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "queue/1752.md",
+        "docs/array/1752-check-if-array-is-sorted-and-rotated.mdx"
+      ],
+      "title": "Check if Array Is Sorted and Rotated",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "check-if-array-is-sorted-and-rotated",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1768,
+      "leetcodeUrl": "https://leetcode.com/problems/merge-strings-alternately/description/",
+      "tags": [
+        "Two Pointers",
+        "String"
+      ],
+      "files": [
+        "queue/1768.md",
+        "docs/two-pointers/1768-merge-strings-alternately.mdx"
+      ],
+      "title": "Merge Strings Alternately",
+      "category": "two-pointers",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "merge-strings-alternately",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1920,
+      "leetcodeUrl": "https://leetcode.com/problems/build-array-from-permutation/description/",
+      "tags": [
+        "Array",
+        "Simulation"
+      ],
+      "files": [
+        "queue/1920.md",
+        "docs/array/1920-build-array-from-permutation.mdx"
+      ],
+      "title": "Build Array from Permutation",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "build-array-from-permutation",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1926,
+      "leetcodeUrl": "https://leetcode.com/problems/nearest-exit-from-entrance-in-maze/description/",
+      "tags": [
+        "Array",
+        "Breadth-First Search",
+        "Matrix"
+      ],
+      "files": [
+        "queue/1926.md",
+        "docs/graph/1926-nearest-exit-from-entrance-in-maze.mdx",
+        "src/components/DSA/NearestExitDiagram.tsx"
+      ],
+      "title": "Nearest Exit from Entrance in Maze",
+      "category": "graph",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "nearest-exit-from-entrance-in-maze",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 1971,
+      "leetcodeUrl": "https://leetcode.com/problems/find-if-path-exists-in-graph/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Graph Theory"
+      ],
+      "files": [
+        "queue/1971.md",
+        "docs/graph/1971-find-if-path-exists-in-graph.mdx",
+        "src/components/DSA/FindPathExistsDiagram.tsx"
+      ],
+      "title": "Find if Path Exists in Graph",
+      "category": "graph",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-if-path-exists-in-graph",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2095,
+      "leetcodeUrl": "https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "files": [
+        "queue/2095.md",
+        "docs/linked-list/2095-delete-the-middle-node-of-a-linked-list.mdx",
+        "src/components/DSA/DeleteMiddleNodeDiagram.tsx"
+      ],
+      "title": "Delete the Middle Node of a Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "delete-the-middle-node-of-a-linked-list",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2130,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "Stack"
+      ],
+      "files": [
+        "queue/2130.md",
+        "docs/linked-list/2130-maximum-twin-sum-of-a-linked-list.mdx",
+        "src/components/DSA/MaxTwinSumDiagram.tsx"
+      ],
+      "title": "Maximum Twin Sum of a Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "maximum-twin-sum-of-a-linked-list",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2176,
+      "leetcodeUrl": "https://leetcode.com/problems/count-equal-and-divisible-pairs-in-an-array/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "queue/2176.md",
+        "docs/array/2176-count-equal-and-divisible-pairs-in-an-array.mdx"
+      ],
+      "title": "Count Equal and Divisible Pairs in an Array",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "count-equal-and-divisible-pairs-in-an-array",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2181,
+      "leetcodeUrl": "https://leetcode.com/problems/merge-nodes-in-between-zeros/description/",
+      "tags": [
+        "Linked List",
+        "Simulation"
+      ],
+      "files": [
+        "queue/2181.md",
+        "docs/linked-list/2181-merge-nodes-in-between-zeros.mdx",
+        "src/components/DSA/MergeNodesBetweenZerosDiagram.tsx"
+      ],
+      "title": "Merge Nodes in Between Zeros",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "merge-nodes-in-between-zeros",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2215,
+      "leetcodeUrl": "https://leetcode.com/problems/find-the-difference-of-two-arrays/description/",
+      "tags": [
+        "Array",
+        "Hash Table"
+      ],
+      "files": [
+        "queue/2215.md",
+        "docs/hash-map-set/2215-find-the-difference-of-two-arrays.mdx"
+      ],
+      "title": "Find the Difference of Two Arrays",
+      "category": "hash-map-set",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-the-difference-of-two-arrays",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2300,
+      "leetcodeUrl": "https://leetcode.com/problems/successful-pairs-of-spells-and-potions/description/",
+      "tags": [
+        "Array",
+        "Two Pointers",
+        "Binary Search",
+        "Sorting"
+      ],
+      "files": [
+        "queue/2300.md",
+        "docs/binary-search/2300-successful-pairs-of-spells-and-potions.mdx"
+      ],
+      "title": "Successful Pairs of Spells and Potions",
+      "category": "binary-search",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "successful-pairs-of-spells-and-potions",
+      "submittedAt": "2026-04-05T00:00:00.000Z"
+    },
+    {
+      "id": 2336,
+      "leetcodeUrl": "https://leetcode.com/problems/smallest-number-in-infinite-set/description/",
+      "tags": [
+        "Hash Table",
+        "Design",
+        "Heap (Priority Queue)",
+        "Ordered Set"
+      ],
+      "files": [
+        "docs/heap/2336-smallest-number-in-infinite-set.mdx"
+      ],
+      "title": "Smallest Number in Infinite Set",
+      "category": "heap",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "smallest-number-in-infinite-set",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2390,
+      "leetcodeUrl": "https://leetcode.com/problems/removing-stars-from-a-string/description/",
+      "tags": [
+        "String",
+        "Stack",
+        "Simulation"
+      ],
+      "files": [
+        "docs/stack/2390-removing-stars-from-a-string.mdx"
+      ],
+      "title": "Removing Stars From a String",
+      "category": "stack",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "removing-stars-from-a-string",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2487,
+      "leetcodeUrl": "https://leetcode.com/problems/remove-nodes-from-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Stack",
+        "Recursion",
+        "Monotonic Stack"
+      ],
+      "files": [
+        "docs/linked-list/2487-remove-nodes-from-linked-list.mdx",
+        "src/components/DSA/RemoveNodesLinkedListDiagram.tsx"
+      ],
+      "title": "Remove Nodes From Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "remove-nodes-from-linked-list",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2490,
+      "leetcodeUrl": "https://leetcode.com/problems/circular-sentence/description/",
+      "tags": [
+        "String"
+      ],
+      "files": [
+        "docs/string/2490-circular-sentence.mdx"
+      ],
+      "title": "Circular Sentence",
+      "category": "string",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "circular-sentence",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2542,
+      "leetcodeUrl": "https://leetcode.com/problems/maximum-subsequence-score/description/",
+      "tags": [
+        "Array",
+        "Greedy",
+        "Sorting",
+        "Heap (Priority Queue)"
+      ],
+      "files": [
+        "docs/heap/2542-maximum-subsequence-score.mdx"
+      ],
+      "title": "Maximum Subsequence Score",
+      "category": "heap",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "maximum-subsequence-score",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2558,
+      "leetcodeUrl": "https://leetcode.com/problems/take-gifts-from-the-richest-pile/description/",
+      "tags": [
+        "Array",
+        "Heap (Priority Queue)",
+        "Simulation"
+      ],
+      "files": [
+        "docs/heap/2558-take-gifts-from-the-richest-pile.mdx"
+      ],
+      "title": "Take Gifts From the Richest Pile",
+      "category": "heap",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "take-gifts-from-the-richest-pile",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2807,
+      "leetcodeUrl": "https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/description/",
+      "tags": [
+        "Linked List",
+        "Math",
+        "Number Theory"
+      ],
+      "files": [
+        "docs/linked-list/2807-insert-greatest-common-divisors-in-linked-list.mdx",
+        "src/components/DSA/InsertGCDLinkedListDiagram.tsx"
+      ],
+      "title": "Insert Greatest Common Divisors in Linked List",
+      "category": "linked-list",
+      "difficulty": "Medium",
+      "status": "done",
+      "slug": "insert-greatest-common-divisors-in-linked-list",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2900,
+      "leetcodeUrl": "https://leetcode.com/problems/longest-unequal-adjacent-groups-subsequence-i/description/",
+      "tags": [
+        "Array",
+        "String",
+        "Dynamic Programming",
+        "Greedy"
+      ],
+      "files": [
+        "docs/dp-1d/2900-longest-unequal-adjacent-groups-subsequence-i.mdx"
+      ],
+      "title": "Longest Unequal Adjacent Groups Subsequence I",
+      "category": "dp-1d",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "longest-unequal-adjacent-groups-subsequence-i",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 2942,
+      "leetcodeUrl": "https://leetcode.com/problems/find-words-containing-character/description/",
+      "tags": [
+        "Array",
+        "String"
+      ],
+      "files": [
+        "docs/array/2942-find-words-containing-character.mdx"
+      ],
+      "title": "Find Words Containing Character",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "find-words-containing-character",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 3105,
+      "leetcodeUrl": "https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "docs/array/3105-longest-strictly-increasing-or-strictly-decreasing-subarray.mdx"
+      ],
+      "title": "Longest Strictly Increasing or Strictly Decreasing Subarray",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "longest-strictly-increasing-or-strictly-decreasing-subarray",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 3110,
+      "leetcodeUrl": "https://leetcode.com/problems/score-of-a-string/description/",
+      "tags": [
+        "String"
+      ],
+      "files": [
+        "docs/string/3110-score-of-a-string.mdx"
+      ],
+      "title": "Score of a String",
+      "category": "string",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "score-of-a-string",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 3151,
+      "leetcodeUrl": "https://leetcode.com/problems/special-array-i/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "docs/array/3151-special-array-i.mdx"
+      ],
+      "title": "Special Array I",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "special-array-i",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    },
+    {
+      "id": 3392,
+      "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-of-length-three-with-a-condition/description/",
+      "tags": [
+        "Array"
+      ],
+      "files": [
+        "docs/array/3392-count-subarrays-of-length-three-with-a-condition.mdx"
+      ],
+      "title": "Count Subarrays of Length Three With a Condition",
+      "category": "array",
+      "difficulty": "Easy",
+      "status": "done",
+      "slug": "count-subarrays-of-length-three-with-a-condition",
+      "submittedAt": "2026-04-06T00:00:00.000Z"
+    }
+  ]
+}

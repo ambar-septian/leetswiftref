@@ -1,0 +1,139 @@
+---
+id: 242-valid-anagram
+title: "Valid Anagram"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={242}
+  title="Valid Anagram"
+  difficulty="Easy"
+  pattern="Character Frequency Array"
+  tags={["Hash Table", "String", "Sorting"]}
+  leetcodeUrl="https://leetcode.com/problems/valid-anagram/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.
+
+An anagram is a word or phrase formed by rearranging the letters of another — using all the original letters exactly once.
+
+**Constraints:**
+- `1 <= s.length, t.length <= 5 * 10^4`
+- `s` and `t` consist of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: s = "anagram", t = "nagaram"
+Output: true
+```
+
+#### Example 2
+
+```
+Input: s = "rat", t = "car"
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must both strings have the same length?", verdict: "yes", reason: "Different lengths immediately disqualify an anagram — early return saves work." },
+    { question: "Do we need to count character frequencies?", verdict: "yes", reason: "Two strings are anagrams iff they have identical character counts." },
+    { question: "Can we use a fixed-size array instead of a hash map?", verdict: "yes", reason: "Input is limited to lowercase English letters (a–z = 26 characters). A 26-slot array is faster than a dictionary." },
+  ]}
+  answer="26-slot frequency array — increment for s, decrement for t; all zeros means anagram"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Guard early if lengths differ. Iterate `s` and `t` in lockstep using `zip`: increment `counts[s[i] - 'a']` and decrement `counts[t[i] - 'a']`. After the loop, all counts must be zero.
+
+<Callout type="cyan" label="Single-pass with zip">
+Using <code>zip(s, t)</code> processes both strings simultaneously in one loop — no need for separate loops or an index variable.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "rat", t = "car"'
+  expected="false"
+  steps={[
+    { label: "init",   text: "counts = [0 × 26]; lengths equal (3=3) → proceed" },
+    { label: "i=0",    text: "s[0]='r': counts['r'-'a']++ → counts[17]=1; t[0]='c': counts['c'-'a']-- → counts[2]=-1" },
+    { label: "i=1",    text: "s[1]='a': counts[0]++→1; t[1]='a': counts[0]--→0" },
+    { label: "i=2",    text: "s[2]='t': counts[19]++→1; t[2]='r': counts[17]--→0" },
+    { label: "check",  text: "counts[19]=1 (t has no 't') → not all zero → return false" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Length guard">
+    Return `false` immediately if `s.count != t.count`.
+  </StepItem>
+  <StepItem title="Build frequency delta">
+    `var counts = Array(repeating: 0, count: 26)`. For each `(sChar, tChar)` in `zip(s, t)`: increment index for `sChar`, decrement index for `tChar`.
+  </StepItem>
+  <StepItem title="Verify all zeros">
+    Return `counts.allSatisfy { $0 == 0 }`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isAnagram(_ s: String, _ t: String) -> Bool {
+    guard s.count == t.count else { return false }
+
+    var counts = Array(repeating: 0, count: 26)
+    for (sChar, tChar) in zip(s, t) {
+      counts[Int(sChar.asciiValue! - 97)] += 1
+      counts[Int(tChar.asciiValue! - 97)] -= 1
+    }
+
+    return counts.allSatisfy { $0 == 0 }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sort both strings", time: "O(n log n)", space: "O(n)", note: "Sort then compare; simple but slower" },
+    { approach: "Frequency array (26-slot)", time: "O(n)", space: "O(1)", note: "Fixed 26-element array; O(1) space regardless of input length", highlight: true },
+    { approach: "Hash map", time: "O(n)", space: "O(k)", note: "k = distinct characters; generalises to Unicode/arbitrary characters" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not checking lengths first",
+      body: "Without the length guard, two strings of different lengths could pass the frequency check if the extra characters cancel each other — which is impossible, but skipping the guard is defensive practice.",
+      fix: "<code>guard s.count == t.count else { return false }</code> at the top.",
+    },
+    {
+      title: "Using asciiValue without subtracting the base",
+      body: "'a' has ASCII value 97. Without subtracting 97, indices range from 97–122 instead of 0–25 and cause an out-of-bounds crash.",
+      fix: "<code>Int(char.asciiValue! - 97)</code> maps 'a'→0, 'b'→1, ..., 'z'→25.",
+    },
+    {
+      title: "Checking counts != 0 instead of allSatisfy { $0 == 0 }",
+      body: "A count array where values cancel to zero overall but have non-zero individual entries (e.g. [1, -1, 0...]) would wrongly appear valid.",
+      fix: "Each element must individually be zero: <code>counts.allSatisfy { $0 == 0 }</code>.",
+    },
+  ]}
+/>

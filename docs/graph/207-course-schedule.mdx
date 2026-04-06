@@ -1,0 +1,177 @@
+---
+id: 207-course-schedule
+title: "Course Schedule"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CourseScheduleDiagram from '@site/src/components/DSA/CourseScheduleDiagram';
+
+<ProblemHeader
+  number={207}
+  title="Course Schedule"
+  difficulty="Medium"
+  pattern="Topological Sort (Kahn's Algorithm)"
+  tags={["Depth-First Search", "Breadth-First Search", "Graph Theory", "Topological Sort"]}
+  leetcodeUrl="https://leetcode.com/problems/course-schedule/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are a total of `numCourses` courses you have to take, labelled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [a, b]` indicates that you must take course `b` first if you want to take course `a`.
+
+Return `true` if you can finish all courses. Otherwise, return `false`.
+
+A cycle in the prerequisite graph makes it impossible to complete all courses — Kahn's algorithm detects this by checking whether every node was processed.
+
+**Constraints:**
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= 5000`
+- `prerequisites[i].length == 2`
+- `0 <= a, b < numCourses`
+- All the pairs `prerequisites[i]` are unique.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: Take course 0 first, then course 1.
+```
+
+#### Example 2
+
+```
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: Courses 0 and 1 each require the other — cycle detected.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the problem reduce to detecting a cycle in a directed graph?", verdict: "yes", reason: "A cycle means at least one course can never be taken — impossible to finish all courses." },
+    { question: "Can we use BFS to process nodes in dependency order?", verdict: "yes", reason: "Kahn's algorithm: start with zero-in-degree nodes, peel the graph layer by layer. If any node is left unprocessed, a cycle exists." },
+    { question: "Do we need to reconstruct the order?", verdict: "no", reason: "Only the count of processed nodes matters — if it equals numCourses, no cycle exists." },
+  ]}
+  answer="Kahn's BFS topological sort — if processed count equals numCourses, return true; otherwise a cycle exists"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<CourseScheduleDiagram />
+
+Build an adjacency list and an in-degree array from `prerequisites`. Seed a queue with all courses that have in-degree 0 (no prerequisites). Process each course: decrement the in-degree of every dependent course; if a dependent course's in-degree reaches 0, enqueue it. After BFS, if `results.count == numCourses`, all courses were reachable and no cycle exists.
+
+<Callout type="cyan" label="Why count equals numCourses means no cycle">
+In a DAG every node eventually reaches in-degree 0 and gets processed. In a cycle, nodes in the cycle never reach in-degree 0 — they remain in the graph and are never enqueued, so the processed count falls short of numCourses.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]"
+  expected="true"
+  steps={[
+    { label: "build",  text: "adjList: {0:[1,2], 1:[3], 2:[3]}; inDegree: [0,1,1,2]" },
+    { label: "init",   text: "seed queue with in-degree 0 nodes → queue = [0]" },
+    { label: "pop 0",  text: "results=[0]; neighbors 1 and 2: inDegree[1]=0 → enqueue 1; inDegree[2]=0 → enqueue 2; queue=[1,2]" },
+    { label: "pop 1",  text: "results=[0,1]; neighbor 3: inDegree[3]=1 → not yet 0; queue=[2]" },
+    { label: "pop 2",  text: "results=[0,1,2]; neighbor 3: inDegree[3]=0 → enqueue 3; queue=[3]" },
+    { label: "pop 3",  text: "results=[0,1,2,3]; no neighbors; queue=[]" },
+    { label: "done",   text: "results.count=4 == numCourses=4 → return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard empty prerequisites">
+    If `prerequisites` is empty, all courses are independent — return `true` immediately.
+  </StepItem>
+  <StepItem title="Build adjacency list and in-degree array">
+    For each `[course, prereq]` pair: add `course` to `adjList[prereq]` and increment `inDegree[course]`.
+  </StepItem>
+  <StepItem title="Seed queue with zero-in-degree nodes">
+    Iterate over `inDegree`; enqueue every index whose count is 0.
+  </StepItem>
+  <StepItem title="BFS processing">
+    Dequeue a node, append to `results`, then for each neighbor decrement its in-degree. If it reaches 0, enqueue it.
+  </StepItem>
+  <StepItem title="Check result count">
+    Return `results.count == numCourses`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func canFinish(_ numCourses: Int, _ prerequisites: [[Int]]) -> Bool {
+    guard !prerequisites.isEmpty else { return true }
+
+    var results = [Int]()
+    var inDegree = Array(repeating: 0, count: numCourses)
+    var adjList = [Int: [Int]]()
+
+    for pair in prerequisites {
+      let course = pair[0]
+      let preq   = pair[1]
+      adjList[preq, default: []].append(course)
+      inDegree[course] += 1
+    }
+
+    var queue = [Int]()
+    for (index, count) in inDegree.enumerated() {
+      if count == 0 { queue.append(index) }
+    }
+
+    while !queue.isEmpty {
+      let node = queue.removeFirst()
+      results.append(node)
+
+      guard let neighbors = adjList[node] else { continue }
+      for neighbor in neighbors {
+        inDegree[neighbor] -= 1
+        if inDegree[neighbor] == 0 { queue.append(neighbor) }
+      }
+    }
+
+    return results.count == numCourses
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Kahn's BFS topological sort", time: "O(V + E)", space: "O(V + E)", note: "V = numCourses, E = prerequisites.count; each node and edge processed once", highlight: true },
+    { approach: "DFS cycle detection", time: "O(V + E)", space: "O(V)", note: "Three-color DFS (unvisited/visiting/visited); O(V) for call stack and state array" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Mixing up edge direction",
+      body: "prerequisite[i] = [a, b] means b must come before a. The edge goes b → a (b unlocks a), so a's in-degree is incremented.",
+      fix: "adjList[prereq].append(course) and inDegree[course] += 1 — prereq is the source, course is the destination.",
+    },
+    {
+      title: "Not guarding against empty prerequisites",
+      body: "With no prerequisites, no edges exist, in-degree array is all zeros, and the guard is not strictly necessary — but forgetting to seed the queue correctly would cause an infinite loop.",
+      fix: "Return true early for empty prerequisites, or ensure all indices with in-degree 0 are correctly seeded.",
+    },
+    {
+      title: "Using results.count instead of numCourses as the target",
+      body: "If prerequisites only mention a subset of courses, some courses may never appear in the graph and still need to be counted.",
+      fix: "Compare results.count to numCourses. The in-degree array is of size numCourses, so unconstrained courses start at 0 and get enqueued at the seed step.",
+    },
+  ]}
+/>

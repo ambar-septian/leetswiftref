@@ -1,0 +1,154 @@
+---
+id: 1161-maximum-level-sum-of-a-binary-tree
+title: "Maximum Level Sum of a Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, MaxLevelSumDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1161}
+  title="Maximum Level Sum of a Binary Tree"
+  difficulty="Medium"
+  pattern="BFS — Level Order Traversal"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the root of a binary tree, the level of its root is `1`, the level of its children is `2`, and so on.
+
+Return the **smallest** level `x` such that the sum of all the values of nodes at level `x` is maximal.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[1, 10^4]`.
+- `-10^5 <= Node.val <= 10^5`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root = [1,7,0,7,-8,null,null]
+Output: 2
+Explanation:
+  Level 1 sum = 1
+  Level 2 sum = 7 + 0 = 7  ← maximum
+  Level 3 sum = 7 + (-8) = -1
+```
+
+#### Example 2
+
+```
+Input:  root = [989,null,10250,98693,-89388,null,null,null,-32127]
+Output: 2
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to process nodes level by level?", verdict: "yes", reason: "We need the sum per level — BFS level-order traversal processes exactly one full level per outer loop iteration." },
+    { question: "Can DFS work here?", verdict: "yes", reason: "DFS can accumulate sums per level in an array, but BFS is more natural and avoids allocating a levels array." },
+    { question: "Do we need to handle ties?", verdict: "yes", reason: "Return the smallest level with maximum sum — update result only on strict improvement (sum > maxVal)." },
+  ]}
+  answer="BFS — Level-order sum with running max"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+BFS processes the tree level by level. For each level, we sum all node values and compare against the running maximum. We update the result only on a strict improvement (`sum > maxVal`), which automatically gives the smallest level in case of ties.
+
+<Callout type="green" label="Strict greater-than for tie-breaking">
+Using `sum > maxVal` (not `>=`) means we update the answer only when we find a strictly larger sum. The first (smallest-numbered) level with the maximum sum wins — which is exactly what the problem requires.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<MaxLevelSumDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard nil root">
+    Return 0 immediately if root is nil (empty tree).
+  </StepItem>
+  <StepItem title="Initialise BFS">
+    Push root into the queue. Set `currentLevel = 0`, `result = 0`, `maxVal = Int.min`.
+  </StepItem>
+  <StepItem title="Process each level">
+    Snapshot the queue count at the start of each iteration. Dequeue exactly that many nodes, accumulating their values into `sum`. Enqueue their non-nil children.
+  </StepItem>
+  <StepItem title="Increment level and compare">
+    After processing the full level, increment `currentLevel`. If `sum > maxVal`, update `maxVal = sum` and `result = currentLevel`.
+  </StepItem>
+  <StepItem title="Return result">
+    When the queue is empty, return `result` — the 1-indexed level with the highest sum.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func maxLevelSum(_ root: TreeNode?) -> Int {
+    guard let root else { return 0 }
+
+    var queue = [root]
+    var currentLevel = 0
+    var result = 0
+    var maxVal = Int.min
+
+    while !queue.isEmpty {
+      let count = queue.count
+      var sum = 0
+
+      for _ in 0..<count {
+        let node = queue.removeFirst()
+        sum += node.val
+        if let left  = node.left  { queue.append(left)  }
+        if let right = node.right { queue.append(right) }
+      }
+
+      currentLevel += 1
+      if sum > maxVal {
+        maxVal = sum
+        result = currentLevel
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS — level-order traversal", time: "O(n)", space: "O(n)", note: "Each node visited once; queue holds at most one full level at a time", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using >= instead of > for max comparison",
+      body: "If two levels have the same sum, >= updates the result to the later level, violating the requirement to return the smallest such level.",
+      fix: "Use sum > maxVal so the first encountered maximum level is kept.",
+    },
+    {
+      title: "Incrementing currentLevel before processing the level",
+      body: "If you increment at the top of the loop (before processing), level indexing is off-by-one.",
+      fix: "Process the full level first, then increment currentLevel before comparing.",
+    },
+    {
+      title: "Not snapshotting the queue count",
+      body: "If you loop while the queue is non-empty without snapshotting the count, newly enqueued children get processed in the same level iteration.",
+      fix: "Capture count = queue.count before the inner loop and iterate exactly count times.",
+    },
+  ]}
+/>

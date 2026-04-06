@@ -1,0 +1,143 @@
+---
+id: 1448-count-good-nodes-in-binary-tree
+title: "Count Good Nodes in Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, CountGoodNodesDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1448}
+  title="Count Good Nodes in Binary Tree"
+  difficulty="Medium"
+  pattern="DFS — Path Maximum"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/count-good-nodes-in-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a binary tree `root`, a node X in the tree is named **good** if in the path from root to X there are no nodes with a value **greater than** X's value.
+
+Return the number of good nodes in the binary tree.
+
+**Constraints:**
+- The number of nodes in the binary tree is in the range `[1, 10^5]`.
+- Each node's value is between `-10^4` and `10^4`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root = [3,1,4,3,null,1,5]
+Output: 4
+Explanation: Good nodes are marked with (G):
+  [3(G)] → [1] → [3(G)]
+  [3(G)] → [4(G)] → [5(G)]
+  Node 1 (left child of root) is NOT good since 3 > 1.
+  Node 1 (left child of 4) is NOT good since 4 > 1.
+```
+
+#### Example 2
+
+```
+Input:  root = [3,3,null,4,2]
+Output: 3
+```
+
+#### Example 3
+
+```
+Input:  root = [1]
+Output: 1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each node need information from its ancestors?", verdict: "yes", reason: "We need the maximum value seen on the path from root to this node — pass it down via DFS parameters." },
+    { question: "Can we compute this bottom-up?", verdict: "no", reason: "Good/not-good depends on the path from root (top-down), not on subtree structure (bottom-up)." },
+    { question: "Is preorder DFS appropriate?", verdict: "yes", reason: "Check the current node against maxSoFar before recursing into children." },
+  ]}
+  answer="DFS — top-down, pass maxSoFar as parameter"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Perform a DFS from the root, passing the maximum value seen so far on the current root-to-node path. At each node: if `node.val >= maxSoFar`, it is a good node (count 1); otherwise count 0. Update `maxSoFar = max(node.val, maxSoFar)` before recursing into children.
+
+<Callout type="green" label="Start with -infinity">
+Initialise maxSoFar with `Int.min`. This ensures the root is always counted as good, since any integer is >= Int.min.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<CountGoodNodesDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Define recursive DFS">
+    `func dfs(_ node: TreeNode?, _ prev: Int) -> Int` — `prev` is the max value seen from root to the parent of this node.
+  </StepItem>
+  <StepItem title="Base case">
+    If `node` is nil, return 0.
+  </StepItem>
+  <StepItem title="Check if current node is good">
+    `let current = node.val >= prev ? 1 : 0`
+  </StepItem>
+  <StepItem title="Update max and recurse">
+    `let maxVal = max(node.val, prev)`. Return `current + dfs(node.left, maxVal) + dfs(node.right, maxVal)`.
+  </StepItem>
+  <StepItem title="Start DFS">
+    Call `dfs(root, Int.min)` to begin.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func goodNodes(_ root: TreeNode?) -> Int {
+    func dfs(_ root: TreeNode?, _ prev: Int) -> Int {
+      guard let root else { return 0 }
+      let current = root.val >= prev ? 1 : 0
+      let maxVal = max(root.val, prev)
+      return current + dfs(root.left, maxVal) + dfs(root.right, maxVal)
+    }
+    return dfs(root, Int.min)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS — top-down with path max", time: "O(n)", space: "O(h)", note: "Each node visited once; O(h) call stack where h is tree height", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Starting maxSoFar at 0 instead of Int.min",
+      body: "If the root has a negative value (e.g., -5), starting at 0 incorrectly marks the root as not-good.",
+      fix: "Initialise with Int.min so any node value passes the first check.",
+    },
+    {
+      title: "Updating prev before checking",
+      body: "Updating maxVal before the current node check would compare the node against itself rather than its ancestors.",
+      fix: "Check node.val >= prev first, then compute maxVal = max(node.val, prev) for children.",
+    },
+    {
+      title: "Using BFS instead of DFS",
+      body: "BFS level-order does not naturally carry path-specific state (the max on each root-to-node path). Each path can diverge.",
+      fix: "Use DFS (preorder) and pass maxSoFar as a parameter to correctly track per-path state.",
+    },
+  ]}
+/>

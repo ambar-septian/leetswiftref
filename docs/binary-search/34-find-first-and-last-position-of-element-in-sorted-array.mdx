@@ -1,0 +1,174 @@
+---
+id: 34-find-first-and-last-position-of-element-in-sorted-array
+title: "Find First and Last Position of Element in Sorted Array"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={34}
+  title="Find First and Last Position of Element in Sorted Array"
+  difficulty="Medium"
+  pattern="Binary Search"
+  tags={["Array", "Binary Search"]}
+  leetcodeUrl="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `nums` sorted in non-decreasing order, find the starting and ending position of a given `target` value.
+
+If `target` is not found in the array, return `[-1, -1]`.
+
+You must write an algorithm with **O(log n)** runtime complexity.
+
+**Constraints**
+- `0 <= nums.length <= 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+- `nums` is sorted in non-decreasing order.
+- `-10^9 <= target <= 10^9`
+
+<Callout type="green" label="Core Insight">
+Run binary search twice — once biased left (when target is found, keep searching left by setting r = m-1) and once biased right (keep searching right by setting l = m+1). Each pass records the last index where target was found.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  nums = [5,7,7,8,8,10], target = 8
+Output: [3, 4]
+Explanation: 8 first appears at index 3 and last at index 4.
+```
+
+#### Example 2
+```
+Input:  nums = [5,7,7,8,8,10], target = 6
+Output: [-1, -1]
+Explanation: 6 is not in the array.
+```
+
+#### Example 3
+```
+Input:  nums = [], target = 0
+Output: [-1, -1]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the array sorted and are we searching for a value?", verdict: "yes", reason: "Sorted array + search = binary search. O(log n) is required." },
+    { question: "Do we need both boundaries, not just existence?", verdict: "yes", reason: "A single binary search stops at any occurrence. We need leftmost and rightmost separately." },
+    { question: "Can we find each boundary with one pass each?", verdict: "yes", reason: "When target is found, bias the search direction (left or right) to keep narrowing toward the boundary." },
+  ]}
+  answer="Binary search ×2 — one left-biased pass for first position, one right-biased pass for last"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+A single `binarySearch` helper takes an `isFindingMostLeft` flag. Standard binary search runs with `l=0, r=nums.count-1`. When `nums[m] == target`: record `result = m`, then bias the search — if finding the left boundary set `r = m - 1`; if finding the right boundary set `l = m + 1`. Call this helper twice and return both results.
+
+<Callout type="cyan" label="Why record result and continue">
+A normal binary search returns immediately on finding target. Here we record the index and keep shrinking the window in the biased direction. This guarantees we land on the extreme occurrence, not an arbitrary middle one.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [5,7,7,8,8,10], target = 8"
+  expected="[3, 4]"
+  steps={[
+    { label: "Left pass", text: "l=0, r=5. m=2, nums[2]=7 < 8 → l=3.", state: "l=3, r=5" },
+    { label: "Left m=4", text: "m=4, nums[4]=8 == target. result=4. Left-biased → r=3.", state: "result=4, l=3, r=3" },
+    { label: "Left m=3", text: "m=3, nums[3]=8 == target. result=3. Left-biased → r=2.", state: "result=3, l=3, r=2 → loop ends" },
+    { label: "Right pass", text: "l=0, r=5. m=2, nums[2]=7 < 8 → l=3.", state: "l=3, r=5" },
+    { label: "Right m=4", text: "m=4, nums[4]=8 == target. result=4. Right-biased → l=5.", state: "result=4, l=5, r=5" },
+    { label: "Right m=5", text: "m=5, nums[5]=10 > 8 → r=4. l=5 > r=4 → loop ends.", state: "result=4" },
+    { label: "Done", text: "First = 3, Last = 4. Return [3, 4].", state: "return [3, 4]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Define binarySearch helper">
+    Parameters: `nums`, `target`, `isFindingMostLeft: Bool`. Returns the boundary index or -1.
+  </StepItem>
+  <StepItem title="Standard binary search loop">
+    `l=0, r=nums.count-1, result=-1`. While `l <= r`, compute `m = (l+r)/2`.
+  </StepItem>
+  <StepItem title="Handle the three cases">
+    `nums[m] < target` → `l = m+1`. `nums[m] > target` → `r = m-1`. Equal → `result = m`, then bias: left search sets `r = m-1`, right search sets `l = m+1`.
+  </StepItem>
+  <StepItem title="Call twice and return">
+    `[binarySearch(nums, target, true), binarySearch(nums, target, false)]`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func searchRange(_ nums: [Int], _ target: Int) -> [Int] {
+    let firstItem = binarySearch(nums, target, isFindingMostLeft: true)
+    let lastItem  = binarySearch(nums, target, isFindingMostLeft: false)
+    return [firstItem, lastItem]
+
+    func binarySearch(_ nums: [Int], _ target: Int, isFindingMostLeft: Bool) -> Int {
+      var l = 0
+      var r = nums.count - 1
+      var result = -1
+
+      while l <= r {
+        let m = (l + r) / 2
+        if nums[m] < target {
+          l = m + 1
+
+        } else if nums[m] > target {
+          r = m - 1
+          
+        } else {
+          result = m
+          if isFindingMostLeft { r = m - 1 }
+          else                 { l = m + 1 }
+        }
+      }
+
+      return result
+    }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Linear scan", time: "O(n)", space: "O(1)", note: "Walk until first and last found — fails O(log n) requirement" },
+    { approach: "Biased binary search ×2", time: "O(log n)", space: "O(1)", note: "Two independent O(log n) passes; constant space", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning immediately when target is found",
+      body: "A standard binary search returns on the first match, which may be any occurrence. We need the leftmost or rightmost.",
+      fix: "Record result = m when nums[m] == target, then continue narrowing in the biased direction instead of returning.",
+    },
+    {
+      title: "Biasing in the wrong direction",
+      body: "For the left boundary, we must set r = m-1 to keep searching left. For the right boundary, set l = m+1 to keep searching right. Swapping these finds the wrong boundary.",
+      fix: "isFindingMostLeft=true → r = m-1. isFindingMostLeft=false → l = m+1.",
+    },
+    {
+      title: "Integer overflow in midpoint calculation",
+      body: "(l + r) / 2 can overflow if l and r are both large positive integers (though Swift's Int is 64-bit on modern hardware, making this unlikely in practice).",
+      fix: "Use l + (r - l) / 2 for a safer midpoint if targeting 32-bit environments.",
+    },
+  ]}
+/>

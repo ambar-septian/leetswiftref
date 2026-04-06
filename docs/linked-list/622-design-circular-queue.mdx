@@ -1,0 +1,187 @@
+---
+id: 622-design-circular-queue
+title: "Design Circular Queue"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CircularQueueDiagram from '@site/src/components/DSA/CircularQueueDiagram';
+
+<ProblemHeader
+  number={622}
+  title="Design Circular Queue"
+  difficulty="Medium"
+  pattern="Circular Array Design"
+  tags={["Array", "Linked List", "Design", "Queue"]}
+  leetcodeUrl="https://leetcode.com/problems/design-circular-queue/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Design your implementation of the circular queue. The circular queue is a linear data structure in which the operations are performed based on the FIFO (First In First Out) principle, and the last position is connected back to the first position to make a circle (also called a "Ring Buffer").
+
+Implement the `MyCircularQueue` class:
+
+- `MyCircularQueue(k)` — Initializes the object with the size of the queue to be `k`.
+- `boolean enQueue(int value)` — Inserts an element into the circular queue. Returns `true` if the operation is successful.
+- `boolean deQueue()` — Deletes an element from the circular queue. Returns `true` if the operation is successful.
+- `int Front()` — Gets the front item from the queue. If the queue is empty, returns `-1`.
+- `int Rear()` — Gets the last item from the queue. If the queue is empty, returns `-1`.
+- `boolean isEmpty()` — Checks whether the circular queue is empty or not.
+- `boolean isFull()` — Checks whether the circular queue is full or not.
+
+You must solve the problem without using the built-in queue data structure in your programming language.
+
+**Constraints:**
+- `1 <= k <= 1000`
+- `0 <= value <= 1000`
+- At most `3000` calls will be made to `enQueue`, `deQueue`, `Front`, `Rear`, `isEmpty`, and `isFull`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+MyCircularQueue cq = new MyCircularQueue(3);
+cq.enQueue(1);  // true
+cq.enQueue(2);  // true
+cq.enQueue(3);  // true
+cq.enQueue(4);  // false (full)
+cq.Rear();      // 3
+cq.isFull();    // true
+cq.deQueue();   // true
+cq.enQueue(4);  // true
+cq.Rear();      // 4
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we use a fixed-size array with modulo arithmetic to simulate a ring?", verdict: "yes", reason: "Incrementing head and tail with modulo maxCount wraps the pointers around, giving circular behaviour on a linear array." },
+    { question: "Do we need a separate count variable?", verdict: "yes", reason: "head == tail when both empty AND when full. A separate count variable disambiguates these two states." },
+    { question: "What is the tail-to-rear offset?", verdict: "yes", reason: "tail points to the next EMPTY slot. The rear (last inserted value) is at (tail - 1 + maxCount) % maxCount." },
+  ]}
+  answer="Circular Array — head and tail pointers with modulo arithmetic; count to distinguish empty from full"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Allocate `items: [Int?]` of size `maxCount`. Maintain `head` (index of front element), `tail` (index of next write slot), and `count`. For `enQueue`: place at `items[tail]`, advance `tail = (tail + 1) % maxCount`, increment count. For `deQueue`: clear `items[head]`, advance `head = (head + 1) % maxCount`, decrement count. `Rear()` reads from `(tail - 1 + maxCount) % maxCount`.
+
+<CircularQueueDiagram />
+
+<Callout type="cyan" label="Why tail needs +maxCount before modulo">
+(tail - 1) can be -1 when tail == 0. In Swift (and most languages), -1 % 5 = -1, not 4. Adding maxCount before the modulo guarantees a non-negative result: (0 - 1 + 5) % 5 = 4.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="MyCircularQueue(3): enQueue(1), enQueue(2), enQueue(3), deQueue(), enQueue(4)"
+  expected="Rear() = 4"
+  steps={[
+    { label: "enQueue(1)", text: "items[tail=0]=1, tail=1, count=1" },
+    { label: "enQueue(2)", text: "items[tail=1]=2, tail=2, count=2" },
+    { label: "enQueue(3)", text: "items[tail=2]=3, tail=0(wrap!), count=3 — isFull" },
+    { label: "deQueue()",  text: "items[head=0]=nil, head=1, count=2" },
+    { label: "enQueue(4)", text: "items[tail=0]=4, tail=1, count=3 — isFull again; Rear=(1-1+3)%3=0 → items[0]=4" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise fields">
+    `head = 0`, `tail = 0`, `count = 0`, `items = [Int?](repeating: nil, count: maxCount)`.
+  </StepItem>
+  <StepItem title="enQueue — guard full, write, advance tail">
+    If `count == maxCount`, return `false`. Else: `items[tail] = value`, `tail = (tail + 1) % maxCount`, `count += 1`, return `true`.
+  </StepItem>
+  <StepItem title="deQueue — guard empty, clear, advance head">
+    If `count == 0`, return `false`. Else: `items[head] = nil`, `head = (head + 1) % maxCount`, `count -= 1`, return `true`.
+  </StepItem>
+  <StepItem title="Front — guard empty, read head">
+    `guard let value = items[head] else { return -1 }; return value`.
+  </StepItem>
+  <StepItem title="Rear — guard empty, read tail-1 with wrap">
+    `let realTail = (tail - 1 + maxCount) % maxCount; guard let value = items[realTail] else { return -1 }; return value`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class MyCircularQueue {
+  var head = 0
+  var tail = 0
+  var count = 0
+  var items: [Int?] = []
+  let maxCount: Int
+
+  init(_ k: Int) {
+    self.maxCount = k
+    self.items = Array(repeating: nil, count: maxCount)
+  }
+
+  func enQueue(_ value: Int) -> Bool {
+    guard count < maxCount else { return false }
+    items[tail] = value
+    tail = (tail + 1) % maxCount
+    count += 1
+    return true
+  }
+
+  func deQueue() -> Bool {
+    guard count > 0 else { return false }
+    items[head] = nil
+    head = (head + 1) % maxCount
+    count -= 1
+    return true
+  }
+
+  func Front() -> Int {
+    guard let value = items[head] else { return -1 }
+    return value
+  }
+
+  func Rear() -> Int {
+    let realTail = (tail - 1 + maxCount) % maxCount
+    guard let value = items[realTail] else { return -1 }
+    return value
+  }
+
+  func isEmpty() -> Bool { count == 0 }
+  func isFull() -> Bool  { count == maxCount }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Circular Array", time: "O(1)", space: "O(k)", note: "All operations are O(1); array of size k allocated at init", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using head == tail to detect both empty and full",
+      body: "After filling the queue completely, head and tail point to the same slot (tail wrapped back to head). Without count, isEmpty and isFull are indistinguishable.",
+      fix: "Track count separately. isEmpty returns count == 0; isFull returns count == maxCount.",
+    },
+    {
+      title: "Negative modulo for Rear() when tail == 0",
+      body: "(tail - 1) % maxCount = -1 % maxCount which in Swift evaluates to -1, not maxCount - 1.",
+      fix: "Use (tail - 1 + maxCount) % maxCount to guarantee a non-negative result.",
+    },
+    {
+      title: "Reading Front() or Rear() without checking isEmpty first",
+      body: "When the queue is empty, items[head] is nil. Force-unwrapping will crash.",
+      fix: "Use guard let value = items[...] else { return -1 } to safely handle the empty case.",
+    },
+  ]}
+/>

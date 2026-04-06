@@ -1,0 +1,158 @@
+---
+id: 102-binary-tree-level-order-traversal
+title: "Binary Tree Level Order Traversal"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import LevelOrderDiagram from '@site/src/components/DSA/LevelOrderDiagram';
+
+<ProblemHeader
+  number={102}
+  title="Binary Tree Level Order Traversal"
+  difficulty="Medium"
+  pattern="BFS"
+  tags={["Tree", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/binary-tree-level-order-traversal/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return the **level order traversal** of its nodes' values (i.e., from left to right, level by level).
+
+Level order traversal visits all nodes at depth 0 (root), then all nodes at depth 1 (root's children), then depth 2, and so on. The output is a list of lists, one inner list per level.
+
+**Constraints**
+- The number of nodes in the tree is in the range `[0, 2000]`.
+- `-1000 <= Node.val <= 1000`
+
+<Callout type="green" label="Core Insight">
+BFS with a queue. At the start of each while-loop iteration, snapshot the current queue size — that is exactly the number of nodes at the current level. Process only that many nodes, appending their children. Collect values into a level array, then append to the result.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  root = [3,9,20,null,null,15,7]
+Output: [[3],[9,20],[15,7]]
+```
+
+#### Example 2
+```
+Input:  root = [1]
+Output: [[1]]
+```
+
+#### Example 3
+```
+Input:  root = []
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we process nodes level by level?", verdict: "yes", reason: "Output is grouped by depth — BFS naturally processes level by level." },
+    { question: "How do we know when one level ends and the next begins?", verdict: "yes", reason: "Snapshot queue.count at the start of each iteration — that many nodes belong to the current level." },
+    { question: "Do nil children pollute the queue?", verdict: "yes", reason: "Appending nil children to the queue and guarding on dequeue keeps the logic simple." },
+  ]}
+  answer="BFS with level-size snapshot — process count nodes per iteration"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Initialise `queue = [root]`. Each while-loop iteration: record `count = queue.count`. Loop exactly `count` times: dequeue, skip nils, append value to `curr`, enqueue both children. After the inner loop, if `curr` is non-empty append it to `result`.
+
+<LevelOrderDiagram />
+
+<Callout type="cyan" label="Why snapshot count before the inner loop">
+During the inner loop, new children are added to the queue. If you check queue.count dynamically inside the inner loop, you will process next-level nodes too. Snapshotting count = queue.count at the start isolates exactly the current level's nodes.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [3,9,20,null,null,15,7]"
+  expected="[[3],[9,20],[15,7]]"
+  steps={[
+    { label: "level 1", text: "queue=[3]. count=1. Dequeue 3, curr=[3]. Enqueue 9, 20. Append [3] to result.", state: "result=[[3]]" },
+    { label: "level 2", text: "queue=[9,20]. count=2. Dequeue 9 → curr=[9], enqueue nil,nil. Dequeue 20 → curr=[9,20], enqueue 15,7.", state: "result=[[3],[9,20]]" },
+    { label: "level 3", text: "queue=[nil,nil,15,7]. count=4. Skip nils. Dequeue 15,7 → curr=[15,7]. Append.", state: "result=[[3],[9,20],[15,7]]" },
+    { label: "level 4", text: "queue has only nils from 15 and 7. curr stays empty. Guard !curr.isEmpty skips append.", state: "done" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard empty root">
+    Return `[]` if root is nil.
+  </StepItem>
+  <StepItem title="Initialise queue and result">
+    `var queue: [TreeNode?] = [root]`, `var result = [[Int]]()`.
+  </StepItem>
+  <StepItem title="BFS loop with level snapshot">
+    While queue not empty: `let count = queue.count`. Inner loop `count` times: dequeue, guard non-nil, append value, enqueue children. Append `curr` to `result` if non-empty.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func levelOrder(_ root: TreeNode?) -> [[Int]] {
+    guard let root else { return [] }
+
+    var queue: [TreeNode?] = [root]
+    var result = [[Int]]()
+
+    while !queue.isEmpty {
+      let count = queue.count      // snapshot current level size
+      var curr = [Int]()
+
+      for _ in 0..<count {
+        guard let item = queue.removeFirst() else { continue }
+        curr.append(item.val)
+        queue.append(item.left)
+        queue.append(item.right)
+      }
+
+      if !curr.isEmpty { result.append(curr) }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS level-order", time: "O(n)", space: "O(n)", note: "Each node enqueued and dequeued once; queue holds at most one full level (O(n/2) = O(n))", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not snapshotting queue count before the inner loop",
+      body: "If count is read dynamically inside the inner loop (or used as queue.count in the for condition), children added during the loop are processed as part of the same level.",
+      fix: "Capture let count = queue.count once before the inner for loop.",
+    },
+    {
+      title: "Appending empty curr arrays to result",
+      body: "When a level consists entirely of nil nodes, curr will be empty. Appending it produces extra empty arrays in the result.",
+      fix: "Guard with if !curr.isEmpty before appending to result.",
+    },
+    {
+      title: "Using removeFirst on a Swift Array for a large queue",
+      body: "Array.removeFirst() is O(n) because it shifts all elements. For performance-critical code this degrades BFS to O(n²).",
+      fix: "For large inputs use an index pointer (var head = 0; let item = queue[head]; head += 1) or a Deque data structure.",
+    },
+  ]}
+/>

@@ -1,0 +1,156 @@
+---
+id: 797-all-paths-from-source-to-target
+title: "All Paths From Source to Target"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { AllPathsSourceTargetDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={797}
+  title="All Paths From Source to Target"
+  difficulty="Medium"
+  pattern="DFS Backtracking"
+  tags={["Backtracking", "Depth-First Search", "Breadth-First Search", "Graph"]}
+  leetcodeUrl="https://leetcode.com/problems/all-paths-from-source-to-target/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a directed acyclic graph (DAG) of `n` nodes labelled from `0` to `n - 1`, find all possible paths from node `0` to node `n - 1` and return them in **any order**.
+
+The graph is given as follows: `graph[i]` is a list of all nodes you can visit from node `i` (i.e., there is a directed edge from node `i` to each node in `graph[i]`).
+
+**Constraints:**
+- `n == graph.length`
+- `2 <= n <= 15`
+- `0 <= graph[i][j] < n`
+- `graph[i][j] != i` (no self-loops)
+- All the values of `graph[i]` are **unique**.
+- The input graph is **guaranteed to be a DAG**.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  graph = [[1,2],[3],[3],[]]
+Output: [[0,1,3],[0,2,3]]
+```
+
+#### Example 2
+
+```
+Input:  graph = [[4,3,1],[3,2,4],[3],[4],[]]
+Output: [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to enumerate all paths (not just shortest)?", verdict: "yes", reason: "DFS backtracking explores every branch fully, collecting every complete path from source to target." },
+    { question: "Is the graph acyclic (DAG)?", verdict: "yes", reason: "Because the graph is a DAG, DFS cannot loop — no visited set is needed. The recursion terminates naturally." },
+    { question: "Is a path built incrementally on the call stack?", verdict: "yes", reason: "Append node on entry, recurse into neighbors, remove node on return — standard backtracking pattern." },
+  ]}
+  answer="DFS Backtracking — append node, recurse to neighbors, record path on reaching n-1, remove node on return"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start DFS from node `0` with `list = [0]`. At each node `i`: if `i == n-1` (target), append a copy of `list` to result and return. Otherwise, for each neighbor in `graph[i]`: append neighbor, recurse, remove neighbor. Because it is a DAG, no visited set is needed.
+
+<AllPathsSourceTargetDiagram />
+
+<Callout type="cyan" label="No visited set needed">
+The graph is guaranteed to be a DAG (no cycles). DFS on a DAG always terminates — every path reaches the target or a dead end. Adding a visited set would be unnecessary overhead.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="graph = [[1,2],[3],[3],[]]"
+  expected="[[0,1,3],[0,2,3]]"
+  steps={[
+    { label: "start", text: "list=[0]. dfs(0). Neighbors: [1,2]." },
+    { label: "→1",    text: "Append 1. list=[0,1]. dfs(1). Neighbors: [3]." },
+    { label: "→3",    text: "Append 3. list=[0,1,3]. i==n-1=3 → record [0,1,3]. Backtrack." },
+    { label: "→2",    text: "Back at 0. Append 2. list=[0,2]. dfs(2). Neighbors: [3]." },
+    { label: "→3",    text: "Append 3. list=[0,2,3]. i==3 → record [0,2,3]. Done." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var result = [[Int]]()`, `var list = [0]`, `let n = graph.count - 1`.
+  </StepItem>
+  <StepItem title="Define DFS">
+    `func dfs(_ i: Int)`: if `i == n`, append `list` to result and return.
+  </StepItem>
+  <StepItem title="Explore neighbors">
+    For each `neighbor` in `graph[i]`: `list.append(neighbor); dfs(neighbor); list.removeLast()`.
+  </StepItem>
+  <StepItem title="Call and return">
+    `dfs(0)`. Return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func allPathsSourceTarget(_ graph: [[Int]]) -> [[Int]] {
+    var result = [[Int]]()
+    var list = [0]
+    let n = graph.count - 1
+
+    func dfs(_ i: Int) {
+      if i == n {
+        result.append(list)
+        return
+      }
+      for neighbor in graph[i] {
+        list.append(neighbor)
+        dfs(neighbor)
+        list.removeLast()
+      }
+    }
+
+    dfs(0)
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS Backtracking on DAG", time: "O(2^n · n)", space: "O(n)", note: "Up to 2^n paths in a DAG of n nodes; copying each path takes O(n). Call stack depth is O(n). Result storage not counted.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Appending list reference instead of a copy",
+      body: "If you append list directly (by reference), all recorded paths will reflect the final state of list when iteration ends.",
+      fix: "In Swift, arrays are value types — appending list copies it automatically. In languages with reference semantics (Python list), use list[:] or list.copy().",
+    },
+    {
+      title: "Adding a visited set unnecessarily",
+      body: "The graph is a DAG — cycles are impossible. Adding a visited set adds complexity and can incorrectly skip valid paths if a node is reachable by multiple routes.",
+      fix: "Remove the visited set entirely for DAG problems. DFS terminates naturally when it reaches the target or a node with no neighbors.",
+    },
+    {
+      title: "Checking i == graph.count instead of i == n-1",
+      body: "The target node label is n-1 (0-indexed), not n. Off-by-one misses the target or checks out-of-bounds.",
+      fix: "Set n = graph.count - 1 and check i == n as the base case.",
+    },
+  ]}
+/>

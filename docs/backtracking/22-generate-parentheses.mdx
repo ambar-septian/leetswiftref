@@ -1,0 +1,163 @@
+---
+id: 22-generate-parentheses
+title: "Generate Parentheses"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import GenerateParenthesesDiagram from '@site/src/components/DSA/GenerateParenthesesDiagram';
+
+<ProblemHeader
+  number={22}
+  title="Generate Parentheses"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["String", "Dynamic Programming", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/generate-parentheses/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given `n` pairs of parentheses, write a function to generate all combinations of **well-formed parentheses**.
+
+A string of parentheses is well-formed if every opening bracket has a corresponding closing bracket and they are properly nested.
+
+**Constraints**
+- `1 <= n <= 8`
+
+<Callout type="green" label="Core Insight">
+At any point in building the string, you may add `(` only if the open count is below `n`, and `)` only if the close count is below the open count. These two rules together guarantee every candidate is valid — no pruning of invalid strings needed after the fact.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+```
+
+#### Example 2
+```
+Input:  n = 1
+Output: ["()"]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to enumerate all valid combinations?", verdict: "yes", reason: "The result is all well-formed strings of length 2n — a classic enumeration problem." },
+    { question: "Can we prune invalid branches early?", verdict: "yes", reason: "Two simple rules (open < n, close < open) prevent ever building an invalid string, cutting the search space significantly vs brute force." },
+    { question: "Is the depth bounded?", verdict: "yes", reason: "The path length is exactly 2n — recursion depth is at most 2n = 16 for n=8." },
+  ]}
+  answer="Backtracking — constrained DFS, add ( when open < n and ) when close < open"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a recursive `dfs(open, close)` where `open` and `close` track how many of each bracket have been added so far. Two branches exist at each call: add `(` if `open < n`, and add `)` if `close < open`. When both counts equal `n`, the path is a complete valid string — append it to results and return.
+
+<GenerateParenthesesDiagram />
+
+<Callout type="cyan" label="Why close < open is the right guard">
+A `)` is only valid if there is an unmatched `(` to the left of it. The number of unmatched opens at any point is exactly `open - close`. Requiring `close < open` ensures we never add a `)` without a pending `(` to match.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="n = 2"
+  expected='["(())", "()()"]'
+  steps={[
+    { label: "dfs(0,0)", text: "open=0 < n=2 → add '('. path=['('].", state: "path='('" },
+    { label: "dfs(1,0)", text: "open=1 < 2 → can add '('. close=0 < open=1 → can add ')'. Try '(' first.", state: "path='((' after open branch" },
+    { label: "dfs(2,0)", text: "open=2 = n, can't add '('. close=0 < 2 → add ')'. path='(()'.", state: "path='(()'" },
+    { label: "dfs(2,1)", text: "close=1 < open=2 → add ')'. path='(())'.", state: "path='(())'" },
+    { label: "dfs(2,2)", text: "open == close == n=2. Append '(())'. Return.", state: "results=['(())']" },
+    { label: "backtrack", text: "Unwind. Back at dfs(1,0), try ')' branch. open=1, close=1. Then add '(': dfs(2,1) → add ')' → '()()'.", state: "results=['(())','()()']" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise results and path">
+    `results = [String]()`, `path = [Character]()` with capacity `n * 2`.
+  </StepItem>
+  <StepItem title="Define dfs(open, close)">
+    Base case: `open == n && close == n` — append `String(path)` to results and return.
+  </StepItem>
+  <StepItem title="Open bracket branch">
+    If `open < n`: append `(`, recurse with `dfs(open+1, close)`, remove last.
+  </StepItem>
+  <StepItem title="Close bracket branch">
+    If `close < open`: append `)`, recurse with `dfs(open, close+1)`, remove last.
+  </StepItem>
+  <StepItem title="Kick off and return">
+    Call `dfs(0, 0)`. Return `results`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func generateParenthesis(_ n: Int) -> [String] {
+    var results = [String]()
+    var path = [Character]()
+    path.reserveCapacity(n * 2)
+
+    func dfs(_ o: Int, _ c: Int) {
+      if c == n && o == n {
+        results.append(String(path))
+        return
+      }
+      if o < n {
+        path.append("(")
+        dfs(o + 1, c)
+        path.removeLast()
+      }
+      if c < o {
+        path.append(")")
+        dfs(o, c + 1)
+        path.removeLast()
+      }
+    }
+
+    dfs(0, 0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force — generate all 2^2n strings, filter valid", time: "O(2^2n * n)", space: "O(n)", note: "Most candidates are invalid" },
+    { approach: "Backtracking with open/close guards", time: "O(4^n / √n)", space: "O(n)", note: "Catalan number of valid strings; pruning eliminates invalid branches early", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using close <= open instead of close < open",
+      body: "When close == open, all opens are matched — adding ) now would create a negative balance. The guard must be strict.",
+      fix: "Use c < o (strictly less than), not c <= o.",
+    },
+    {
+      title: "Checking the base case with path.count instead of open == n && close == n",
+      body: "path.count == n * 2 is equivalent here, but open == n && close == n makes the invariant explicit and avoids a multiplication.",
+      fix: "Either works. The solution uses c == n && o == n for clarity.",
+    },
+    {
+      title: "Forgetting removeLast after each recursive branch",
+      body: "Without path.removeLast() the path keeps accumulating characters from previous branches, producing garbled results.",
+      fix: "Always call path.removeLast() immediately after each recursive dfs call returns.",
+    },
+  ]}
+/>

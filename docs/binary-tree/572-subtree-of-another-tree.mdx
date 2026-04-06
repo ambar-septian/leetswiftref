@@ -1,0 +1,162 @@
+---
+id: 572-subtree-of-another-tree
+title: "Subtree of Another Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import SubtreeOfAnotherTreeDiagram from '@site/src/components/DSA/SubtreeOfAnotherTreeDiagram';
+
+<ProblemHeader
+  number={572}
+  title="Subtree of Another Tree"
+  difficulty="Easy"
+  pattern="DFS + Tree Equality"
+  tags={["Tree", "Depth-First Search", "String Matching", "Binary Tree", "Hash Function"]}
+  leetcodeUrl="https://leetcode.com/problems/subtree-of-another-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the roots of two binary trees `root` and `subRoot`, return `true` if there is a subtree of `root` with the same structure and node values as `subRoot` and `false` otherwise.
+
+A subtree of a binary tree `tree` is a tree that consists of a node in `tree` and all of this node's descendants. The tree `tree` could also be considered as a subtree of itself.
+
+**Constraints:**
+- The number of nodes in the `root` tree is in the range `[1, 2000]`.
+- The number of nodes in the `subRoot` tree is in the range `[1, 1000]`.
+- `-10^4 <= root.val <= 10^4`
+- `-10^4 <= subRoot.val <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root = [3,4,5,1,2], subRoot = [4,1,2]
+Output: true
+Explanation: The subtree rooted at node 4 (left child of root) matches subRoot exactly.
+```
+
+#### Example 2
+
+```
+Input:  root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]
+Output: false
+Explanation: The subtree under node 4 has an extra node 0 that subRoot does not.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to check every node in root as a potential match start?", verdict: "yes", reason: "The subtree can be rooted anywhere in root — DFS visits every node and checks if isSameTree holds from there." },
+    { question: "Can we reuse the isSameTree function from problem 100?", verdict: "yes", reason: "isSameTree checks structural + value equality of two trees. isSubtree calls it at every node of root." },
+    { question: "Is there an early-exit opportunity?", verdict: "yes", reason: "If isSameTree(root, subRoot) returns true, we return immediately without checking remaining nodes." },
+  ]}
+  answer="DFS on root — at each node call isSameTree(node, subRoot); recurse into children if no match"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Two mutually recursive functions:
+- `isSubtree(root, subRoot)`: returns `true` if `isSameTree(root, subRoot)` or `isSubtree(root.left, subRoot)` or `isSubtree(root.right, subRoot)`.
+- `isSameTree(a, b)`: both nil → `true`; values differ → `false`; recurse left and right.
+
+<SubtreeOfAnotherTreeDiagram />
+
+<Callout type="cyan" label="Why subRoot == nil is always true">
+An empty tree (nil) is trivially a subtree of any tree — the guard at the start of isSubtree returns true when subRoot is nil. This matches the problem definition.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [3,4,5,1,2], subRoot = [4,1,2]"
+  expected="true"
+  steps={[
+    { label: "root=3",  text: "isSameTree(3, 4)? 3 != 4 → false. Try isSubtree(root.left=4, subRoot)." },
+    { label: "root=4",  text: "isSameTree(4, 4)? vals match. Check children." },
+    { label: "left",    text: "isSameTree(1, 1)? true. isSameTree(2, 2)? true. → isSameTree returns true." },
+    { label: "done",    text: "isSubtree returns true." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base cases for isSubtree">
+    If `subRoot == nil`, return `true` (empty tree is always a subtree). If `root == nil`, return `false` (non-empty subRoot cannot match a nil root).
+  </StepItem>
+  <StepItem title="Check structural equality at current root">
+    If `isSameTree(root, subRoot)` returns true, return `true` immediately.
+  </StepItem>
+  <StepItem title="Recurse into children">
+    Return `isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot)`.
+  </StepItem>
+  <StepItem title="isSameTree — both nil">
+    If both are nil, return `true`.
+  </StepItem>
+  <StepItem title="isSameTree — values match">
+    If `root?.val == subRoot?.val`, recurse: return `isSameTree(root?.left, subRoot?.left) && isSameTree(root?.right, subRoot?.right)`.
+  </StepItem>
+  <StepItem title="isSameTree — values differ">
+    Return `false`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isSubtree(_ root: TreeNode?, _ subRoot: TreeNode?) -> Bool {
+    guard let subRoot else { return true }
+    guard let root   else { return false }
+
+    if isSameTree(root, subRoot) {
+      return true
+    }
+    return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot)
+  }
+
+  func isSameTree(_ root: TreeNode?, _ subRoot: TreeNode?) -> Bool {
+    if root == nil, subRoot == nil { return true }
+
+    if root?.val == subRoot?.val {
+      return isSameTree(root?.left,  subRoot?.left)
+          && isSameTree(root?.right, subRoot?.right)
+    }
+    return false
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS + isSameTree", time: "O(m * n)", space: "O(h)", note: "m = nodes in root, n = nodes in subRoot; isSameTree called up to m times; h = height of root for call stack", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Checking only value equality without structural equality",
+      body: "Two nodes with the same value do not guarantee matching subtrees. A node 4 with different children would still match a subRoot of 4 if only values are compared.",
+      fix: "Use isSameTree which recursively checks both structure and values at every corresponding node pair.",
+    },
+    {
+      title: "Confusing the nil base cases",
+      body: "isSubtree returns true when subRoot is nil (empty tree is a subtree of anything) but false when root is nil and subRoot is not (cannot find a non-empty subRoot in an empty tree).",
+      fix: "Guard subRoot first: guard let subRoot else { return true }. Then guard root: guard let root else { return false }.",
+    },
+    {
+      title: "Short-circuit failure in isSameTree",
+      body: "If one node is nil and the other is not, root?.val == subRoot?.val evaluates both Optional<Int> values as nil and may return true incorrectly.",
+      fix: "Check root == nil && subRoot == nil explicitly as the first condition in isSameTree before comparing values.",
+    },
+  ]}
+/>

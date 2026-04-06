@@ -1,0 +1,154 @@
+---
+id: 1-two-sum
+title: "Two Sum"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1}
+  title="Two Sum"
+  difficulty="Easy"
+  pattern="Hash Map"
+  tags={["Array", "Hash Table"]}
+  leetcodeUrl="https://leetcode.com/problems/two-sum/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers that add up to `target`.
+
+You may assume that each input has **exactly one solution**, and you may not use the same element twice. You can return the answer in any order.
+
+**Constraints**
+- `2 <= nums.length <= 10^4`
+- `-10^9 <= nums[i] <= 10^9`
+- `-10^9 <= target <= 10^9`
+- Exactly one valid answer exists.
+
+<Callout type="green" label="Core Insight">
+For every number `x`, we need `target - x`. Instead of scanning the whole array each time, store numbers you have already seen in a hash map so the lookup is O(1).
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  nums = [2, 7, 11, 15], target = 9
+Output: [0, 1]
+Explanation: nums[0] + nums[1] = 2 + 7 = 9
+```
+
+#### Example 2
+```
+Input:  nums = [3, 2, 4], target = 6
+Output: [1, 2]
+Explanation: nums[1] + nums[2] = 2 + 4 = 6
+```
+
+#### Example 3
+```
+Input:  nums = [3, 3], target = 6
+Output: [0, 1]
+Explanation: nums[0] + nums[1] = 3 + 3 = 6
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need all pairs or just one?", verdict: "yes", reason: "Exactly one answer — stop as soon as we find it." },
+    { question: "Is the array sorted?", verdict: "no", reason: "No ordering guarantee, so two-pointer does not apply directly." },
+    { question: "Can we trade space for time?", verdict: "yes", reason: "Store seen values in a hash map to turn O(n) lookups into O(1)." },
+  ]}
+  answer="Hash Map — Complement Lookup"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a single pass with a hash map that maps each value to its index. For every element, compute the complement (`target - nums[i]`). If the complement is already in the map, we have our answer. Otherwise, insert the current element.
+
+<Callout type="cyan" label="Why one pass works">
+When we reach index `i` and the complement was at index `j` (j less than i), it is already in the map. We return immediately without ever needing a second scan.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [2, 7, 11, 15], target = 9"
+  expected="[0, 1]"
+  steps={[
+    { label: "i=0", text: "nums[0] = 2 — complement = 9 - 2 = 7. Map is empty, no match. Store 2→0.", state: "dict = {2: 0}" },
+    { label: "i=1", text: "nums[1] = 7 — complement = 9 - 7 = 2. Found 2 in map at index 0. Return [0, 1].", state: "dict = {2: 0} → return [0, 1]" },
+    { label: "Done", text: "Answer is [0, 1]. nums[0] + nums[1] = 2 + 7 = 9.", state: "result = [0, 1]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise an empty dictionary">
+    `dict: [Int: Int]` maps a value to its index in `nums`.
+  </StepItem>
+  <StepItem title="Iterate through nums">
+    For each index `i`, compute `complement = target - nums[i]`.
+  </StepItem>
+  <StepItem title="Check for complement">
+    If `complement` exists in `dict`, return `[dict[complement]!, i]` — we are done.
+  </StepItem>
+  <StepItem title="Store current value">
+    Otherwise, store `dict[nums[i]] = i` and move to the next element.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
+    var dict = [Int: Int]()  // value → index
+
+    for i in 0..<nums.count {
+      let complement = target - nums[i]
+      if let existingIndex = dict[complement] {
+        return [existingIndex, i]
+      }
+      dict[nums[i]] = i
+    }
+
+    return []
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute Force (nested loops)", time: "O(n²)", space: "O(1)", note: "Check every pair" },
+    { approach: "Hash Map — one pass", time: "O(n)", space: "O(n)", note: "Single scan, instant complement lookup", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using the same element twice",
+      body: "Checking dict[nums[i]] before inserting nums[i] prevents matching an element with itself.",
+      fix: "Always look up the complement first, then insert the current element — never the reverse.",
+    },
+    {
+      title: "Returning indices in wrong order",
+      body: "The earlier index comes from the map; the later index is the current loop variable.",
+      fix: "Return [existingIndex, i] — the stored index first, the current index second.",
+    },
+    {
+      title: "Assuming no duplicates",
+      body: "Duplicate values are valid. Storing dict[nums[i]] = i overwrites older indices, but for Two Sum this is safe because the problem guarantees exactly one solution.",
+      fix: "No special handling needed — the one-pass approach handles duplicates correctly.",
+    },
+  ]}
+/>

@@ -1,0 +1,162 @@
+---
+id: 9-palindrome-number
+title: "Palindrome Number"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={9}
+  title="Palindrome Number"
+  difficulty="Easy"
+  pattern="Two Pointers"
+  tags={["Math"]}
+  leetcodeUrl="https://leetcode.com/problems/palindrome-number/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer `x`, return `true` if `x` is a **palindrome**, and `false` otherwise.
+
+An integer is a palindrome when it reads the same forward and backward. For example, `121` is a palindrome while `123` is not.
+
+**Constraints**
+- `-2^31 <= x <= 2^31 - 1`
+
+<Callout type="green" label="Core Insight">
+Convert the integer to its string representation, then use two pointers from both ends moving toward the middle. If every pair of characters matches, it is a palindrome.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  x = 121
+Output: true
+Explanation: 121 reads as 121 from left to right and from right to left.
+```
+
+#### Example 2
+```
+Input:  x = -121
+Output: false
+Explanation: From left to right it reads -121. From right to left it reads 121-.
+             Therefore it is not a palindrome.
+```
+
+#### Example 3
+```
+Input:  x = 10
+Output: false
+Explanation: Reads 01 from right to left. Therefore it is not a palindrome.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the number negative?", verdict: "no", reason: "Negative numbers are never palindromes due to the leading minus sign — return false immediately." },
+    { question: "Can we compare the number symmetrically?", verdict: "yes", reason: "Convert to a string array and compare index i with index n-1-i from both ends." },
+    { question: "Do we need to check all character pairs?", verdict: "no", reason: "Only check up to the middle index — the second half mirrors the first." },
+  ]}
+  answer="Two Pointers on string digits — compare from both ends to middle"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Negative numbers are immediately rejected. For non-negative numbers, convert the integer to a `String`, map it to an array of single-character strings, then walk a pointer from index `0` to `count / 2`. At each step compare `array[pointer]` with `array[count - pointer - 1]`. If any pair mismatches return `false`; if all match return `true`.
+
+<Callout type="cyan" label="Why only check half">
+A palindrome is symmetric. Checking beyond the midpoint would redundantly re-compare pairs already verified. Stopping at count / 2 covers all unique pairs exactly once.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="x = 121"
+  expected="true"
+  steps={[
+    { label: "Convert", text: "String(121) → ['1','2','1']. count = 3, middleIndex = 1.", state: "array = ['1','2','1'], pointer=0" },
+    { label: "pointer=0", text: "array[0]='1' vs array[2]='1' — match. pointer → 1.", state: "pointer=1" },
+    { label: "pointer=1", text: "pointer == middleIndex (1). Loop exits.", state: "return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Reject negatives">
+    If `x < 0` return `false` immediately.
+  </StepItem>
+  <StepItem title="Convert to character array">
+    `String(x).map(String.init)` produces an array of single-character strings for easy index access.
+  </StepItem>
+  <StepItem title="Set bounds">
+    `count = array.count`, `middleIndex = count / 2`, `pointer = 0`.
+  </StepItem>
+  <StepItem title="Compare pairs">
+    While `pointer < middleIndex`: if `array[pointer] != array[count - pointer - 1]` return `false`, else `pointer += 1`.
+  </StepItem>
+  <StepItem title="All pairs matched">
+    Loop completes without mismatch — return `true`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isPalindrome(_ x: Int) -> Bool {
+    if x < 0 {
+      return false
+    }
+
+    let array = String(x).map(String.init)
+    let count = array.count
+    var pointer = 0
+    let middleIndex = count / 2
+
+    while pointer < middleIndex {
+      if array[pointer] == array[count - pointer - 1] {
+        pointer += 1
+        continue
+      } else {
+        return false
+      }
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two pointers on string digits", time: "O(d)", space: "O(d)", note: "d = number of digits; check only half", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting that negative numbers are not palindromes",
+      body: "The minus sign makes any negative number asymmetric. -121 reversed is 121-, not -121.",
+      fix: "Add an early return: if x < 0 return false.",
+    },
+    {
+      title: "Treating 0 as a special case",
+      body: "0 is a valid palindrome (single digit). The loop with middleIndex = 0 never executes and correctly returns true.",
+      fix: "No special handling needed — the algorithm handles single-digit numbers correctly.",
+    },
+    {
+      title: "Off-by-one in the mirror index",
+      body: "The mirror of index i in an array of length n is n-1-i, not n-i. Using n-i would access out of bounds for i=0.",
+      fix: "Use array[count - pointer - 1] (subtract 1 to convert length to zero-based index).",
+    },
+  ]}
+/>

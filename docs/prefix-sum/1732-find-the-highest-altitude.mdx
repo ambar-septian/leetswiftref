@@ -1,0 +1,127 @@
+---
+id: 1732-find-the-highest-altitude
+title: "Find the Highest Altitude"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1732}
+  title="Find the Highest Altitude"
+  difficulty="Easy"
+  pattern="Prefix Sum — Running Maximum"
+  tags={["Array", "Prefix Sum"]}
+  leetcodeUrl="https://leetcode.com/problems/find-the-highest-altitude/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There is a biker going on a road trip. The road trip consists of `n + 1` points at different altitudes. The biker starts his trip on point `0` with altitude equal to `0`.
+
+You are given an integer array `gain` of length `n` where `gain[i]` is the **net gain in altitude** between points `i` and `i+1` for all `0 <= i < n`. Return the **highest altitude** of a point.
+
+**Constraints:**
+- `n == gain.length`
+- `1 <= n <= 100`
+- `-100 <= gain[i] <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  gain = [-5,1,5,0,-7]
+Output: 1
+Explanation: Altitudes: [0,-5,-4,1,1,-6]. Maximum = 1.
+```
+
+#### Example 2
+
+```
+Input:  gain = [-4,-3,-2,-1,4,3,2]
+Output: 0
+Explanation: Altitudes: [0,-4,-7,-9,-10,-6,-3,-1]. Maximum = 0 (the start).
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is each altitude a cumulative sum of gains?", verdict: "yes", reason: "altitude[i] = altitude[i-1] + gain[i-1]. Accumulate a running prefix sum and track the maximum." },
+  ]}
+  answer="Prefix Sum — accumulate running sum, track max"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start with `sum = 0` (altitude at point 0) and `maxAlt = 0`. For each gain value, add it to `sum` and update `maxAlt = max(sum, maxAlt)`.
+
+<Callout type="yellow" label="Include starting altitude">
+The biker starts at altitude 0. Initialise `maxAlt = 0` to ensure the starting point is considered even if all subsequent altitudes are negative.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="gain = [-5,1,5,0,-7]"
+  expected="1"
+  steps={[
+    { label: "Start", text: "sum=0, maxAlt=0. Starting altitude is 0.", state: "sum=0, max=0" },
+    { label: "-5",   text: "sum=0+(-5)=-5. maxAlt=max(-5,0)=0.", state: "sum=-5, max=0" },
+    { label: "1",    text: "sum=-5+1=-4. maxAlt=max(-4,0)=0.", state: "sum=-4, max=0" },
+    { label: "5",    text: "sum=-4+5=1. maxAlt=max(1,0)=1.", state: "sum=1, max=1" },
+    { label: "0",    text: "sum=1+0=1. maxAlt=max(1,1)=1.", state: "sum=1, max=1" },
+    { label: "-7",   text: "sum=1+(-7)=-6. maxAlt=max(-6,1)=1.", state: "sum=-6, max=1 → return 1" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var sum = 0`, `var maxAlt = 0`.
+  </StepItem>
+  <StepItem title="Accumulate and track">
+    For each gain: `sum += gain[i]`, `maxAlt = max(sum, maxAlt)`.
+  </StepItem>
+  <StepItem title="Return maxAlt">
+    Return the highest altitude reached.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func largestAltitude(_ gain: [Int]) -> Int {
+    var sum = 0
+    var maxAlt = 0
+    for g in gain {
+      sum += g
+      maxAlt = max(sum, maxAlt)
+    }
+    return maxAlt
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Single pass prefix sum", time: "O(n)", space: "O(1)", note: "One pass, two variables", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Initialising maxAlt to Int.min instead of 0",
+      body: "The starting point has altitude 0. If all gains are negative, the answer is still 0. Initialising to Int.min would miss this.",
+      fix: "Initialise maxAlt = 0 to include the starting altitude in the comparison.",
+    },
+  ]}
+/>

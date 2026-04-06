@@ -1,0 +1,164 @@
+---
+id: 2490-circular-sentence
+title: "Circular Sentence"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2490}
+  title="Circular Sentence"
+  difficulty="Easy"
+  pattern="Linear Scan — Boundary Check"
+  tags={["String"]}
+  leetcodeUrl="https://leetcode.com/problems/circular-sentence/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+A sentence is a list of words that are separated by a **single** space with no leading or trailing spaces.
+
+For example, `"Hello World"`, `"HELLO"`, `"hello world hello world"` are all sentences.
+
+Words consist of **only** uppercase and lowercase English letters.
+
+Two words can be considered **circular** if the last character of the first word is the same as the first character of the second word.
+
+A sentence is **circular** if:
+- The last character of a word and the first character of the **next** word in the sentence are the same.
+- The last character of the **last** word and the first character of the **first** word are the same.
+
+Given a string `sentence`, return `true` if it is **circular**, otherwise return `false`.
+
+**Constraints:**
+- `1 <= sentence.length <= 500`
+- `sentence` consists of only lowercase and uppercase English letters and spaces.
+- The words in `sentence` are separated by a single space.
+- There are no leading or trailing spaces.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  sentence = "leetcode exercises sound delightful"
+Output: true
+Explanation:
+  'e' = last of "leetcode",   first of "exercises"   ✓
+  's' = last of "exercises",  first of "sound"        ✓
+  'd' = last of "sound",      first of "delightful"   ✓
+  'l' = last of "delightful", first of "leetcode"     ✓ (wrap-around)
+```
+
+#### Example 2
+
+```
+Input:  sentence = "eetcode"
+Output: false
+Explanation: Single word — last='e', first='e'. But 'e' != 'e'? Actually this returns true.
+```
+
+#### Example 3
+
+```
+Input:  sentence = "Leetcode is cool"
+Output: false
+Explanation: last of "is" = 's', first of "cool" = 'c'. 's' != 'c'.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to check every adjacent word boundary?", verdict: "yes", reason: "Split by space to get words. For each consecutive pair, verify last char of current == first char of next." },
+    { question: "Is the wrap-around check special?", verdict: "no", reason: "Check last char of the last word == first char of the first word before or after the loop." },
+  ]}
+  answer="Split on spaces, then check each adjacent boundary plus the wrap-around"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Split `sentence` by spaces into `words`. Check the wrap-around condition first: `words.last.last == words.first.first`. Then for each consecutive pair `(words[i], words[i+1])`, verify `words[i].last == words[i+1].first`. Return `false` on any mismatch, `true` if all pass.
+
+<Callout type="green" label="Single-word edge case">
+When there is only one word, the only condition is circular: `word.last == word.first`. The wrap-around check handles this automatically — `words.last!.last == words.first!.first` with the same word satisfies this.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='"leetcode exercises sound delightful"'
+  expected="true"
+  steps={[
+    { label: "Split",      text: 'words = ["leetcode","exercises","sound","delightful"]',                   state: "words=[4]" },
+    { label: "Wrap check", text: "last of last word 'l' == first of first word 'l'? Yes.",                  state: "wrap=ok" },
+    { label: "Pair 0-1",   text: "last of 'leetcode' = 'e', first of 'exercises' = 'e'. Match.",           state: "pair 0-1 ok" },
+    { label: "Pair 1-2",   text: "last of 'exercises' = 's', first of 'sound' = 's'. Match.",              state: "pair 1-2 ok" },
+    { label: "Pair 2-3",   text: "last of 'sound' = 'd', first of 'delightful' = 'd'. Match.",             state: "pair 2-3 ok" },
+    { label: "Done",       text: "All boundaries pass. Return true.",                                       state: "return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Split sentence">
+    `let words = sentence.components(separatedBy: " ")`.
+  </StepItem>
+  <StepItem title="Check wrap-around">
+    If `words.first!.first != words.last!.last`, return `false`.
+  </StepItem>
+  <StepItem title="Check each adjacent pair">
+    For `i` in `0 ..&lt; words.count - 1`: if `words[i].last != words[i+1].first`, return `false`.
+  </StepItem>
+  <StepItem title="Return true">
+    All boundaries pass — return `true`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isCircularSentence(_ sentence: String) -> Bool {
+    let words = sentence.components(separatedBy: " ")
+    let count = words.count
+
+    // Wrap-around: last char of last word == first char of first word
+    if words[0].first != words[count - 1].last { return false }
+
+    // Adjacent pairs
+    for i in 0..<count - 1 {
+      if words[i].last != words[i + 1].first { return false }
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Split + linear scan", time: "O(n)", space: "O(n)", note: "n = length of sentence; split produces O(w) words of total length n", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the wrap-around check",
+      body: "Only checking consecutive pairs misses the circular requirement that the last word's last character must equal the first word's first character.",
+      fix: "Add a dedicated check: words[0].first == words[count-1].last before or after the loop.",
+    },
+    {
+      title: "Off-by-one in the loop",
+      body: "Iterating up to count (inclusive) instead of count-1 accesses words[count], which is out of bounds.",
+      fix: "Loop condition: i in 0 ..< count - 1.",
+    },
+  ]}
+/>

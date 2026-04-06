@@ -1,0 +1,183 @@
+---
+id: 994-rotting-oranges
+title: "Rotting Oranges"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { RottingOrangesDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={994}
+  title="Rotting Oranges"
+  difficulty="Medium"
+  pattern="Multi-Source BFS"
+  tags={["Array", "Breadth-First Search", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/rotting-oranges/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an `m x n` integer grid `grid` where each cell can have one of three values:
+- `0` representing an empty cell,
+- `1` representing a fresh orange,
+- `2` representing a rotten orange.
+
+Every minute, any fresh orange that is **4-directionally adjacent** to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return `-1`.
+
+**Constraints:**
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 10`
+- `grid[i][j]` is `0`, `1`, or `2`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  grid = [[2,1,1],[1,1,0],[0,1,1]]
+Output: 4
+```
+
+#### Example 2
+
+```
+Input:  grid = [[2,1,1],[0,1,1],[1,0,1]]
+Output: -1
+Explanation: The orange in the bottom-left corner can never rot.
+```
+
+#### Example 3
+
+```
+Input:  grid = [[0,2]]
+Output: 0
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does rot spread from multiple sources simultaneously?", verdict: "yes", reason: "All initially rotten oranges spread at the same time — seed the BFS queue with all of them at once." },
+    { question: "Is level-by-level BFS the right tool for minimum time?", verdict: "yes", reason: "Each BFS level corresponds to one minute. The number of levels processed (where at least one new orange rots) equals the answer." },
+    { question: "How do we detect the impossible case?", verdict: "yes", reason: "Track freshCount. If any fresh orange remains after BFS ends, return -1." },
+  ]}
+  answer="Multi-source BFS — seed with all rotten cells, spread level by level, count levels with new rot"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Seed the BFS queue with all initially rotten cells (encoded as `r * cols + c`). Count `freshCount`. Process BFS level by level: for each level, process all current queue entries, spreading rot to adjacent fresh oranges (mark as 2, decrement freshCount, enqueue). If any new rot occurred in a level, increment `results`. After BFS, return `freshCount == 0 ? results : -1`.
+
+<RottingOrangesDiagram />
+
+<Callout type="cyan" label="Multi-source BFS">
+Seeding with all rotten cells simultaneously models the real problem: rot spreads from every rotten orange in parallel. BFS naturally processes all cells at distance 1 before distance 2, etc. — distance in BFS levels equals elapsed minutes.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="grid = [[2,1,1],[1,1,0],[0,1,1]]"
+  expected="4"
+  steps={[
+    { label: "init",    text: "Queue = [(0,0)]. freshCount=5." },
+    { label: "min 1",  text: "Spread from (0,0) → (0,1) and (1,0) rot. freshCount=3. results=1." },
+    { label: "min 2",  text: "Spread from (0,1)→(0,2) and (1,0)→(1,1). freshCount=1. results=2." },
+    { label: "min 3",  text: "Spread from (1,1)→(2,1). freshCount=0. results=3." },
+    { label: "min 4",  text: "Spread from (2,1)→(2,2). freshCount=0. results=4. freshCount==0 → return 4." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Seed queue and count fresh">
+    Scan grid: if `grid[r][c] == 2`, enqueue `r * cols + c`. If `grid[r][c] == 1`, `freshCount += 1`.
+  </StepItem>
+  <StepItem title="BFS level by level">
+    While queue is not empty: snapshot `count = queue.count`. Process `count` items. For each, spread to 4 neighbors: if neighbor is fresh, mark as 2, enqueue, decrement freshCount. If any neighbor was newly rotted, set `rootenFound = true`.
+  </StepItem>
+  <StepItem title="Count minutes">
+    After processing a full level, if `rootenFound`: `results += 1`.
+  </StepItem>
+  <StepItem title="Return">
+    `return freshCount == 0 ? results : -1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func orangesRotting(_ grid: [[Int]]) -> Int {
+    guard !grid.isEmpty else { return 0 }
+    var grid = grid
+    let rows = grid.count, cols = grid[0].count
+    let directions = [(0,1),(1,0),(0,-1),(-1,0)]
+    var queue = [Int](), freshCount = 0, results = 0
+
+    for r in 0..<rows {
+      for c in 0..<cols {
+        if grid[r][c] == 2 { queue.append(r * cols + c) }
+        else if grid[r][c] == 1 { freshCount += 1 }
+      }
+    }
+
+    while !queue.isEmpty {
+      let count = queue.count
+      var rootenFound = false
+      for _ in 0..<count {
+        let ev = queue.removeFirst()
+        let rIdx = ev / cols, cIdx = ev % cols
+        for dir in directions {
+          let rr = rIdx + dir.0, cc = cIdx + dir.1
+          guard rr >= 0, cc >= 0, rr < rows, cc < cols else { continue }
+          if grid[rr][cc] == 1 {
+            grid[rr][cc] = 2
+            queue.append(rr * cols + cc)
+            rootenFound = true
+            freshCount -= 1
+          }
+        }
+      }
+      if rootenFound { results += 1 }
+    }
+
+    return freshCount == 0 ? results : -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Multi-Source BFS", time: "O(m·n)", space: "O(m·n)", note: "Every cell is enqueued at most once. Queue can hold up to m·n entries.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not seeding all initial rotten cells",
+      body: "If only one rotten cell is seeded, single-source BFS misses the simultaneous spread from other rotten cells and over-counts minutes.",
+      fix: "Scan the entire grid first and enqueue every cell with value 2 before starting BFS.",
+    },
+    {
+      title: "Counting minutes for empty BFS levels",
+      body: "If the BFS processes a level but no new orange rots (all neighbours are empty or already rotten), that level should not count as a minute.",
+      fix: "Only increment results when rootenFound is true — i.e., at least one fresh orange became rotten in that BFS level.",
+    },
+    {
+      title: "Returning results when fresh oranges still remain",
+      body: "If isolated fresh oranges are unreachable from any rotten cell, the algorithm finishes BFS but there are still fresh oranges left.",
+      fix: "Check freshCount == 0 after BFS. If fresh oranges remain, return -1.",
+    },
+  ]}
+/>

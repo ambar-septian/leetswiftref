@@ -1,0 +1,174 @@
+---
+id: 125-valid-palindrome
+title: "Valid Palindrome"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={125}
+  title="Valid Palindrome"
+  difficulty="Easy"
+  pattern="Two Pointers"
+  tags={["Two Pointers", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/valid-palindrome/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+A phrase is a **palindrome** if, after converting all uppercase letters to lowercase and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and digits.
+
+Given a string `s`, return `true` if it is a palindrome, or `false` otherwise.
+
+**Constraints:**
+- `1 <= s.length <= 2 * 10^5`
+- `s` consists only of printable ASCII characters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: s = "A man, a plan, a canal: Panama"
+Output: true
+Explanation: "amanaplanacanalpanama" is a palindrome.
+```
+
+#### Example 2
+
+```
+Input: s = "race a car"
+Output: false
+Explanation: "raceacar" is not a palindrome.
+```
+
+#### Example 3
+
+```
+Input: s = " "
+Output: true
+Explanation: After removing non-alphanumeric characters, s is empty "". An empty string reads the same forward and backward.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we check the string by comparing from both ends simultaneously?", verdict: "yes", reason: "A palindrome mirrors itself — two pointers moving inward naturally check each pair." },
+    { question: "Do we need to skip non-alphanumeric characters?", verdict: "yes", reason: "Spaces, punctuation, and other symbols are ignored — advance the pointer past them before comparing." },
+    { question: "Does case matter?", verdict: "no", reason: "Lowercase both characters before comparing." },
+  ]}
+  answer="Two Pointers — left and right converge, skipping non-alphanumeric chars and lowercasing before compare"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Convert the string to a character array. Use `left` starting at index 0 and `right` starting at the last index. Before comparing, independently advance each pointer past any character that is neither a letter (`a`–`z`, ASCII 97–122) nor a digit (`0`–`9`, ASCII 48–57). If both are alphanumeric and match (lowercased), advance both. If they do not match, return `false`.
+
+<Callout type="cyan" label="ASCII-based check">
+Checking ASCII ranges directly avoids calling any library character-classification functions. Lowercase with <code>lowercased()</code> first, then check if the ASCII value falls in 97–122 or 48–57.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="true"
+  input='s = "A man, a plan, a canal: Panama"'
+  steps={[
+    { label: "l=0, r=29",  text: "'A'→'a' vs 'a'→'a': match — advance both" },
+    { label: "l=1, r=28",  text: "' ' is non-alpha — advance left" },
+    { label: "l=2, r=28",  text: "'m' vs 'a': wait — right is 'a'... continue matching" },
+    { label: "...",         text: "skipping spaces and punctuation on both sides as needed" },
+    { label: "converge",   text: "all pairs match — return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert to character array">
+    `let array = Array(s)` for O(1) index access.
+  </StepItem>
+  <StepItem title="Initialise two pointers">
+    `var left = 0`, `var right = array.count - 1`.
+  </StepItem>
+  <StepItem title="Lowercase and check alphanumeric">
+    For each pointer, lowercase the character: `let a = Character(array[left].lowercased())`. Check if its ASCII value is in `[97,122]` (a–z) or `[48,57]` (0–9). If not, skip (advance the pointer) and `continue`.
+  </StepItem>
+  <StepItem title="Compare">
+    If both are alphanumeric: if they are equal, advance both (`left += 1`, `right -= 1`). Otherwise return `false`.
+  </StepItem>
+  <StepItem title="Return true">
+    Once pointers cross or meet, all pairs have been verified — return `true`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isPalindrome(_ s: String) -> Bool {
+    let array = Array(s)
+    var left  = 0
+    var right = array.count - 1
+
+    while left < right {
+      let a = Character(array[left].lowercased())
+      let b = Character(array[right].lowercased())
+
+      let asciiA = a.asciiValue ?? 0
+      if !((asciiA >= 97 && asciiA <= 122) || (asciiA >= 48 && asciiA <= 57)) {
+        left += 1
+        continue
+      }
+
+      let asciiB = b.asciiValue ?? 0
+      if !((asciiB >= 97 && asciiB <= 122) || (asciiB >= 48 && asciiB <= 57)) {
+        right -= 1
+        continue
+      }
+
+      if a == b {
+        left  += 1
+        right -= 1
+      } else {
+        return false
+      }
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two Pointers (in-place)", time: "O(n)", space: "O(n)", note: "O(n) for the character array; comparisons are O(1) each", highlight: true },
+    { approach: "Filter + reverse", time: "O(n)", space: "O(n)", note: "Build clean string, compare with reversed — simpler but more allocations" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Skipping both pointers in the same iteration",
+      body: "When the left character is non-alphanumeric, only advance <code>left</code>. When right is non-alphanumeric, only advance <code>right</code>. Both may need skipping independently.",
+      fix: "Use a <code>continue</code> after skipping each pointer so the loop re-evaluates both characters from their new positions.",
+    },
+    {
+      title: "Comparing before lowercasing",
+      body: "'A' and 'a' have different ASCII values. Without lowercasing first, 'A' vs 'a' would incorrectly fail.",
+      fix: "Always lowercase both characters before the ASCII range check and before comparing.",
+    },
+    {
+      title: "Using left != right as the loop condition",
+      body: "For even-length palindromes, <code>left</code> and <code>right</code> will jump past each other (left becomes greater than right) rather than meeting exactly.",
+      fix: "Use <code>while left less than right</code> to handle both even- and odd-length cases correctly.",
+    },
+  ]}
+/>

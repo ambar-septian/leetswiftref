@@ -1,0 +1,184 @@
+---
+id: 211-design-add-and-search-words-data-structure
+title: "Design Add and Search Words Data Structure"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import WordDictionaryDiagram from '@site/src/components/DSA/WordDictionaryDiagram';
+
+<ProblemHeader
+  number={211}
+  title="Design Add and Search Words Data Structure"
+  difficulty="Medium"
+  pattern="Trie + DFS Wildcard"
+  tags={["String", "Depth-First Search", "Design", "Trie"]}
+  leetcodeUrl="https://leetcode.com/problems/design-add-and-search-words-data-structure/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Design a data structure that supports adding new words and searching for strings, where the search query may contain the wildcard character `'.'` which matches any letter.
+
+Implement the `WordDictionary` class:
+- `WordDictionary()` — Initialises the object.
+- `void addWord(word)` — Adds `word` to the data structure.
+- `bool search(word)` — Returns `true` if any string in the data structure matches `word`. `'.'` matches any single character.
+
+**Constraints:**
+- `1 <= word.length <= 25`
+- `word` in `addWord` consists of lowercase English letters only.
+- `word` in `search` consists of lowercase English letters or `'.'`.
+- At most `10^4` calls will be made to `addWord` and `search`.
+- At least one call will be made to `search`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+["WordDictionary","addWord","addWord","addWord","search","search","search","search"]
+[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]
+
+Output: [null,null,null,null,false,true,true,true]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need fast prefix and exact-word lookups?", verdict: "yes", reason: "A trie provides O(m) insert and search where m is the word length, regardless of dictionary size." },
+    { question: "Does '.' require special handling?", verdict: "yes", reason: "When we encounter '.', we cannot follow a single child — we must branch into all children and check if any subtree matches the rest of the pattern." },
+    { question: "Can DFS handle the branching naturally?", verdict: "yes", reason: "Recursive DFS tries each child when '.' is seen; early return on any True result short-circuits the remaining branches." },
+  ]}
+  answer="Trie + recursive DFS — branch into all children at '.' positions"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<WordDictionaryDiagram />
+
+`addWord` walks the trie character-by-character, creating nodes as needed, and sets `isEndOfWord = true` on the final node — identical to a standard trie insert.
+
+`search` uses a recursive DFS helper that takes a node and a character index. For a regular character, it follows the single matching child. For `'.'`, it iterates over all children and recurses into each one, returning `true` if any subtree matches the remaining suffix.
+
+<Callout type="cyan" label="Why DFS for wildcard">
+An iterative approach would require maintaining multiple active trie positions simultaneously — a queue of states. Recursive DFS handles this naturally: each branch is a separate call frame that either succeeds or backtracks.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='addWord("bad"), addWord("dad"), addWord("mad")'
+  expected='search(".ad") = true, search("b..") = true, search("bat") = false'
+  steps={[
+    { label: 'add "bad"',    text: 'create root→b→a→d; d.isEnd=true' },
+    { label: 'add "dad"',    text: 'create root→d→a→d; d.isEnd=true' },
+    { label: 'add "mad"',    text: 'create root→m→a→d; d.isEnd=true' },
+    { label: 'search(".ad")',text: 'index=0: "." → branch into b,d,m children; each subtree follows a→d reaching isEnd=true → return true' },
+    { label: 'search("b..")',text: 'index=0: "b" → follow b child; index=1: "." → branch into a; index=2: "." → branch into d (isEnd=true) → return true' },
+    { label: 'search("bat")',text: 'index=0: "b" → follow b child; index=1: "a" → follow a child; index=2: "t" → no t child → return false' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Define Node">
+    `var children = [Character: Node]()`, `var isEndOfWord = false`.
+  </StepItem>
+  <StepItem title="addWord — standard trie insert">
+    Walk characters, create missing nodes, set final node's `isEndOfWord = true`.
+  </StepItem>
+  <StepItem title="search — DFS with wildcard branch">
+    Convert word to `[Character]`. Recursive helper takes `node` and `index`. Base case: `index == chars.count → return node.isEndOfWord`.
+  </StepItem>
+  <StepItem title="Handle '.' by branching">
+    If `chars[index] == '.'`, iterate all `node.children.values`; return `true` if any child's subtree returns `true`.
+  </StepItem>
+  <StepItem title="Handle regular character">
+    If the child for `chars[index]` exists, recurse with it; otherwise return `false`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Node {
+  var children = [Character: Node]()
+  var isEndOfWord = false
+}
+
+class WordDictionary {
+  var root: Node
+
+  init() { root = Node() }
+
+  func addWord(_ word: String) {
+    var curr = root
+    for char in word {
+      if let node = curr.children[char] { curr = node }
+      else {
+        curr.children[char] = Node()
+        curr = curr.children[char]!
+      }
+    }
+    curr.isEndOfWord = true
+  }
+
+  func search(_ word: String) -> Bool {
+    let chars = Array(word)
+
+    func dfs(_ curr: Node?, index: Int) -> Bool {
+      guard let curr else { return false }
+      if index == chars.count { return curr.isEndOfWord }
+
+      let char = chars[index]
+      if char == "." {
+        for child in curr.children.values {
+          if dfs(child, index: index + 1) { return true }
+        }
+        return false
+      } else if let node = curr.children[char] {
+        return dfs(node, index: index + 1)
+      }
+      return false
+    }
+
+    return dfs(root, index: 0)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "addWord", time: "O(m)", space: "O(m)", note: "m = word length; one node created per character in the worst case", highlight: true },
+    { approach: "search (no wildcards)", time: "O(m)", space: "O(m)", note: "Single trie path; O(m) call stack depth" },
+    { approach: "search (all wildcards)", time: "O(26^m)", space: "O(m)", note: "Worst case: '....' branches into all children at every level — exponential in m" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning true when '.' matches an empty children map",
+      body: "If a node has no children, branching into <code>curr.children.values</code> for '.' immediately falls through to <code>return false</code>. This is correct — but easy to mis-read as a successful match.",
+      fix: "The for loop over <code>curr.children.values</code> simply does not execute when the map is empty, so returning <code>false</code> afterward is correct.",
+    },
+    {
+      title: "Checking isEndOfWord before reaching the end of the pattern",
+      body: "isEndOfWord should only be checked at <code>index == chars.count</code>, not at every node. Checking mid-traversal causes false positives for prefix matches.",
+      fix: "Only <code>return curr.isEndOfWord</code> when <code>index == chars.count</code> — after all characters are consumed.",
+    },
+    {
+      title: "Passing the mutable curr pointer instead of a local one",
+      body: "If curr is the WordDictionary's root field and gets reassigned inside addWord, concurrent calls will corrupt each other's state.",
+      fix: "In addWord, declare <code>var curr = root</code> locally at the start — do not mutate the root reference.",
+    },
+  ]}
+/>

@@ -1,0 +1,153 @@
+---
+id: 876-middle-of-the-linked-list
+title: "Middle of the Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { MiddleLinkedListDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={876}
+  title="Middle of the Linked List"
+  difficulty="Easy"
+  pattern="Two-Pass Linked List"
+  tags={["Linked List", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/middle-of-the-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `head` of a singly linked list, return the **middle node** of the linked list.
+
+If there are two middle nodes, return the **second middle** node.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[1, 100]`.
+- `1 <= Node.val <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  head = [1,2,3,4,5]
+Output: [3,4,5]
+Explanation: The middle node is node 3.
+```
+
+#### Example 2
+
+```
+Input:  head = [1,2,3,4,5,6]
+Output: [4,5,6]
+Explanation: Since the list has two middle nodes (3 and 4), return the second one.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we count the length in one pass and seek the middle in another?", verdict: "yes", reason: "Walk once to count, compute middleIndex = count/2 (or (count+1)/2 for odd), walk again to that index." },
+    { question: "Is the fast/slow pointer approach cleaner?", verdict: "yes", reason: "A slow pointer moving one step and a fast pointer moving two steps — slow is at the middle when fast reaches the end. One pass, O(1) space." },
+    { question: "Which method does this implementation use?", verdict: "yes", reason: "This solution uses the two-pass count-then-seek approach, which is straightforward and easy to reason about." },
+  ]}
+  answer="Two-pass: count all nodes in pass 1, compute middle index, seek to that node in pass 2"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Pass 1: walk `current` while `current.next != nil`, incrementing `count` each step. After the loop, `count` equals the number of steps taken (not the total nodes). Compute `middleIndex`: if `count % 2 == 0`, `count / 2`; else `(count + 1) / 2`. Pass 2: reset `current = head`, advance `middleIndex` times, return.
+
+<MiddleLinkedListDiagram />
+
+<Callout type="cyan" label="Count vs node count">
+The loop counts how many times we advance (until next is nil), not the number of nodes. For [1,2,3,4,5]: we advance 4 times → count=4. middleIndex = 4/2 = 2. Walk index 0→1→2 → node(3). This is correct: position 2 (0-indexed) is the middle of 5 nodes.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,3,4,5]"
+  expected="node(3)"
+  steps={[
+    { label: "pass 1", text: "Walk while next!=nil: count = 4 (advanced from node 1 through node 4)." },
+    { label: "compute", text: "count=4, 4%2==0 → middleIndex = 4/2 = 2." },
+    { label: "pass 2", text: "Reset current=head. Advance 2 times: node1→node2→node3. index==2 → return node(3)." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Count steps">
+    `var current = head; var count = 0`. While `current?.next != nil`: `count += 1; current = current?.next`.
+  </StepItem>
+  <StepItem title="Compute middle index">
+    `middleIndex = count % 2 == 0 ? count / 2 : (count + 1) / 2`.
+  </StepItem>
+  <StepItem title="Walk to middle">
+    `current = head; var index = 0`. While `index != middleIndex`: `index += 1; current = current?.next`.
+  </StepItem>
+  <StepItem title="Return middle node">
+    Return `current`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func middleNode(_ head: ListNode?) -> ListNode? {
+    var current = head
+    var count = 0
+
+    while current?.next != nil {
+      count += 1
+      current = current?.next
+    }
+
+    var middleIndex = count % 2 == 0 ? count / 2 : (count + 1) / 2
+
+    current = head
+    var index = 0
+    while index != middleIndex {
+      index += 1
+      current = current?.next
+    }
+
+    return current
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pass (count + seek)", time: "O(n)", space: "O(1)", note: "Two linear passes. O(1) extra space — only pointer and count variables.", highlight: true },
+    { approach: "Fast/Slow pointers", time: "O(n)", space: "O(1)", note: "One pass. Slow advances 1 step, fast advances 2. When fast reaches end, slow is at middle." },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Off-by-one in the middle index formula",
+      body: "The count variable counts advances (not nodes). For [1,2,3,4,5] count=4 but there are 5 nodes. The formula middleIndex=count/2 gives position 2 (0-indexed), which is node 3 — correct.",
+      fix: "Verify: for n nodes, count = n-1. count/2 = (n-1)/2 which is 0-indexed middle for odd n. For even n, count/2 gives the second middle node as required.",
+    },
+    {
+      title: "Stopping the count loop when current is nil",
+      body: "Looping while current != nil (instead of current.next != nil) advances one extra step, making count = n instead of n-1, and the middle index formula breaks.",
+      fix: "Loop while current?.next != nil so the last node is reached but not advanced past.",
+    },
+    {
+      title: "Forgetting to reset current to head for pass 2",
+      body: "After pass 1, current points to the last node. Not resetting means the walk in pass 2 starts from the wrong position.",
+      fix: "Reassign current = head at the start of pass 2.",
+    },
+  ]}
+/>

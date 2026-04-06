@@ -1,0 +1,161 @@
+---
+id: 203-remove-linked-list-elements
+title: "Remove Linked List Elements"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import RemoveElementsDiagram from '@site/src/components/DSA/RemoveElementsDiagram';
+
+<ProblemHeader
+  number={203}
+  title="Remove Linked List Elements"
+  difficulty="Easy"
+  pattern="Dummy Head"
+  tags={["Linked List", "Recursion"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-linked-list-elements/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `head` of a linked list and an integer `val`, remove all the nodes of the linked list that have `Node.val == val`, and return the new head.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[0, 10^4]`.
+- `1 <= Node.val <= 50`
+- `0 <= val <= 50`
+
+<SectionHeader n={2} title="Examples" />
+
+<RemoveElementsDiagram />
+
+#### Example 1
+
+```
+Input: head = [1,2,6,3,4,5,6], val = 6
+Output: [1,2,3,4,5]
+```
+
+#### Example 2
+
+```
+Input: head = [], val = 1
+Output: []
+```
+
+#### Example 3
+
+```
+Input: head = [7,7,7,7], val = 7
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can the head node itself be removed?", verdict: "yes", reason: "If head.val == val, the head changes. A dummy node before the real head eliminates this special case." },
+    { question: "Do we need to track the previous node?", verdict: "yes", reason: "To bypass a node we need curr.next = curr.next.next, so we check curr.next.val rather than curr.val — keeping curr as the predecessor." },
+    { question: "Is a separate prev pointer needed?", verdict: "no", reason: "Checking curr.next.val instead of curr.val means curr itself acts as the predecessor — no separate prev variable required." },
+  ]}
+  answer="Dummy Head — check curr.next.val; bypass with curr.next = curr.next.next; return dummy.next"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Prepend a dummy sentinel node before the head. Traverse with `curr` starting at the dummy. At each step, peek at `curr.next.val`: if it equals `val`, skip it by setting `curr.next = curr.next.next` (do not advance `curr`); otherwise advance `curr = curr.next`. Return `dummy.next` as the new head.
+
+<Callout type="cyan" label="Why a dummy head">
+Without a dummy, removing the head node requires a special case. The dummy absorbs it: curr always has a predecessor, so every node (including the original head) is handled uniformly.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,6,3,4,5,6], val = 6"
+  expected="[1,2,3,4,5]"
+  steps={[
+    { label: "init",    text: "dummy -> 1 -> 2 -> 6 -> 3 -> 4 -> 5 -> 6 -> nil; curr = dummy" },
+    { label: "step 1",  text: "curr.next.val = 1, not 6 → advance curr to node 1" },
+    { label: "step 2",  text: "curr.next.val = 2, not 6 → advance curr to node 2" },
+    { label: "step 3",  text: "curr.next.val = 6 == val → bypass: curr.next = node 3; curr stays at node 2" },
+    { label: "step 4",  text: "curr.next.val = 3, not 6 → advance curr to node 3" },
+    { label: "step 5",  text: "curr.next.val = 4, not 6 → advance curr to node 4" },
+    { label: "step 6",  text: "curr.next.val = 5, not 6 → advance curr to node 5" },
+    { label: "step 7",  text: "curr.next.val = 6 == val → bypass: curr.next = nil; curr stays at node 5" },
+    { label: "done",    text: "curr.next = nil → loop ends; return dummy.next = node 1; list = [1,2,3,4,5]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Create a dummy sentinel">
+    Allocate a new `ListNode()` as `curr` and save `result = curr`. Point `curr.next = head`.
+  </StepItem>
+  <StepItem title="Traverse until curr has no next">
+    Loop while `curr != nil`. The loop ends when `curr` itself becomes nil (after advancing past the last real node).
+  </StepItem>
+  <StepItem title="Check curr.next.val">
+    If `curr.next?.val == val`, set `curr.next = curr.next?.next` (bypass the matching node). Do not advance `curr`.
+  </StepItem>
+  <StepItem title="Advance if no match">
+    Otherwise, move `curr = curr.next`.
+  </StepItem>
+  <StepItem title="Return dummy.next">
+    Return `result?.next` — the first real node after the sentinel.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func removeElements(_ head: ListNode?, _ val: Int) -> ListNode? {
+    var curr: ListNode? = ListNode()
+    var result = curr
+    curr?.next = head
+
+    while curr != nil {
+      if curr?.next?.val == val {
+        curr?.next = curr?.next?.next
+      } else {
+        curr = curr?.next
+      }
+    }
+
+    return result?.next
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Dummy head iterative", time: "O(n)", space: "O(1)", note: "Single pass; one dummy node allocated — constant extra space", highlight: true },
+    { approach: "Recursive", time: "O(n)", space: "O(n)", note: "Elegant but O(n) call stack depth for a list of length n" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Advancing curr after a bypass",
+      body: "After setting <code>curr.next = curr.next.next</code>, advancing <code>curr = curr.next</code> skips the newly linked node — it could also need removal.",
+      fix: "Do NOT advance curr when a node is removed. Let the loop re-check <code>curr.next.val</code> on the next iteration.",
+    },
+    {
+      title: "Not using a dummy head for the head node",
+      body: "If the head itself has <code>val</code>, returning <code>head</code> will include it. Handling the head separately adds fragile special-case logic.",
+      fix: "Use a dummy sentinel so the head is handled uniformly with all other nodes.",
+    },
+    {
+      title: "Returning head instead of dummy.next",
+      body: "The original <code>head</code> may have been removed, so returning it is wrong.",
+      fix: "Always return <code>result?.next</code> (the dummy's next), which points to the first surviving node.",
+    },
+  ]}
+/>

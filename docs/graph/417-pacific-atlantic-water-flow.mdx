@@ -1,0 +1,204 @@
+---
+id: 417-pacific-atlantic-water-flow
+title: "Pacific Atlantic Water Flow"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import PacificAtlanticDiagram from '@site/src/components/DSA/PacificAtlanticDiagram';
+
+<ProblemHeader
+  number={417}
+  title="Pacific Atlantic Water Flow"
+  difficulty="Medium"
+  pattern="Multi-Source BFS"
+  tags={["Array", "Depth-First Search", "Breadth-First Search", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/pacific-atlantic-water-flow/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There is an `m x n` rectangular island that borders both the **Pacific Ocean** and the **Atlantic Ocean**. The Pacific Ocean touches the island's left and top edges, and the Atlantic Ocean touches the island's right and bottom edges.
+
+The island is partitioned into a grid of `1 x 1` squares. You are given an `m x n` integer matrix `heights` where `heights[r][c]` represents the height above sea level of the cell at coordinate `(r, c)`.
+
+The island receives a lot of rain, and the rain water can flow to neighbouring cells directly **north, south, east, and west** if the neighbouring cell's height is **less than or equal to** the current cell's height. Water can flow from any cell adjacent to an ocean into the ocean.
+
+Return a 2D list of grid coordinates `result` where `result[i] = [ri, ci]` denotes that rain water can flow from cell `(ri, ci)` to **both** the Pacific and Atlantic oceans.
+
+**Constraints**
+- `m == heights.length`
+- `n == heights[r].length`
+- `1 <= m, n <= 200`
+- `0 <= heights[r][c] <= 10^5`
+
+<Callout type="green" label="Core Insight">
+Instead of asking "can water from cell X reach both oceans?" (expensive), reverse the question: start BFS from each ocean's border and ask "which cells can water flow *uphill* from here?". The intersection of both reachable sets is the answer.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:
+heights = [[1,2,2,3,5],
+           [3,2,3,4,4],
+           [2,4,5,3,1],
+           [6,7,1,4,5],
+           [5,1,1,2,4]]
+
+Output: [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]
+```
+Explanation: The shaded cells can send water to both the Pacific (top/left border) and the Atlantic (bottom/right border).
+
+#### Example 2
+```
+Input:  heights = [[1]]
+Output: [[0, 0]]
+Explanation: The single cell borders both oceans directly.
+```
+
+<PacificAtlanticDiagram />
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does water flow from many sources simultaneously?", verdict: "yes", reason: "Both entire ocean borders are starting points — multi-source BFS fits naturally." },
+    { question: "Can we solve it forward (cell → ocean)?", verdict: "no", reason: "Checking every cell individually is O((M*N)^2); reverse BFS from borders is O(M*N)." },
+    { question: "Do we need the intersection of two reachable sets?", verdict: "yes", reason: "Run BFS twice — once per ocean — then intersect the visited sets." },
+  ]}
+  answer="Reverse Multi-Source BFS — border-seeded uphill expansion"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Seed the Pacific BFS queue with every cell on the top row and left column. Seed the Atlantic BFS queue with every cell on the bottom row and right column. In each BFS, expand to a neighbour only if its height is **greater than or equal to** the current cell (water flows downhill, so we travel uphill in reverse). Collect all visited cells per ocean, then return the intersection.
+
+<Callout type="cyan" label="Why reverse flow works">
+Normal flow: water goes from high to low toward an ocean. Reversed: we start at the ocean border and move to equal-or-higher cells. Any cell we can reach this way can send water to that ocean in the forward direction.
+</Callout>
+
+<Callout type="amber" label="Encode / Decode trick">
+The solution uses a flat integer key `r * cols + c` to represent grid coordinates inside the BFS queue and visited sets, avoiding the overhead of tuple hashing.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]"
+  expected="[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]"
+  steps={[
+    { label: "Seed Pacific", text: "Enqueue all cells on the top row (row 0) and left column (col 0). These are guaranteed to reach the Pacific.", state: "queue = [0,0],[0,1],[0,2],[0,3],[0,4],[1,0],[2,0],[3,0],[4,0]" },
+    { label: "BFS Pacific", text: "Pop each cell and expand to neighbours with height >= current. E.g. from (0,4)=5 we can reach (1,4)=4? No — 4 < 5. From (2,0)=2 we reach (2,1)=4 — yes, enqueue.", state: "pacificSet grows to cover upper-left region" },
+    { label: "Seed Atlantic", text: "Enqueue all cells on the bottom row (row 4) and right column (col 4).", state: "queue = [4,0],[4,1],[4,2],[4,3],[4,4],[0,4],[1,4],[2,4],[3,4]" },
+    { label: "BFS Atlantic", text: "Same uphill BFS from Atlantic borders. Cells reachable from bottom-right region are collected.", state: "atlanticSet grows to cover lower-right region" },
+    { label: "Intersect", text: "Cells in both pacificSet and atlanticSet are the answer. Decode each integer key back to [row, col].", state: "result = [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Encode coordinates">
+    Map `(r, c)` to a single integer `r * cols + c` for fast set operations. Decode with `index / cols` and `index % cols`.
+  </StepItem>
+  <StepItem title="Seed Pacific queue">
+    Add all cells from the top row (`row 0, cols 0..cols-1`) and the left column (`col 0, rows 1..rows-1`) to the queue.
+  </StepItem>
+  <StepItem title="Run BFS — uphill expansion">
+    While the queue is non-empty: pop a cell, mark it visited, check all 4 neighbours. Enqueue a neighbour if it is in bounds, not yet visited, and its height is >= the current cell's height.
+  </StepItem>
+  <StepItem title="Collect Pacific set">
+    Every cell popped during the Pacific BFS is reachable — store it in `pacificSet`.
+  </StepItem>
+  <StepItem title="Seed Atlantic queue and repeat BFS">
+    Add the bottom row and right column, run the same BFS to get `atlanticSet`.
+  </StepItem>
+  <StepItem title="Intersect and decode">
+    `pacificSet.intersection(atlanticSet)` gives the encoded indices. Map each back to `[r, c]` and return.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func pacificAtlantic(_ heights: [[Int]]) -> [[Int]] {
+    guard !heights.isEmpty else { return [[]] }
+    let rows = heights.count
+    let cols = heights[0].count
+    let directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+    func encode(_ r: Int, _ c: Int) -> Int { r * cols + c }
+    func decode(_ index: Int) -> [Int] { [index / cols, index % cols] }
+
+    var queue = [Int]()
+
+    // Seed Pacific: top row + left column
+    for i in 0..<rows { queue.append(encode(i, 0)) }
+    for i in 1..<cols { queue.append(encode(0, i)) }
+
+    func bfs() -> Set<Int> {
+      var oceanSet = Set<Int>()
+      var visited = Set<Int>()
+      while !queue.isEmpty {
+        let q = queue.removeFirst()
+        let grid = decode(q)
+        oceanSet.insert(q)
+        for dir in directions {
+          let rD = grid[0] + dir.0
+          let cD = grid[1] + dir.1
+          guard rD >= 0, cD >= 0, rD < rows, cD < cols else { continue }
+          guard heights[rD][cD] >= heights[grid[0]][grid[1]] else { continue }
+          let newGrid = encode(rD, cD)
+          guard !visited.contains(newGrid) else { continue }
+          visited.insert(newGrid)
+          queue.append(newGrid)
+        }
+      }
+      return oceanSet
+    }
+
+    let pacificSet = bfs()
+
+    // Seed Atlantic: bottom row + right column
+    for i in 0..<rows { queue.append(encode(i, cols - 1)) }
+    for i in 0..<cols - 1 { queue.append(encode(rows - 1, i)) }
+    let atlanticSet = bfs()
+
+    return pacificSet.intersection(atlanticSet).map { decode($0) }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Naive — DFS from every cell", time: "O((M*N)^2)", space: "O(M*N)", note: "Repeat DFS for each of M*N cells" },
+    { approach: "Reverse multi-source BFS", time: "O(M*N)", space: "O(M*N)", note: "Two BFS passes + set intersection", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Flowing downhill instead of uphill in reverse BFS",
+      body: "The BFS expands from ocean borders, so we travel in the reverse direction of water flow — uphill. The neighbour must have height >= current.",
+      fix: "Use heights[rD][cD] >= heights[grid[0]][grid[1]], not <=.",
+    },
+    {
+      title: "Off-by-one when seeding Atlantic borders",
+      body: "The bottom row is seeded with all columns 0..cols-1, but the right column loop must avoid re-adding the bottom-right corner already covered.",
+      fix: "Seed right col as rows 0..rows-2 (exclusive of bottom row), and bottom row as cols 0..cols-1, or use the pattern in the solution: rows 0..rows-1 for right col and cols 0..cols-2 for bottom row.",
+    },
+    {
+      title: "Reusing the queue variable across both BFS calls",
+      body: "The solution reuses the same queue variable. If it is not empty when the second BFS starts, stale cells from the Pacific pass will corrupt the Atlantic result.",
+      fix: "Ensure queue is empty before seeding the Atlantic borders — the first bfs() call drains it completely.",
+    },
+  ]}
+/>

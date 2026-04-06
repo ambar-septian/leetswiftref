@@ -1,0 +1,160 @@
+---
+id: 187-repeated-dna-sequences
+title: "Repeated DNA Sequences"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={187}
+  title="Repeated DNA Sequences"
+  difficulty="Medium"
+  pattern="Sliding Window"
+  tags={["Hash Table", "String", "Bit Manipulation", "Sliding Window", "Rolling Hash", "Hash Function"]}
+  leetcodeUrl="https://leetcode.com/problems/repeated-dna-sequences/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+The **DNA sequence** is composed of a series of nucleotides abbreviated as `'A'`, `'C'`, `'G'`, and `'T'`.
+
+Given a string `s` that represents a DNA sequence, return all the **10-letter-long sequences (substrings)** that occur more than once in a DNA molecule. You may return the answer in **any order**.
+
+**Constraints:**
+- `1 <= s.length <= 10^5`
+- `s[i]` is either `'A'`, `'C'`, `'G'`, or `'T'`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+Output: ["AAAAACCCCC","CCCCCAAAAA"]
+```
+
+#### Example 2
+
+```
+Input: s = "AAAAAAAAAAAAA"
+Output: ["AAAAAAAAAA"]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window size fixed?", verdict: "yes", reason: "Every substring is exactly 10 characters — a fixed-size sliding window." },
+    { question: "Do we need to detect duplicates?", verdict: "yes", reason: "Use a 'seen' set to track substrings encountered once; a 'result' set for those seen more than once." },
+    { question: "Can the same repeated sequence appear multiple times in output?", verdict: "no", reason: "Use a set for results to avoid duplicates in the output." },
+  ]}
+  answer="Fixed sliding window of size 10 — seen set tracks first occurrence, result set captures repeats"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a fixed window of size 10 defined by a `left` and `right` String.Index. At each position, extract the 10-character `Substring` `s[left...right]`. If it is already in the `seen` set, add it to `result`. Otherwise add it to `seen`. Advance both indices by one. Convert the result set to `[String]` at the end.
+
+<Callout type="cyan" label="Set for results">
+Using a <code>Set</code> for results automatically deduplicates: if "AAAAAAAAAA" appears three times, it still appears once in the output.
+</Callout>
+
+<Callout type="green" label="Substring vs String hashing">
+Storing <code>Substring</code> views in sets avoids copying the 10-character window on every step. The final <code>result.map(String.init)</code> materialises the strings only once.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected='["AAAAACCCCC","CCCCCAAAAA"]'
+  input='s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"'
+  steps={[
+    { label: "l=0, r=9",   text: '"AAAAACCCCC" → seen.insert' },
+    { label: "l=1, r=10",  text: '"AAAACCCCCА" → seen.insert' },
+    { label: "...",         text: "keep sliding..." },
+    { label: "l=10, r=19", text: '"AAAAACCCCC" → already in seen → result.insert' },
+    { label: "l=11, r=20", text: '"AAAACCCCCC" → seen.insert' },
+    { label: "...",         text: "CCCCCAAAAA eventually repeats too → result.insert" },
+    { label: "done",        text: 'result = ["AAAAACCCCC","CCCCCAAAAA"]' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard short input">
+    If `s.count less than 10`, return `[]` — no 10-letter windows possible.
+  </StepItem>
+  <StepItem title="Initialise indices and sets">
+    `var left = s.startIndex`, `var right = s.index(startIndex, offsetBy: 9)`. `var seen = Set(Substring)()`, `var result = Set(Substring)()`.
+  </StepItem>
+  <StepItem title="Slide the window">
+    While `right less than s.endIndex`: extract `s[left...right]`, check and update `seen`/`result`, advance both indices.
+  </StepItem>
+  <StepItem title="Return result">
+    `result.map(String.init)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findRepeatedDnaSequences(_ s: String) -> [String] {
+    guard s.count >= 10 else { return [] }
+
+    var seen   = Set<Substring>()
+    var result = Set<Substring>()
+
+    let startIndex = s.startIndex
+    var left  = startIndex
+    var right = s.index(startIndex, offsetBy: 9)
+
+    while right < s.endIndex {
+      let sub = s[left...right]
+
+      if seen.contains(sub) {
+        result.insert(sub)
+      } else {
+        seen.insert(sub)
+      }
+
+      left  = s.index(after: left)
+      right = s.index(after: right)
+    }
+
+    return result.map(String.init)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fixed sliding window + hash sets", time: "O(n)", space: "O(n)", note: "n-9 windows; each Substring hash/compare is O(10) = O(1) (fixed size)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using a single set and checking for duplicates on insert",
+      body: "A single set cannot distinguish 'seen once' from 'seen twice or more' — it only tracks membership.",
+      fix: "Use two sets: <code>seen</code> (first occurrence) and <code>result</code> (repeats). Only add to result when the substring is already in seen.",
+    },
+    {
+      title: "Using an inclusive right index but advancing incorrectly",
+      body: "The window uses <code>left...right</code> (inclusive). After processing, both left and right must advance by one. Forgetting to advance right by one causes windows of length 11 on the second step.",
+      fix: "Always advance both <code>left</code> and <code>right</code> by <code>s.index(after:)</code> at each iteration.",
+    },
+    {
+      title: "Initialising right to index offset 10 instead of 9",
+      body: "The window is 10 characters, indices 0 to 9 (inclusive). Initialising right at offset 10 creates an 11-character window.",
+      fix: "Use <code>s.index(startIndex, offsetBy: 9)</code> — offset is 9 for a 10-element inclusive range.",
+    },
+  ]}
+/>

@@ -1,0 +1,137 @@
+---
+id: 2181-merge-nodes-in-between-zeros
+title: "Merge Nodes in Between Zeros"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, MergeNodesBetweenZerosDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2181}
+  title="Merge Nodes in Between Zeros"
+  difficulty="Medium"
+  pattern="Linked List — Simulation"
+  tags={["Linked List", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/merge-nodes-in-between-zeros/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given the `head` of a linked list, which contains a series of integers **separated by 0s**. The **beginning** and **end** of the linked list will have `Node.val == 0`.
+
+For every two consecutive 0s, **merge** all the nodes lying in between them into a single node whose value is the **sum** of all the merged nodes. The modified list should not contain any 0s.
+
+Return the `head` of the modified linked list.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[3, 2 * 10^5]`.
+- `0 <= Node.val <= 1000`
+- There are **no** two consecutive nodes with `Node.val == 0`.
+- The **beginning** and **end** of the linked list have `Node.val == 0`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  head = [0,3,1,0,4,5,2,0]
+Output: [4,11]
+Explanation: Segment [3,1] → sum=4. Segment [4,5,2] → sum=11.
+```
+
+#### Example 2
+
+```
+Input:  head = [0,1,0,3,0,2,2,0]
+Output: [1,3,4]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we accumulate values between sentinels?", verdict: "yes", reason: "Walk until a 0 is found, accumulating non-zero values. Each 0 boundary creates a new result node." },
+    { question: "Can we reuse existing nodes?", verdict: "yes", reason: "Repurpose the 0-nodes themselves as result nodes by accumulating into dummy.val, avoiding new allocations." },
+  ]}
+  answer="Simulation — accumulate into dummy nodes at each zero boundary"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a dummy node pointer that starts at the result head. Walk `current` from `head.next` (skipping the first 0). For non-zero nodes, add to `dummy.val`. When a zero node is found and `current.next != nil` (not the trailing zero), move dummy to a new zero node and continue.
+
+<Callout type="green" label="Reuse zero nodes">
+Instead of allocating new ListNodes for each segment, reuse the zero nodes already in the list. Set dummy = dummy.next (the zero node), then accumulate into it. No extra allocation needed.
+</Callout>
+
+<SectionHeader n={5} title="Examples" />
+
+<MergeNodesBetweenZerosDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `dummy = ListNode(0)` (the result head). `result = dummy`. `current = head.next` (skip leading 0).
+  </StepItem>
+  <StepItem title="Walk until current.next is nil">
+    For each node: if `current.val == 0`, move to a new node (`dummy.next = ListNode(0)`, `dummy = dummy.next`). Otherwise, `dummy.val += current.val`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return `result` — the head of the accumulated list.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func mergeNodes(_ head: ListNode?) -> ListNode? {
+    var current = head?.next
+    var dummy: ListNode? = ListNode(0)
+    let result = dummy
+
+    while current?.next != nil {
+      if current?.val == 0 {
+        dummy?.next = ListNode(0)
+        dummy = dummy?.next
+      } else {
+        dummy?.val += current!.val
+      }
+      current = current?.next
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Single-pass simulation", time: "O(n)", space: "O(k)", note: "n = total nodes, k = number of segments; output list has k nodes", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not skipping the leading zero",
+      body: "The head is always 0. Starting current at head would accumulate 0 into the first result node or trigger a spurious new-node creation.",
+      fix: "Start current = head?.next to skip the leading sentinel zero.",
+    },
+    {
+      title: "Processing the trailing zero",
+      body: "The last node is also 0. If you loop while current != nil, you create an empty extra node at the end.",
+      fix: "Loop while current?.next != nil — this stops before processing the trailing zero.",
+    },
+    {
+      title: "Forgetting to initialise dummy with val=0",
+      body: "The first result node accumulates into dummy.val. Starting with a non-zero value would corrupt the first segment sum.",
+      fix: "Initialise dummy = ListNode(0) so the first segment starts clean.",
+    },
+  ]}
+/>

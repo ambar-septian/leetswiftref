@@ -1,0 +1,135 @@
+---
+id: 1557-minimum-number-of-vertices-to-reach-all-nodes
+title: "Minimum Number of Vertices to Reach All Nodes"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, MinVerticesDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1557}
+  title="Minimum Number of Vertices to Reach All Nodes"
+  difficulty="Medium"
+  pattern="Graph — In-Degree Analysis"
+  tags={["Graph Theory"]}
+  leetcodeUrl="https://leetcode.com/problems/minimum-number-of-vertices-to-reach-all-nodes/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a **directed acyclic graph** (DAG) with `n` vertices numbered from `0` to `n-1`, and an array `edges` where `edges[i] = [from_i, to_i]` represents a directed edge from node `from_i` to node `to_i`.
+
+Find the smallest set of vertices from which all nodes in the graph are reachable. It's guaranteed that a unique solution exists.
+
+Note: vertices with **no incoming edges** (in-degree 0) cannot be reached by any other vertex, so they must be in the starting set. Every other vertex can be reached via an incoming edge.
+
+**Constraints:**
+- `2 <= n <= 10^5`
+- `1 <= edges.length <= min(10^5, n * (n-1) / 2)`
+- `edges[i].length == 2`
+- `0 <= from_i, to_i < n`
+- All pairs `(from_i, to_i)` are distinct.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  n=6, edges=[[0,1],[0,2],[2,5],[3,4],[4,2]]
+Output: [0,3]
+Explanation: 0 and 3 are the only nodes with no incoming edges.
+```
+
+#### Example 2
+
+```
+Input:  n=5, edges=[[0,1],[2,1],[3,1],[1,4],[2,4]]
+Output: [0,2,3]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Which nodes cannot be reached from any other node?", verdict: "yes", reason: "Nodes with in-degree 0 have no incoming edges — no path can reach them, so they must be starting points." },
+    { question: "Do we need to run DFS/BFS to verify reachability?", verdict: "no", reason: "In a DAG with a guaranteed unique solution, nodes with in-degree > 0 are all reachable from the in-degree-0 set." },
+  ]}
+  answer="Graph in-degree analysis — collect nodes with no incoming edges"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Collect all nodes that appear as edge destinations (non-zero in-degree). Remove them from the full node set. The remaining nodes have in-degree 0 and form the minimum starting set.
+
+<Callout type="green" label="O(E) solution">
+Build a set of all source nodes (edge[0]). Build a list of all destination nodes (edge[1]). Remove each destination from the source set. What remains are nodes with no incoming edges.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<MinVerticesDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build candidate set from sources">
+    Start with a set of all nodes that appear as `edge[0]` (source side of any edge).
+  </StepItem>
+  <StepItem title="Collect all destinations">
+    Gather all nodes that appear as `edge[1]` (destination side) into a list.
+  </StepItem>
+  <StepItem title="Remove destinations from candidate set">
+    For each destination, remove it from the candidate set. What remains has in-degree 0.
+  </StepItem>
+  <StepItem title="Return result">
+    Convert the remaining set to an array and return it.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findSmallestSetOfVertices(_ n: Int, _ edges: [[Int]]) -> [Int] {
+    var sources = Set<Int>()
+    var destinations = [Int]()
+
+    for edge in edges {
+      sources.insert(edge[0])
+      destinations.append(edge[1])
+    }
+
+    for dest in destinations {
+      sources.remove(dest)
+    }
+
+    return Array(sources)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS/DFS from every node", time: "O(n + E)", space: "O(n + E)", note: "Correct but unnecessary for a DAG" },
+    { approach: "In-degree analysis", time: "O(E)", space: "O(n)", note: "Single pass over edges; Set operations O(1) average", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Starting with all n nodes instead of just sources",
+      body: "If you iterate 0..<n and try to remove destinations, you correctly identify in-degree-0 nodes. The solution above uses a shorter path: only collect nodes that appeared as sources.",
+      fix: "Either approach works. The key is: any node that appears as a destination has in-degree > 0 and should not be in the result.",
+    },
+    {
+      title: "Assuming the output must be sorted",
+      body: "The problem does not require a sorted output. Returning any order of the in-degree-0 nodes is accepted.",
+      fix: "Return Array(sources) directly without sorting.",
+    },
+  ]}
+/>

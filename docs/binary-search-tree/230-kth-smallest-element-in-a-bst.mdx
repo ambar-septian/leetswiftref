@@ -1,0 +1,153 @@
+---
+id: 230-kth-smallest-element-in-a-bst
+title: "Kth Smallest Element in a BST"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import KthSmallestBSTDiagram from '@site/src/components/DSA/KthSmallestBSTDiagram';
+
+<ProblemHeader
+  number={230}
+  title="Kth Smallest Element in a BST"
+  difficulty="Medium"
+  pattern="Iterative Inorder Traversal"
+  tags={["Tree", "Depth-First Search", "Binary Search Tree", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/kth-smallest-element-in-a-bst/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary search tree and an integer `k`, return the `k`th smallest value (1-indexed) among all the values of the nodes in the tree.
+
+A BST's inorder traversal yields values in ascending sorted order. The kth node visited during inorder traversal is the kth smallest.
+
+**Constraints:**
+- The number of nodes in the tree is `n`.
+- `1 <= k <= n <= 10^4`
+- `0 <= Node.val <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [3,1,4,null,2], k = 1
+Output: 1
+```
+
+#### Example 2
+
+```
+Input: root = [5,3,6,2,4,null,null,1], k = 3
+Output: 3
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does inorder traversal of a BST visit nodes in sorted order?", verdict: "yes", reason: "BST property guarantees left subtree values are smaller. Inorder (left, root, right) visits ascending." },
+    { question: "Should we collect all values and index into them?", verdict: "no", reason: "We can stop as soon as we reach the kth node — no need to traverse the entire tree." },
+    { question: "Is an iterative approach preferred over recursive?", verdict: "yes", reason: "Iterative inorder with an explicit stack stops exactly at the kth node without additional O(n) recursion overhead." },
+  ]}
+  answer="Iterative inorder with stack — count visited nodes; return val when count == k"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<KthSmallestBSTDiagram />
+
+Push all left-spine nodes onto a stack. Pop the top, increment a counter; when the counter equals `k`, return the popped node's value. Otherwise, move to the popped node's right child and repeat — pushing its left spine.
+
+<Callout type="cyan" label="Why iterative over recursive">
+Recursive inorder carries the entire call stack until it returns. The iterative version can return the moment <code>n == k</code> without unwinding — cleaner early exit and potentially lower peak stack depth.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [5,3,6,2,4,null,null,1], k = 3"
+  expected="3"
+  steps={[
+    { label: "init",   text: "stack=[], curr=5" },
+    { label: "push left", text: "push 5→3→2→1; stack=[5,3,2,1]; curr=nil" },
+    { label: "pop 1",  text: "n=1; 1 != 3; move to 1.right=nil; curr=nil" },
+    { label: "pop 2",  text: "n=2; 2 != 3; move to 2.right=nil; curr=nil" },
+    { label: "pop 3",  text: "n=3; 3 == k → return 3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack and curr">
+    `var stack: [TreeNode?] = []`, `var curr: TreeNode? = root`, `var n = 0`.
+  </StepItem>
+  <StepItem title="Push left spine">
+    While `curr != nil`: push `curr` onto the stack, move `curr = curr?.left`.
+  </StepItem>
+  <StepItem title="Pop and count">
+    Pop the top node, increment `n`. If `n == k`, return the node's value.
+  </StepItem>
+  <StepItem title="Move to right subtree">
+    Set `curr = poppedNode?.right` and repeat the left-spine push from there.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func kthSmallest(_ root: TreeNode?, _ k: Int) -> Int {
+    var stack: [TreeNode?] = []
+    var curr: TreeNode? = root
+    var n = 0
+
+    while !stack.isEmpty || curr != nil {
+      while curr != nil {
+        stack.append(curr)
+        curr = curr?.left
+      }
+      curr = stack.removeLast()
+      n += 1
+      if n == k { return curr!.val }
+      curr = curr?.right
+    }
+
+    return -1  // unreachable given valid k
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Iterative inorder", time: "O(H + k)", space: "O(H)", note: "H = tree height; push left spine O(H) then k pops", highlight: true },
+    { approach: "Recursive inorder", time: "O(H + k)", space: "O(H)", note: "Same asymptotic but early return requires threading a flag through recursive calls" },
+    { approach: "Collect all, sort, index", time: "O(n)", space: "O(n)", note: "Visits all nodes; wastes work beyond the kth node" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Incrementing n before popping instead of after",
+      body: "The counter represents how many nodes have been visited. It should increment when a node is popped (visited), not before.",
+      fix: "<code>curr = stack.removeLast(); n += 1; if n == k { return curr!.val }</code> — pop, count, check.",
+    },
+    {
+      title: "Not moving to the right subtree after popping",
+      body: "After processing a node, the next inorder node is the leftmost node in its right subtree. Failing to set <code>curr = curr?.right</code> after the pop means the right subtree is never visited.",
+      fix: "Always set <code>curr = poppedNode?.right</code> as the last step in the outer loop body.",
+    },
+    {
+      title: "Returning n instead of the node's value",
+      body: "The counter n is the ordinal position; the answer is the actual node value <code>curr!.val</code>.",
+      fix: "Return <code>curr!.val</code> when <code>n == k</code>, not <code>n</code>.",
+    },
+  ]}
+/>

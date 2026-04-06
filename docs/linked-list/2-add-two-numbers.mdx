@@ -1,0 +1,192 @@
+---
+id: 2-add-two-numbers
+title: "Add Two Numbers"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import AddTwoNumbersDiagram from '@site/src/components/DSA/AddTwoNumbersDiagram';
+
+<ProblemHeader
+  number={2}
+  title="Add Two Numbers"
+  difficulty="Medium"
+  pattern="Iterative Simulation"
+  tags={["Linked List", "Math", "Recursion"]}
+  leetcodeUrl="https://leetcode.com/problems/add-two-numbers/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given two **non-empty** linked lists representing two non-negative integers. The digits are stored in **reverse order**, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not have leading zeros, except the number 0 itself.
+
+**Constraints**
+- The number of nodes in each list is in the range `[1, 100]`.
+- `0 <= Node.val <= 9`
+- It is guaranteed that the list represents a number that does not have leading zeros.
+
+<Callout type="green" label="Core Insight">
+Because the digits are stored in reverse order, the head of each list is the least significant digit — exactly where grade-school addition starts. Walk both lists simultaneously, summing digits and tracking the carry, then append a final carry node if needed.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  l1 = [2,4,3], l2 = [5,6,4]
+Output: [7,0,8]
+Explanation: 342 + 465 = 807, stored reversed as [7,0,8].
+```
+
+#### Example 2
+```
+Input:  l1 = [0], l2 = [0]
+Output: [0]
+```
+
+#### Example 3
+```
+Input:  l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+Output: [8,9,9,9,0,0,0,1]
+Explanation: 9999999 + 9999 = 10009998, stored reversed.
+```
+
+<AddTwoNumbersDiagram />
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are the operands already aligned least-significant digit first?", verdict: "yes", reason: "Reversed storage means the head is the ones digit — iterate forward and add like normal arithmetic." },
+    { question: "Can lists have different lengths?", verdict: "yes", reason: "Treat missing digits as 0; iterate until both lists and the carry are exhausted." },
+    { question: "Can addition produce an extra digit?", verdict: "yes", reason: "9+9 with carry can produce a 3-digit result from 2-digit inputs — append a carry node at the end." },
+  ]}
+  answer="Iterative simulation — traverse both lists simultaneously, digit by digit with carry"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Extract both lists into integer arrays. Walk through both arrays index by index, summing the values plus the running carry. Store `total % 10` as the current digit and set carry to `1` if `total >= 10`, else `0`. After the loop, if carry is still `1`, append it. Convert the integer array back into a linked list by mapping each value to a `ListNode` and linking them in order.
+
+<Callout type="cyan" label="Why extract to arrays first">
+Working with plain arrays simplifies index-based access and bounds checking compared to walking two list pointers simultaneously. The conversion back to a linked list is a single O(n) pass.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="l1 = [2,4,3], l2 = [5,6,4]"
+  expected="[7,0,8]"
+  steps={[
+    { label: "Extract", text: "l1Values = [2,4,3], l2Values = [5,6,4]. mod = 0.", state: "index=0, mod=0" },
+    { label: "index=0", text: "2 + 5 + 0 = 7. result = [7]. 7 < 10 → mod = 0.", state: "result=[7], mod=0" },
+    { label: "index=1", text: "4 + 6 + 0 = 10. result = [7,0]. 10 >= 10 → mod = 1.", state: "result=[7,0], mod=1" },
+    { label: "index=2", text: "3 + 4 + 1 = 8. result = [7,0,8]. 8 < 10 → mod = 0.", state: "result=[7,0,8], mod=0" },
+    { label: "Done", text: "mod = 0, no extra node. Convert [7,0,8] to linked list.", state: "output = 7→0→8" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Extract both lists to arrays">
+    Walk l1 and l2 simultaneously, appending each node's value to `l1Values` and `l2Values` until both pointers are nil.
+  </StepItem>
+  <StepItem title="Add digit by digit with carry">
+    Loop while `index < l1Values.count || index < l2Values.count`. Use 0 for a missing digit. `total = l1[i] + l2[i] + mod`. Append `total % 10` to result.
+  </StepItem>
+  <StepItem title="Propagate final carry">
+    If `mod != 0` after the loop, append `mod` (which is `1`) to the result array.
+  </StepItem>
+  <StepItem title="Convert array to linked list">
+    Map each integer to a `ListNode`. Link each node to the next by setting `child.next = listNodes[index + 1]`. Return the first node.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func addTwoNumbers(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
+    guard let l1 = l1, let l2 = l2 else { return nil }
+    let total = calculate(l1: l1, l2: l2)
+    return Solution.convert(total)
+  }
+
+  func calculate(l1: ListNode, l2: ListNode) -> [Int] {
+    var currentL1: ListNode? = l1
+    var currentL2: ListNode? = l2
+    var l1Values = [Int]()
+    var l2Values = [Int]()
+
+    while currentL1 != nil || currentL2 != nil {
+      if let val = currentL1?.val { l1Values.append(val) }
+      if let val = currentL2?.val { l2Values.append(val) }
+      
+      currentL1 = currentL1?.next
+      currentL2 = currentL2?.next
+    }
+
+    var index = 0
+    var result = [Int]()
+    var mod = 0
+
+    while index < l1Values.count || index < l2Values.count {
+      let v1 = l1Values.indices.contains(index) ? l1Values[index] : 0
+      let v2 = l2Values.indices.contains(index) ? l2Values[index] : 0
+      let total = v1 + v2 + mod
+
+      result.append(total % 10)
+      mod = total >= 10 ? 1 : 0
+
+      index += 1
+    }
+
+    if mod != 0 { result.append(mod) }
+    return result
+  }
+
+  static func convert(_ values: [Int]) -> ListNode? {
+    let listNodes = values.map(ListNode.init)
+
+    for (index, child) in listNodes.enumerated() {
+      if index + 1 != listNodes.count {
+        child.next = listNodes[index + 1]
+      }
+    }
+    return listNodes.first
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Iterative simulation with arrays", time: "O(max(m,n))", space: "O(max(m,n))", note: "m, n = lengths of l1 and l2; result length is at most max(m,n)+1", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the final carry node",
+      body: "Adding 9+9=18 at the last position leaves carry=1 after the loop ends. Without appending it, the result is one digit short.",
+      fix: "After the loop, if mod != 0 append mod to the result array.",
+    },
+    {
+      title: "Stopping the extraction loop too early",
+      body: "If l1 and l2 have different lengths, using && in the while condition stops at the shorter list, dropping the remaining digits of the longer one.",
+      fix: "Use || in the extraction loop condition so both lists are fully drained.",
+    },
+    {
+      title: "Using the shorter list length as the carry loop bound",
+      body: "The addition loop must run until both arrays are exhausted. Stopping at min(l1.count, l2.count) drops digits from the longer list.",
+      fix: "Loop while index < l1Values.count || index < l2Values.count, substituting 0 for missing values.",
+    },
+  ]}
+/>

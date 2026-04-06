@@ -1,0 +1,140 @@
+---
+id: 1343-number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold
+title: "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1343}
+  title="Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold"
+  difficulty="Medium"
+  pattern="Sliding Window — Fixed Size"
+  tags={["Array", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `arr` and two integers `k` and `threshold`, return the number of sub-arrays of size `k` and average greater than or equal to `threshold`.
+
+**Constraints:**
+- `1 <= arr.length <= 10^5`
+- `1 <= arr[i] <= 10^4`
+- `1 <= k <= arr.length`
+- `0 <= threshold <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4
+Output: 3
+Explanation: Sub-arrays [2,5,5],[5,5,5],[5,5,8] have averages 4, 5, 6 — all >= 4.
+```
+
+#### Example 2
+
+```
+Input:  arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5
+Output: 6
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the window size fixed?", verdict: "yes", reason: "Window is always exactly k elements — classic fixed-size sliding window." },
+    { question: "Do we recompute the sum from scratch each time?", verdict: "no", reason: "Slide by adding the new element and removing the leftmost. O(1) per step instead of O(k)." },
+    { question: "Can we compare sum vs threshold*k instead of avg vs threshold?", verdict: "yes", reason: "avg >= threshold iff sum >= threshold*k. Avoids integer division and floating point." },
+  ]}
+  answer="Fixed-size sliding window — slide sum O(1) per step"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build the initial window of size `k`. Then slide one element at a time: add `arr[i]`, remove `arr[i-k]`, and check if `sum / k >= threshold`. Using integer division is safe here since both `sum` and `threshold * k` are integers.
+
+<Callout type="green" label="Avoid division when possible">
+Instead of computing `sum / k >= threshold`, compare `sum >= threshold * k`. This avoids any integer division rounding and is slightly faster.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4"
+  expected="3"
+  steps={[
+    { label: "Init",    text: "Build first window [2,2,2]. sum=6. avg=6/3=2 < 4 → skip. result=0.", state: "result=0" },
+    { label: "i=3",     text: "Slide: add arr[3]=2, remove arr[0]=2. sum=6. avg=2 < 4 → skip. result=0.", state: "result=0" },
+    { label: "i=4",     text: "Slide: add arr[4]=5, remove arr[1]=2. sum=9. avg=3 < 4 → skip. result=0.", state: "result=0" },
+    { label: "i=5",     text: "Slide: add arr[5]=5, remove arr[2]=2. sum=12. avg=4 >= 4 → result=1.", state: "result=1" },
+    { label: "i=6",     text: "Slide: add arr[6]=5, remove arr[3]=2. sum=15. avg=5 >= 4 → result=2.", state: "result=2" },
+    { label: "i=7",     text: "Slide: add arr[7]=8, remove arr[4]=5. sum=18. avg=6 >= 4 → result=3.", state: "result=3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build first window">
+    Sum `arr[0..k-1]`. Check if `sum / k >= threshold`. Initialise `result` accordingly.
+  </StepItem>
+  <StepItem title="Slide the window">
+    For `i` from `k` to `arr.count - 1`: `sum = sum - arr[i-k] + arr[i]`.
+  </StepItem>
+  <StepItem title="Check threshold">
+    If `sum / k >= threshold`, increment `result`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return the count of qualifying windows.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func numOfSubarrays(_ arr: [Int], _ k: Int, _ threshold: Int) -> Int {
+    var sum = 0
+    for i in 0..<k { sum += arr[i] }
+
+    var result = sum / k >= threshold ? 1 : 0
+
+    for i in k..<arr.count {
+      sum = sum - arr[i - k] + arr[i]
+      if sum / k >= threshold { result += 1 }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (recompute each window)", time: "O(n·k)", space: "O(1)", note: "Recomputes sum for each window from scratch" },
+    { approach: "Fixed-size sliding window", time: "O(n)", space: "O(1)", note: "O(k) init + O(n-k) slides = O(n)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Off-by-one on the initial window",
+      body: "Iterating 0..<k fills the first window correctly, but starting the slide loop at k (not k-1) is essential to avoid duplicate processing.",
+      fix: "Init loop: 0..<k. Slide loop starts at k.",
+    },
+    {
+      title: "Wrong remove index",
+      body: "When sliding to position i, the element leaving the window is arr[i-k], not arr[i-k-1] or arr[i-1].",
+      fix: "Use sum = sum - arr[i-k] + arr[i].",
+    },
+  ]}
+/>

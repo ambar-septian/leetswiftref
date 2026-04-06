@@ -1,0 +1,173 @@
+---
+id: 216-combination-sum-iii
+title: "Combination Sum III"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CombinationSumIIIDiagram from '@site/src/components/DSA/CombinationSumIIIDiagram';
+
+<ProblemHeader
+  number={216}
+  title="Combination Sum III"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["Array", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/combination-sum-iii/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Find all valid combinations of `k` numbers that sum up to `n` such that:
+- Only numbers `1` through `9` are used.
+- Each number is used at most once.
+
+Return a list of all possible valid combinations. The list must not contain the same combination twice, and the combinations may be returned in any order.
+
+**Constraints:**
+- `2 <= k <= 9`
+- `1 <= n <= 60`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: k = 3, n = 7
+Output: [[1,2,4]]
+Explanation: 1 + 2 + 4 = 7, using 3 distinct numbers.
+```
+
+#### Example 2
+
+```
+Input: k = 3, n = 9
+Output: [[1,2,6],[1,3,5],[2,3,4]]
+```
+
+#### Example 3
+
+```
+Input: k = 4, n = 1
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we choosing a subset of a fixed set (1–9)?", verdict: "yes", reason: "Classic combination problem — choose k elements from a known set without repetition." },
+    { question: "Can we prune early?", verdict: "yes", reason: "If sum exceeds n at any point, no further additions will bring it back — prune the branch immediately." },
+    { question: "Do we need to avoid duplicate combinations?", verdict: "yes", reason: "Advancing startIndex past the chosen element ensures each number is considered only once and combinations stay in ascending order." },
+  ]}
+  answer="Backtracking — choose digits in ascending order from startIndex; prune when sum exceeds n or path length exceeds k"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<CombinationSumIIIDiagram />
+
+Use a recursive DFS over digits 1–9. At each level, choose the next digit (from `startIndex` to 9), add it to `path` and `sum`, recurse with `startIndex = i + 1`, then undo the choice. Record `path` when `sum == n` and `path.count == k`. Prune when `sum > n`.
+
+<Callout type="cyan" label="Why startIndex prevents duplicates">
+By always starting the next loop at <code>i + 1</code>, we never pick the same digit twice and we always build combinations in ascending order. This eliminates the need for deduplication post-hoc.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="k = 2, n = 5"
+  expected="[[1,4],[2,3]]"
+  steps={[
+    { label: "dfs(0)",   text: "path=[], sum=0" },
+    { label: "pick 1",   text: "path=[1], sum=1 → dfs(1)" },
+    { label: "  pick 2", text: "path=[1,2], sum=3; count=2 but sum != 5 → backtrack" },
+    { label: "  pick 3", text: "path=[1,3], sum=4; count=2 but sum != 5 → backtrack" },
+    { label: "  pick 4", text: "path=[1,4], sum=5; count=2 and sum==5 → add [1,4] ✓" },
+    { label: "  pick 5", text: "path=[1,5], sum=6 > 5 → prune" },
+    { label: "pick 2",   text: "path=[2], sum=2 → dfs(2)" },
+    { label: "  pick 3", text: "path=[2,3], sum=5; count=2 and sum==5 → add [2,3] ✓" },
+    { label: "  pick 4", text: "path=[2,4], sum=6 > 5 → prune" },
+    { label: "pick 3",   text: "path=[3], sum=3 → dfs(3); pick 4: sum=7 > 5 → prune" },
+    { label: "done",     text: "result = [[1,4],[2,3]]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise candidates">
+    `nums = [1,2,3,4,5,6,7,8,9]`, `path = [Int]()`, `sum = 0`, `results = [[Int]]()`.
+  </StepItem>
+  <StepItem title="Base cases">
+    If `sum == n` and `path.count == k`, append `path` to results and return. If `sum > n`, return (prune).
+  </StepItem>
+  <StepItem title="Choose and recurse">
+    For `i` from `startIndex` to `nums.count - 1`: append `nums[i]`, add to `sum`, recurse with `i + 1`, then undo.
+  </StepItem>
+  <StepItem title="Return results">
+    Return `results` after the initial `dfs(0)` call.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func combinationSum3(_ k: Int, _ n: Int) -> [[Int]] {
+    var results = [[Int]]()
+    let nums = Array(1...9)
+    var path = [Int]()
+    var sum  = 0
+
+    func dfs(_ startIndex: Int) {
+      if sum == n, path.count == k {
+        results.append(path)
+        return
+      } else if sum > n {
+        return
+      }
+      for i in startIndex..<nums.count {
+        path.append(nums[i])
+        sum += nums[i]
+        dfs(i + 1)
+        path.removeLast()
+        sum -= nums[i]
+      }
+    }
+
+    dfs(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking", time: "O(C(9,k) × k)", space: "O(k)", note: "At most C(9,k) valid combinations; O(k) path copy per result; O(k) call stack depth", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Pruning only on sum > n but not on path.count > k",
+      body: "A path can reach the right sum with too many elements, or the right count with the wrong sum. Both conditions must be met simultaneously.",
+      fix: "Only record a result when both <code>sum == n</code> AND <code>path.count == k</code>. Add an early return when <code>path.count == k</code> and sum is still wrong.",
+    },
+    {
+      title: "Recursing with i instead of i + 1",
+      body: "Passing i instead of i+1 allows the same number to be selected multiple times, producing combinations with repeated digits.",
+      fix: "Always recurse with <code>dfs(i + 1)</code> to advance past the chosen index.",
+    },
+    {
+      title: "Not pruning when path.count already equals k",
+      body: "If path.count == k but sum != n, continuing the loop tries to add more elements beyond k.",
+      fix: "Add <code>if path.count == k { return }</code> (or equivalently, check inside the base-case block) to stop early when the path is full.",
+    },
+  ]}
+/>

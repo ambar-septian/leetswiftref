@@ -1,0 +1,140 @@
+---
+id: 100-same-tree
+title: "Same Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import SameTreeDiagram from '@site/src/components/DSA/SameTreeDiagram';
+
+<ProblemHeader
+  number={100}
+  title="Same Tree"
+  difficulty="Easy"
+  pattern="DFS"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/same-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.
+
+Two binary trees are considered the same if they are structurally identical, and the nodes have the same value. Both structure and values must match at every position.
+
+**Constraints**
+- The number of nodes in both trees is in the range `[0, 100]`.
+- `-10^4 <= Node.val <= 10^4`
+
+<Callout type="green" label="Core Insight">
+Serialize both trees into preorder arrays including null sentinels (to capture structure). Two trees are identical if and only if their serialized arrays are equal. Alternatively, recurse directly: two trees match if both nodes are nil, or both are non-nil with the same value and matching subtrees.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  p = [1,2,3], q = [1,2,3]
+Output: true
+```
+
+#### Example 2
+```
+Input:  p = [1,2], q = [1,null,2]
+Output: false
+```
+
+#### Example 3
+```
+Input:  p = [1,2,1], q = [1,1,2]
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must structure and values match at every node?", verdict: "yes", reason: "A nil in one tree at a position where the other has a node makes them different." },
+    { question: "Can we reduce the problem to array equality?", verdict: "yes", reason: "Preorder serialisation with null markers uniquely encodes any tree — identical arrays mean identical trees." },
+    { question: "Does the recursion terminate cleanly?", verdict: "yes", reason: "Nil nodes return [nil] as a sentinel; non-nil nodes recurse into both subtrees." },
+  ]}
+  answer="DFS serialisation — preorder array with nulls, then compare"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Define `dfs(_ tree: TreeNode?) -> [Int?]`. If `tree` is nil return `[nil]`. Otherwise return `[tree.val] + dfs(tree.left) + dfs(tree.right)`. Call on both `p` and `q` and compare the resulting arrays.
+
+<SameTreeDiagram />
+
+<Callout type="cyan" label="Direct recursive alternative">
+The direct approach compares without serialising: if both nodes are nil return true; if one is nil and the other is not, return false; else return p.val == q.val and isSameTree(p.left, q.left) and isSameTree(p.right, q.right). Same complexity, no intermediate arrays.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="p = [1,2,3], q = [1,1,2]"
+  expected="false"
+  steps={[
+    { label: "dfs(p)", text: "p=1: [1] + dfs(2) + dfs(3). dfs(2)=[2,nil,nil]. dfs(3)=[3,nil,nil]. → [1,2,nil,nil,3,nil,nil].", state: "p serialised" },
+    { label: "dfs(q)", text: "q=1: [1] + dfs(1) + dfs(2). → [1,1,nil,nil,2,nil,nil].", state: "q serialised" },
+    { label: "compare", text: "[1,2,nil,nil,3,nil,nil] != [1,1,nil,nil,2,nil,nil]. Return false.", state: "false" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Serialise with dfs">
+    If node is nil return `[nil]`. Else return `[node.val] + dfs(node.left) + dfs(node.right)`.
+  </StepItem>
+  <StepItem title="Compare arrays">
+    `return dfs(p) == dfs(q)`. Swift's `==` on `[Int?]` performs element-wise equality including nil comparisons.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func isSameTree(_ p: TreeNode?, _ q: TreeNode?) -> Bool {
+    func dfs(_ tree: TreeNode?) -> [Int?] {
+      guard let tree else { return [nil] }
+      return [tree.val] + dfs(tree.left) + dfs(tree.right)
+    }
+    return dfs(p) == dfs(q)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS serialisation", time: "O(n)", space: "O(n)", note: "O(n) for serialised arrays; O(h) call stack", highlight: true },
+    { approach: "Direct recursive comparison", time: "O(n)", space: "O(h)", note: "No intermediate arrays — O(h) stack only" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Omitting null sentinels from the serialisation",
+      body: "Without null markers, [1,2] and [1,null,2] serialise to the same values [1,2]. The trees are structurally different but appear equal.",
+      fix: "Include [nil] in the serialisation for nil nodes — this captures structural differences.",
+    },
+    {
+      title: "Comparing only root values without recursing",
+      body: "p.val == q.val is true for [1,2,3] and [1,1,2] at the root, but the subtrees differ.",
+      fix: "Recursively compare both left and right subtrees, not just the root values.",
+    },
+    {
+      title: "Not handling the case where both nodes are nil",
+      body: "If both p and q are nil the function should return true — they are the same empty tree. Returning false for two nil nodes would incorrectly fail leaf comparisons.",
+      fix: "Nil nodes return [nil] — two [nil] arrays compare equal. In the direct approach, two nil nodes return true explicitly.",
+    },
+  ]}
+/>

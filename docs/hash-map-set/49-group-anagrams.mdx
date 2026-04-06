@@ -1,0 +1,151 @@
+---
+id: 49-group-anagrams
+title: "Group Anagrams"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={49}
+  title="Group Anagrams"
+  difficulty="Medium"
+  pattern="Hash Map"
+  tags={["Array", "Hash Table", "String", "Sorting"]}
+  leetcodeUrl="https://leetcode.com/problems/group-anagrams/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
+
+An **anagram** is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once. For example, `"eat"`, `"tea"`, and `"ate"` are all anagrams of each other.
+
+**Constraints**
+- `1 <= strs.length <= 10^4`
+- `0 <= strs[i].length <= 100`
+- `strs[i]` consists of lowercase English letters
+
+<Callout type="green" label="Core Insight">
+Two strings are anagrams if and only if their sorted characters are identical. Sort each string to produce a canonical key and group all strings that share the same key into the same bucket in a hash map.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+#### Example 2
+```
+Input:  strs = [""]
+Output: [[""]]
+```
+
+#### Example 3
+```
+Input:  strs = ["a"]
+Output: [["a"]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to group items by a shared property?", verdict: "yes", reason: "All anagrams share the same sorted-character key — hash map buckets group them naturally." },
+    { question: "Is there a cheap canonical form for anagrams?", verdict: "yes", reason: "Sorting the characters of a string (O(k log k)) gives a unique key per anagram class." },
+    { question: "Can we do a single pass?", verdict: "yes", reason: "One pass through strs: sort each string, look up/create bucket, append. O(n * k log k) total." },
+  ]}
+  answer="Hash Map — sorted-character canonical key bucketing"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build a dictionary mapping `String → [String]`. For every input string, sort its characters to produce the canonical key. Append the original string to the array at that key (creating the array if absent). Return all values of the dictionary.
+
+<Callout type="cyan" label="Alternative: character-frequency key">
+Instead of sorting, build a 26-element frequency array and use its string representation as the key (e.g., "1,0,0,...,1,0,0"). This runs in O(k) per string instead of O(k log k) and is preferable for very long strings.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='strs = ["eat","tea","tan","ate","nat","bat"]'
+  expected='[["eat","tea","ate"],["tan","nat"],["bat"]]'
+  steps={[
+    { label: '"eat"', text: 'sorted("eat") = "aet". dict = {"aet": ["eat"]}.', state: 'dict size = 1' },
+    { label: '"tea"', text: 'sorted("tea") = "aet". Key exists. dict = {"aet": ["eat","tea"]}.', state: 'dict size = 1' },
+    { label: '"tan"', text: 'sorted("tan") = "ant". New key. dict = {"aet": [...], "ant": ["tan"]}.', state: 'dict size = 2' },
+    { label: '"ate"', text: 'sorted("ate") = "aet". Append. dict["aet"] = ["eat","tea","ate"].', state: 'dict size = 2' },
+    { label: '"nat"', text: 'sorted("nat") = "ant". Append. dict["ant"] = ["tan","nat"].', state: 'dict size = 2' },
+    { label: '"bat"', text: 'sorted("bat") = "abt". New key. Return Array(dict.values).', state: '3 groups' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise dictionary">
+    `var dict = [String: [String]]()` — maps sorted key to list of anagram strings.
+  </StepItem>
+  <StepItem title="Iterate and key each string">
+    For each `str` in `strs`: compute `key = String(str.sorted())`.
+  </StepItem>
+  <StepItem title="Bucket by key">
+    `dict[key, default: []].append(str)` — appends to existing bucket or creates a new one.
+  </StepItem>
+  <StepItem title="Return all groups">
+    `return Array(dict.values)` — each value is one anagram group.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func groupAnagrams(_ strs: [String]) -> [[String]] {
+    var dict = [String: [String]]()
+
+    for str in strs {
+      let key = String(str.sorted())   // O(k log k) canonical key
+      dict[key, default: []].append(str)
+    }
+
+    return Array(dict.values)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (compare every pair)", time: "O(n² * k)", space: "O(n * k)", note: "Check each pair with isAnagram" },
+    { approach: "Hash Map — sorted key", time: "O(n * k log k)", space: "O(n * k)", note: "n strings each sorted in O(k log k)", highlight: true },
+    { approach: "Hash Map — frequency key", time: "O(n * k)", space: "O(n * k)", note: "26-char frequency array as key, no sorting" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using the original string as the key",
+      body: "The original string cannot serve as the key because anagrams have different original strings by definition. The key must be a canonical form that all anagrams share.",
+      fix: "Use String(str.sorted()) — the sorted characters — as the key.",
+    },
+    {
+      title: "Returning dict.keys instead of dict.values",
+      body: "The question asks for groups of original strings, not the canonical keys. Returning keys gives sorted strings, not the originals.",
+      fix: "Return Array(dict.values) — the arrays of original strings.",
+    },
+    {
+      title: "Not handling empty strings",
+      body: "An empty string sorts to an empty string. Multiple empty-string inputs should be grouped together — the canonical key approach handles this naturally since sorted(\"\") == \"\".",
+      fix: "No special handling needed. The algorithm is correct for empty strings.",
+    },
+  ]}
+/>

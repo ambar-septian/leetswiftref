@@ -1,0 +1,151 @@
+---
+id: 83-remove-duplicates-from-sorted-list
+title: "Remove Duplicates from Sorted List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import RemoveDuplicatesDiagram from '@site/src/components/DSA/RemoveDuplicatesDiagram';
+
+<ProblemHeader
+  number={83}
+  title="Remove Duplicates from Sorted List"
+  difficulty="Easy"
+  pattern="Linked List"
+  tags={["Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-duplicates-from-sorted-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the head of a sorted linked list, delete all duplicates such that each element appears only once. Return the linked list sorted as well.
+
+Unlike problem 82 (which removes all occurrences), this problem **keeps one copy** of each value and removes only the extra duplicates.
+
+**Constraints**
+- The number of nodes in the list is in the range `[0, 300]`.
+- `-100 <= Node.val <= 100`
+- The list is guaranteed to be **sorted** in ascending order.
+
+<Callout type="green" label="Core Insight">
+In a sorted list, duplicates are always adjacent. Maintain a curr pointer. While curr.next has the same value as curr, skip curr.next by setting curr.next = curr.next.next (bypassing the duplicate). When the values differ, advance curr to curr.next.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+<RemoveDuplicatesDiagram />
+
+#### Example 1
+```
+Input:  1 → 1 → 2 → null
+Output: 1 → 2 → null
+```
+
+#### Example 2
+```
+Input:  1 → 1 → 2 → 3 → 3 → null
+Output: 1 → 2 → 3 → null
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are duplicates always adjacent in the input?", verdict: "yes", reason: "The list is sorted — equal values always sit next to each other." },
+    { question: "Can we skip duplicates by re-linking next pointers?", verdict: "yes", reason: "While item.next.val == item.val, set item.next = item.next.next. No new nodes needed." },
+    { question: "Do we need a dummy head?", verdict: "no", reason: "The head is always kept (we keep one copy of every value). No need for a dummy predecessor." },
+  ]}
+  answer="Iterative traversal — skip next node while it matches current value"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start with `curr = head`. For each node, use an inner pointer `item = curr`. While `item.next` exists and `item.next.val == item.val`, set `item.next = item.next.next` (bypass the duplicate). After the inner loop, advance `curr = item.next`.
+
+The outer loop ensures every distinct value is processed; the inner loop eliminates all consecutive copies of the current value.
+
+<Callout type="cyan" label="In-place re-linking vs. building a new list">
+Because we only keep one copy of each value and the first occurrence is always preserved, we can modify next pointers in place. No new nodes are created — O(1) extra space.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="1 → 1 → 2 → 3 → 3 → null"
+  expected="1 → 2 → 3 → null"
+  steps={[
+    { label: "curr=1", text: "item=node(1). item.next.val==1==item.val. item.next = item.next.next = node(2).", state: "1 → 2 → 3 → 3 → null" },
+    { label: "inner done", text: "item.next.val=2 != 1. Inner loop exits. curr = item.next = node(2).", state: "curr=node(2)" },
+    { label: "curr=2", text: "item=node(2). item.next.val=3 != 2. Inner loop skipped. curr=node(3).", state: "curr=node(3)" },
+    { label: "curr=3", text: "item=node(3). item.next.val==3==item.val. item.next = item.next.next = null.", state: "1 → 2 → 3 → null" },
+    { label: "done", text: "curr = item.next = null. Loop ends. Return head.", state: "1 → 2 → 3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise pointers">
+    `var curr = head`, `var result = curr`.
+  </StepItem>
+  <StepItem title="Outer loop — advance through distinct values">
+    While `curr != nil`: use inner loop to skip duplicates of the current value.
+  </StepItem>
+  <StepItem title="Inner loop — bypass duplicate next nodes">
+    `var item = curr`. While `item.next.val == item.val`, set `item.next = item.next.next`.
+  </StepItem>
+  <StepItem title="Advance curr">
+    `curr = item.next` (the first node of the next distinct value).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func deleteDuplicates(_ head: ListNode?) -> ListNode? {
+    var curr = head
+    let result = curr
+
+    while curr != nil {
+      var item = curr
+      while item?.val == item?.next?.val {
+        item?.next = item?.next?.next   // bypass duplicate
+      }
+      curr = item?.next
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Iterative in-place re-linking", time: "O(n)", space: "O(1)", note: "Single pass; each node visited at most twice (outer + inner)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Advancing curr inside the inner loop instead of after it",
+      body: "If curr is advanced during duplicate skipping, the outer loop may jump past the first occurrence of the next distinct value.",
+      fix: "Use a separate item pointer for the inner loop. Advance curr only after the inner loop exits.",
+    },
+    {
+      title: "Confusing this problem with problem 82 (remove all duplicates)",
+      body: "Problem 83 keeps the first occurrence; problem 82 removes all occurrences. Using the problem-82 approach here would delete nodes that should be kept.",
+      fix: "Only bypass next nodes whose value equals the current node's value — leave the current node in place.",
+    },
+    {
+      title: "Not handling nil next safely in Swift",
+      body: "item?.next?.val uses optional chaining. If item.next is nil, the comparison item?.val == item?.next?.val evaluates to Optional(val) == nil which is false — the inner loop exits safely.",
+      fix: "Optional chaining handles nil termination correctly. No explicit nil guard is needed inside the inner loop.",
+    },
+  ]}
+/>

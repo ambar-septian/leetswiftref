@@ -1,0 +1,154 @@
+---
+id: 841-keys-and-rooms
+title: "Keys and Rooms"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { KeysAndRoomsDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={841}
+  title="Keys and Rooms"
+  difficulty="Medium"
+  pattern="DFS Graph Traversal"
+  tags={["Depth-First Search", "Breadth-First Search", "Graph"]}
+  leetcodeUrl="https://leetcode.com/problems/keys-and-rooms/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are `n` rooms labelled from `0` to `n - 1` and all the rooms are locked except for room `0`. Your goal is to visit all the rooms. However, you cannot enter a locked room without having its key.
+
+When you visit a room, you may find a set of **distinct keys** in it. Each key has a number on it, denoting which room it unlocks, and you can take all of them with you to unlock the other rooms.
+
+Given an array `rooms` where `rooms[i]` is the list of keys in room `i`, return `true` if you can visit **all** the rooms, or `false` otherwise.
+
+**Constraints:**
+- `n == rooms.length`
+- `2 <= n <= 1000`
+- `0 <= rooms[i].length <= 1000`
+- `1 <= sum(rooms[i].length) <= 3000`
+- `0 <= rooms[i][j] < n`
+- All the values in `rooms[i]` are **unique**.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  rooms = [[1],[2],[3],[]]
+Output: true
+Explanation: Visit room 0 (key 1) → room 1 (key 2) → room 2 (key 3) → room 3. All visited.
+```
+
+#### Example 2
+
+```
+Input:  rooms = [[1,3],[3,0],[2],[0]]
+Output: false
+Explanation: We can never enter room 2.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is this a reachability problem on a directed graph?", verdict: "yes", reason: "Rooms are nodes; keys are directed edges. Can we reach all nodes from node 0?" },
+    { question: "Does DFS from node 0 with a visited set suffice?", verdict: "yes", reason: "DFS explores every reachable room exactly once. After DFS, compare visited.count to rooms.count." },
+    { question: "Is a queue (BFS) an alternative?", verdict: "yes", reason: "BFS from room 0 also works — both give O(N+K) time. DFS is simpler to implement recursively." },
+  ]}
+  answer="DFS from room 0 with a visited set — if visited.count equals rooms.count, all rooms are reachable"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+DFS from room `0`. Maintain a `visited` set. At each room `i`: insert `i` into visited, then recurse into each key (neighbor) that has not yet been visited. After DFS completes, check if `visited.count == rooms.count`.
+
+<KeysAndRoomsDiagram />
+
+<Callout type="cyan" label="Visited check before recursing">
+Guarding with visited.contains(i) at the top of dfs ensures each room is processed at most once, even if multiple rooms contain the same key.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="rooms = [[1,3],[2],[],[]]"
+  expected="true"
+  steps={[
+    { label: "room 0", text: "visited={0}. Keys: [1,3]. DFS into room 1." },
+    { label: "room 1", text: "visited={0,1}. Keys: [2]. DFS into room 2." },
+    { label: "room 2", text: "visited={0,1,2}. No keys. Backtrack to room 1 → backtrack to room 0." },
+    { label: "room 3", text: "DFS into room 3 (key from room 0). visited={0,1,2,3}. No keys." },
+    { label: "check", text: "visited.count=4 == rooms.count=4 → return true." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise visited set">
+    `var visited = Set(Int)()`.
+  </StepItem>
+  <StepItem title="Define DFS">
+    `func dfs(_ i: Int)`: guard `!visited.contains(i)` else return. Insert `i`. For each `key` in `rooms[i]`: `dfs(key)`.
+  </StepItem>
+  <StepItem title="Start from room 0">
+    `dfs(0)`.
+  </StepItem>
+  <StepItem title="Check all rooms visited">
+    Return `visited.count == rooms.count`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func canVisitAllRooms(_ rooms: [[Int]]) -> Bool {
+    var visited = Set<Int>()
+
+    func dfs(_ i: Int) {
+      guard !visited.contains(i) else { return }
+      visited.insert(i)
+      for key in rooms[i] {
+        dfs(key)
+      }
+    }
+
+    dfs(0)
+    return visited.count == rooms.count
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS with visited set", time: "O(N + K)", space: "O(N)", note: "N = number of rooms, K = total keys. Each room and each key is processed exactly once. O(N) for the visited set and call stack.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Starting DFS from room 1 instead of room 0",
+      body: "Room 0 is the only room that starts unlocked. DFS must begin at room 0.",
+      fix: "Always call dfs(0).",
+    },
+    {
+      title: "Not guarding against already-visited rooms",
+      body: "Without the visited check, DFS can loop infinitely if rooms contain keys pointing back to earlier rooms.",
+      fix: "Check visited.contains(i) at the top of dfs and return early if already visited.",
+    },
+    {
+      title: "Comparing visited.count to rooms.count - 1",
+      body: "All n rooms (including room 0) must be visited. Off-by-one returns true even when one room is unreachable.",
+      fix: "Compare visited.count == rooms.count (not rooms.count - 1).",
+    },
+  ]}
+/>

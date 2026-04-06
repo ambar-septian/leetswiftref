@@ -1,0 +1,164 @@
+---
+id: 735-asteroid-collision
+title: "Asteroid Collision"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={735}
+  title="Asteroid Collision"
+  difficulty="Medium"
+  pattern="Stack Simulation"
+  tags={["Array", "Stack", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/asteroid-collision/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+We are given an array `asteroids` of integers representing asteroids in a row. For each asteroid, the absolute value represents its size, and the sign represents its direction (positive = right, negative = left). Each asteroid moves at the same speed.
+
+Find the state of the asteroids after all collisions. If two asteroids meet, the smaller one explodes. If both are the same size, both explode. Two asteroids moving in the same direction will never meet.
+
+**Constraints:**
+- `2 <= asteroids.length <= 10^4`
+- `-1000 <= asteroids[i] <= 1000`
+- `asteroids[i] != 0`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  asteroids = [5,10,-5]
+Output: [5,10]
+Explanation: The 10 and -5 collide. 10 is bigger so 10 survives. The 5 and 10 never collide.
+```
+
+#### Example 2
+
+```
+Input:  asteroids = [8,-8]
+Output: []
+Explanation: The 8 and -8 collide. Same size — both explode.
+```
+
+#### Example 3
+
+```
+Input:  asteroids = [10,2,-5]
+Output: [10]
+Explanation: 2 and -5 collide: -5 wins (abs(-5)=5 > 2). Then 10 and -5 collide: 10 wins.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the outcome depend only on the most recent surviving asteroid?", verdict: "yes", reason: "A negative asteroid can only collide with the top of the stack (most recent positive). A stack naturally models this last-in comparison." },
+    { question: "Can a single negative asteroid destroy multiple positives?", verdict: "yes", reason: "A large negative asteroid keeps popping stack tops until it hits something equal or larger, or the stack runs out of positives." },
+    { question: "Do two positives or two negatives ever collide?", verdict: "no", reason: "Same-direction asteroids move apart — only a positive followed by a negative can collide." },
+  ]}
+  answer="Stack simulation — push asteroids; when a negative arrives, pop and compare against the stack top until resolved"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a stack. For each asteroid `ast`: while the stack top is positive and `ast` is negative, a collision occurs. If `|ast| > top`, pop the top (top destroyed). If `|ast| < top`, set `ast = 0` (ast destroyed). If equal, pop top and set `ast = 0` (both destroyed). After the loop, if `ast != 0`, push it.
+
+<Callout type="cyan" label="When does no collision happen?">
+No collision when: ast is positive (moving right, cannot catch stack top), stack is empty, or stack top is negative (both moving left — they move away from each other). Only a positive-on-stack-top collides with an incoming negative.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="asteroids = [10, 2, -5]"
+  expected="[10]"
+  steps={[
+    { label: "ast=10", text: "Stack empty or top not positive-vs-negative. Push 10. Stack: [10]." },
+    { label: "ast=2",  text: "Both positive — no collision. Push 2. Stack: [10, 2]." },
+    { label: "ast=-5", text: "top=2 (pos) vs ast=-5 (neg). |−5|=5 > 2 → pop 2. Stack: [10]. top=10 vs ast=-5. |−5|=5 < 10 → ast=0. Stack: [10]." },
+    { label: "done",   text: "ast=0, skip push. Return [10]." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack">
+    `var stack = [Int]()`.
+  </StepItem>
+  <StepItem title="Process each asteroid">
+    `var ast = asteroids[i]`. Enter collision loop: while `!stack.isEmpty`, `stack.last! > 0`, and `ast < 0`.
+  </StepItem>
+  <StepItem title="Resolve collision">
+    If `|ast| > |top|`: pop top (top destroyed). If `|top| > |ast|`: `ast = 0` (ast destroyed). If equal: pop top and `ast = 0` (both destroyed).
+  </StepItem>
+  <StepItem title="Push survivor">
+    If `ast != 0`, push to stack.
+  </StepItem>
+  <StepItem title="Return stack">
+    The stack holds all surviving asteroids in order.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func asteroidCollision(_ asteroids: [Int]) -> [Int] {
+    var stack: [Int] = []
+
+    for i in 0..<asteroids.count {
+      var ast = asteroids[i]
+      while let top = stack.last, top > 0, ast < 0 {
+        if abs(ast) > abs(top) {
+          stack.removeLast()
+        } else if abs(top) > abs(ast) {
+          ast = 0
+        } else {
+          stack.removeLast()
+          ast = 0
+        }
+      }
+      if ast != 0 {
+        stack.append(ast)
+      }
+    }
+
+    return stack
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack Simulation", time: "O(n)", space: "O(n)", note: "Each asteroid is pushed and popped at most once. The while loop does not cause O(n^2) — total pops across all iterations is bounded by n.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the equal-size case",
+      body: "If |ast| == |top|, both are destroyed. Failing to handle this leaves one survivor incorrectly.",
+      fix: "The equal branch must pop the stack top AND set ast=0, so neither asteroid is pushed.",
+    },
+    {
+      title: "Colliding same-direction asteroids",
+      body: "Two positives or two negatives never collide. Triggering the collision loop for positive-vs-positive produces wrong results.",
+      fix: "The while condition must check top > 0 AND ast < 0 — only this combination represents a collision.",
+    },
+    {
+      title: "Pushing after ast is already zero",
+      body: "If ast becomes 0 (asteroid was destroyed), pushing 0 to the stack corrupts the result.",
+      fix: "Always guard with `if ast != 0` before pushing.",
+    },
+  ]}
+/>

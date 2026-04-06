@@ -1,0 +1,143 @@
+---
+id: 145-binary-tree-postorder-traversal
+title: "Binary Tree Postorder Traversal"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import PostorderTraversalDiagram from '@site/src/components/DSA/PostorderTraversalDiagram';
+
+<ProblemHeader
+  number={145}
+  title="Binary Tree Postorder Traversal"
+  difficulty="Easy"
+  pattern="DFS"
+  tags={["Stack", "Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/binary-tree-postorder-traversal/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return the **postorder traversal** of its node values.
+
+Postorder traversal visits nodes in the order: **left subtree → right subtree → root**.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 100]`.
+- `-100 <= Node.val <= 100`
+- **Follow-up:** Recursive solution is trivial. Can you do it iteratively?
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [1,null,2,3]
+Output: [3,2,1]
+```
+
+#### Example 2
+
+```
+Input: root = []
+Output: []
+```
+
+#### Example 3
+
+```
+Input: root = [1]
+Output: [1]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the traversal order root-last?", verdict: "yes", reason: "Postorder = children before parent. Append root.val after both subtree results." },
+    { question: "Can the solution be expressed purely functionally?", verdict: "yes", reason: "postorder(left) + postorder(right) + [root.val] directly encodes the definition." },
+    { question: "Is it related to preorder?", verdict: "yes", reason: "Postorder is the mirror of preorder reversed: where preorder prepends root, postorder appends." },
+  ]}
+  answer="Recursive DFS — concatenate left, then right subtree, then append root"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<PostorderTraversalDiagram />
+
+Return `postorderTraversal(root.left) + postorderTraversal(root.right) + [root.val]`. Both subtrees are fully processed before the root is appended, which is exactly what postorder requires.
+
+<Callout type="cyan" label="Postorder use case">
+Postorder is naturally suited to problems where a node must be processed only after all its descendants — such as deleting a tree, computing subtree properties, or flattening a tree (problem 114).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="[2,3,1]"
+  input="root = [1,2,3]"
+  steps={[
+    { label: "postorder(1)", text: "postorder(2) + postorder(3) + [1]" },
+    { label: "postorder(2)", text: "[] + [] + [2] = [2]" },
+    { label: "postorder(3)", text: "[] + [] + [3] = [3]" },
+    { label: "postorder(1)", text: "[2] + [3] + [1] = [2,3,1]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard nil root">
+    `guard let root else { return [] }`.
+  </StepItem>
+  <StepItem title="Build postorder array">
+    `postorderTraversal(root.left) + postorderTraversal(root.right) + [root.val]`.
+  </StepItem>
+  <StepItem title="Return result">
+    The concatenated array is the postorder traversal.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func postorderTraversal(_ root: TreeNode?) -> [Int] {
+    guard let root else { return [] }
+    return postorderTraversal(root.left)
+      + postorderTraversal(root.right)
+      + [root.val]
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive DFS", time: "O(n)", space: "O(h)", note: "Every node visited once; O(h) call stack", highlight: true },
+    { approach: "Iterative (modified preorder reversed)", time: "O(n)", space: "O(n)", note: "Reverse of root-right-left preorder gives left-right-root postorder" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Appending root before subtrees",
+      body: "Writing <code>[root.val] + postorder(left) + postorder(right)</code> produces preorder, not postorder.",
+      fix: "Root must come last: <code>postorder(left) + postorder(right) + [root.val]</code>.",
+    },
+    {
+      title: "Iterative approach: reversing a preorder (root-right-left) result",
+      body: "The iterative postorder trick is: compute root-right-left (preorder with right before left) then reverse the entire result. Forgetting the reversal gives the wrong order.",
+      fix: "If using the iterative trick, push left before right (so right is processed first), collect the result, then reverse it.",
+    },
+    {
+      title: "Confusing postorder with inorder for BST deletion",
+      body: "Inorder on a BST gives sorted values, not a safe deletion order. Postorder is the correct traversal for deleting all nodes in a tree (children before parent).",
+      fix: "Use postorder (left-right-root) when a parent must be processed only after all descendants.",
+    },
+  ]}
+/>

@@ -1,0 +1,157 @@
+---
+id: 26-remove-duplicates-from-sorted-array
+title: "Remove Duplicates from Sorted Array"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={26}
+  title="Remove Duplicates from Sorted Array"
+  difficulty="Easy"
+  pattern="Two Pointers"
+  tags={["Array", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums` sorted in **non-decreasing order**, remove the duplicates **in-place** such that each unique element appears only once. The **relative order** of the elements should be kept the same. Then return the number of unique elements in `nums`.
+
+Consider the number of unique elements of `nums` to be `k`. To get accepted, you need to:
+- Change the array `nums` such that the first `k` elements of `nums` contain the unique elements in the order they were present in `nums` initially.
+- The remaining elements of `nums` are not important, as is the size of `nums`.
+- Return `k`.
+
+**Constraints**
+- `1 <= nums.length <= 3 * 10^4`
+- `-100 <= nums[i] <= 100`
+- `nums` is sorted in **non-decreasing** order.
+
+<Callout type="green" label="Core Insight">
+Because the array is sorted, duplicates are always adjacent. A slow pointer marks the boundary of the unique prefix. A fast pointer scans ahead — whenever it finds a value different from slow, copy it to slow+1 and advance slow.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  nums = [1,1,2]
+Output: 2, nums = [1,2,_]
+Explanation: Two unique elements. First 2 positions hold [1,2].
+```
+
+#### Example 2
+```
+Input:  nums = [0,0,1,1,1,2,2,3,3,4]
+Output: 5, nums = [0,1,2,3,4,_,_,_,_,_]
+Explanation: Five unique elements.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the array sorted, making duplicates adjacent?", verdict: "yes", reason: "Sorted order guarantees all copies of a value are consecutive — no hash set needed." },
+    { question: "Must we modify in-place with O(1) extra space?", verdict: "yes", reason: "We cannot allocate a new array; the slow pointer rewrites the prefix in place." },
+    { question: "Can slow and fast pointers solve this in one pass?", verdict: "yes", reason: "Fast scans; slow writes. Each unique element is written exactly once." },
+  ]}
+  answer="Two Pointers — slow marks unique prefix boundary, fast scans for new values"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start `slow = 0`, `fast = 1`. Walk `fast` through the array. When `nums[fast] != nums[slow]` a new unique value is found: advance `slow` and copy `nums[fast]` into `nums[slow]`. When equal, just advance `fast`. Return `slow + 1` (the count of unique elements written).
+
+<Callout type="cyan" label="Why sorted order is required">
+If the array were unsorted, duplicates could appear anywhere and a simple adjacent comparison would miss them. Sorting ensures every duplicate is adjacent to its original, so comparing only slow and fast is sufficient.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [0,0,1,1,1,2,2,3,3,4]"
+  expected="5"
+  steps={[
+    { label: "Init", text: "slow=0 (val=0), fast=1 (val=0). Equal — advance fast.", state: "[0,0,1,1,1,2,2,3,3,4]  slow=0" },
+    { label: "fast=2", text: "nums[2]=1 != nums[0]=0. slow→1, nums[1]=1. result=2.", state: "[0,1,1,1,1,2,2,3,3,4]  slow=1" },
+    { label: "fast=3,4", text: "nums[3]=1, nums[4]=1 both equal nums[1]=1. Advance fast twice.", state: "[0,1,1,1,1,2,2,3,3,4]  slow=1" },
+    { label: "fast=5", text: "nums[5]=2 != nums[1]=1. slow→2, nums[2]=2. result=3.", state: "[0,1,2,1,1,2,2,3,3,4]  slow=2" },
+    { label: "fast=6", text: "nums[6]=2 == nums[2]=2. Skip.", state: "[0,1,2,1,1,2,2,3,3,4]  slow=2" },
+    { label: "fast=7,8,9", text: "3, 3, 4 — each new unique written. Final result = 5.", state: "[0,1,2,3,4,2,2,3,3,4]  slow=4" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard empty array">
+    Return `0` immediately if `nums` is empty.
+  </StepItem>
+  <StepItem title="Initialise pointers">
+    `slow = 0`, `fast = 1`, `result = 1` (the first element is always unique).
+  </StepItem>
+  <StepItem title="Scan with fast">
+    While `fast < nums.count`: if `nums[slow] == nums[fast]`, advance `fast`. Otherwise advance `slow`, write `nums[fast]` into `nums[slow]`, increment `result`, then advance `fast`.
+  </StepItem>
+  <StepItem title="Return result">
+    `result` equals the number of unique elements written to the front of the array.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func removeDuplicates(_ nums: inout [Int]) -> Int {
+    guard !nums.isEmpty else { return 0 }
+
+    var slow = 0
+    var fast = 1
+    var result = 1
+
+    while fast < nums.count {
+      if nums[slow] == nums[fast] {
+        fast += 1
+      } else {
+        slow += 1
+        nums[slow] = nums[fast]
+        result += 1
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two pointers — single pass in-place", time: "O(n)", space: "O(1)", note: "Each element visited once; no extra allocation", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Advancing fast when equal without moving slow",
+      body: "When nums[slow] == nums[fast] we skip the duplicate by advancing only fast. Accidentally advancing slow here would corrupt the unique prefix.",
+      fix: "Only advance slow (and write) when a new unique value is found.",
+    },
+    {
+      title: "Returning slow instead of slow + 1",
+      body: "slow is a zero-based index. The count of unique elements written is slow + 1. Returning slow underreports by 1.",
+      fix: "Return result (initialised to 1 and incremented for each new unique value), or equivalently slow + 1 after the loop.",
+    },
+    {
+      title: "Not handling single-element arrays",
+      body: "If nums has one element, fast starts at 1 which is out of bounds — the while loop never executes and result = 1 is returned correctly.",
+      fix: "No special case needed — the guard and initialisation handle it.",
+    },
+  ]}
+/>

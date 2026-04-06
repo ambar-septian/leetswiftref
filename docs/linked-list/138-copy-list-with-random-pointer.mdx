@@ -1,0 +1,182 @@
+---
+id: 138-copy-list-with-random-pointer
+title: "Copy List with Random Pointer"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CopyRandomListDiagram from '@site/src/components/DSA/CopyRandomListDiagram';
+
+<ProblemHeader
+  number={138}
+  title="Copy List with Random Pointer"
+  difficulty="Medium"
+  pattern="Interleave Clone"
+  tags={["Hash Table", "Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/copy-list-with-random-pointer/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+A linked list of length `n` is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`.
+
+Construct a **deep copy** of the list. The deep copy should consist of exactly `n` brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointers of the new nodes should point to new nodes in the copied list — no pointers in the new list should point to nodes in the original list.
+
+Return the head of the copied linked list.
+
+**Constraints:**
+- `0 <= n <= 1000`
+- `-10^4 <= Node.val <= 10^4`
+- `Node.random` is `null` or points to some node in the linked list.
+
+<SectionHeader n={2} title="Examples" />
+
+<CopyRandomListDiagram />
+
+#### Example 1
+
+```
+Input: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+Output: [[7,null],[13,0],[11,4],[10,2],[1,0]]
+Explanation: Each [val, random_index] — random_index is the index of the node random points to.
+```
+
+#### Example 2
+
+```
+Input: head = [[1,1],[2,1]]
+Output: [[1,1],[2,1]]
+```
+
+#### Example 3
+
+```
+Input: head = []
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the random pointer require all clones to exist before wiring?", verdict: "yes", reason: "A node's random may point to a node we haven't cloned yet. Clones must be created in a first pass before random pointers can be set." },
+    { question: "Can we avoid a hash map to save space?", verdict: "yes", reason: "Interleaving clones next to originals lets us find any node's clone via node.next without extra storage." },
+    { question: "Is a hash map approach valid too?", verdict: "yes", reason: "Hash map (ObjectIdentifier → clone) is O(n) space but simpler to reason about." },
+  ]}
+  answer="3-pass interleave — insert clones inline, set randoms via node.next, detach two lists"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+**Pass 1 — Interleave:** For each original node, create a clone and insert it immediately after the original: `clone.next = orig.next; orig.next = clone`.
+
+**Pass 2 — Random pointers:** For each original node, `orig.next.random = orig.random?.next`. The clone of any node is always at `node.next`.
+
+**Pass 3 — Detach:** Walk the interleaved list, restoring original `next` pointers and extracting the clone list simultaneously.
+
+<Callout type="cyan" label="Why interleaving works">
+After pass 1, every original node's clone is one step ahead. So to set a clone's random, the random of the original node also has its clone one step ahead — no hash map needed.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="deep copy of list"
+  input="head = [[7,null],[13,0],[11,4]]"
+  steps={[
+    { label: "Pass 1",         text: "7 → 7' → 13 → 13' → 11 → 11' → nil" },
+    { label: "Pass 2: node=7", text: "7.random=nil → 7'.random = nil.next = nil" },
+    { label: "Pass 2: node=13",text: "13.random=7 → 13'.random = 7.next = 7'" },
+    { label: "Pass 2: node=11",text: "11.random=11' ... set via same rule" },
+    { label: "Pass 3",         text: "restore: 7→13→11→nil; clone: 7'→13'→11'→nil" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Pass 1: insert clones">
+    Walk original list. For each node: `clone.next = curr.next; curr.next = clone; curr = clone.next`.
+  </StepItem>
+  <StepItem title="Pass 2: wire random pointers">
+    Walk again. For each original node: `node.next?.random = node.random?.next`. The clone of `node.random` is always at `node.random.next`.
+  </StepItem>
+  <StepItem title="Pass 3: detach">
+    Use a dummy head for the clone list. For each original node: extract `clone = orig.next`, `nextOrig = clone.next`. Set `orig.next = nextOrig`, append `clone` to clone list.
+  </StepItem>
+  <StepItem title="Return clone head">
+    Return `headCopy?.next` (skip the dummy sentinel).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func copyRandomList(_ head: Node?) -> Node? {
+    // Pass 1: interleave clones
+    var curr = head
+    while curr != nil {
+      let clone = Node(curr!.val)
+      clone.next = curr?.next
+      curr?.next = clone
+      curr = clone.next
+    }
+
+    // Pass 2: set random pointers
+    curr = head
+    while let node = curr {
+      node.next?.random = node.random?.next
+      curr = node.next?.next
+    }
+
+    // Pass 3: detach
+    let headCopy: Node? = Node(0)
+    var copy = headCopy
+    curr = head
+    while let orig = curr {
+      let clone    = orig.next
+      let nextOrig = clone?.next
+
+      copy?.next = clone
+      copy = clone
+
+      orig.next = nextOrig
+      curr = nextOrig
+    }
+
+    return headCopy?.next
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "3-pass interleave", time: "O(n)", space: "O(1)", note: "No extra data structure; three linear passes", highlight: true },
+    { approach: "Hash map (ObjectIdentifier)", time: "O(n)", space: "O(n)", note: "Maps original node references to their clones" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Setting random pointers in pass 1 before all clones exist",
+      body: "A node's random pointer can reference any node in the list, including ones not yet cloned. Setting randoms during pass 1 may reference an original node that has no clone yet.",
+      fix: "Always do random assignment in a dedicated second pass, after all clones are created and interleaved.",
+    },
+    {
+      title: "Not restoring original next pointers in pass 3",
+      body: "After pass 3, the original list's next pointers still point to clones if not explicitly restored. This corrupts the original list.",
+      fix: "In pass 3, always set <code>orig.next = nextOrig</code> before advancing, restoring the original list structure.",
+    },
+    {
+      title: "Using node.val as hash map key",
+      body: "Multiple nodes can have the same val. Using val as the key would cause collisions and incorrect random pointer wiring.",
+      fix: "Use <code>ObjectIdentifier(node)</code> as the key (Swift object identity) rather than the value.",
+    },
+  ]}
+/>

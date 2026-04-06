@@ -1,0 +1,174 @@
+---
+id: 19-remove-nth-node-from-end-of-list
+title: "Remove Nth Node From End of List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import RemoveNthNodeDiagram from '@site/src/components/DSA/RemoveNthNodeDiagram';
+
+<ProblemHeader
+  number={19}
+  title="Remove Nth Node From End of List"
+  difficulty="Medium"
+  pattern="Fast / Slow Pointers"
+  tags={["Linked List", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `head` of a linked list, remove the `n`th node from the **end** of the list and return its head.
+
+**Constraints**
+- The number of nodes in the list is `sz`.
+- `1 <= sz <= 30`
+- `0 <= Node.val <= 100`
+- `1 <= n <= sz`
+
+<Callout type="green" label="Core Insight">
+Use a fast pointer that moves 2 steps at a time and a slow pointer that moves 1 step. When fast stops, count gives the total node count. Convert that to a 0-based front index, walk a dummy-headed cursor to the node just before the target, then skip the target with curr.next = curr.next.next.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  head = [1,2,3,4,5], n = 2
+Output: [1,2,3,5]
+Explanation: The 2nd node from the end is node 4 — remove it.
+```
+
+#### Example 2
+```
+Input:  head = [1], n = 1
+Output: []
+```
+
+#### Example 3
+```
+Input:  head = [1,2], n = 1
+Output: [1]
+```
+
+<RemoveNthNodeDiagram />
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to find a position relative to the end of the list?", verdict: "yes", reason: "The target is the nth node from the end — its front index is length - n." },
+    { question: "Can we find the length without a separate pass?", verdict: "yes", reason: "A fast pointer moving 2 steps and a slow pointer moving 1 step let us count nodes in one traversal." },
+    { question: "Do we need a dummy head to handle edge cases?", verdict: "yes", reason: "If the head itself must be removed (n == sz), a dummy node before head lets us unlink it uniformly." },
+  ]}
+  answer="Fast/slow pointers to count length, then dummy-head cursor to remove the target node"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Start `slow` at `head` and `fast` at `head.next`, `count = 1`. Advance both while `fast != nil && fast.next != nil` (fast moves 2 steps, slow moves 1 step, count increments). After the loop, `count` encodes half the list length. Compute the true length: `count * 2`, then subtract 1 if `fast` is nil (odd-length list). The front index of the target is `length - n`. Walk a dummy-headed cursor that many steps, then unlink via `curr.next = curr.next.next`.
+
+<Callout type="amber" label="Why the count formula works">
+Fast moves 2 steps per iteration. If the list has L nodes: odd L → fast ends at nil after (L-1)/2 iterations, so count = (L+1)/2 and length = 2*count - 1. Even L → fast ends at the last node after L/2-1 iterations... actually fast ends when fast.next is nil, so for even L fast stops at the last node (not nil), count = L/2, length = 2*count. The fast==nil check distinguishes the two cases.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,3,4,5], n = 2"
+  expected="[1,2,3,5]"
+  steps={[
+    { label: "Init", text: "slow=1, fast=2, count=1.", state: "slow→1, fast→2, count=1" },
+    { label: "Iter 1", text: "fast(2) and fast.next(3) non-nil. slow→2, fast→4, count=2.", state: "slow→2, fast→4, count=2" },
+    { label: "Iter 2", text: "fast(4) and fast.next(5) non-nil. slow→3, fast→nil, count=3.", state: "slow→3, fast→nil, count=3" },
+    { label: "Length", text: "count*2=6. fast==nil → count-=1 → length=5. target = max(0, 5-2) = 3.", state: "length=5, target=3" },
+    { label: "Walk", text: "curr=dummy→1. Walk 3 steps: curr→1→2→3. curr is now node 3.", state: "curr→3" },
+    { label: "Unlink", text: "curr.next = curr.next.next → 3.next = 5 (skipping 4).", state: "list = 1→2→3→5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise fast/slow and count">
+    `slow = head`, `fast = head?.next`, `count = 1`.
+  </StepItem>
+  <StepItem title="Advance to count nodes">
+    While `fast != nil && fast?.next != nil`: move `slow` one step, `fast` two steps, `count += 1`.
+  </StepItem>
+  <StepItem title="Compute true length">
+    `count *= 2`. If `fast == nil` (odd length), `count -= 1`. `target = max(0, count - n)`.
+  </StepItem>
+  <StepItem title="Attach dummy head">
+    Create `dummy = ListNode(0)`, `curr = dummy`, `curr.next = head`.
+  </StepItem>
+  <StepItem title="Walk to the node before target">
+    Advance `curr` exactly `target` times via `curr = curr.next`.
+  </StepItem>
+  <StepItem title="Unlink the target">
+    `curr.next = curr.next?.next`. Return `dummy.next`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
+    var slow = head
+    var fast = head?.next
+    var count = 1
+
+    while fast != nil, fast?.next != nil {
+      slow = slow?.next
+      fast = fast?.next?.next
+      count += 1
+    }
+
+    count = count * 2
+    if fast == nil { count -= 1 }
+    let target = max(0, count - n)
+
+    var dummy: ListNode? = ListNode(0)
+    var curr = dummy
+    curr?.next = head
+
+    for _ in 0..<target {
+      curr = curr?.next
+    }
+    curr?.next = curr?.next?.next
+    return dummy?.next
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pass (count length, then remove)", time: "O(n)", space: "O(1)", note: "Two separate full traversals" },
+    { approach: "Fast/slow pointer — one logical pass", time: "O(n)", space: "O(1)", note: "Fast pointer encodes length in one traversal", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Removing the wrong node without a dummy head",
+      body: "If the head itself is the target (n == list length), there is no previous node to update. Without a dummy, this requires a separate branch.",
+      fix: "Prepend a dummy node. The cursor starts at dummy, so even the head can be unlinked uniformly via dummy.next = dummy.next.next.",
+    },
+    {
+      title: "Walking to the target node instead of the node before it",
+      body: "To unlink node at index i, we need curr to point to index i-1 so we can update curr.next. Walking to the target itself leaves no way to update the previous pointer.",
+      fix: "Walk exactly target steps from dummy (not target+1), stopping one node before the target.",
+    },
+    {
+      title: "Off-by-one in the odd/even length formula",
+      body: "The fast==nil check distinguishes odd-length lists (fast ran off the end) from even-length ones (fast stopped at the last node). Missing this check gives length = 2*count for all lists, which is off by 1 for odd lengths.",
+      fix: "After count *= 2, subtract 1 if fast == nil.",
+    },
+  ]}
+/>

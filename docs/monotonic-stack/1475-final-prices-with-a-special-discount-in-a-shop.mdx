@@ -1,0 +1,160 @@
+---
+id: 1475-final-prices-with-a-special-discount-in-a-shop
+title: "Final Prices With a Special Discount in a Shop"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1475}
+  title="Final Prices With a Special Discount in a Shop"
+  difficulty="Easy"
+  pattern="Monotonic Stack — Next Smaller or Equal"
+  tags={["Array", "Stack", "Monotonic Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/final-prices-with-a-special-discount-in-a-shop/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an integer array `prices` where `prices[i]` is the price of the `i`-th item in a shop.
+
+There is a special discount for items in the shop. If you buy the `i`-th item, then you will receive a discount equivalent to `prices[j]` where `j` is the minimum index such that `j > i` and `prices[j] <= prices[i]`. Otherwise, you will not receive any discount at all.
+
+Return an integer array `answer` where `answer[i]` is the final price you will pay for the `i`-th item of the shop considering the special discount.
+
+**Constraints:**
+- `1 <= prices.length <= 500`
+- `1 <= prices[i] <= 10^3`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  prices = [8,4,6,2,3]
+Output: [4,2,4,2,3]
+Explanation:
+  8 → next price <=8 is 4 (index 1) → 8-4=4
+  4 → next price <=4 is 2 (index 3) → 4-2=2
+  6 → next price <=6 is 2 (index 3) → 6-2=4
+  2 → no next price <=2 after index 3 → 2
+  3 → no next price → 3
+```
+
+#### Example 2
+
+```
+Input:  prices = [1,2,3,4,5]
+Output: [1,2,3,4,5]
+Explanation: No item has a cheaper or equal item after it.
+```
+
+#### Example 3
+
+```
+Input:  prices = [10,1,1,6]
+Output: [9,0,1,6]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need the next smaller or equal element for each index?", verdict: "yes", reason: "Classic monotonic stack problem: maintain a stack of indices; pop when a smaller/equal element is found." },
+    { question: "Is the stack monotonically increasing or decreasing?", verdict: "yes", reason: "Keep a non-decreasing stack. Pop entries when the current price is <= the top — that current price is the discount." },
+  ]}
+  answer="Monotonic stack — next smaller or equal element"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a stack of `(value, index)` pairs in non-decreasing order. When `prices[i] <= stack.top.value`, the top entry's item receives a discount of `prices[i]`. Pop and apply. Push the current item.
+
+<Callout type="green" label="Pop condition includes equality">
+The discount applies when `prices[j] <= prices[i]` — note the `<=`, not just `less than`. Pop when the current price is less than or equal to the stack top.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="prices = [8,4,6,2,3]"
+  expected="[4,2,4,2,3]"
+  steps={[
+    { label: "i=0 (8)", text: "Stack empty. Push (8,0). result=[8,4,6,2,3].", state: "stack=[(8,0)]" },
+    { label: "i=1 (4)", text: "4<=8 → pop (8,0): result[0]=8-4=4. Stack empty. Push (4,1).", state: "stack=[(4,1)], result[0]=4" },
+    { label: "i=2 (6)", text: "6>4 → no pop. Push (6,2).", state: "stack=[(4,1),(6,2)]" },
+    { label: "i=3 (2)", text: "2<=6 → pop (6,2): result[2]=6-2=4. 2<=4 → pop (4,1): result[1]=4-2=2. Push (2,3).", state: "stack=[(2,3)], result[1]=2, result[2]=4" },
+    { label: "i=4 (3)", text: "3>2 → no pop. Push (3,4).", state: "stack=[(2,3),(3,4)]" },
+    { label: "End", text: "Stack has (2,3) and (3,4) — no discount found. result[3]=2, result[4]=3.", state: "result=[4,2,4,2,3]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise result as a copy of prices">
+    `var result = prices` — items with no discount keep their original price.
+  </StepItem>
+  <StepItem title="Iterate and maintain stack">
+    For each `i`, while `stack.last?.value >= prices[i]`: pop the top, apply discount `result[top.index] = top.value - prices[i]`.
+  </StepItem>
+  <StepItem title="Push current item">
+    After popping, push `(value: prices[i], index: i)` onto the stack.
+  </StepItem>
+  <StepItem title="Return result">
+    Any indices still in the stack at the end received no discount — their result values are unchanged.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func finalPrices(_ prices: [Int]) -> [Int] {
+    var stack = [(value: Int, index: Int)]()
+    var result = prices
+
+    for i in 0..<prices.count {
+      while let top = stack.last, prices[i] <= top.value {
+        stack.removeLast()
+        result[top.index] = top.value - prices[i]
+      }
+      stack.append((value: prices[i], index: i))
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (nested loops)", time: "O(n²)", space: "O(1)", note: "For each item, scan rightward for first smaller/equal" },
+    { approach: "Monotonic stack", time: "O(n)", space: "O(n)", note: "Each index pushed and popped at most once", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using strict less-than for the pop condition",
+      body: "The problem says discount applies when prices[j] <= prices[i]. Using < misses equal-price discounts.",
+      fix: "Pop when prices[i] <= top.value (less than or equal).",
+    },
+    {
+      title: "Storing only values in the stack",
+      body: "When popping, you need to know which result index to update. Without storing the index, you cannot apply the discount.",
+      fix: "Store (value, index) pairs in the stack.",
+    },
+    {
+      title: "Not initialising result from prices",
+      body: "Items at the bottom of the stack when the loop ends received no discount. If result starts as all zeros, they would be wrong.",
+      fix: "Initialise var result = prices so unapplied items retain their original price.",
+    },
+  ]}
+/>

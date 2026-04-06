@@ -1,0 +1,154 @@
+---
+id: 236-lowest-common-ancestor-of-a-binary-tree
+title: "Lowest Common Ancestor of a Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import LCADiagram from '@site/src/components/DSA/LCADiagram';
+
+<ProblemHeader
+  number={236}
+  title="Lowest Common Ancestor of a Binary Tree"
+  difficulty="Medium"
+  pattern="Post-Order DFS"
+  tags={["Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a binary tree, find the **lowest common ancestor (LCA)** of two given nodes `p` and `q`.
+
+The lowest common ancestor is defined as the lowest node in the tree that has both `p` and `q` as descendants (where a node is allowed to be a descendant of itself).
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[2, 10^5]`.
+- `-10^9 <= Node.val <= 10^9`
+- All node values are unique.
+- `p != q`
+- Both `p` and `q` exist in the tree.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+Output: 3
+Explanation: LCA of nodes 5 and 1 is 3.
+```
+
+#### Example 2
+
+```
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+Output: 5
+Explanation: LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need information from both subtrees before deciding at a node?", verdict: "yes", reason: "The LCA can only be identified after knowing whether p and q appear in the left subtree, right subtree, or both — post-order is required." },
+    { question: "Can a node be its own ancestor?", verdict: "yes", reason: "If root === p, root is already an ancestor of q (since q exists in the subtree). Return root immediately." },
+    { question: "How do we propagate the result upward?", verdict: "yes", reason: "Return the found node up the call stack. A node where both left and right return non-nil is the LCA." },
+  ]}
+  answer="Post-order DFS — return node if it matches p or q; LCA is where both subtrees return non-nil"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<LCADiagram />
+
+Recurse post-order. At each node:
+- If nil, return nil.
+- If `root === p` or `root === q`, return `root` (found one of the targets).
+- Recurse left and right. If both return non-nil, `root` is the LCA — return it. Otherwise return whichever side is non-nil (propagate upward).
+
+<Callout type="cyan" label="Why returning root when root === p works">
+The problem guarantees both p and q exist in the tree. If root === p, then q must be somewhere in p's subtree or above. Either way, p is the LCA (a node can be its own ancestor). Returning root early is correct.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [3,5,1,6,2,0,8], p = 5, q = 1"
+  expected="3"
+  steps={[
+    { label: "dfs(3)",  text: "not p or q → recurse left and right" },
+    { label: "dfs(5)",  text: "root === p (5) → return node 5 immediately (skip subtree)" },
+    { label: "dfs(1)",  text: "root === q (1) → return node 1 immediately" },
+    { label: "back@3",  text: "left=node5 (non-nil), right=node1 (non-nil) → both non-nil → return root 3" },
+    { label: "done",    text: "LCA = node 3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case — nil node">
+    Return nil immediately if root is nil.
+  </StepItem>
+  <StepItem title="Base case — target found">
+    If `root === p` or `root === q`, return `root`. This covers the case where a node is its own ancestor.
+  </StepItem>
+  <StepItem title="Post-order recurse">
+    `let left = lca(root.left, p, q)`, `let right = lca(root.right, p, q)`.
+  </StepItem>
+  <StepItem title="Both non-nil — LCA found">
+    If `left != nil && right != nil`, return `root`.
+  </StepItem>
+  <StepItem title="Propagate non-nil side">
+    Otherwise return `left ?? right` — pass the found node up the call stack.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func lowestCommonAncestor(_ root: TreeNode?, _ p: TreeNode?, _ q: TreeNode?) -> TreeNode? {
+    guard let root else { return nil }
+
+    if root === p || root === q { return root }
+
+    let left  = lowestCommonAncestor(root.left,  p, q)
+    let right = lowestCommonAncestor(root.right, p, q)
+
+    if left != nil, right != nil { return root }
+    return left ?? right
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Post-order DFS", time: "O(n)", space: "O(h)", note: "Visits every node at most once; O(h) call stack where h = tree height", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not returning early when root matches p or q",
+      body: "Without the early return, the DFS would recurse into p's subtree unnecessarily. Worse, if q is in p's subtree, the code would return q instead of p as the LCA.",
+      fix: "Always <code>return root</code> immediately when <code>root === p || root === q</code>, before recursing.",
+    },
+    {
+      title: "Returning root when only one side is non-nil",
+      body: "If only the left subtree finds a target, returning root instead of left claims the current node is the LCA, which is wrong.",
+      fix: "Only return root when BOTH left and right are non-nil. Otherwise <code>return left ?? right</code>.",
+    },
+    {
+      title: "Using value equality (==) instead of reference equality (===)",
+      body: "The problem guarantees unique values, so value equality would work here — but using === is semantically correct for node identity and safer in general.",
+      fix: "Use <code>root === p</code> (reference equality) rather than <code>root?.val == p?.val</code>.",
+    },
+  ]}
+/>

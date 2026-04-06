@@ -1,0 +1,158 @@
+---
+id: 383-ransom-note
+title: "Ransom Note"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={383}
+  title="Ransom Note"
+  difficulty="Easy"
+  pattern="Hash Map Frequency Count"
+  tags={["Hash Table", "String", "Counting"]}
+  leetcodeUrl="https://leetcode.com/problems/ransom-note/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two strings `ransomNote` and `magazine`, return `true` if `ransomNote` can be constructed by using the letters from `magazine`, and `false` otherwise.
+
+Each letter in `magazine` can only be used once in `ransomNote`.
+
+**Constraints:**
+- `1 <= ransomNote.length, magazine.length <= 10^5`
+- `ransomNote` and `magazine` consist of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  ransomNote = "a", magazine = "b"
+Output: false
+```
+
+#### Example 2
+
+```
+Input:  ransomNote = "aa", magazine = "ab"
+Output: false
+Explanation: Only one 'a' in magazine; two needed.
+```
+
+#### Example 3
+
+```
+Input:  ransomNote = "aa", magazine = "aab"
+Output: true
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to match exact letter counts between two strings?", verdict: "yes", reason: "We need the magazine to have at least as many of each letter as the ransom note requires." },
+    { question: "Is the alphabet bounded?", verdict: "yes", reason: "Only lowercase letters — a 26-slot frequency array or hash map both work in O(1) lookup." },
+    { question: "Can we solve in one pass over the ransom note?", verdict: "yes", reason: "Pre-build the magazine frequency map, then decrement as we consume each letter from the ransom note." },
+  ]}
+  answer="Hash Map Frequency Count — build magazine map, consume ransomNote letters"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Count every character in `magazine` into a hash map (`[Character: Int]`). Then iterate through `ransomNote`: for each character, check if it exists in the map with a positive count. If yes, decrement (and remove when it hits zero). If not found, return `false`. Return `true` after consuming all ransom note characters.
+
+<Callout type="cyan" label="Why remove zero-count entries">
+Removing the entry when count reaches zero keeps the map clean and makes the presence check (`dict[char] != nil`) equivalent to checking a positive count. Alternatively, just check `dict[char, default: 0] > 0`.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='ransomNote = "aa", magazine = "aab"'
+  expected="true"
+  steps={[
+    { label: "build",   text: "Scan magazine 'aab': dict = {a:2, b:1}" },
+    { label: "note[0]", text: "ransomNote[0]='a'; dict has a:2 → decrement to 1; dict = {a:1, b:1}" },
+    { label: "note[1]", text: "ransomNote[1]='a'; dict has a:1 → decrement to 0, remove key; dict = {b:1}" },
+    { label: "done",    text: "All ransom note chars consumed without failure → return true" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build frequency map from magazine">
+    Iterate `magazine`; for each character increment `dict[char, default: 0]`.
+  </StepItem>
+  <StepItem title="Consume ransom note characters">
+    For each character in `ransomNote`, look it up in `dict`.
+  </StepItem>
+  <StepItem title="Check availability">
+    If the character is not in `dict`, return `false` immediately.
+  </StepItem>
+  <StepItem title="Decrement and prune">
+    Decrement the count. If it reaches zero, remove the entry.
+  </StepItem>
+  <StepItem title="Return true">
+    If the loop completes, every character was available — return `true`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func canConstruct(_ ransomNote: String, _ magazine: String) -> Bool {
+    var dict = [Character: Int]()
+    for char in magazine {
+      dict[char, default: 0] += 1
+    }
+
+    for char in ransomNote {
+      if let value = dict[char] {
+        dict[char] = value - 1
+        if value - 1 <= 0 {
+          dict[char] = nil
+        }
+        continue
+      }
+      return false
+    }
+
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Hash Map Frequency Count", time: "O(m + n)", space: "O(1)", note: "m = magazine length, n = ransomNote length; map holds at most 26 keys", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Building frequency map from ransomNote instead of magazine",
+      body: "The magazine supplies the letters; the ransom note consumes them. Building the map from the wrong string inverts the check.",
+      fix: "Always build from magazine, then iterate ransomNote to consume letters.",
+    },
+    {
+      title: "Forgetting to remove zero-count entries",
+      body: "If entries stay at count 0, a subsequent check of dict[char] != nil incorrectly reports the letter as available.",
+      fix: "Set dict[char] = nil when the count reaches zero, or consistently check dict[char, default: 0] > 0.",
+    },
+    {
+      title: "Checking length equality first",
+      body: "ransomNote.count == magazine.count is NOT a required condition — the magazine can be longer than the note.",
+      fix: "Only check that each required letter is available in sufficient quantity. Length equality is neither necessary nor sufficient.",
+    },
+  ]}
+/>

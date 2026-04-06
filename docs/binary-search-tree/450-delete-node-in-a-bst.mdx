@@ -1,0 +1,192 @@
+---
+id: 450-delete-node-in-a-bst
+title: "Delete Node in a BST"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import DeleteNodeBSTDiagram from '@site/src/components/DSA/DeleteNodeBSTDiagram';
+
+<ProblemHeader
+  number={450}
+  title="Delete Node in a BST"
+  difficulty="Medium"
+  pattern="Recursive BST"
+  tags={["Tree", "Binary Search Tree", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/delete-node-in-a-bst/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
+Basically, the deletion can be divided into two stages:
+1. Search for the node to remove.
+2. If the node is found, delete the node.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 10^4]`.
+- `-10^5 <= Node.val <= 10^5`
+- Each node has a **unique** value.
+- `root` is a valid binary search tree.
+- `-10^5 <= key <= 10^5`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root = [5,3,6,2,4,null,7], key = 3
+Output: [5,4,6,2,null,null,7]
+Explanation: Node 3 has two children. Its inorder successor (min of right subtree) is 4.
+             Replace 3 with 4, then delete 4 from the right subtree.
+```
+
+#### Example 2
+
+```
+Input:  root = [5,3,6,2,4,null,7], key = 0
+Output: [5,3,6,2,4,null,7]
+Explanation: Key 0 is not found — return unchanged tree.
+```
+
+#### Example 3
+
+```
+Input:  root = [], key = 0
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we use BST ordering to navigate to the target?", verdict: "yes", reason: "If key > root.val go right; if key less than root.val go left. Exactly like BST search." },
+    { question: "What happens when we find the node?", verdict: "yes", reason: "Three cases: (1) leaf — return nil; (2) one child — return that child; (3) two children — find inorder successor, copy its value, delete successor from right subtree." },
+    { question: "Does recursion handle pointer reconnection automatically?", verdict: "yes", reason: "root.left = deleteNode(root.left, key) rewires the parent's pointer after the recursive call returns the updated subtree root." },
+  ]}
+  answer="Recursive BST — navigate to target, handle three deletion cases with return-value pointer fixup"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Recurse using the BST property:
+- If `key > root.val`: problem is in the right subtree — `root.right = deleteNode(root.right, key)`.
+- If `key < root.val`: problem is in the left subtree — `root.left = deleteNode(root.left, key)`.
+- If `key == root.val`: found the node. Handle three cases:
+  - No left child → return `root.right`.
+  - No right child → return `root.left`.
+  - Both children → find minimum of right subtree (inorder successor), copy its value into root, then delete that minimum from the right subtree.
+
+Return `root` at the end to rewire the parent's pointer.
+
+<DeleteNodeBSTDiagram />
+
+<Callout type="cyan" label="Finding the inorder successor">
+Traverse left as far as possible in the right subtree. The leftmost node in the right subtree is the smallest value greater than the deleted node — it can safely replace the deleted node while preserving BST ordering.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [5,3,6,2,4,null,7], key = 3"
+  expected="[5,4,6,2,null,null,7]"
+  steps={[
+    { label: "step 1", text: "key=3 < root.val=5 → go left: deleteNode(node(3), 3)" },
+    { label: "step 2", text: "key=3 == node.val=3 → both children exist; find min of right subtree" },
+    { label: "step 3", text: "right child is node(4); 4.left is nil → inorder successor = 4" },
+    { label: "step 4", text: "Copy successor value: node.val = 4; delete 4 from right subtree: node.right = deleteNode(node(4), 4)" },
+    { label: "step 5", text: "deleteNode(node(4), 4): 4==4, no left child → return right child (nil)" },
+    { label: "done",   text: "Tree reconstructed: 5→[4→[2,nil],6→[nil,7]]; return root (5)" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case — node not found">
+    `guard let root else { return root }`. Returns nil without modification if key exceeds the tree.
+  </StepItem>
+  <StepItem title="Navigate using BST ordering">
+    If `key > root.val`: `root.right = deleteNode(root.right, key)`. Else if `key < root.val`: `root.left = deleteNode(root.left, key)`.
+  </StepItem>
+  <StepItem title="Found — leaf or one child">
+    If `root.left == nil`, return `root.right`. If `root.right == nil`, return `root.left`.
+  </StepItem>
+  <StepItem title="Found — two children: locate inorder successor">
+    Traverse left from `root.right` until `curr?.left == nil`. `curr` is the minimum node in the right subtree.
+  </StepItem>
+  <StepItem title="Replace value and delete successor">
+    `root.val = curr!.val`. Then `root.right = deleteNode(root.right, root.val)`.
+  </StepItem>
+  <StepItem title="Return root">
+    `return root` rewires the parent pointer to the (potentially updated) subtree root.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func deleteNode(_ root: TreeNode?, _ key: Int) -> TreeNode? {
+    guard let root else {
+      return root
+    }
+
+    if key > root.val {
+      root.right = deleteNode(root.right, key)
+    } else if key < root.val {
+      root.left = deleteNode(root.left, key)
+    } else {
+      if root.left == nil {
+        return root.right
+      } else if root.right == nil {
+        return root.left
+      }
+
+      // Find the inorder successor (min of right subtree)
+      var curr = root.right
+      while let left = curr?.left {
+        curr = left
+      }
+
+      root.val = curr?.val ?? -1
+      root.right = deleteNode(root.right, root.val)
+
+      return root
+    }
+
+    return root
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive BST", time: "O(h)", space: "O(h)", note: "h = tree height; O(log n) balanced, O(n) worst case skewed; recursion stack depth = h", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not returning root after deletion in the two-children case",
+      body: "If the code returns nil or the wrong node when the deleted node had two children, the subtree rooted at this node is lost.",
+      fix: "After setting root.val and recursively deleting the successor, explicitly return root. The node stays in place with its value updated.",
+    },
+    {
+      title: "Using inorder predecessor instead of successor",
+      body: "Either the inorder predecessor (max of left subtree) or the inorder successor (min of right subtree) can replace the deleted node. Both are correct — be consistent with the chosen traversal direction.",
+      fix: "To use the inorder successor: traverse left from root.right until curr.left == nil. To use predecessor: traverse right from root.left until curr.right == nil.",
+    },
+    {
+      title: "Overwriting root.val before deleting the successor",
+      body: "The successor's value is copied into root.val first. The subsequent call deleteNode(root.right, root.val) uses the NEW root.val to find and delete the successor. This is correct — but only if root.val is set before the recursive call.",
+      fix: "Set root.val = curr.val first, then call deleteNode(root.right, root.val) — order matters.",
+    },
+  ]}
+/>

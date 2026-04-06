@@ -1,0 +1,160 @@
+---
+id: 257-binary-tree-paths
+title: "Binary Tree Paths"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import BinaryTreePathsDiagram from '@site/src/components/DSA/BinaryTreePathsDiagram';
+
+<ProblemHeader
+  number={257}
+  title="Binary Tree Paths"
+  difficulty="Easy"
+  pattern="Backtracking DFS"
+  tags={["String", "Backtracking", "Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/binary-tree-paths/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return all root-to-leaf paths in any order.
+
+A **leaf** is a node with no children.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[1, 100]`.
+- `-100 <= Node.val <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [1,2,3,null,5]
+Output: ["1->2->5","1->3"]
+```
+
+#### Example 2
+
+```
+Input: root = [1]
+Output: ["1"]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the path need to be tracked across recursive calls?", verdict: "yes", reason: "Each DFS call extends the current path by one node; the path must be maintained as a mutable array shared across the recursion." },
+    { question: "When should we record a path?", verdict: "yes", reason: "A root-to-leaf path is complete when both children are nil — record then return." },
+    { question: "Must we undo path changes on backtrack?", verdict: "yes", reason: "After returning from a subtree, the node just explored must be popped so the path is clean for the next branch." },
+  ]}
+  answer="Backtracking DFS — push node on entry, record at leaf, pop on exit"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<BinaryTreePathsDiagram />
+
+Maintain a `path` array. Push the current node's value as a string. If it is a leaf, join `path` with `"->"` and append to results. Otherwise recurse into left and right children. After all recursion from this node, pop the last element to restore the path for sibling branches.
+
+<Callout type="cyan" label="Pop at the end vs pop after each child">
+Popping once at the end of the function (after both children) is equivalent to popping after each child — but the single-pop placement at the bottom is cleaner. It restores the path for the caller regardless of which branch was taken.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [1,2,3,null,5]"
+  expected='["1->2->5","1->3"]'
+  steps={[
+    { label: "dfs(1)",  text: "push '1'; path=['1']; has children → recurse" },
+    { label: "dfs(2)",  text: "push '2'; path=['1','2']; has right child → recurse" },
+    { label: "dfs(5)",  text: "push '5'; path=['1','2','5']; leaf → record '1->2->5'; pop '5'" },
+    { label: "dfs(nil)",text: "dfs(2.left=nil) → return immediately" },
+    { label: "back@2",  text: "pop '2'; path=['1']" },
+    { label: "dfs(3)",  text: "push '3'; path=['1','3']; leaf → record '1->3'; pop '3'" },
+    { label: "back@1",  text: "pop '1'; path=[]; done → return ['1->2->5','1->3']" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard nil root">
+    Return `[]` if the root is nil.
+  </StepItem>
+  <StepItem title="Push current node value">
+    Append `String(root.val)` to `path`.
+  </StepItem>
+  <StepItem title="At leaf — record path">
+    If `root.left == nil && root.right == nil`, append `path.joined(separator: "->")` to results and pop, then return.
+  </StepItem>
+  <StepItem title="Recurse into children">
+    Call `dfs(root.left)` and `dfs(root.right)`.
+  </StepItem>
+  <StepItem title="Pop on return">
+    `path.removeLast()` after both children have been explored.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func binaryTreePaths(_ root: TreeNode?) -> [String] {
+    guard let root else { return [] }
+    var results = [String]()
+    var path    = [String]()
+
+    func dfs(_ root: TreeNode?) {
+      guard let root else { return }
+      path.append(String(root.val))
+
+      if root.left == nil, root.right == nil {
+        results.append(path.joined(separator: "->"))
+        path.removeLast()
+        return
+      }
+
+      dfs(root.left)
+      dfs(root.right)
+      path.removeLast()
+    }
+
+    dfs(root)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking DFS", time: "O(n × h)", space: "O(h)", note: "n nodes visited; path join at each leaf is O(h); h = tree height; O(h) call stack", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not popping after the leaf case",
+      body: "The leaf branch has an early return. Without a <code>path.removeLast()</code> before that return, the leaf node stays in path when control passes back to the parent.",
+      fix: "Pop before returning at the leaf: <code>results.append(...); path.removeLast(); return</code>.",
+    },
+    {
+      title: "Recording at every node instead of only at leaves",
+      body: "A root-to-leaf path ends at a leaf. Recording at every node creates partial paths.",
+      fix: "Only record when <code>root.left == nil && root.right == nil</code>.",
+    },
+    {
+      title: "Using string concatenation instead of a path array",
+      body: "Building a String directly (e.g. <code>path + '->' + val</code>) copies the entire string on each call — O(n×h) extra allocations. It also makes backtracking harder since strings are value types.",
+      fix: "Use a mutable <code>[String]</code> array and join only at the leaf.",
+    },
+  ]}
+/>

@@ -1,0 +1,157 @@
+---
+id: 2807-insert-greatest-common-divisors-in-linked-list
+title: "Insert Greatest Common Divisors in Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, InsertGCDLinkedListDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2807}
+  title="Insert Greatest Common Divisors in Linked List"
+  difficulty="Medium"
+  pattern="Linked List — Pairwise Insertion"
+  tags={["Linked List", "Math", "Number Theory"]}
+  leetcodeUrl="https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the head of a linked list where every node's value is a positive integer, insert a new node between every pair of adjacent nodes so that the new node's value is the **greatest common divisor (GCD)** of the two adjacent nodes.
+
+Return the `head` of the modified linked list.
+
+The **GCD** of two integers is the largest positive integer that evenly divides both numbers.
+
+**Constraints:**
+- The number of nodes in the list is in the range `[1, 5000]`.
+- `1 <= Node.val <= 1000`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  head = [18,6,10,3]
+Output: [18,6,6,2,10,1,3]
+Explanation:
+  GCD(18,6)=6  → insert 6 between 18 and 6.
+  GCD(6,10)=2  → insert 2 between 6 and 10.
+  GCD(10,3)=1  → insert 1 between 10 and 3.
+```
+
+#### Example 2
+
+```
+Input:  head = [7]
+Output: [7]
+Explanation: Single node — no adjacent pairs to process.
+```
+
+<InsertGCDLinkedListDiagram />
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we process pairs of adjacent nodes?", verdict: "yes", reason: "Walk with curr and curr.next. For each pair, compute GCD and splice in a new node." },
+    { question: "Can we modify the list in place?", verdict: "yes", reason: "Insert the new node by updating pointers: curr.next = gcdNode, gcdNode.next = originalNext. Then advance curr by two." },
+  ]}
+  answer="Walk adjacent pairs, compute GCD via Euclidean algorithm, splice new node"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Walk `curr` from `head`. While `curr.next != nil`: save `next = curr.next`, compute `gcd = GCD(curr.val, next.val)`, create `gcdNode = ListNode(gcd)`, set `curr.next = gcdNode` and `gcdNode.next = next`. Advance `curr = curr.next.next` (skipping over the inserted node to reach the original next node).
+
+<Callout type="cyan" label="Euclidean GCD">
+GCD(a, b): while b != 0, swap (a,b) = (b, a%b). Return a. This is O(log min(a,b)) per call.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [18,6,10,3]"
+  expected="[18,6,6,2,10,1,3]"
+  steps={[
+    { label: "Start",     text: "curr=18, curr.next=6. Compute GCD(18,6)=6.",               state: "curr=18" },
+    { label: "Insert 6",  text: "Insert node(6): 18 → node(6) → 6. Advance curr to node(6) (original).", state: "[18,6,6,10,3]" },
+    { label: "Step 2",    text: "curr=6, curr.next=10. Compute GCD(6,10)=2.",               state: "curr=6" },
+    { label: "Insert 2",  text: "Insert node(2): 6 → node(2) → 10. Advance curr to 10.",   state: "[18,6,6,2,10,3]" },
+    { label: "Step 3",    text: "curr=10, curr.next=3. Compute GCD(10,3)=1.",               state: "curr=10" },
+    { label: "Insert 1",  text: "Insert node(1): 10 → node(1) → 3. Advance curr to 3.",    state: "[18,6,6,2,10,1,3]" },
+    { label: "Done",      text: "curr=3, curr.next=nil. Loop ends. Return head.",           state: "return head" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Walk adjacent pairs">
+    `var current = head`. While `current?.next != nil`: capture `let next = current!.next`.
+  </StepItem>
+  <StepItem title="Compute GCD and splice">
+    Compute `gcdNode = findGCD(current!.val, next!.val)` (returns a `ListNode`). Set `current!.next = gcdNode`, `gcdNode.next = next`.
+  </StepItem>
+  <StepItem title="Advance past the inserted node">
+    `current = current?.next?.next` — this skips the inserted GCD node and lands on the original `next`.
+  </StepItem>
+  <StepItem title="Return head">
+    Return the original `head` (unmodified reference).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func insertGreatestCommonDivisors(_ head: ListNode?) -> ListNode? {
+    var current = head
+
+    while current?.next != nil {
+      let next = current!.next
+      let gcdNode = findGCD(current!.val, next!.val)
+      current!.next = gcdNode
+      gcdNode.next = next
+      current = current?.next?.next  // skip inserted node
+    }
+
+    return head
+  }
+
+  func findGCD(_ a: Int, _ b: Int) -> ListNode {
+    var x = a, y = b
+    while y != 0 {
+      let temp = y
+      y = x % y
+      x = temp
+    }
+    return ListNode(x)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Pairwise GCD insertion", time: "O(n log V)", space: "O(n)", note: "n pairs, each GCD call O(log V) where V = max node value (1000); O(n) new nodes allocated", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Advancing curr by one instead of two",
+      body: "After inserting the GCD node, curr.next points to the newly inserted node, not the original next. Advancing by one would re-process the inserted GCD node as the new curr.",
+      fix: "Advance with current = current?.next?.next to skip over the inserted node.",
+    },
+    {
+      title: "Forgetting to link gcdNode.next to the original next",
+      body: "Setting curr.next = gcdNode without setting gcdNode.next = next disconnects the rest of the list.",
+      fix: "Always set both: curr.next = gcdNode and gcdNode.next = next.",
+    },
+  ]}
+/>

@@ -1,0 +1,192 @@
+---
+id: 394-decode-string
+title: "Decode String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={394}
+  title="Decode String"
+  difficulty="Medium"
+  pattern="Stack"
+  tags={["String", "Stack", "Recursion"]}
+  leetcodeUrl="https://leetcode.com/problems/decode-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an encoded string, return its decoded version.
+
+The encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the brackets is repeated exactly `k` times. Note that `k` is guaranteed to be a positive integer.
+
+You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc. Furthermore, you may assume that the original data does not contain any digits and that all the digits are only for those repeat numbers, `k`. For example, there will not be input like `3a` or `2[4]`.
+
+The test cases are generated so that the length of the output will never exceed `10^5`.
+
+**Constraints:**
+- `1 <= s.length <= 30`
+- `s` consists of lowercase English letters, digits, and square brackets `'[]'`.
+- It is guaranteed that `s` is valid and the depth of the nesting is at most `10`.
+- It is guaranteed that the total output length does not exceed `10^5`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "3[a]2[bc]"
+Output: "aaabcbc"
+```
+
+#### Example 2
+
+```
+Input:  s = "3[a2[c]]"
+Output: "accaccacc"
+```
+
+#### Example 3
+
+```
+Input:  s = "2[abc]3[cd]ef"
+Output: "abcabccdcdcdef"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are brackets nested (inner must be resolved before outer)?", verdict: "yes", reason: "Nested brackets mean the innermost group must be expanded first — classic LIFO order, perfect for a stack." },
+    { question: "Can we process characters left to right?", verdict: "yes", reason: "Push characters and brackets onto the stack; when we hit ']', pop back to '[' to extract the content and the repeat count." },
+    { question: "Do repeat numbers always appear immediately before '['?", verdict: "yes", reason: "The format guarantees k[...]; after popping the substring, pop digits from the stack to reconstruct k." },
+  ]}
+  answer="Stack — push until ']', then pop to extract substring and repeat count"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a string stack. For every character except `]`, push it directly. When `]` is encountered:
+1. Pop characters until `[` is found — that is the substring to repeat.
+2. Pop `[`.
+3. Pop consecutive digit strings from the top to form the repeat count `k`.
+4. Push `String(repeating: substring, count: k)`.
+
+Join the stack at the end to get the final result.
+
+<Callout type="cyan" label="Digit reconstruction">
+Repeat counts can be multi-digit (e.g., `12[a]`). Digits are pushed individually as single-character strings. When popping the count, concatenate them in correct order: each newly popped digit goes to the front of the accumulated string.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "3[a2[c]]"'
+  expected='"accaccacc"'
+  steps={[
+    { label: "i=0..4", text: "Push '3','[','a','2','[' → stack=['3','[','a','2','[']" },
+    { label: "i=5",    text: "Push 'c' → stack=['3','[','a','2','[','c']" },
+    { label: "i=6 ]",  text: "Hit ']': pop 'c' → substr='c'; pop '['; pop '2' → k=2; push 'cc' → stack=['3','[','a','cc']" },
+    { label: "i=7 ]",  text: "Hit ']': pop 'cc' → substr='cc'; pop 'a' → substr='acc'; pop '['; pop '3' → k=3; push 'accaccacc'" },
+    { label: "done",   text: "stack=['accaccacc']; join → return 'accaccacc'" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise an empty string stack">
+    `var stack = [String]()`.
+  </StepItem>
+  <StepItem title="Push non-closing characters">
+    For every character that is not `]`, push `String(char)` onto the stack.
+  </StepItem>
+  <StepItem title="On ']' — collect substring">
+    Pop strings from the stack while the top is not `[`, prepending each to build the inner substring.
+  </StepItem>
+  <StepItem title="Pop the '[' separator">
+    Remove the `[` from the stack.
+  </StepItem>
+  <StepItem title="Collect the repeat count">
+    While the top of the stack parses as an integer, pop and prepend to build the full multi-digit count `k`.
+  </StepItem>
+  <StepItem title="Push the expanded string">
+    Push `String(repeating: substr, count: Int(k) ?? 0)`.
+  </StepItem>
+  <StepItem title="Join and return">
+    `return stack.joined(separator: "")`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func decodeString(_ s: String) -> String {
+    var stack = [String]()
+
+    func index(_ index: Int) -> Character {
+      let strIndex = s.index(s.startIndex, offsetBy: index)
+      return s[strIndex]
+    }
+
+    for i in 0..<s.count {
+      let str = index(i)
+      if str != "]" {
+        stack.append(String(str))
+      } else {
+        var substr = ""
+        while let top = stack.last, top != "[" {
+          let lastItem = stack.removeLast()
+          substr = lastItem + substr
+        }
+
+        stack.removeLast()  // Pop the "["
+
+        var k = ""
+        while let top = stack.last, Int(top) != nil {
+          let number = stack.removeLast()
+          k = number + k
+        }
+
+        stack.append(
+          String(repeating: substr, count: Int(k) ?? 0)
+        )
+      }
+    }
+
+    return stack.joined(separator: "")
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack", time: "O(n * k_max)", space: "O(n * k_max)", note: "Each character may be expanded up to k_max times across nesting levels; n = input length", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Wrong substring order when popping",
+      body: "Popping characters one by one and appending builds the substring in reverse. The last character popped was the leftmost in the original.",
+      fix: "Prepend each popped element: substr = lastItem + substr (not substr + lastItem).",
+    },
+    {
+      title: "Wrong digit order when popping the count",
+      body: "Similarly, digits are popped in reverse order. The deepest digit on the stack is the most significant.",
+      fix: "Prepend each popped digit: k = number + k. For '12[a]', '2' is popped first → k='2', then '1' → k='12'.",
+    },
+    {
+      title: "Not popping the '[' before reading the count",
+      body: "If '[' is not removed before reading the repeat count, the digit-parsing loop may stop prematurely or include '[' as a count character.",
+      fix: "Always call stack.removeLast() to remove '[' before beginning the digit collection loop.",
+    },
+  ]}
+/>

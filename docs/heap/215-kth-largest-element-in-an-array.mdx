@@ -1,0 +1,141 @@
+---
+id: 215-kth-largest-element-in-an-array
+title: "Kth Largest Element in an Array"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={215}
+  title="Kth Largest Element in an Array"
+  difficulty="Medium"
+  pattern="Max-Heap"
+  tags={["Array", "Divide and Conquer", "Sorting", "Heap (Priority Queue)", "Quickselect"]}
+  leetcodeUrl="https://leetcode.com/problems/kth-largest-element-in-an-array/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums` and an integer `k`, return the `k`th largest element in the array. Note that it is the `k`th largest element in sorted order, not the `k`th distinct element.
+
+You must solve it without sorting.
+
+**Constraints:**
+- `1 <= k <= nums.length <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+```
+
+#### Example 2
+
+```
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need the k largest or just the kth?", verdict: "yes", reason: "We need the single kth largest value — popping k times from a max-heap gives it directly." },
+    { question: "Can we avoid a full sort?", verdict: "yes", reason: "A max-heap built in O(n) lets us pop the maximum in O(log n) — total O(n + k log n) vs O(n log n) for sorting." },
+    { question: "Is Quickselect faster?", verdict: "yes", reason: "Quickselect is O(n) average, but O(n²) worst-case. The heap approach is reliable O(n + k log n) regardless of input." },
+  ]}
+  answer="Max-Heap — build in O(n), pop max k times; the kth pop is the answer"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build a max-heap from all elements. Call `popMax()` k times; the value returned on the kth pop is the kth largest.
+
+<Callout type="cyan" label="Swift Heap">
+Swift's <code>Heap</code> type (from the swift-collections package) is a min-heap by default. To get max-heap behaviour, wrap values in a struct that reverses the comparator, or call <code>popMax()</code> which is provided on <code>Heap</code> for the maximum element.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [3,2,1,5,6,4], k = 2"
+  expected="5"
+  steps={[
+    { label: "build",  text: "heap = [6,5,4,2,3,1] (max-heap; 6 at root)" },
+    { label: "pop 1",  text: "popMax() → 6; k=1 remaining; heap re-heapifies" },
+    { label: "pop 2",  text: "popMax() → 5; k=0; result=5" },
+    { label: "done",   text: "k pops completed → return 5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build a max-heap">
+    Construct `Heap(nums)` — Swift's Heap supports `popMax()` to retrieve the largest element.
+  </StepItem>
+  <StepItem title="Pop max k times">
+    Decrement `k` each time. Store the value returned by `popMax()` as `result`.
+  </StepItem>
+  <StepItem title="Return result">
+    After `k` pops, `result` holds the kth largest element.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findKthLargest(_ nums: [Int], _ k: Int) -> Int {
+    var heap = Heap(nums)  // Swift Collections Heap; popMax() available
+    var k = k
+    var result = -1
+
+    while k > 0 {
+      guard let max = heap.popMax() else { continue }
+      result = max
+      k -= 1
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sort", time: "O(n log n)", space: "O(1)", note: "Simple but uses sorting which is prohibited" },
+    { approach: "Max-Heap", time: "O(n + k log n)", space: "O(n)", note: "Build O(n), k pops each O(log n)", highlight: true },
+    { approach: "Min-Heap (size k)", time: "O(n log k)", space: "O(k)", note: "Keep only k smallest; top of min-heap is the kth largest" },
+    { approach: "Quickselect", time: "O(n) avg / O(n²) worst", space: "O(1)", note: "Partition-based; optimal average but degrades on adversarial input" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using a min-heap without size capping",
+      body: "Calling popMin() k times gives the k smallest elements, not the kth largest.",
+      fix: "Use popMax() for max-heap approach, or maintain a min-heap of exactly k elements and return heap.min at the end.",
+    },
+    {
+      title: "Off-by-one: popping k-1 times",
+      body: "The kth largest is the value at the kth pop. Stopping after k-1 pops returns the (k-1)th largest.",
+      fix: "Loop while k greater than 0, decrement k after each pop, and capture result each time. The final value of result after the loop is the kth largest.",
+    },
+    {
+      title: "Not handling the guard let failure",
+      body: "If the heap is empty unexpectedly and popMax() returns nil, an infinite loop results when using continue inside the while loop.",
+      fix: "For a valid input where k is at most nums.count, the heap will never be empty during k pops. The guard is defensive — in practice, break or fatalError is cleaner.",
+    },
+  ]}
+/>

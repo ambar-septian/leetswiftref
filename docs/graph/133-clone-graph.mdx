@@ -1,0 +1,177 @@
+---
+id: 133-clone-graph
+title: "Clone Graph"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CloneGraphDiagram from '@site/src/components/DSA/CloneGraphDiagram';
+
+<ProblemHeader
+  number={133}
+  title="Clone Graph"
+  difficulty="Medium"
+  pattern="DFS + Hash Map"
+  tags={["Hash Table", "Depth-First Search", "Breadth-First Search", "Graph Theory"]}
+  leetcodeUrl="https://leetcode.com/problems/clone-graph/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a reference of a node in a **connected undirected graph**, return a **deep copy** (clone) of the graph.
+
+Each node in the graph contains a value (`val`) and a list of its neighbors (`neighbors`). The graph is represented in the test as an adjacency list where `adjList[i]` is a list of all nodes adjacent to node `i + 1` (1-indexed).
+
+Your clone must be an entirely new set of node objects. Changing the original graph must not affect the clone and vice versa.
+
+**Constraints:**
+- The number of nodes in the graph is in the range `[0, 100]`.
+- `1 <= Node.val <= 100`
+- `Node.val` is unique for each node.
+- There are no repeated edges and no self-loops.
+- The graph is connected, and all nodes can be visited starting from the given node.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: adjList = [[2,4],[1,3],[2,4],[1,3]]
+Output: [[2,4],[1,3],[2,4],[1,3]]
+Explanation: 4-node cycle: 1↔2↔3↔4↔1. The returned graph is a deep copy — entirely new node objects.
+```
+
+#### Example 2
+
+```
+Input: adjList = [[]]
+Output: [[]]
+Explanation: Single node with no neighbors.
+```
+
+#### Example 3
+
+```
+Input: adjList = []
+Output: []
+Explanation: Empty graph.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the graph potentially cyclic?", verdict: "yes", reason: "Without a visited set, DFS would loop forever on cycles. The clone dict serves as the visited marker." },
+    { question: "Can the same node be a neighbor of multiple other nodes?", verdict: "yes", reason: "We must reuse the already-created clone (from the dict) instead of creating duplicate node objects." },
+    { question: "Can we build each clone on first visit and look it up on subsequent visits?", verdict: "yes", reason: "Store new node in dict immediately after creation, before recursing into neighbors." },
+  ]}
+  answer="DFS + dict — create clone on first visit, store immediately, reuse on revisit"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<CloneGraphDiagram />
+
+Use a `dict [Int: Node]` mapping old node values to their clones. When DFS visits a node: create a new node, store it in `dict`, then iterate over neighbors. For each neighbor, if its clone already exists in `dict` (cycle or shared neighbor), append that clone. Otherwise recurse into the neighbor to create its clone.
+
+<Callout type="cyan" label="Store before recursing">
+The clone must be stored in <code>dict</code> immediately after creation — before iterating neighbors. This prevents infinite recursion when a neighbor points back to the current node.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="deep copy of graph"
+  input="adjList = [[2,4],[1,3],[2,4],[1,3]]  (nodes 1-2-3-4 in a cycle)"
+  steps={[
+    { label: "dfs(1)",   text: "create Node(1); dict[1]=Node(1); neighbors=[2,4]" },
+    { label: "dfs(2)",   text: "create Node(2); dict[2]=Node(2); neighbors=[1,3]" },
+    { label: "neighbor 1", text: "dict[1] exists → append Node(1) to Node(2).neighbors" },
+    { label: "dfs(3)",   text: "create Node(3); dict[3]=Node(3); neighbors=[2,4]" },
+    { label: "neighbor 2", text: "dict[2] exists → append Node(2) to Node(3).neighbors" },
+    { label: "dfs(4)",   text: "create Node(4); dict[4]=Node(4); neighbors=[1,3]" },
+    { label: "neighbors", text: "dict[1] and dict[3] exist → append both; return Node(4)" },
+    { label: "back up",  text: "Node(3) appends Node(4); Node(2) appends Node(3); Node(1) appends Node(2), Node(4)" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard nil">
+    Return nil if the input node is nil.
+  </StepItem>
+  <StepItem title="Initialise dict">
+    `var dict = [Int: Node]()` — maps old node val to its clone.
+  </StepItem>
+  <StepItem title="DFS: create and store clone">
+    Create `let newNode = Node(oldNode.val)` and immediately store `dict[oldNode.val] = newNode`.
+  </StepItem>
+  <StepItem title="Clone neighbors">
+    For each neighbor: if `dict[neighbor.val]` exists, append that clone. Else call `dfs(neighbor)` and append the returned clone.
+  </StepItem>
+  <StepItem title="Return the clone">
+    Return `newNode` from DFS. The top-level call returns the clone of the entry node.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func cloneGraph(_ node: Node?) -> Node? {
+    guard let node else { return nil }
+    var dict = [Int: Node]()
+
+    func dfs(_ oldNode: Node?) -> Node? {
+      guard let oldNode else { return nil }
+      let newNode = Node(oldNode.val)
+      dict[oldNode.val] = newNode
+
+      for neighbor in oldNode.neighbors {
+        guard let neighbor else { continue }
+        if let existing = dict[neighbor.val] {
+          newNode.neighbors.append(existing)
+        } else {
+          newNode.neighbors.append(dfs(neighbor))
+        }
+      }
+
+      return newNode
+    }
+
+    return dfs(node)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS + hash map", time: "O(V + E)", space: "O(V)", note: "Every node and edge visited once; dict stores V clone references", highlight: true },
+    { approach: "BFS + hash map", time: "O(V + E)", space: "O(V)", note: "Same complexity; queue replaces call stack" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Storing the clone in dict after recursing into neighbors",
+      body: "If you recurse before storing the new node, a cycle (e.g. neighbor pointing back to the current node) will trigger another DFS call for the current node and create a duplicate — or infinite recursion.",
+      fix: "Always store <code>dict[oldNode.val] = newNode</code> immediately after creating the node, before touching neighbors.",
+    },
+    {
+      title: "Using the node object as the dict key instead of val",
+      body: "If you key the dict by the old node reference, you need reference equality. In Swift, using the unique val is simpler and more portable since val is guaranteed unique.",
+      fix: "Key the dict by <code>oldNode.val</code> (Int) — guaranteed unique per the problem constraints.",
+    },
+    {
+      title: "Not handling the nil neighbor case",
+      body: "The neighbors array is typed <code>[Node?]</code> — each element can be nil even though the problem says no such nulls exist in practice.",
+      fix: "Guard each neighbor with <code>guard let neighbor else { continue }</code> to be safe.",
+    },
+  ]}
+/>

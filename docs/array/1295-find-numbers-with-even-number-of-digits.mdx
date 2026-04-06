@@ -1,0 +1,135 @@
+---
+id: 1295-find-numbers-with-even-number-of-digits
+title: "Find Numbers with Even Number of Digits"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1295}
+  title="Find Numbers with Even Number of Digits"
+  difficulty="Easy"
+  pattern="Math — Digit Count"
+  tags={["Array", "Math"]}
+  leetcodeUrl="https://leetcode.com/problems/find-numbers-with-even-number-of-digits/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array `nums` of integers, return how many of them contain an **even number of digits**.
+
+**Constraints:**
+- `1 <= nums.length <= 500`
+- `1 <= nums[i] <= 10^5`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [12, 345, 2, 6, 7896]
+Output: 2
+Explanation: 12 has 2 digits (even). 345 has 3. 2 has 1. 6 has 1. 7896 has 4 (even). Count = 2.
+```
+
+#### Example 2
+
+```
+Input:  nums = [555, 901, 482, 1771]
+Output: 1
+Explanation: Only 1771 has 4 digits (even).
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to count digits?", verdict: "yes", reason: "log10(n) + 1 gives the number of digits in O(1) without string conversion." },
+    { question: "Can we use string length instead?", verdict: "yes", reason: "String(num).count is simpler but allocates a string. log10 is more efficient." },
+    { question: "Is parity checking straightforward?", verdict: "yes", reason: "digitCount % 2 == 0 immediately tells us if the count is even." },
+  ]}
+  answer="Linear scan — count digits with log10"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+For each number, compute `Int(log10(Double(num))) + 1` to get the digit count, then check if it is even. For example: `log10(100) = 2`, so `Int(2) + 1 = 3` digits — correct.
+
+<Callout type="green" label="Why log10 works">
+A number with d digits satisfies 10^(d-1) is at most n, and n is less than 10^d. So log10(n) is in [d-1, d), and Int(log10(n)) = d-1, giving digit count = d.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [12, 345, 2, 6, 7896]"
+  expected="2"
+  steps={[
+    { label: "12",   text: "log10(12)≈1.08 → Int=1 → digits=2. Even → count=1.", state: "result=1" },
+    { label: "345",  text: "log10(345)≈2.54 → Int=2 → digits=3. Odd → skip.", state: "result=1" },
+    { label: "2",    text: "log10(2)≈0.30 → Int=0 → digits=1. Odd → skip.", state: "result=1" },
+    { label: "6",    text: "log10(6)≈0.78 → Int=0 → digits=1. Odd → skip.", state: "result=1" },
+    { label: "7896", text: "log10(7896)≈3.90 → Int=3 → digits=4. Even → count=2.", state: "result=2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Iterate through nums">
+    For each index `i`, access `nums[i]`.
+  </StepItem>
+  <StepItem title="Compute digit count">
+    `let value = Int(log10(Double(num))) + 1`
+  </StepItem>
+  <StepItem title="Check parity">
+    If `value % 2 == 0`, increment `result`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return the count of numbers with an even digit count.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+import Foundation
+
+class Solution {
+  func findNumbers(_ nums: [Int]) -> Int {
+    var result = 0
+    for num in nums {
+      let digits = Int(log10(Double(num))) + 1
+      result += (digits % 2 == 0 ? 1 : 0)
+    }
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Linear scan with log10", time: "O(n)", space: "O(1)", note: "Single pass, constant work per element", highlight: true },
+    { approach: "String conversion", time: "O(n · d)", space: "O(d)", note: "d = max digits; allocates a string per number" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Calling log10 on 0",
+      body: "log10(0) is -infinity. The constraints guarantee nums[i] >= 1, so this is safe here, but always verify constraints before using log10.",
+      fix: "Guard num > 0 before computing log10, or use string conversion if the input might include 0.",
+    },
+    {
+      title: "Forgetting the + 1",
+      body: "Int(log10(Double(num))) gives the floor of the log, which is one less than the digit count.",
+      fix: "Always add 1: digit count = Int(log10(Double(num))) + 1.",
+    },
+  ]}
+/>

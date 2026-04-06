@@ -1,0 +1,166 @@
+---
+id: 105-construct-binary-tree-from-preorder-and-inorder-traversal
+title: "Construct Binary Tree from Preorder and Inorder Traversal"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import BuildTreeDiagram from '@site/src/components/DSA/BuildTreeDiagram';
+
+<ProblemHeader
+  number={105}
+  title="Construct Binary Tree from Preorder and Inorder Traversal"
+  difficulty="Medium"
+  pattern="Divide and Conquer"
+  tags={["Array", "Hash Table", "Divide and Conquer", "Tree", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two integer arrays `preorder` and `inorder` where `preorder` is the preorder traversal of a binary tree and `inorder` is the inorder traversal of the same tree, construct and return the binary tree.
+
+- **Preorder** traversal visits: root → left subtree → right subtree
+- **Inorder** traversal visits: left subtree → root → right subtree
+
+These two traversals together uniquely determine a binary tree (assuming all values are distinct).
+
+**Constraints**
+- `1 <= preorder.length <= 3000`
+- `inorder.length == preorder.length`
+- `-3000 <= preorder[i], inorder[i] <= 3000`
+- `preorder` and `inorder` consist of **unique** values.
+- Each value of `inorder` also appears in `preorder`.
+- `preorder` is **guaranteed** to be the preorder traversal of the tree.
+- `inorder` is **guaranteed** to be the inorder traversal of the tree.
+
+<Callout type="green" label="Core Insight">
+preorder[0] is always the root. Find that value's position (mid) in inorder — everything left of mid is the left subtree and everything right is the right subtree. A shared preIndex advances through preorder as each root is consumed; a hash map gives O(1) inorder lookups.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+```
+
+#### Example 2
+```
+Input:  preorder = [-1], inorder = [-1]
+Output: [-1]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the first element of preorder always the root?", verdict: "yes", reason: "Preorder = root first. Each recursive call consumes preorder[preIndex] as the current root." },
+    { question: "Does the root's position in inorder define left and right subtree sizes?", verdict: "yes", reason: "inorder[0..mid-1] = left subtree, inorder[mid+1..n-1] = right subtree." },
+    { question: "Can we find the root's inorder position in O(1)?", verdict: "yes", reason: "Pre-build a hash map from value to inorder index — avoids O(n) linear scan per level." },
+  ]}
+  answer="Divide and conquer — consume preorder root, split inorder, recurse on subranges"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build `hash[inorder[i]] = i` for all `i`. Use a shared `preIndex = 0` variable. Define `recursive(inLeft, inRight)`:
+1. If `inLeft > inRight` return nil.
+2. Root value = `preorder[preIndex]`; increment `preIndex`.
+3. `mid = hash[rootVal]`.
+4. `root.left = recursive(inLeft, mid - 1)`, `root.right = recursive(mid + 1, inRight)`.
+
+<BuildTreeDiagram />
+
+<Callout type="cyan" label="Why recurse left before right">
+preorder is root → left → right. After consuming the root at preIndex, the next values in preorder belong to the left subtree. Recursing left first naturally consumes those values in order before moving to the right subtree.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="preorder=[3,9,20,15,7], inorder=[9,3,15,20,7]"
+  expected="[3,9,20,null,null,15,7]"
+  steps={[
+    { label: "recursive(0,4)", text: "root=preorder[0]=3. preIndex=1. mid=hash[3]=1. Left: recursive(0,0). Right: recursive(2,4).", state: "root=3" },
+    { label: "recursive(0,0)", text: "root=preorder[1]=9. preIndex=2. mid=hash[9]=0. Left: recursive(0,-1)=nil. Right: recursive(1,0)=nil. Return node(9).", state: "left child=9" },
+    { label: "recursive(2,4)", text: "root=preorder[2]=20. preIndex=3. mid=hash[20]=3. Left: recursive(2,2). Right: recursive(4,4).", state: "right child=20" },
+    { label: "recursive(2,2)", text: "root=preorder[3]=15. mid=hash[15]=2. Left/right nil. Return node(15).", state: "20.left=15" },
+    { label: "recursive(4,4)", text: "root=preorder[4]=7. mid=hash[7]=4. Left/right nil. Return node(7).", state: "20.right=7" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build inorder hash map">
+    `var hash = [Int: Int]()`. For `i` in `0..<inorder.count`: `hash[inorder[i]] = i`. O(n) preprocessing.
+  </StepItem>
+  <StepItem title="Shared preIndex">
+    `var preIndex = 0`. This advances globally as each root is consumed — no need to pass subarray slices.
+  </StepItem>
+  <StepItem title="Recursive build">
+    `recursive(inLeft, inRight)`: base case `inLeft > inRight` → nil. Consume `preorder[preIndex++]` as root. Split at `mid = hash[rootVal]`. Recurse left, then right.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func buildTree(_ preorder: [Int], _ inorder: [Int]) -> TreeNode? {
+    var hash = [Int: Int]()
+    for i in 0..<inorder.count { hash[inorder[i]] = i }
+
+    var preIndex = 0
+
+    func recursive(_ inLeft: Int, _ inRight: Int) -> TreeNode? {
+      if inLeft > inRight { return nil }
+
+      let rootVal = preorder[preIndex]
+      preIndex += 1
+      let root = TreeNode(rootVal)
+
+      let mid = hash[rootVal]!
+      root.left  = recursive(inLeft,    mid - 1)
+      root.right = recursive(mid + 1,   inRight)
+
+      return root
+    }
+
+    return recursive(0, inorder.count - 1)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Naive (linear inorder search)", time: "O(n²)", space: "O(n)", note: "O(n) search per node" },
+    { approach: "Hash map + shared preIndex", time: "O(n)", space: "O(n)", note: "O(1) inorder lookup; O(h) call stack; O(n) hash map", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Recursing right before left",
+      body: "Preorder lists the left subtree values before the right subtree values. If you recurse right first, preIndex consumes right-subtree values for the left child — producing the wrong tree.",
+      fix: "Always recurse left first: root.left = recursive(inLeft, mid - 1) before root.right = recursive(mid + 1, inRight).",
+    },
+    {
+      title: "Slicing arrays instead of using index bounds",
+      body: "Creating Array(preorder[1...mid]) at each level copies subarrays, making the total time O(n²).",
+      fix: "Use (inLeft, inRight) bounds on the inorder array and a shared preIndex to avoid any array copying.",
+    },
+    {
+      title: "Off-by-one on left subtree bounds",
+      body: "The root is at inorder[mid]. The left subtree spans inorder[inLeft...mid-1]. Passing mid instead of mid-1 as the right bound includes the root in the left subtree recursion.",
+      fix: "Left call: recursive(inLeft, mid - 1). Right call: recursive(mid + 1, inRight).",
+    },
+  ]}
+/>

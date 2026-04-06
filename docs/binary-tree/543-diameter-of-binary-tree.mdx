@@ -1,0 +1,156 @@
+---
+id: 543-diameter-of-binary-tree
+title: "Diameter of Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import DiameterBinaryTreeDiagram from '@site/src/components/DSA/DiameterBinaryTreeDiagram';
+
+<ProblemHeader
+  number={543}
+  title="Diameter of Binary Tree"
+  difficulty="Easy"
+  pattern="Post-Order DFS"
+  tags={["Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/diameter-of-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return the length of the **diameter** of the tree.
+
+The **diameter** of a binary tree is the **length of the longest path** between any two nodes in the tree. This path may or may not pass through the root.
+
+The length of a path between two nodes is represented by the number of **edges** between them.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[1, 10^4]`.
+- `-100 <= Node.val <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  root = [1,2,3,4,5]
+Output: 3
+Explanation: The longest path is [4,2,1,3] or [5,2,1,3] — 3 edges.
+```
+
+#### Example 2
+
+```
+Input:  root = [1,2]
+Output: 1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the diameter at each node equal left height + right height?", verdict: "yes", reason: "The longest path through a given node uses the entire left subtree height and the entire right subtree height." },
+    { question: "Must we visit children before the parent to compute heights?", verdict: "yes", reason: "Height is computed bottom-up — post-order DFS is the natural fit." },
+    { question: "Can the diameter path skip the root?", verdict: "yes", reason: "The diameter is the global maximum across ALL nodes. We track a mutable result variable that gets updated at each node." },
+  ]}
+  answer="Post-Order DFS — at each node compute left+right height, update global max"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a recursive helper that returns the **height** of the subtree rooted at each node (number of nodes on the longest root-to-leaf path). At each node, the candidate diameter is `left + right` (number of edges through this node). Update a closure-captured `result` with this value. Return `1 + max(left, right)` so the parent receives the correct height.
+
+<DiameterBinaryTreeDiagram />
+
+<Callout type="cyan" label="Height vs diameter — what the helper returns">
+The helper returns height (used by the parent to compute diameter), NOT the diameter. The diameter is a side-effect captured in the outer result variable. Returning diameter from the helper would not give the parent the height it needs.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [1,2,3,4,5]"
+  expected="3"
+  steps={[
+    { label: "leaf 4", text: "left=0, right=0; diameter contribution=0; return height=1; result=0" },
+    { label: "leaf 5", text: "left=0, right=0; diameter contribution=0; return height=1; result=0" },
+    { label: "node 2", text: "left=1(from 4), right=1(from 5); diameter=2; result=max(0,2)=2; return height=2" },
+    { label: "leaf 3", text: "left=0, right=0; diameter contribution=0; result stays 2; return height=1" },
+    { label: "node 1", text: "left=2(from 2), right=1(from 3); diameter=3; result=max(2,3)=3; return height=3" },
+    { label: "done",   text: "return result=3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise result variable">
+    `var result = 0` — tracks the maximum diameter seen across all nodes.
+  </StepItem>
+  <StepItem title="Define recursive height function">
+    `func recursive(_ root: TreeNode?) -> Int`. Base case: `guard let root else { return 0 }`.
+  </StepItem>
+  <StepItem title="Recurse post-order">
+    `let left = recursive(root.left)`, `let right = recursive(root.right)`.
+  </StepItem>
+  <StepItem title="Update diameter">
+    `result = max(result, left + right)`.
+  </StepItem>
+  <StepItem title="Return height">
+    `return 1 + max(left, right)`.
+  </StepItem>
+  <StepItem title="Return result">
+    Call `recursive(root)` and return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func diameterOfBinaryTree(_ root: TreeNode?) -> Int {
+    var result = 0
+
+    func recursive(_ root: TreeNode?) -> Int {
+      guard let root else { return 0 }
+      let left  = recursive(root.left)
+      let right = recursive(root.right)
+      result = max(result, left + right)
+      return 1 + max(left, right)
+    }
+
+    recursive(root)
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Post-Order DFS", time: "O(n)", space: "O(h)", note: "Every node visited once; call stack depth = tree height h; O(log n) balanced, O(n) skewed", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning the diameter instead of the height from the helper",
+      body: "If the helper returns left + right (the diameter at this node) instead of 1 + max(left, right) (the height), the parent receives an incorrect height and the diameter calculation breaks.",
+      fix: "The helper must return 1 + max(left, right). The diameter is captured as a side-effect in the outer result variable.",
+    },
+    {
+      title: "Counting nodes instead of edges",
+      body: "The diameter is the number of EDGES, not nodes. A path through a single node has diameter 0 (0 edges), not 1.",
+      fix: "The formula left + right counts edges correctly when left and right are the heights returned by children (which start at 0 for nil nodes).",
+    },
+    {
+      title: "Only updating result at the root",
+      body: "The longest path may not pass through the root. Checking only at the end gives the diameter through the root, not the global maximum.",
+      fix: "Update result = max(result, left + right) at EVERY node during the recursion.",
+    },
+  ]}
+/>

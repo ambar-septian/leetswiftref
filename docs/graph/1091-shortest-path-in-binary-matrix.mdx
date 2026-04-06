@@ -1,0 +1,193 @@
+---
+id: 1091-shortest-path-in-binary-matrix
+title: "Shortest Path in Binary Matrix"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, ShortestPathBinaryMatrixDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1091}
+  title="Shortest Path in Binary Matrix"
+  difficulty="Medium"
+  pattern="BFS — Shortest Path"
+  tags={["Array", "Breadth-First Search", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/shortest-path-in-binary-matrix/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an `n x n` binary matrix `grid`, return the length of the shortest **clear path** in the matrix. If there is no clear path, return `-1`.
+
+A clear path in a binary matrix is a path from the **top-left cell** `(0, 0)` to the **bottom-right cell** `(n-1, n-1)` such that:
+- All the visited cells of the path are `0`.
+- All the adjacent cells of the path are **8-directionally** connected (horizontally, vertically, or diagonally adjacent).
+
+The length of a clear path is the number of visited cells of this path.
+
+**Constraints:**
+- `n == grid.length == grid[i].length`
+- `1 <= n <= 100`
+- `grid[i][j]` is `0` or `1`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  grid = [[0,1],[1,0]]
+Output: 2
+```
+
+#### Example 2
+
+```
+Input:  grid = [[0,0,0],[1,1,0],[1,1,0]]
+Output: 4
+```
+
+#### Example 3
+
+```
+Input:  grid = [[1,0,0],[1,1,0],[1,1,0]]
+Output: -1
+Explanation: grid[0][0] = 1, so start is blocked.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need the shortest path (minimum steps)?", verdict: "yes", reason: "BFS guarantees the shortest path in an unweighted graph — each level = one step." },
+    { question: "Is movement 8-directional?", verdict: "yes", reason: "Include all 8 directions in the neighbor expansion." },
+    { question: "Can we mark cells visited in-place?", verdict: "yes", reason: "Set visited cells to 1 — this avoids a separate visited set and reduces space." },
+  ]}
+  answer="BFS — 8-directional level-order traversal"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+BFS explores cells in waves: all cells reachable in exactly `k` steps are processed before any cell reachable in `k+1` steps. This guarantees the first time we reach the destination, we have the shortest path.
+
+We encode each cell as a single integer `r * cols + c` to avoid tuple overhead, and mark visited cells as `1` in the grid copy to prevent revisiting.
+
+<Callout type="green" label="In-place visited marking">
+Setting `grid[rD][cD] = 1` immediately upon enqueueing (not upon dequeuing) is critical. Marking on dequeue allows multiple queue entries for the same cell, wasting work and potentially giving wrong answers.
+</Callout>
+
+<Callout type="yellow" label="Early exit guards">
+Check `grid[0][0] == 0` and `grid[rows-1][cols-1] == 0` before BFS. If either start or end is blocked, return -1 immediately.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<ShortestPathBinaryMatrixDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard start and end">
+    Return -1 if `grid[0][0]` or `grid[rows-1][cols-1]` is 1 — path is impossible.
+  </StepItem>
+  <StepItem title="Initialise BFS">
+    Push index `0` (cell (0,0)) into the queue. Set `results = 1` (path length starts at 1 for the start cell itself).
+  </StepItem>
+  <StepItem title="Process level by level">
+    For each level, dequeue all current cells. For each cell, decode `(r, c)` from the index. If `(r, c)` is the destination, return `results`.
+  </StepItem>
+  <StepItem title="Expand 8 neighbors">
+    For each of the 8 directions, compute `(rD, cD)`. Skip if out of bounds or `grid[rD][cD] == 1`. Otherwise mark `grid[rD][cD] = 1` and enqueue `rD * cols + cD`.
+  </StepItem>
+  <StepItem title="Increment level counter">
+    After processing the full current level, increment `results`. Continue until queue is empty.
+  </StepItem>
+  <StepItem title="No path found">
+    If the queue empties without reaching the destination, return -1.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func shortestPathBinaryMatrix(_ grid: [[Int]]) -> Int {
+    guard !grid.isEmpty else { return -1 }
+
+    let rows = grid.count
+    let cols = grid[0].count
+
+    guard grid[0][0] == 0, grid[rows - 1][cols - 1] == 0 else { return -1 }
+
+    var queue = [0]
+    var results = 1
+    let directions = [
+      (0, 1), (0, -1), (1, 0), (-1, 0),
+      (1, 1), (1, -1), (-1, 1), (-1, -1),
+    ]
+    var grid = grid
+
+    while !queue.isEmpty {
+      for _ in 0..<queue.count {
+        let q = queue.removeFirst()
+        let r = q / cols
+        let c = q % cols
+
+        if r == rows - 1 && c == cols - 1 {
+          return results
+        }
+
+        for dir in directions {
+          let rD = r + dir.0
+          let cD = c + dir.1
+
+          if rD >= rows || cD >= cols || rD < 0 || cD < 0 || grid[rD][cD] == 1 {
+            continue
+          }
+
+          grid[rD][cD] = 1
+          queue.append(rD * cols + cD)
+        }
+      }
+
+      results += 1
+    }
+
+    return -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "BFS — 8-directional with in-place marking", time: "O(n²)", space: "O(n²)", note: "Each cell visited at most once; queue holds at most O(n²) entries", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting 8-directional movement",
+      body: "Using only 4 directions (up/down/left/right) misses diagonal paths, producing wrong answers on many test cases.",
+      fix: "Include all 8 direction tuples: (0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1).",
+    },
+    {
+      title: "Marking visited on dequeue instead of enqueue",
+      body: "If you mark grid[rD][cD]=1 after removing from the queue, multiple copies of the same cell enter the queue before any is processed, causing redundant work and inflated path lengths.",
+      fix: "Set grid[rD][cD]=1 immediately before appending to the queue.",
+    },
+    {
+      title: "Not checking start/end cells",
+      body: "If grid[0][0]=1 or grid[n-1][n-1]=1, the path is impossible. Entering the BFS loop without this check wastes time and may return an incorrect result.",
+      fix: "Guard both start and end cells at the top of the function and return -1 immediately if blocked.",
+    },
+    {
+      title: "Path length starts at 1, not 0",
+      body: "The problem defines path length as the number of visited cells, so the start cell itself counts. Initialising results=0 returns an answer that is one too small.",
+      fix: "Initialise results=1 and increment after each completed level.",
+    },
+  ]}
+/>

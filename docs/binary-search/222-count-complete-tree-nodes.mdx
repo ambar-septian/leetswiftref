@@ -1,0 +1,146 @@
+---
+id: 222-count-complete-tree-nodes
+title: "Count Complete Tree Nodes"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={222}
+  title="Count Complete Tree Nodes"
+  difficulty="Easy"
+  pattern="Recursive DFS"
+  tags={["Binary Search", "Bit Manipulation", "Tree", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/count-complete-tree-nodes/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a **complete** binary tree, return the number of nodes in the tree.
+
+In a complete binary tree, every level except possibly the last is completely filled, and all nodes in the last level are as far left as possible. The number of nodes can range from `2^h` to `2^(h+1) - 1` where `h` is the height.
+
+**Note:** The follow-up asks for an O(log² n) solution that exploits the complete-tree property. The DFS solution below runs in O(n).
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 5 * 10^4]`.
+- `0 <= Node.val <= 5 * 10^4`
+- The tree is guaranteed to be a complete binary tree.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [1,2,3,4,5,6]
+Output: 6
+```
+
+#### Example 2
+
+```
+Input: root = []
+Output: 0
+```
+
+#### Example 3
+
+```
+Input: root = [1]
+Output: 1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the count at any node just 1 + left subtree nodes + right subtree nodes?", verdict: "yes", reason: "Any binary tree node contributes 1 to the count. Recursion handles the decomposition naturally." },
+    { question: "Does the complete-tree property enable a faster O(log² n) approach?", verdict: "yes", reason: "Compare left-spine height vs right-spine height — if equal the left subtree is a perfect tree of known size. The DFS below skips this optimisation." },
+    { question: "Is O(n) acceptable for this problem?", verdict: "yes", reason: "The constraint is up to 50,000 nodes — O(n) DFS is fast enough." },
+  ]}
+  answer="Recursive DFS — 1 + countNodes(left) + countNodes(right); base case returns 0 for nil"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+A single post-order DFS: if the node is nil return 0, otherwise return `1 + count(left) + count(right)`. Every node is visited exactly once.
+
+<Callout type="cyan" label="O(log² n) optimisation">
+For the complete-tree property: measure the left-spine height and the right-spine height at each node. If they are equal, the subtree is a perfect binary tree with <code>2^h - 1</code> nodes (return instantly). Otherwise recurse into both children. This reduces calls from O(n) to O(log² n).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [1,2,3,4,5,6]"
+  expected="6"
+  steps={[
+    { label: "count(1)",  text: "1 + count(2) + count(3)" },
+    { label: "count(2)",  text: "1 + count(4) + count(5)" },
+    { label: "count(4)",  text: "1 + count(nil) + count(nil) = 1" },
+    { label: "count(5)",  text: "1 + count(nil) + count(nil) = 1" },
+    { label: "count(2)",  text: "= 1 + 1 + 1 = 3" },
+    { label: "count(3)",  text: "1 + count(6) + count(nil) = 1 + 1 + 0 = 2" },
+    { label: "count(1)",  text: "= 1 + 3 + 2 = 6 → return 6" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    If `root` is nil, return `0`.
+  </StepItem>
+  <StepItem title="Recurse into subtrees">
+    Compute `left = dfs(root.left)` and `right = dfs(root.right)`.
+  </StepItem>
+  <StepItem title="Return total">
+    Return `1 + left + right`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func countNodes(_ root: TreeNode?) -> Int {
+    func dfs(_ root: TreeNode?) -> Int {
+      guard let root else { return 0 }
+      return 1 + dfs(root.left) + dfs(root.right)
+    }
+    return dfs(root)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive DFS", time: "O(n)", space: "O(h)", note: "Visits every node once; O(h) call stack where h = log n for a complete tree", highlight: true },
+    { approach: "Binary search on last level", time: "O(log² n)", space: "O(log n)", note: "Compare spine heights to detect perfect subtrees — skips counting known-size subtrees" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the base case for nil",
+      body: "Without a nil check, accessing <code>root.left</code> or <code>root.right</code> on a nil node causes a crash.",
+      fix: "<code>guard let root else { return 0 }</code> at the top of the recursive function.",
+    },
+    {
+      title: "Counting with + 1 outside the recursion",
+      body: "Placing the +1 contribution of the current node correctly is important. Returning just <code>dfs(left) + dfs(right)</code> misses counting the current node.",
+      fix: "Return <code>1 + dfs(root.left) + dfs(root.right)</code> — the 1 counts the current node.",
+    },
+    {
+      title: "Assuming O(log² n) is required",
+      body: "The problem notes a follow-up for better than O(n), but O(n) DFS is accepted within the constraints. The O(log² n) approach is significantly more complex.",
+      fix: "The simple DFS is correct and fast enough. Only implement the optimised version if explicitly required.",
+    },
+  ]}
+/>

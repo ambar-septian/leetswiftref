@@ -1,0 +1,156 @@
+---
+id: 14-longest-common-prefix
+title: "Longest Common Prefix"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={14}
+  title="Longest Common Prefix"
+  difficulty="Easy"
+  pattern="Vertical Scan"
+  tags={["Array", "String", "Trie"]}
+  leetcodeUrl="https://leetcode.com/problems/longest-common-prefix/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Write a function to find the longest common prefix string amongst an array of strings.
+
+If there is no common prefix, return an empty string `""`.
+
+**Constraints**
+- `1 <= strs.length <= 200`
+- `0 <= strs[i].length <= 200`
+- `strs[i]` consists of only lowercase English letters.
+
+<Callout type="green" label="Core Insight">
+Use the first string as the reference. For each character position, check whether every other string has the same character at that position. Stop as soon as any string is too short or has a different character — everything up to that point is the common prefix.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  strs = ["flower","flow","flight"]
+Output: "fl"
+Explanation: "fl" is the longest prefix shared by all three strings.
+```
+
+#### Example 2
+```
+Input:  strs = ["dog","racecar","car"]
+Output: ""
+Explanation: There is no common prefix among the input strings.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to compare all strings at each character position?", verdict: "yes", reason: "A prefix must be shared by every string — one mismatch anywhere ends the prefix." },
+    { question: "Can we use the first string as the candidate prefix?", verdict: "yes", reason: "The common prefix can be at most as long as the shortest string, and the first string is a convenient upper bound to iterate over." },
+    { question: "Can we stop early?", verdict: "yes", reason: "As soon as any string is shorter than the current index, or any character mismatches, we return what we have collected so far." },
+  ]}
+  answer="Vertical scan — iterate column by column using the first string as reference"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Iterate through each character index of `strs[0]`. For that index, check every other string in the array. If a string is shorter than the current index, or its character at that index differs from `strs[0]`'s character, break out of both loops immediately and return the prefix collected so far. Otherwise append the character to the result.
+
+<Callout type="cyan" label="Why iterate over the first string">
+The common prefix is bounded by the length of the shortest string. Iterating over the first string and using early exit on length or mismatch is equivalent to — and avoids computing — the minimum length upfront.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='strs = ["flower","flow","flight"]'
+  expected='"fl"'
+  steps={[
+    { label: "index=0 'f'", text: "Check 'f' against flow[0]='f' ✓, flight[0]='f' ✓. Append 'f'.", state: "results=['f']" },
+    { label: "index=1 'l'", text: "Check 'l' against flow[1]='l' ✓, flight[1]='l' ✓. Append 'l'.", state: "results=['f','l']" },
+    { label: "index=2 'o'", text: "Check 'o' against flow[2]='o' ✓, flight[2]='i' ✗. Break outer loop.", state: "results=['f','l'] → break" },
+    { label: "Done", text: "Return results.joined() = 'fl'.", state: "result = 'fl'" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Handle empty input">
+    If `strs` is empty return `""` immediately.
+  </StepItem>
+  <StepItem title="Iterate over first string's characters">
+    Use `strs.first!.enumerated()` to get each `(index, char)` pair.
+  </StepItem>
+  <StepItem title="Check every other string at this index">
+    For each string from index `1` onward: if `firstCharIndex >= nextWord.count` or `nextWord[nextWordIndex] != char`, break out of both loops via a labeled break.
+  </StepItem>
+  <StepItem title="Accumulate matching character">
+    If all strings match at this position, append `String(char)` to `results`.
+  </StepItem>
+  <StepItem title="Return joined result">
+    `results.joined()` concatenates the collected characters into the prefix string.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func longestCommonPrefix(_ strs: [String]) -> String {
+    if strs.isEmpty {
+      return ""
+    }
+
+    var results = [String]()
+    outerLoop: for (firstCharIndex, char) in strs.first!.enumerated() {
+      for stringIndex in 1..<strs.count {
+        let nextWord = strs[stringIndex]
+        guard firstCharIndex < nextWord.count else { break outerLoop }
+        let nextWordIndex = nextWord.index(nextWord.startIndex, offsetBy: firstCharIndex)
+        if nextWord[nextWordIndex] != char {
+          return results.joined()
+        }
+      }
+      results.append(String(char))
+    }
+
+    return results.joined()
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Vertical scan — first string as reference", time: "O(S)", space: "O(p)", note: "S = total chars across all strings, p = prefix length", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not breaking out of both loops on mismatch",
+      body: "When a mismatch is found inside the inner loop, a plain break only exits the inner loop. The outer loop continues to the next character, producing a wrong result.",
+      fix: "Use a labeled break (outerLoop: / break outerLoop) or return results.joined() directly from inside the inner loop.",
+    },
+    {
+      title: "Forgetting to check string length before index access",
+      body: "If a string is shorter than the current index, subscripting it will crash. The guard must check length before accessing the character.",
+      fix: "Guard firstCharIndex < nextWord.count before computing the String.Index and accessing the character.",
+    },
+    {
+      title: "Using String subscript with integers directly",
+      body: "Swift Strings are not integer-indexed. Using an Int offset requires converting via String.Index, otherwise the code will not compile.",
+      fix: "Use nextWord.index(nextWord.startIndex, offsetBy: firstCharIndex) to get the correct String.Index before subscripting.",
+    },
+  ]}
+/>

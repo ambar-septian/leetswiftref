@@ -1,0 +1,156 @@
+---
+id: 2390-removing-stars-from-a-string
+title: "Removing Stars From a String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2390}
+  title="Removing Stars From a String"
+  difficulty="Medium"
+  pattern="Stack — Character Buffer"
+  tags={["String", "Stack", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/removing-stars-from-a-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a string `s`, which contains stars `*`.
+
+In one operation, you choose a star in `s`, remove the **closest non-star character** to its **left**, as well as remove the star itself.
+
+Return the string after **all** stars have been removed.
+
+**Note:**
+- The input is generated such that the operation is always possible.
+- It can be shown that the resulting string will always be unique.
+
+**Constraints:**
+- `1 <= s.length <= 10^5`
+- `s` consists of lowercase English letters and stars `*`.
+- The operation above can be always performed on the input.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "leet**cod*e"
+Output: "lecoe"
+Explanation:
+  - Remove 't' (closest left of first *), and the first *.  → "lee*cod*e"
+  - Remove 'e' (closest left of next *), and the second *. → "lecod*e"
+  - Remove 'd' (closest left of last *), and the third *.  → "lecoe"
+```
+
+#### Example 2
+
+```
+Input:  s = "erase*****"
+Output: ""
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does each star affect only the most recently added character?", verdict: "yes", reason: "A star always removes the closest non-star to its left — exactly the last character pushed. That is the definition of a stack." },
+    { question: "Can we solve this in one pass?", verdict: "yes", reason: "Push non-star characters; pop on star. A single left-to-right scan suffices." },
+  ]}
+  answer="Stack — push letters, pop on star"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use a character array as a stack. Iterate left to right:
+- If the character is `*`, call `removeLast()` to undo the most recently added letter.
+- Otherwise, append the character.
+
+Join the array into a string at the end.
+
+<Callout type="green" label="Character array as stack">
+Swift's `[Character]` with `append` / `removeLast` is O(1) amortised — faster than building a String directly because String mutation involves UTF-8 re-encoding overhead.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "leet**cod*e"'
+  expected='"lecoe"'
+  steps={[
+    { label: "l",  text: "Non-star → push 'l'.",           state: "stack=['l']" },
+    { label: "e",  text: "Non-star → push 'e'.",           state: "stack=['l','e']" },
+    { label: "e",  text: "Non-star → push 'e'.",           state: "stack=['l','e','e']" },
+    { label: "t",  text: "Non-star → push 't'.",           state: "stack=['l','e','e','t']" },
+    { label: "*",  text: "Star → pop 't'.",                state: "stack=['l','e','e']" },
+    { label: "*",  text: "Star → pop 'e'.",                state: "stack=['l','e']" },
+    { label: "c",  text: "Non-star → push 'c'.",           state: "stack=['l','e','c']" },
+    { label: "o",  text: "Non-star → push 'o'.",           state: "stack=['l','e','c','o']" },
+    { label: "d",  text: "Non-star → push 'd'.",           state: "stack=['l','e','c','o','d']" },
+    { label: "*",  text: "Star → pop 'd'.",                state: "stack=['l','e','c','o']" },
+    { label: "e",  text: "Non-star → push 'e'.",           state: "stack=['l','e','c','o','e']" },
+    { label: "Done", text: "Join stack → \"lecoe\".",      state: "return \"lecoe\"" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise stack">
+    `var result = [Character]()` — pre-reserve capacity with `result.reserveCapacity(s.count)` to avoid repeated reallocations.
+  </StepItem>
+  <StepItem title="Iterate characters">
+    For each `char` in `s`: if `char == "*"`, call `result.removeLast()`; else call `result.append(char)`.
+  </StepItem>
+  <StepItem title="Return result">
+    `return String(result)`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func removeStars(_ s: String) -> String {
+    var result = [Character]()
+    result.reserveCapacity(s.count)
+
+    for char in s {
+      if char == "*" {
+        result.removeLast()
+      } else {
+        result.append(char)
+      }
+    }
+
+    return String(result)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Stack (character array)", time: "O(n)", space: "O(n)", note: "Single pass; each character is pushed and popped at most once", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Calling removeLast on an empty stack",
+      body: "The problem guarantees the operation is always valid (never more stars than preceding letters), so an unchecked removeLast is safe here. In an interview, note this assumption explicitly.",
+      fix: "Trust the guarantee; no guard needed. If you are uncertain, add a guard !result.isEmpty check.",
+    },
+    {
+      title: "Mutating the original string in place",
+      body: "Removing characters from a String by index is O(n) per deletion due to UTF-8 shifting, making the overall complexity O(n^2).",
+      fix: "Use a [Character] array as the stack — append and removeLast are O(1) amortised.",
+    },
+  ]}
+/>

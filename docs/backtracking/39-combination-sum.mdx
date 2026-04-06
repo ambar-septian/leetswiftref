@@ -1,0 +1,169 @@
+---
+id: 39-combination-sum
+title: "Combination Sum"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CombinationSumDiagram from '@site/src/components/DSA/CombinationSumDiagram';
+
+<ProblemHeader
+  number={39}
+  title="Combination Sum"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["Array", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/combination-sum/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of **distinct** integers `candidates` and a target integer `target`, return a list of all **unique combinations** of `candidates` where the chosen numbers sum to `target`. You may return the combinations in any order.
+
+The **same** number may be chosen from `candidates` an **unlimited number of times**. Two combinations are unique if the frequency of at least one of the chosen numbers is different.
+
+The test cases are generated such that the number of unique combinations that sum up to `target` is less than `150` combinations for the given input.
+
+**Constraints**
+- `1 <= candidates.length <= 30`
+- `2 <= candidates[i] <= 40`
+- All elements of `candidates` are **distinct**.
+- `1 <= target <= 40`
+
+<Callout type="green" label="Core Insight">
+Use DFS starting from a `startIndex` that never moves backwards. Recurse with `dfs(i)` — not `dfs(i+1)` — to allow reusing the current element. Prune immediately when the running sum exceeds the target.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+```
+
+#### Example 2
+```
+Input:  candidates = [2,3], target = 6
+Output: [[2,2,2],[3,3]]
+```
+
+#### Example 3
+```
+Input:  candidates = [2], target = 1
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must we enumerate all combinations that sum to target?", verdict: "yes", reason: "Need every valid subset — backtracking explores all paths while pruning dead ends." },
+    { question: "Can elements be reused?", verdict: "yes", reason: "Unlimited reuse means recurse with dfs(i) instead of dfs(i+1) — stay at the same index." },
+    { question: "Can we prune early when sum exceeds target?", verdict: "yes", reason: "If sums > target there is no way to recover — return immediately to cut the branch." },
+  ]}
+  answer="Backtracking — DFS with startIndex, reuse via dfs(i), prune when sum exceeds target"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a shared `paths` array and a `sums` running total. The recursive function `dfs(_ startIndex)` iterates from `startIndex` to the end of `candidates`. For each candidate `c`: append it, add to `sums`, recurse with `dfs(i)` (same index — allows reuse), then remove and subtract (backtrack). Base cases: `sums == target` → record result; `sums > target` → prune.
+
+<CombinationSumDiagram />
+
+<Callout type="cyan" label="Why startIndex prevents duplicate combinations">
+Without a startIndex every DFS call could pick any element, generating [2,3] and [3,2] as separate results. Starting each recursive call from index `i` (not 0) ensures elements are always added in non-decreasing index order, so each combination appears exactly once.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="candidates = [2,3,6,7], target = 7"
+  expected="[[2,2,3],[7]]"
+  steps={[
+    { label: "dfs(0)", text: "Try candidate[0]=2. paths=[2], sums=2. Recurse dfs(0).", state: "paths=[2], sums=2" },
+    { label: "dfs(0)→2", text: "Try 2 again. paths=[2,2], sums=4. Recurse dfs(0).", state: "paths=[2,2], sums=4" },
+    { label: "dfs(0)→3", text: "Try candidate[1]=3. paths=[2,2,3], sums=7 == target. Append [2,2,3].", state: "results=[[2,2,3]]" },
+    { label: "backtrack", text: "Remove 3, 2, 2. Try candidate[1]=3 at top level. paths=[3], sums=3.", state: "paths=[3], sums=3" },
+    { label: "dfs(1)→3", text: "paths=[3,3], sums=6. Try 3 again: sums=9 > 7, prune. Try 6: sums=12 > 7, prune.", state: "paths=[3,3], branch pruned" },
+    { label: "try 7", text: "Back to top. Try candidate[3]=7. paths=[7], sums=7 == target. Append [7].", state: "results=[[2,2,3],[7]]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise shared state">
+    `results = [[Int]]()`, `paths = [Int]()`, `sums = 0`.
+  </StepItem>
+  <StepItem title="Base cases">
+    `sums == target` → append a copy of `paths` and return. `sums > target` → return immediately (prune).
+  </StepItem>
+  <StepItem title="Iterate from startIndex">
+    For `i` from `startIndex` to `candidates.count - 1`: append `candidates[i]`, add to `sums`, call `dfs(i)` (same i — reuse allowed).
+  </StepItem>
+  <StepItem title="Backtrack">
+    After each recursive call: `paths.removeLast()`, `sums -= candidates[i]`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func combinationSum(_ candidates: [Int], _ target: Int) -> [[Int]] {
+    var results = [[Int]]()
+    var paths = [Int]()
+    var sums = 0
+
+    func dfs(_ startIndex: Int) {
+      if sums == target {
+        results.append(paths)
+        return
+      } else if sums > target {
+        return
+      }
+      for i in startIndex..<candidates.count {
+        paths.append(candidates[i])
+        sums += candidates[i]
+        dfs(i)            // i, not i+1 — reuse allowed
+        paths.removeLast()
+        sums -= candidates[i]
+      }
+    }
+
+    dfs(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking with pruning", time: "O(N^(T/M) * T/M)", space: "O(T/M)", note: "N=candidates count, T=target, M=min candidate; T/M is max recursion depth", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using dfs(i+1) instead of dfs(i)",
+      body: "dfs(i+1) moves past the current element after picking it, preventing reuse. For Combination Sum, the same element must be reusable.",
+      fix: "Pass i (not i+1) to the recursive call to allow picking the same candidate again.",
+    },
+    {
+      title: "Not checking sums > target before the loop",
+      body: "Without an early prune, branches where the sum already exceeds the target still iterate through all remaining candidates wastefully.",
+      fix: "Return immediately when sums > target, before entering the for loop.",
+    },
+    {
+      title: "Appending paths directly without copying",
+      body: "In Swift, Array is a value type so results.append(paths) copies it — safe. In reference-type languages, appending the mutable path reference would cause all results to reflect the final (empty) state.",
+      fix: "In Swift this is safe. In other languages, append a copy: results.append(Array(paths)).",
+    },
+  ]}
+/>

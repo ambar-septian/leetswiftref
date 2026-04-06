@@ -1,0 +1,150 @@
+---
+id: 933-number-of-recent-calls
+title: "Number of Recent Calls"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={933}
+  title="Number of Recent Calls"
+  difficulty="Easy"
+  pattern="Sliding Queue"
+  tags={["Design", "Queue", "Data Stream"]}
+  leetcodeUrl="https://leetcode.com/problems/number-of-recent-calls/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You have a `RecentCounter` class which counts the number of recent requests within a certain time frame.
+
+Implement the `RecentCounter` class:
+- `RecentCounter()` — Initializes the counter with zero recent requests.
+- `int ping(int t)` — Adds a new request at time `t`, where `t` represents some time in milliseconds, and returns the number of requests that have happened in the inclusive range `[t - 3000, t]`. It is **guaranteed** that every call to `ping` uses a strictly larger value of `t` than the previous call.
+
+**Constraints:**
+- `1 <= t <= 10^9`
+- Each test case will call `ping` with strictly increasing values of `t`.
+- At most `10^4` calls will be made.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  ["RecentCounter","ping","ping","ping","ping"]
+        [[],[1],[100],[3001],[3002]]
+Output: [null,1,2,3,3]
+
+Explanation:
+  ping(1):    requests in [1-3000,1]=[-2999,1]. Only t=1 qualifies. Return 1.
+  ping(100):  range [-2900,100]. t=1 and t=100 qualify. Return 2.
+  ping(3001): range [1,3001]. t=1,100,3001 qualify. Return 3.
+  ping(3002): range [2,3002]. t=1 no longer qualifies. Return 3.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to evict timestamps older than t-3000?", verdict: "yes", reason: "As t grows, old timestamps fall out of the [t-3000, t] window. A sliding pointer (or queue) efficiently skips past stale entries." },
+    { question: "Are timestamps strictly increasing?", verdict: "yes", reason: "New pings always have a larger t, so the pings array is sorted ascending — we only need to advance a left pointer forward, never backward." },
+    { question: "Can we use a pointer instead of actual dequeue?", verdict: "yes", reason: "Rather than removing elements, advance currentIndex past any t - pings[currentIndex] > 3000 entries. The live window is pings[currentIndex..]." },
+  ]}
+  answer="Sliding window with a left pointer — advance past timestamps older than t-3000, return window size"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Store all ping timestamps in `pings`. Maintain `currentIndex` pointing to the oldest timestamp inside the current window. On each `ping(t)`: advance `currentIndex` while `t - pings[currentIndex] > 3000`. Append `t`. Return `pings.count - currentIndex` (number of elements from `currentIndex` to end inclusive).
+
+<Callout type="cyan" label="Periodic cleanup">
+The array grows indefinitely if currentIndex is never used for actual removal. This implementation batches removals: when currentIndex exceeds 1000, it removes all expired entries at once and resets the index to 0. This keeps memory bounded.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="ping(1), ping(100), ping(3001), ping(3002)"
+  expected="1, 2, 3, 3"
+  steps={[
+    { label: "ping(1)",    text: "pings=[1]. currentIndex=0. 1-1=0<=3000 — no advance. Return 1-0=1." },
+    { label: "ping(100)",  text: "pings=[1,100]. 100-1=99<=3000 — no advance. Return 2-0=2." },
+    { label: "ping(3001)", text: "pings=[1,100,3001]. 3001-1=3000<=3000 — no advance. Return 3-0=3." },
+    { label: "ping(3002)", text: "pings=[1,100,3001,3002]. 3002-1=3001>3000 → advance idx to 1. 3002-100=2902<=3000 — stop. Return 4-1=3." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var pings = [Int]()`, `var currentIndex = 0`, `let const = 3000`.
+  </StepItem>
+  <StepItem title="Periodic cleanup">
+    If `currentIndex > 1000`: `pings.removeFirst(currentIndex); currentIndex = 0`.
+  </StepItem>
+  <StepItem title="Advance index past stale entries">
+    While `currentIndex < pings.count` and `t - pings[currentIndex] > 3000`: `currentIndex += 1`.
+  </StepItem>
+  <StepItem title="Append and return count">
+    `pings.append(t)`. Return `pings.count - currentIndex`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class RecentCounter {
+  let const = 3000
+  var pings = [Int]()
+  var currentIndex = 0
+
+  init() {}
+
+  func ping(_ t: Int) -> Int {
+    if currentIndex > 1000 {
+      pings.removeFirst(currentIndex)
+      currentIndex = 0
+    }
+
+    while currentIndex < pings.count, t - pings[currentIndex] > const {
+      currentIndex += 1
+    }
+
+    pings.append(t)
+    return pings.count - currentIndex
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sliding Pointer with periodic cleanup", time: "O(1) amortised", space: "O(W)", note: "W = max pings in any 3000ms window (bounded by constraints). Each ping is added once and evicted at most once. Periodic removeFirst keeps memory bounded.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting to append t before returning",
+      body: "The new ping at time t must be included in the count. Returning before appending under-counts by 1.",
+      fix: "Append t to pings before computing and returning the count.",
+    },
+    {
+      title: "Comparing t - pings[i] >= 3000 (non-strict)",
+      body: "The window is [t-3000, t] inclusive. A ping exactly 3000ms old is still valid.",
+      fix: "Evict only when t - pings[currentIndex] > 3000 (strictly greater).",
+    },
+    {
+      title: "Never cleaning up the pings array",
+      body: "If currentIndex grows indefinitely without removing stale entries, pings.removeFirst(currentIndex) gets called with an increasingly large argument, which is O(n) per call.",
+      fix: "Batch-remove periodically (e.g., when currentIndex > 1000) to amortise the removal cost.",
+    },
+  ]}
+/>

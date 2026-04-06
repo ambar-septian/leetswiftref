@@ -1,0 +1,156 @@
+---
+id: 11-container-with-most-water
+title: "Container With Most Water"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={11}
+  title="Container With Most Water"
+  difficulty="Medium"
+  pattern="Two Pointers"
+  tags={["Array", "Two Pointers", "Greedy"]}
+  leetcodeUrl="https://leetcode.com/problems/container-with-most-water/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an integer array `height` of length `n`. There are `n` vertical lines drawn such that the two endpoints of the `i`th line are at `(i, 0)` and `(i, height[i])`.
+
+Find two lines that together with the x-axis form a container that holds the most water. Return the **maximum amount of water** a container can store.
+
+**Note:** You may not slant the container.
+
+**Constraints**
+- `n == height.length`
+- `2 <= n <= 10^5`
+- `0 <= height[i] <= 10^4`
+
+<Callout type="green" label="Core Insight">
+Start with the widest possible container (pointers at both ends). The area is always limited by the shorter line. Moving the taller line inward can only decrease width without increasing the height limit — so always move the shorter pointer inward to have any chance of finding a larger area.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+Explanation: Lines at index 1 (height 8) and index 8 (height 7).
+             Area = min(8, 7) * (8 - 1) = 7 * 7 = 49.
+```
+
+#### Example 2
+```
+Input:  height = [1,1]
+Output: 1
+Explanation: Only two lines. Area = min(1,1) * 1 = 1.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we searching for an optimal pair in a linear structure?", verdict: "yes", reason: "We want two indices i < j that maximise min(height[i], height[j]) * (j - i)." },
+    { question: "Can we safely discard candidates from either end?", verdict: "yes", reason: "Moving the taller pointer inward is always suboptimal — the greedy choice is to move the shorter one." },
+    { question: "Does this give us O(n) instead of O(n²)?", verdict: "yes", reason: "Each pointer moves at most n steps total — linear time guaranteed." },
+  ]}
+  answer="Two Pointers — greedy, always move the shorter-height pointer inward"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Place `left` at index `0` and `right` at index `n - 1`. At each step compute `area = min(height[left], height[right]) * (right - left)` and update the running maximum. Then move whichever pointer points to the shorter line — if they are equal, move either (here we move `left`). Repeat until the pointers meet.
+
+<Callout type="cyan" label="Why moving the taller pointer is always wrong">
+Suppose left is shorter. Moving right inward shrinks the width AND keeps the same height limit (still capped by the shorter left). The area can only decrease or stay the same. Moving left is the only way to possibly increase the height cap.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="height = [1,8,6,2,5,4,8,3,7]"
+  expected="49"
+  steps={[
+    { label: "Start", text: "left=0 (h=1), right=8 (h=7). Area = min(1,7)*8 = 8. max=8. h[left] < h[right] → move left.", state: "left=0, right=8, max=8" },
+    { label: "left=1", text: "left=1 (h=8), right=8 (h=7). Area = min(8,7)*7 = 49. max=49. h[right] < h[left] → move right.", state: "left=1, right=8, max=49" },
+    { label: "left=1,r=7", text: "left=1 (h=8), right=7 (h=3). Area = min(8,3)*6 = 18. max=49. Move right.", state: "left=1, right=7, max=49" },
+    { label: "converge", text: "Pointers continue converging. No area exceeds 49.", state: "result = 49" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise pointers and result">
+    `left = 0`, `right = height.count - 1`, `total = 0`.
+  </StepItem>
+  <StepItem title="Compute area at current window">
+    `minHeight = min(height[left], height[right])`, `width = right - left`, `area = minHeight * width`. Update `total = max(total, area)`.
+  </StepItem>
+  <StepItem title="Move the shorter pointer">
+    If `height[left] > height[right]` move `right -= 1`, else move `left += 1`.
+  </StepItem>
+  <StepItem title="Repeat until pointers meet">
+    Loop while `left != right`. Return `total`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func maxArea(_ height: [Int]) -> Int {
+    var left = 0
+    var right = height.count - 1
+    var total = 0
+
+    while left != right {
+      let minHeight = min(height[left], height[right])
+      let width = right - left
+      total = max(width * minHeight, total)
+
+      if height[left] > height[right] {
+        right -= 1
+      } else {
+        left += 1
+      }
+    }
+
+    return total
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force — check all pairs", time: "O(n²)", space: "O(1)", note: "Try every (i, j) combination" },
+    { approach: "Two pointers — greedy", time: "O(n)", space: "O(1)", note: "Each pointer moves at most n steps total", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Moving the taller pointer instead of the shorter one",
+      body: "Moving the taller pointer inward only reduces width while keeping the same height cap (limited by the shorter line). The area cannot increase.",
+      fix: "Always move the pointer with the smaller height: if height[left] > height[right] move right, else move left.",
+    },
+    {
+      title: "Using left < right instead of left != right",
+      body: "Both conditions are equivalent here since left and right only move toward each other. Either works, but left != right is more explicit about the termination condition.",
+      fix: "No correctness issue — either condition terminates the loop correctly.",
+    },
+    {
+      title: "Computing width as right - left + 1",
+      body: "Width is the number of gaps between lines, not the number of lines. For indices 1 and 8, width = 8 - 1 = 7, not 8.",
+      fix: "Use width = right - left (no +1).",
+    },
+  ]}
+/>

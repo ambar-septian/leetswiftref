@@ -1,0 +1,160 @@
+---
+id: 853-car-fleet
+title: "Car Fleet"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={853}
+  title="Car Fleet"
+  difficulty="Medium"
+  pattern="Monotonic Stack"
+  tags={["Array", "Stack", "Sorting", "Monotonic Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/car-fleet/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are `n` cars at given miles away from the starting mile `0`, traveling to their destination at `target` miles.
+
+You are given two integer arrays `position` and `speed`, both of length `n`, where `position[i]` is the position of the `i`-th car and `speed[i]` is the speed of the `i`-th car (in miles per hour).
+
+A car can never pass another car, but it can catch up to it and travel next to it at the speed of the slower car. A **car fleet** is a non-empty set of cars driving at the same position and same speed. Note that a single car is also a car fleet.
+
+If a car catches up to a car fleet at the moment the fleet reaches the destination, it does **not** count as a fleet.
+
+Return the **number of car fleets** that will arrive at the destination.
+
+**Constraints:**
+- `n == position.length == speed.length`
+- `1 <= n <= 10^5`
+- `0 < target <= 10^6`
+- `0 < position[i] < target`
+- `0 < speed[i] <= 10^6`
+- All values of `position` are unique.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  target = 12, position = [10,8,0,5,3], speed = [2,4,1,1,3]
+Output: 3
+Explanation:
+  Car at 10 takes (12-10)/2 = 1.0 hr. Car at 8 takes (12-8)/4 = 1.0 hr — same, merge into fleet.
+  Car at 5 takes (12-5)/1 = 7.0 hr. Car at 3 takes (12-3)/3 = 3.0 hr. Car at 0 takes 12.0 hr.
+  Fleets: {10,8}, {5}, {3}, {0} — wait, car 3 is slower than car 5 ahead, so 3 does not catch 5 → 3 fleets.
+```
+
+#### Example 2
+
+```
+Input:  target = 10, position = [3], speed = [3]
+Output: 1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does a car merge with the fleet ahead if it arrives no later?", verdict: "yes", reason: "Sort cars by position descending (closest to target first). A car merges into the fleet ahead if its arrival time is less than or equal to the fleet's arrival time." },
+    { question: "Can we use a stack of arrival times?", verdict: "yes", reason: "Process cars from closest to target to farthest. Push each car's arrival time. If the new car's arrival time is no greater than the stack top, it merges — pop it. The stack size is the fleet count." },
+    { question: "Why sort by position descending?", verdict: "yes", reason: "Cars closer to the target determine constraints on cars behind them. Processing front-to-back naturally simulates overtaking rules." },
+  ]}
+  answer="Sort by position descending, compute arrival times, use a stack — pop when current time is within the fleet ahead"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Sort cars by position in descending order (closest to target first). For each car, compute `time = (target - position) / speed` (as a Float). Push onto a stack. If `stack.last <= stack[stack.count-2]`, the current car catches the car ahead — pop it (they form the same fleet). Final stack size is the number of distinct fleets.
+
+<Callout type="cyan" label="Arrival time as fleet identity">
+Two cars form the same fleet if the trailing car arrives no later than the leading car. The leading car sets the pace — the trailing car catches up before or exactly at the target. Processing front-to-back, the stack always holds one representative time per distinct fleet.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="target=12, position=[10,8,0,5,3], speed=[2,4,1,1,3]"
+  expected="3"
+  steps={[
+    { label: "sort", text: "Sort by pos desc: [(10,2),(8,4),(5,1),(3,3),(0,1)]." },
+    { label: "car(10)", text: "time=(12-10)/2=1.0. Stack: [1.0]." },
+    { label: "car(8)", text: "time=(12-8)/4=1.0. Stack: [1.0, 1.0]. 1.0<=1.0 → pop. Stack: [1.0]. Fleet merged." },
+    { label: "car(5)", text: "time=(12-5)/1=7.0. Stack: [1.0, 7.0]. 7.0>1.0 → keep. Stack: [1.0, 7.0]." },
+    { label: "car(3)", text: "time=(12-3)/3=3.0. Stack: [1.0, 7.0, 3.0]. 3.0<=7.0 → pop. Stack: [1.0, 7.0]." },
+    { label: "car(0)", text: "time=(12-0)/1=12.0. Stack: [1.0, 7.0, 12.0]. 12.0>7.0 → keep. Return 3." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard single car">
+    `guard position.count > 1 else { return 1 }`.
+  </StepItem>
+  <StepItem title="Sort by position descending">
+    `let cars = zip(position, speed).sorted { $0.0 > $1.0 }`.
+  </StepItem>
+  <StepItem title="Compute arrival times and build stack">
+    For each `car`: `let time = Float(target - car.0) / Float(car.1)`. Push `time`. While `stack.count >= 2` and `stack.last! <= stack[stack.count-2]`: pop.
+  </StepItem>
+  <StepItem title="Return fleet count">
+    `return stack.count`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func carFleet(_ target: Int, _ position: [Int], _ speed: [Int]) -> Int {
+    guard position.count > 1 else { return 1 }
+
+    let cars = Array(zip(position, speed)).sorted { $0.0 > $1.0 }
+    var stack = [Float]()
+
+    for car in cars {
+      let time = (Float(target) - Float(car.0)) / Float(car.1)
+      stack.append(time)
+      while stack.count >= 2, stack[stack.count - 1] <= stack[stack.count - 2] {
+        stack.removeLast()
+      }
+    }
+
+    return stack.count
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sort + Monotonic Stack", time: "O(n log n)", space: "O(n)", note: "Sorting dominates. Each arrival time is pushed and popped at most once. O(n) for the stack.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Sorting by position ascending instead of descending",
+      body: "Processing the farthest car first means we compare trailing cars against cars that are further from the target — the wrong direction. Merging rules break.",
+      fix: "Sort by position descending so the car closest to the target is processed first.",
+    },
+    {
+      title: "Integer division for arrival time",
+      body: "Using Int division truncates decimals — two cars with different non-integer arrival times may appear equal, causing incorrect fleet merges.",
+      fix: "Compute arrival time as Float (or Double) to preserve fractional hours.",
+    },
+    {
+      title: "Returning stack.count - 1",
+      body: "Each element remaining on the stack represents one distinct fleet. Off-by-one under-counts.",
+      fix: "Return stack.count directly — every stack element is one fleet.",
+    },
+  ]}
+/>

@@ -1,0 +1,154 @@
+---
+id: 328-odd-even-linked-list
+title: "Odd Even Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import OddEvenLinkedListDiagram from '@site/src/components/DSA/OddEvenLinkedListDiagram';
+
+<ProblemHeader
+  number={328}
+  title="Odd Even Linked List"
+  difficulty="Medium"
+  pattern="In-Place Chain Weaving"
+  tags={["Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/odd-even-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `head` of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
+
+The **first** node is considered odd, the **second** even, and so on. Note that the relative order inside both groups should be preserved.
+
+You must solve the problem in O(1) extra space complexity and O(n) time complexity.
+
+**Constraints:**
+- The number of nodes in the linked list is in the range `[0, 10^4]`.
+- `-10^6 <= Node.val <= 10^6`
+
+<SectionHeader n={2} title="Examples" />
+
+<OddEvenLinkedListDiagram />
+
+#### Example 1
+
+```
+Input: head = [1,2,3,4,5]
+Output: [1,3,5,2,4]
+```
+
+#### Example 2
+
+```
+Input: head = [2,1,3,5,6,4,7]
+Output: [2,3,6,7,1,5,4]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Can we build two separate chains and join them?", verdict: "yes", reason: "Weave odd.next to odd.next.next and even.next to even.next.next simultaneously — no extra memory needed." },
+    { question: "Must we save the even head before the loop?", verdict: "yes", reason: "The loop modifies odd.next, which would otherwise lose the reference to the even chain's start." },
+    { question: "When does the loop terminate?", verdict: "yes", reason: "When even is nil (list had even count of nodes) or even.next is nil (odd count), both chains are complete." },
+  ]}
+  answer="Weave odd and even chains simultaneously; save evenHead; join at end: odd.next = evenHead"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+`odd` starts at `head`, `even` starts at `head.next`, `evenHead = even`. Each iteration:
+- `odd.next = even.next` (skip even node in odd chain)
+- `even.next = odd.next.next` (skip odd node in even chain, i.e. the new odd.next's next)
+- Advance `odd = odd.next`, `even = even.next`
+
+After the loop, `odd.next = evenHead` to join the chains.
+
+<Callout type="cyan" label="Loop termination condition">
+Both <code>odd?.next != nil</code> AND <code>even?.next != nil</code> must hold — if either pointer's next is nil, all remaining links are already set correctly and we can exit.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,3,4,5]"
+  expected="[1,3,5,2,4]"
+  steps={[
+    { label: "init",    text: "odd=1, even=2, evenHead=2" },
+    { label: "iter 1",  text: "odd.next=3 (even.next); even.next=4 (odd.next.next=3.next=4); odd=3, even=4" },
+    { label: "iter 2",  text: "odd.next=5 (even.next); even.next=nil (odd.next.next=5.next=nil); odd=5, even=nil" },
+    { label: "exit",    text: "even=nil → loop ends" },
+    { label: "join",    text: "odd.next = evenHead (2); chain: 1→3→5→2→4→nil" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Save even head">
+    `var evenHead = head?.next`. This anchor is needed to join the chains at the end.
+  </StepItem>
+  <StepItem title="Weave chains in the loop">
+    While `odd?.next != nil && even?.next != nil`: redirect `odd.next` to skip the even node, redirect `even.next` to skip the new odd node, then advance both pointers.
+  </StepItem>
+  <StepItem title="Join odd and even chains">
+    `odd?.next = evenHead`.
+  </StepItem>
+  <StepItem title="Return head">
+    The head of the odd chain is the original `head`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func oddEvenList(_ head: ListNode?) -> ListNode? {
+    var odd     = head
+    var even    = head?.next
+    var evenHead = even
+
+    while odd?.next != nil, even?.next != nil {
+      odd?.next  = even?.next
+      even?.next = odd?.next?.next
+      odd  = odd?.next
+      even = even?.next
+    }
+
+    odd?.next = evenHead
+    return head
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "In-place chain weaving", time: "O(n)", space: "O(1)", note: "Single pass; only three pointer variables regardless of list length", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not saving evenHead before the loop",
+      body: "Inside the loop, <code>odd.next = even.next</code> overwrites odd's next pointer — the original even head is lost if not saved.",
+      fix: "Save <code>var evenHead = head?.next</code> before any pointer modifications.",
+    },
+    {
+      title: "Using || instead of && in the loop condition",
+      body: "With ||, the loop continues when only one pointer has a next. Accessing .next on a nil even pointer causes a crash.",
+      fix: "Use <code>while odd?.next != nil, even?.next != nil</code> — both must have a next to safely continue.",
+    },
+    {
+      title: "Advancing odd before computing even.next",
+      body: "even.next should be set to odd.next.next (the node after the new odd). If odd is advanced first, odd.next refers to the already-advanced pointer's next, which is one step too far.",
+      fix: "Set both odd.next and even.next before advancing either pointer.",
+    },
+  ]}
+/>

@@ -1,0 +1,179 @@
+---
+id: 17-letter-combinations-of-a-phone-number
+title: "Letter Combinations of a Phone Number"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import LetterCombinationsDiagram from '@site/src/components/DSA/LetterCombinationsDiagram';
+
+<ProblemHeader
+  number={17}
+  title="Letter Combinations of a Phone Number"
+  difficulty="Medium"
+  pattern="Backtracking"
+  tags={["Hash Table", "String", "Backtracking"]}
+  leetcodeUrl="https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string containing digits from `2` to `9` inclusive, return all possible letter combinations that the number could represent. Return the answer in **any order**.
+
+A mapping of digits to letters (just like on the telephone buttons) is given below. Note that `1` does not map to any letters.
+
+```
+2 → a b c       3 → d e f
+4 → g h i       5 → j k l
+6 → m n o       7 → p q r s
+8 → t u v       9 → w x y z
+```
+
+**Constraints**
+- `0 <= digits.length <= 4`
+- `digits[i]` is a digit in the range `['2', '9']`.
+
+<Callout type="green" label="Core Insight">
+Build each combination one character at a time. At each recursive call, append one letter mapped from the current digit, recurse to the next digit, then remove the letter (backtrack). When the path length equals the number of digits, record the combination.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+```
+
+#### Example 2
+```
+Input:  digits = ""
+Output: []
+```
+
+#### Example 3
+```
+Input:  digits = "2"
+Output: ["a","b","c"]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to enumerate all combinations of choices?", verdict: "yes", reason: "Each digit contributes 3-4 letter choices — the result is the Cartesian product of all digit mappings." },
+    { question: "Can we build solutions incrementally and prune?", verdict: "yes", reason: "Append one letter per recursive level; once path length equals digits.count, we have a complete combination." },
+    { question: "Is the search space small enough for backtracking?", verdict: "yes", reason: "At most 4 digits, 4 letters each → max 4^4 = 256 combinations. Backtracking is efficient here." },
+  ]}
+  answer="Backtracking — build path letter by letter, append to results when complete, remove on return"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Pre-build a dictionary mapping each digit character to its letter array. Use a recursive `backTrack(_ index: Int)` function with a shared `path` array. At each call, look up the letters for `digs[index]`, iterate over them: append the letter, recurse with `index + 1`, then remove the last element. The base case is `path.count == digits.count` — join the path and append to results.
+
+<LetterCombinationsDiagram />
+
+<Callout type="cyan" label="Why backtracking not iteration">
+An iterative approach would need nested loops, one per digit — impossible when the number of digits is variable. Backtracking handles arbitrary depth with a single recursive function.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='digits = "23"'
+  expected='["ad","ae","af","bd","be","bf","cd","ce","cf"]'
+  steps={[
+    { label: "Start", text: "backTrack(0). digs[0]='2' → letters = [a,b,c].", state: "path=[]" },
+    { label: "append a", text: "path=[a]. backTrack(1). digs[1]='3' → letters = [d,e,f].", state: "path=[a]" },
+    { label: "append d", text: "path=[a,d]. path.count == 2 == digits.count. Append 'ad'. Return.", state: "results=['ad']" },
+    { label: "append e", text: "Remove d. path=[a]. Append e. path=[a,e]. Append 'ae'. Return.", state: "results=['ad','ae']" },
+    { label: "append f", text: "Remove e. Append f. Append 'af'. Return.", state: "results=['ad','ae','af']" },
+    { label: "next b", text: "Remove a. path=[]. Append b. backTrack(1) → produces bd, be, bf.", state: "results=[...,'bd','be','bf']" },
+    { label: "next c", text: "Remove b. Append c. backTrack(1) → produces cd, ce, cf.", state: "results=[...,'cd','ce','cf']" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build the digit-to-letters map">
+    A dictionary `[Character: [Character]]` maps '2'→['a','b','c'] through '9'→['w','x','y','z'].
+  </StepItem>
+  <StepItem title="Define the backtracking function">
+    `backTrack(_ index: Int)` uses shared `path: [Character]` and `results: [String]`.
+  </StepItem>
+  <StepItem title="Base case — complete combination">
+    If `path.count == digits.count`, append `String(path)` to results and return.
+  </StepItem>
+  <StepItem title="Recursive case — try each letter">
+    For each letter in `consts[digs[index]]`: append letter → recurse with `index + 1` → remove last.
+  </StepItem>
+  <StepItem title="Kick off and return">
+    Call `backTrack(0)`. Return `results` (empty if `digits` is empty since the base case is never reached).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func letterCombinations(_ digits: String) -> [String] {
+    let consts: [Character: [Character]] = [
+      "2": ["a","b","c"], "3": ["d","e","f"],
+      "4": ["g","h","i"], "5": ["j","k","l"],
+      "6": ["m","n","o"], "7": ["p","q","r","s"],
+      "8": ["t","u","v"], "9": ["w","x","y","z"],
+    ]
+    var results = [String]()
+    var path = [Character]()
+    let digs = Array(digits)
+
+    func backTrack(_ index: Int) {
+      if path.count == digits.count {
+        results.append(String(path))
+        return
+      }
+      let chars = consts[digs[index], default: []]
+      for char in chars {
+        path.append(char)
+        backTrack(index + 1)
+        path.removeLast()
+      }
+    }
+
+    backTrack(0)
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Backtracking", time: "O(4^n * n)", space: "O(n)", note: "n = digits.length; 4^n combinations, O(n) to build each string; recursion stack depth is n", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not handling the empty digits input",
+      body: "If digits is empty, backTrack(0) is called and path.count (0) == digits.count (0) immediately, so 'empty string' gets appended to results.",
+      fix: "The current solution avoids this because backTrack(0) checks path.count == digits.count before touching digs[0]. However if digits is empty, path.count == 0 == digits.count is true immediately and an empty string is appended. Add an early return if digits.isEmpty to return [].",
+    },
+    {
+      title: "Forgetting to remove the last element after recursion",
+      body: "Without path.removeLast() after the recursive call, the path keeps growing and subsequent combinations include characters from previous branches.",
+      fix: "Always call path.removeLast() immediately after backTrack(index + 1) returns.",
+    },
+    {
+      title: "Accessing digs[index] without a bounds check",
+      body: "If index reaches digits.count before path.count does (which should not happen with correct logic), accessing digs[index] would crash.",
+      fix: "The base case path.count == digits.count ensures we return before index ever equals digits.count.",
+    },
+  ]}
+/>

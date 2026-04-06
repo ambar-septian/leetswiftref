@@ -1,0 +1,156 @@
+---
+id: 28-find-the-index-of-the-first-occurrence-in-a-string
+title: "Find the Index of the First Occurrence in a String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={28}
+  title="Find the Index of the First Occurrence in a String"
+  difficulty="Easy"
+  pattern="Sliding Two Pointers"
+  tags={["Two Pointers", "String", "String Matching"]}
+  leetcodeUrl="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two strings `haystack` and `needle`, return the index of the **first occurrence** of `needle` in `haystack`, or `-1` if `needle` is not part of `haystack`.
+
+**Constraints**
+- `1 <= haystack.length, needle.length <= 10^4`
+- `haystack` and `needle` consist of only lowercase English characters.
+
+<Callout type="green" label="Core Insight">
+Anchor a left pointer at each starting position in haystack. Use a right pointer to match characters of needle one by one from that anchor. On full match return left; on any mismatch reset right to 0 and advance left by one.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  haystack = "sadbutsad", needle = "sad"
+Output: 0
+Explanation: "sad" occurs at index 0 and 6. Return 0 (first occurrence).
+```
+
+#### Example 2
+```
+Input:  haystack = "leetcode", needle = "leeto"
+Output: -1
+Explanation: "leeto" does not occur in "leetcode".
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we searching for a fixed-length pattern?", verdict: "yes", reason: "needle has fixed length — slide a window of that size across haystack." },
+    { question: "Can we match character by character?", verdict: "yes", reason: "Compare haystack[left+right] with needle[right]; reset right on mismatch." },
+    { question: "Is an O(n*m) solution acceptable here?", verdict: "yes", reason: "With constraints up to 10^4 each, worst-case 10^8 ops is tight but the average case is far better. KMP would give O(n+m) but adds complexity." },
+  ]}
+  answer="Sliding two pointers — anchor left, extend right to match needle, reset on mismatch"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Convert both strings to character arrays for O(1) access. Maintain `left` as the current starting index in haystack and `right` as how many characters of needle have been matched so far. At each step, compare `h[left + right]` with `n[right]`. On match advance `right` and check if `right == n.count` (full match — return `left`). On mismatch reset `right = 0` and advance `left`. Return `-1` if left exhausts the haystack.
+
+<Callout type="cyan" label="The left + right index trick">
+Instead of copying a substring, index into haystack directly with left + right. This avoids O(m) allocations per window and keeps space O(1).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='haystack = "sadbutsad", needle = "sad"'
+  expected="0"
+  steps={[
+    { label: "left=0,r=0", text: "h[0]='s' == n[0]='s'. right→1, count=1.", state: "left=0, right=1" },
+    { label: "left=0,r=1", text: "h[1]='a' == n[1]='a'. right→2, count=2.", state: "left=0, right=2" },
+    { label: "left=0,r=2", text: "h[2]='d' == n[2]='d'. right→3, count=3 == n.count. Return left=0.", state: "return 0" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert to arrays and guard">
+    `h = haystack.map`, `n = needle.map`. Return -1 if either is empty.
+  </StepItem>
+  <StepItem title="Initialise pointers">
+    `left = 0`, `right = 0`, `count = 0`.
+  </StepItem>
+  <StepItem title="Bounds check before access">
+    Guard `right + left < h.count && right < n.count` — if either overflows, no match remains; return -1.
+  </StepItem>
+  <StepItem title="Match or reset">
+    If `h[right + left] == n[right]`: advance `right`, increment `count`. If `count == n.count` return `left`. Else reset `count = 0`, `right = 0`, advance `left`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func strStr(_ haystack: String, _ needle: String) -> Int {
+    let h = haystack.map { String($0) }
+    let n = needle.map { String($0) }
+    guard h.count > 0, n.count > 0 else { return -1 }
+
+    var left = 0
+    var right = 0
+    var count = 0
+
+    while left < h.count {
+      guard right + left < h.count, right < n.count else { return -1 }
+
+      if h[right + left] == n[right] {
+        right += 1
+        count += 1
+        if count == n.count { return left }
+        
+      } else {
+        count = 0
+        left += 1
+        right = 0
+      }
+    }
+
+    return -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Naive sliding window (this solution)", time: "O(n*m)", space: "O(n+m)", note: "n = haystack length, m = needle length; array conversion is O(n+m)" },
+    { approach: "KMP algorithm", time: "O(n+m)", space: "O(m)", note: "Builds failure function to avoid redundant comparisons — optimal but more complex", highlight: false },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not resetting right to 0 on mismatch",
+      body: "If right is not reset, the next window starts mid-needle rather than from the beginning, producing incorrect matches.",
+      fix: "On any mismatch, set right = 0, count = 0, and advance left by 1.",
+    },
+    {
+      title: "Accessing h[right + left] without a bounds check",
+      body: "When left is near the end and right > 0, right + left can exceed h.count, causing an index out-of-bounds crash.",
+      fix: "Guard right + left < h.count before the array access.",
+    },
+    {
+      title: "Returning -1 when needle is empty",
+      body: "The guard returns -1 for empty needle, but LeetCode specifies that an empty needle should return 0 (found at index 0). Verify expected behaviour with the problem statement.",
+      fix: "If empty needle should return 0, add: if n.count == 0 return 0 before the guard.",
+    },
+  ]}
+/>

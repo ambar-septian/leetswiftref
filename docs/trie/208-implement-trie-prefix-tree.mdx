@@ -1,0 +1,177 @@
+---
+id: 208-implement-trie-prefix-tree
+title: "Implement Trie (Prefix Tree)"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import ImplementTrieDiagram from '@site/src/components/DSA/ImplementTrieDiagram';
+
+<ProblemHeader
+  number={208}
+  title="Implement Trie (Prefix Tree)"
+  difficulty="Medium"
+  pattern="Trie"
+  tags={["Hash Table", "String", "Design", "Trie"]}
+  leetcodeUrl="https://leetcode.com/problems/implement-trie-prefix-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+A **trie** (also called a prefix tree) is a tree data structure used to efficiently store and retrieve keys in a dataset of strings.
+
+Implement the `Trie` class with the following operations:
+
+- `Trie()` — Initialises the trie object.
+- `void insert(String word)` — Inserts the string `word` into the trie.
+- `boolean search(String word)` — Returns `true` if the string `word` is in the trie (i.e. was previously inserted), and `false` otherwise.
+- `boolean startsWith(String prefix)` — Returns `true` if there is a previously inserted string that has the prefix `prefix`, and `false` otherwise.
+
+**Constraints:**
+- `1 <= word.length, prefix.length <= 2000`
+- `word` and `prefix` consist only of lowercase English letters.
+- At most `3 * 10^4` calls in total will be made to `insert`, `search`, and `startsWith`.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]
+
+Output: [null, null, true, false, true, null, true]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need fast prefix lookups?", verdict: "yes", reason: "A trie shares prefixes across words — traversal depth equals the word length, not the dictionary size." },
+    { question: "Should we use a fixed-size array or a hash map for children?", verdict: "no", reason: "A hash map [Character: Node] is flexible for any character set; a 26-slot array is faster for lowercase English only." },
+    { question: "How do search and startsWith differ?", verdict: "yes", reason: "Both traverse identically — the only difference is the return value: search requires isEndOfWord == true at the final node; startsWith just requires the path to exist." },
+  ]}
+  answer="Trie with hash map children — isEndOfWord flag distinguishes exact search from prefix check"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<ImplementTrieDiagram />
+
+Each `Node` holds a dictionary of children (`[Character: Node]`) and an `isEndOfWord` flag. Insert walks the trie character by character, creating nodes as needed, then sets the final node's flag. Search and `startsWith` both walk the same path — `search` returns `curr.isEndOfWord`, while `startsWith` returns `true` as long as the path exists.
+
+<Callout type="cyan" label="isEndOfWord vs path existence">
+Without the end-of-word flag, searching for "app" would return true even if only "apple" was inserted — the path a→p→p exists but "app" was never fully inserted as a word.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='insert("app"), insert("apple"), insert("bad")'
+  expected="search(app)=true, search(ap)=false, startsWith(app)=true"
+  steps={[
+    { label: 'insert "app"',    text: 'create a→p→p; set p (last) isEndOfWord=true' },
+    { label: 'insert "apple"',  text: 'reuse existing a→p→p path; create l→e; set e isEndOfWord=true' },
+    { label: 'insert "bad"',    text: 'create b→a→d; set d isEndOfWord=true' },
+    { label: 'search("app")',   text: 'traverse a→p→p; final node isEndOfWord=true → return true' },
+    { label: 'search("ap")',    text: 'traverse a→p; final node isEndOfWord=false → return false' },
+    { label: 'startsWith("ap")',text: 'traverse a→p; path exists → return true (isEndOfWord irrelevant)' },
+    { label: 'startsWith("baz")',text: 'traverse b→a; no z child → return false' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Define the Node class">
+    Each node has `var children = [Character: Node]()` and `var isEndOfWord = false`.
+  </StepItem>
+  <StepItem title="insert — walk and create">
+    For each character: if a child exists, move into it; otherwise create a new node. After the loop, set `curr.isEndOfWord = true`.
+  </StepItem>
+  <StepItem title="search — walk and check flag">
+    For each character: if the child does not exist, return `false`. After the loop, return `curr.isEndOfWord`.
+  </StepItem>
+  <StepItem title="startsWith — walk and check existence">
+    Identical traversal to search. Return `false` if any child is missing; return `true` if the full prefix path exists (ignore `isEndOfWord`).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Node {
+  var children = [Character: Node]()
+  var isEndOfWord = false
+}
+
+class Trie {
+  let root = Node()
+
+  init() {}
+
+  func insert(_ word: String) {
+    var curr = root
+    for char in word {
+      if let existing = curr.children[char] {
+        curr = existing
+      } else {
+        let node = Node()
+        curr.children[char] = node
+        curr = node
+      }
+    }
+    curr.isEndOfWord = true
+  }
+
+  func search(_ word: String) -> Bool {
+    var curr = root
+    for char in word {
+      guard let existing = curr.children[char] else { return false }
+      curr = existing
+    }
+    return curr.isEndOfWord
+  }
+
+  func startsWith(_ prefix: String) -> Bool {
+    var curr = root
+    for char in prefix {
+      guard let existing = curr.children[char] else { return false }
+      curr = existing
+    }
+    return true
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Trie with hash map children", time: "O(m) per operation", space: "O(m × n)", note: "m = word/prefix length; n = number of inserted words. Hash map lookup is O(1) amortised", highlight: true },
+    { approach: "Trie with 26-slot array children", time: "O(m) per operation", space: "O(m × n × 26)", note: "Faster constant factor for lowercase-only input; wastes memory for sparse character sets" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Returning true from search when only a prefix was inserted",
+      body: "If only 'apple' was inserted, searching for 'app' walks to the third 'p' node successfully — but <code>isEndOfWord</code> is false there.",
+      fix: "Always check <code>curr.isEndOfWord</code> at the end of search. Only <code>startsWith</code> skips this check.",
+    },
+    {
+      title: "Confusing search and startsWith return conditions",
+      body: "Both traverse identically. The difference is a single character: search returns <code>curr.isEndOfWord</code>; startsWith returns <code>true</code> unconditionally if the path exists.",
+      fix: "Keep the traversal logic identical in both methods — only the final return statement differs.",
+    },
+    {
+      title: "Using a class-level curr variable instead of a local one",
+      body: "If curr is stored on the Trie rather than declared locally in each method, concurrent or sequential calls corrupt each other's traversal state.",
+      fix: "Always declare <code>var curr = root</code> at the start of each method.",
+    },
+  ]}
+/>

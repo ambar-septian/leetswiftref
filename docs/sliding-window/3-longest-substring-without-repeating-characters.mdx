@@ -1,0 +1,168 @@
+---
+id: 3-longest-substring-without-repeating-characters
+title: "Longest Substring Without Repeating Characters"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={3}
+  title="Longest Substring Without Repeating Characters"
+  difficulty="Medium"
+  pattern="Sliding Window"
+  tags={["Hash Table", "String", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/longest-substring-without-repeating-characters/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a string `s`, find the length of the **longest substring** without repeating characters.
+
+A **substring** is a contiguous non-empty sequence of characters within a string.
+
+**Constraints**
+- `0 <= s.length <= 5 * 10^4`
+- `s` consists of English letters, digits, symbols, and spaces.
+
+<Callout type="green" label="Core Insight">
+Maintain a window `[left, right]` of characters with no duplicates. Expand right freely; when a duplicate appears, shrink from the left until the duplicate is removed. Track the max window size seen.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with length 3.
+```
+
+#### Example 2
+```
+Input:  s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with length 1.
+```
+
+#### Example 3
+```
+Input:  s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with length 3.
+Note: "pwke" is a subsequence, not a substring.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we looking for an optimal contiguous subarray or substring?", verdict: "yes", reason: "Longest substring — a classic sliding window target." },
+    { question: "Does the window have a simple validity condition?", verdict: "yes", reason: "Valid = no duplicate characters; easy to maintain with a Set." },
+    { question: "Can we expand right and shrink left without restarting?", verdict: "yes", reason: "When a duplicate enters, slide left until it is gone — O(n) total." },
+  ]}
+  answer="Sliding Window — expand right, shrink left on duplicate"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use two pointers `left` and `right` and a `Set` of characters currently in the window. Advance `right` one character at a time. If `chars[right]` is already in the set, remove `chars[left]` from the set and advance `left`. Otherwise insert `chars[right]` and update the max length. Continue until `right` reaches the end.
+
+<Callout type="cyan" label="Why the set shrink is correct">
+When we see a duplicate at `right`, the offending copy is somewhere in `[left, right-1]`. We remove from the left one by one until it is gone — then the window is valid again and we can continue expanding.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "abcabcbb"'
+  expected="3"
+  steps={[
+    { label: "a,b,c", text: "right expands: insert a, b, c. No duplicates. Max = 3.", state: "window = [a,b,c], left=0, right=2, max=3" },
+    { label: "dup a", text: "chars[3]='a' already in set. Remove chars[left]='a', left=1.", state: "window = [b,c], left=1, right=3" },
+    { label: "insert a", text: "chars[3]='a' no longer in set. Insert. Max still 3.", state: "window = [b,c,a], left=1, right=3, max=3" },
+    { label: "dup b", text: "chars[4]='b' in set. Remove 'b' (left=1), left=2.", state: "window = [c,a], left=2, right=4" },
+    { label: "insert b", text: "Insert 'b'. Max still 3.", state: "window = [c,a,b], left=2, right=4, max=3" },
+    { label: "dup c", text: "chars[5]='c' in set. Remove 'c' (left=2), left=3.", state: "window = [a,b], left=3, right=5" },
+    { label: "finish", text: "Continue shrinking on duplicates. Final max = 3.", state: "result = 3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert string to character array">
+    `Array(s)` gives O(1) index access to each character.
+  </StepItem>
+  <StepItem title="Initialise window pointers and set">
+    `left = 0`, `right = 0`, `cache = Set`, `result = 0`.
+  </StepItem>
+  <StepItem title="Expand right">
+    If `chars[right]` is not in `cache`, insert it, update `result = max(result, right - left + 1)`, and advance `right`.
+  </StepItem>
+  <StepItem title="Shrink left on duplicate">
+    If `chars[right]` is already in `cache`, remove `chars[left]` from `cache` and advance `left`. Do not advance `right` yet.
+  </StepItem>
+  <StepItem title="Repeat until right reaches end">
+    The loop terminates when `right == chars.count`. Return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func lengthOfLongestSubstring(_ s: String) -> Int {
+    let chars = Array(s)
+    var cache = Set<Character>()
+    var result = 0
+    var left = 0
+    var right = 0
+
+    while right < chars.count {
+      if !cache.contains(chars[right]) {
+        cache.insert(chars[right])
+        result = max(result, right - left + 1)
+        right += 1
+        
+      } else {
+        cache.remove(chars[left])
+        left += 1
+      }
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force — check all substrings", time: "O(n³)", space: "O(min(n,m))", note: "n = string length, m = charset size" },
+    { approach: "Sliding window with Set", time: "O(n)", space: "O(min(n,m))", note: "Each char added and removed at most once", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Advancing right when a duplicate is found",
+      body: "When chars[right] is in the cache, we must shrink from the left first — not advance right. Advancing right would skip the duplicate and leave the window invalid.",
+      fix: "Only advance right after successfully inserting chars[right] into the cache.",
+    },
+    {
+      title: "Forgetting to handle the empty string",
+      body: "If s is empty, chars.count is 0, the while loop never executes, and result stays 0 — which is correct. No special case needed, but worth verifying.",
+      fix: "No code change required — the loop handles it gracefully.",
+    },
+    {
+      title: "Using String subscript directly instead of converting to Array",
+      body: "Swift String subscript requires O(n) index computation. Accessing chars[i] on a raw String in a loop makes the overall complexity O(n^2).",
+      fix: "Convert once with Array(s) before the loop so all index accesses are O(1).",
+    },
+  ]}
+/>

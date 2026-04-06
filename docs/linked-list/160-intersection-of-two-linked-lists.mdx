@@ -1,0 +1,169 @@
+---
+id: 160-intersection-of-two-linked-lists
+title: "Intersection of Two Linked Lists"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import IntersectionListDiagram from '@site/src/components/DSA/IntersectionListDiagram';
+
+<ProblemHeader
+  number={160}
+  title="Intersection of Two Linked Lists"
+  difficulty="Easy"
+  pattern="Two Pointer Redirect"
+  tags={["Hash Table", "Linked List", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/intersection-of-two-linked-lists/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the heads of two singly linked lists `headA` and `headB`, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return `null`.
+
+The intersection is by **reference**, not by value — it is the node object (same memory address) that both lists share, not a node with the same value.
+
+**Note:** The linked lists must **retain their original structure** after the function returns.
+
+**Constraints:**
+- The number of nodes of `listA` is `m`.
+- The number of nodes of `listB` is `n`.
+- `1 <= m, n <= 3 * 10^4`
+- `1 <= Node.val <= 10^5`
+- `0 <= skipA, skipB <= 3 * 10^4` (offset to intersection node)
+- **Follow-up:** Can you solve it in O(n) time and use only O(1) memory?
+
+<SectionHeader n={2} title="Examples" />
+
+<IntersectionListDiagram />
+
+#### Example 1
+
+```
+Input: listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
+Output: Reference to node with value 8
+Explanation: Intersecting node is 8. Lists A and B share nodes [8,4,5].
+```
+
+#### Example 2
+
+```
+Input: listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
+Output: null
+Explanation: No intersection.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do the two lists have different lengths before the intersection?", verdict: "yes", reason: "The non-shared prefix lengths differ. We need to equalise the effective distance each pointer travels." },
+    { question: "Can we equalise distances without knowing lengths explicitly?", verdict: "yes", reason: "When a pointer reaches nil, redirect it to the other list's head. After at most one redirect each, both pointers have travelled |A| + |B| steps and are aligned." },
+    { question: "Will the pointers always meet at nil if there is no intersection?", verdict: "yes", reason: "Both pointers travel |A|+|B| steps total. If no intersection, they both arrive at nil simultaneously." },
+  ]}
+  answer="Two-pointer redirect — each pointer walks its list then the other's; they meet at intersection or nil"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Advance `tailA` and `tailB` simultaneously. When `tailA` reaches nil (and has not yet redirected), set `tailA = headB`. When `tailB` reaches nil, set `tailB = headA`. After the redirect, both pointers have effectively walked `|A| + |B|` total steps — they are synchronised. If an intersection exists, they land on the same node. If not, both land on nil simultaneously.
+
+<Callout type="cyan" label="Why the paths equalise">
+Pointer A travels |A-only| + |shared| steps, hits nil, then walks |B-only| + |shared| more = total |A| + |B|. Pointer B travels the same total in the opposite order. Both arrive at the intersection node — or nil — at the same step.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="reference to node 8"
+  input="A=[4,1,8,4,5] (len=5), B=[5,6,1,8,4,5] (len=6), intersection=8"
+  steps={[
+    { label: "steps 1-5",  text: "tailA walks 4→1→8→4→5→nil; tailB walks 5→6→1→8→4" },
+    { label: "redirect A", text: "tailA=nil → redirect to headB=5" },
+    { label: "step 6",     text: "tailA=5(B), tailB=5(A-end)→nil" },
+    { label: "redirect B", text: "tailB=nil → redirect to headA=4" },
+    { label: "steps 7-8",  text: "tailA=6, tailB=4; tailA=1, tailB=1; still differ" },
+    { label: "step 9",     text: "tailA=8(B), tailB=8(A); tailA===tailB → return node 8" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise two pointers">
+    `var tailA = headA`, `var tailB = headB`, `var hasLoopedToB = false`, `var hasLoopedToA = false`.
+  </StepItem>
+  <StepItem title="Loop while either pointer is non-nil">
+    Check `tailA === tailB` — if true, return `tailA`.
+  </StepItem>
+  <StepItem title="Advance pointers">
+    `tailA = tailA?.next`, `tailB = tailB?.next`.
+  </StepItem>
+  <StepItem title="Redirect on nil (once each)">
+    If `tailA == nil` and not yet redirected: `tailA = headB; hasLoopedToB = true`. Same symmetrically for `tailB`.
+  </StepItem>
+  <StepItem title="No intersection">
+    When both pointers are nil simultaneously, return nil.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func getIntersectionNode(_ headA: ListNode?, _ headB: ListNode?) -> ListNode? {
+    var hasLoopToB = false
+    var hasLoopToA = false
+    var tailA = headA
+    var tailB = headB
+
+    while tailA != nil || tailB != nil {
+      if tailA === tailB { return tailA }
+
+      tailA = tailA?.next
+      tailB = tailB?.next
+
+      if tailA == nil, !hasLoopToB {
+        tailA = headB
+        hasLoopToB = true
+      }
+      if tailB == nil, !hasLoopToA {
+        tailB = headA
+        hasLoopToA = true
+      }
+    }
+
+    return nil
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Two-pointer redirect", time: "O(m+n)", space: "O(1)", note: "Each pointer walks at most m+n nodes total before meeting or both reaching nil", highlight: true },
+    { approach: "Hash set", time: "O(m+n)", space: "O(m)", note: "Store all of list A's nodes; scan list B for first match" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Redirecting more than once",
+      body: "Without a guard flag, a pointer could be redirected every time it hits nil — causing an infinite loop when the lists have no intersection.",
+      fix: "Use a boolean flag (<code>hasLoopToB</code>, <code>hasLoopToA</code>) to ensure each pointer is redirected at most once.",
+    },
+    {
+      title: "Using == instead of ===",
+      body: "Two nodes at different positions can share the same val. Value equality would produce false intersections.",
+      fix: "Use === (reference equality) to check if both pointers point to the exact same node object.",
+    },
+    {
+      title: "Checking equality before advancing",
+      body: "If you check <code>tailA === tailB</code> after redirecting but before the next advance, you may return nil incorrectly on lists that both end at nil simultaneously.",
+      fix: "Check equality at the top of the loop, before any advancement or redirection.",
+    },
+  ]}
+/>

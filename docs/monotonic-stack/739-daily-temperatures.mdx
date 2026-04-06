@@ -1,0 +1,155 @@
+---
+id: 739-daily-temperatures
+title: "Daily Temperatures"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={739}
+  title="Daily Temperatures"
+  difficulty="Medium"
+  pattern="Monotonic Stack"
+  tags={["Array", "Stack", "Monotonic Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/daily-temperatures/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `temperatures` representing the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the `i`-th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0` instead.
+
+**Constraints:**
+- `1 <= temperatures.length <= 10^5`
+- `30 <= temperatures[i] <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  temperatures = [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+```
+
+#### Example 2
+
+```
+Input:  temperatures = [30,40,50,60]
+Output: [1,1,1,0]
+```
+
+#### Example 3
+
+```
+Input:  temperatures = [30,60,90]
+Output: [1,1,0]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "For each day, do we need the next day that is strictly warmer?", verdict: "yes", reason: "Classic next-greater-element shape: for each element find the first element to its right that is larger." },
+    { question: "Can a stack of indices give us the day gap directly?", verdict: "yes", reason: "Store indices on the stack. When a warmer day i arrives, every index j still on the stack with temperatures[j] < temperatures[i] gets answer[j] = i - j." },
+    { question: "Is the stack monotonically decreasing in temperature?", verdict: "yes", reason: "We only pop when the incoming temperature is strictly higher — so temperatures at stored indices form a non-increasing sequence." },
+  ]}
+  answer="Monotonic decreasing stack of indices — pop and record gap when a warmer day is found"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a stack of indices (temperatures stored implicitly). For each index `i`: while the stack is not empty and `temperatures[i] > temperatures[stack.last!]`, pop `topIndex` and set `results[topIndex] = i - topIndex`. Push `i` onto the stack. Indices remaining in the stack at the end have no warmer future day — they keep `results[i] = 0` (the array default).
+
+<Callout type="cyan" label="Store indices, not temperatures">
+Storing indices on the stack lets us compute the day gap directly as currentIndex - poppedIndex. If we stored temperatures instead we would still need to map back to indices.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="temperatures = [73,74,75,71,69,72,76,73]"
+  expected="[1,1,4,2,1,1,0,0]"
+  steps={[
+    { label: "i=0 (73)", text: "Stack empty. Push 0. Stack: [0]." },
+    { label: "i=1 (74)", text: "74>73 → pop 0, result[0]=1-0=1. Stack empty. Push 1. Stack: [1]." },
+    { label: "i=2 (75)", text: "75>74 → pop 1, result[1]=2-1=1. Push 2. Stack: [2]." },
+    { label: "i=3 (71)", text: "71<75 — no pop. Push 3. Stack: [2,3]." },
+    { label: "i=4 (69)", text: "69<71 — no pop. Push 4. Stack: [2,3,4]." },
+    { label: "i=5 (72)", text: "72>69 → pop 4, result[4]=1. 72>71 → pop 3, result[3]=2. 72<75 — stop. Push 5. Stack: [2,5]." },
+    { label: "i=6 (76)", text: "76>72 → pop 5, result[5]=1. 76>75 → pop 2, result[2]=4. Stack empty. Push 6." },
+    { label: "i=7 (73)", text: "73<76 — no pop. Push 7. Remaining [6,7] → result[6]=result[7]=0." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var stack = [Int]()`, `var results = Array(repeating: 0, count: temperatures.count)`.
+  </StepItem>
+  <StepItem title="Iterate">
+    For each `i` in `0..temperatures.count-1`.
+  </StepItem>
+  <StepItem title="Pop warmer days">
+    While `!stack.isEmpty` and `temperatures[i] > temperatures[stack.last!]`: `let topIndex = stack.removeLast(); results[topIndex] = i - topIndex`.
+  </StepItem>
+  <StepItem title="Push current index">
+    `stack.append(i)`.
+  </StepItem>
+  <StepItem title="Return results">
+    Indices still in stack have no warmer day — they keep 0 by default.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func dailyTemperatures(_ temperatures: [Int]) -> [Int] {
+    var stack = [Int]()
+    var results = Array(repeating: 0, count: temperatures.count)
+
+    for i in 0..<temperatures.count {
+      while !stack.isEmpty, let topIndex = stack.last,
+            temperatures[i] > temperatures[topIndex] {
+        stack.removeLast()
+        results[topIndex] = i - topIndex
+      }
+      stack.append(i)
+    }
+
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Monotonic Stack", time: "O(n)", space: "O(n)", note: "Each index is pushed once and popped at most once — total stack operations are O(n). O(n) for the stack in the worst case (strictly decreasing temperatures).", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Storing temperatures instead of indices",
+      body: "If you push temperatures rather than indices, you cannot compute the day gap without an additional mapping.",
+      fix: "Always push the index. The temperature is available via temperatures[stack.last!] when needed.",
+    },
+    {
+      title: "Using >= instead of > for the pop condition",
+      body: "The problem asks for strictly warmer days. Popping on equal temperatures would incorrectly record a gap for a day that is not actually warmer.",
+      fix: "Use temperatures[i] > temperatures[topIndex] (strict greater than) in the while condition.",
+    },
+    {
+      title: "Not initialising results to zero",
+      body: "Days with no warmer future day should have answer 0. If the array is not pre-initialised, leftover stack indices produce undefined values.",
+      fix: "Initialise results = Array(repeating: 0, count: n) so unresolved indices keep 0.",
+    },
+  ]}
+/>

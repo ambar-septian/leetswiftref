@@ -1,0 +1,150 @@
+---
+id: 226-invert-binary-tree
+title: "Invert Binary Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import InvertBinaryTreeDiagram from '@site/src/components/DSA/InvertBinaryTreeDiagram';
+
+<ProblemHeader
+  number={226}
+  title="Invert Binary Tree"
+  difficulty="Easy"
+  pattern="Recursive DFS"
+  tags={["Tree", "Depth-First Search", "Breadth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/invert-binary-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, invert the tree (mirror it), and return its root. Inverting means every node's left and right children are swapped at every level of the tree.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 100]`.
+- `-100 <= Node.val <= 100`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: root = [4,2,7,1,3,6,9]
+Output: [4,7,2,9,6,3,1]
+```
+
+#### Example 2
+
+```
+Input: root = [2,1,3]
+Output: [2,3,1]
+```
+
+#### Example 3
+
+```
+Input: root = []
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Should we invert subtrees before or after swapping children?", verdict: "yes", reason: "Post-order: invert left and right subtrees first, then swap node.left and node.right. The result is identical either way, but post-order makes the logic clearer." },
+    { question: "Is a single pass enough?", verdict: "yes", reason: "Every node is visited exactly once. The swap at each node is O(1)." },
+    { question: "Can BFS also work?", verdict: "yes", reason: "Level-order BFS can swap children as nodes are dequeued — also O(n) time and O(n) space for the queue." },
+  ]}
+  answer="Recursive DFS — invert subtrees recursively, then swap node.left and node.right"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<InvertBinaryTreeDiagram />
+
+Recurse into the left subtree and right subtree. Once both return their inverted roots, assign `node.left = invertedRight` and `node.right = invertedLeft`. Return the node. The base case returns nil for a nil node.
+
+<Callout type="cyan" label="Post-order vs pre-order">
+Swapping children before recursing (pre-order) also works — the swap just happens in a different relative order. Post-order is more common in explanations because it mirrors the idea of "invert children first, then attach them."
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [4,2,7,1,3,6,9]"
+  expected="[4,7,2,9,6,3,1]"
+  steps={[
+    { label: "invert(4)", text: "recurse into left=2 and right=7 first" },
+    { label: "invert(2)", text: "recurse into 1 and 3; both leaves return themselves; swap: 2.left=3, 2.right=1" },
+    { label: "invert(7)", text: "recurse into 6 and 9; both leaves return themselves; swap: 7.left=9, 7.right=6" },
+    { label: "swap at 4", text: "4.left = inverted(7) = [7,9,6]; 4.right = inverted(2) = [2,3,1]" },
+    { label: "done",      text: "return root 4 → tree = [4,7,2,9,6,3,1]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    If `node` is nil, return nil.
+  </StepItem>
+  <StepItem title="Recurse into both subtrees">
+    `let left = invert(node.left)`, `let right = invert(node.right)`.
+  </StepItem>
+  <StepItem title="Swap children">
+    `node.left = right`, `node.right = left`.
+  </StepItem>
+  <StepItem title="Return node">
+    Return the current node (its children are now swapped).
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func invertTree(_ root: TreeNode?) -> TreeNode? {
+    return invert(root)
+
+    func invert(_ node: TreeNode?) -> TreeNode? {
+      guard let node else { return nil }
+      let left  = invert(node.left)
+      let right = invert(node.right)
+      node.left  = right
+      node.right = left
+      return node
+    }
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive DFS", time: "O(n)", space: "O(h)", note: "Every node visited once; O(h) call stack where h = log n for balanced, O(n) for skewed", highlight: true },
+    { approach: "BFS (queue)", time: "O(n)", space: "O(n)", note: "Queue holds up to one full level — O(n) in a complete tree" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Swapping node references before recursing without saving them",
+      body: "If you do <code>node.left = node.right; node.right = node.left</code> without a temp variable, the second line reassigns node.right to the already-swapped node.left.",
+      fix: "Save both subtree results: <code>let left = invert(node.left); let right = invert(node.right)</code>, then assign <code>node.left = right; node.right = left</code>.",
+    },
+    {
+      title: "Not returning the node after swapping",
+      body: "The function must return the modified node so callers can use it as a child. Returning nil silently disconnects subtrees.",
+      fix: "Always <code>return node</code> at the end of the invert function.",
+    },
+    {
+      title: "Inverting only one level",
+      body: "Swapping just the root's children leaves all deeper nodes uninverted.",
+      fix: "The recursion handles all levels automatically — invert must be called on both children before swapping at the current node.",
+    },
+  ]}
+/>

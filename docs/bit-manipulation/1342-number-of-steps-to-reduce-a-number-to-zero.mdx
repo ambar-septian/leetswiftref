@@ -1,0 +1,144 @@
+---
+id: 1342-number-of-steps-to-reduce-a-number-to-zero
+title: "Number of Steps to Reduce a Number to Zero"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1342}
+  title="Number of Steps to Reduce a Number to Zero"
+  difficulty="Easy"
+  pattern="Bit Manipulation / Simulation"
+  tags={["Math", "Bit Manipulation"]}
+  leetcodeUrl="https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer `num`, return the number of steps to reduce it to zero.
+
+In one step, if the current number is even, you have to divide it by 2; otherwise, you have to subtract 1 from it.
+
+**Constraints:**
+- `0 <= num <= 10^6`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  num = 14
+Output: 6
+Explanation:
+  14 is even → 14/2 = 7        (step 1)
+  7  is odd  → 7-1  = 6        (step 2)
+  6  is even → 6/2  = 3        (step 3)
+  3  is odd  → 3-1  = 2        (step 4)
+  2  is even → 2/2  = 1        (step 5)
+  1  is odd  → 1-1  = 0        (step 6)
+```
+
+#### Example 2
+
+```
+Input:  num = 8
+Output: 4
+Explanation: 8→4→2→1→0 (4 steps, all divisions).
+```
+
+#### Example 3
+
+```
+Input:  num = 123
+Output: 12
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we simulating a bit-by-bit process?", verdict: "yes", reason: "Dividing by 2 shifts the binary representation right. Subtracting 1 clears the lowest set bit. Each step processes one bit." },
+    { question: "Can we count steps from the binary representation?", verdict: "yes", reason: "Each 1-bit costs 2 steps (subtract then shift); the leading 1-bit costs 1 step. But simulation is simpler and equally O(log n)." },
+  ]}
+  answer="Simulation — halve even, decrement odd"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Simulate the process directly: while `current != 0`, apply the appropriate operation and count steps. This is O(log n) because each division by 2 halves the number.
+
+<Callout type="cyan" label="Bit insight">
+In binary, dividing by 2 is a right shift (removes the trailing 0). Subtracting 1 from an odd number clears its trailing 1. So each bit in the binary representation of num contributes exactly the steps needed to remove it.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="num = 14  (binary: 1110)"
+  expected="6"
+  steps={[
+    { label: "14", text: "14 is even → 14/2 = 7. Steps=1.", state: "current=7" },
+    { label: "7",  text: "7 is odd → 7-1 = 6. Steps=2.", state: "current=6" },
+    { label: "6",  text: "6 is even → 6/2 = 3. Steps=3.", state: "current=3" },
+    { label: "3",  text: "3 is odd → 3-1 = 2. Steps=4.", state: "current=2" },
+    { label: "2",  text: "2 is even → 2/2 = 1. Steps=5.", state: "current=1" },
+    { label: "1",  text: "1 is odd → 1-1 = 0. Steps=6.", state: "current=0 → done" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    Set `current = num`, `result = 0`.
+  </StepItem>
+  <StepItem title="Loop until zero">
+    While `current != 0`: if `current % 2 == 0` divide by 2; otherwise subtract 1. Increment `result` each iteration.
+  </StepItem>
+  <StepItem title="Return result">
+    Return the total step count.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func numberOfSteps(_ num: Int) -> Int {
+    var result = 0
+    var current = num
+    while current != 0 {
+      current = current % 2 == 0 ? current / 2 : current - 1
+      result += 1
+    }
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Simulation", time: "O(log n)", space: "O(1)", note: "Each division halves num; at most O(log n) iterations", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Handling num = 0",
+      body: "If num starts at 0, the while loop never executes and returns 0, which is correct — no steps needed.",
+      fix: "No special handling needed; the loop condition handles it naturally.",
+    },
+    {
+      title: "Using integer division for even check",
+      body: "current / 2 in Swift performs integer division, which is correct here. No floating point issues.",
+      fix: "Use current / 2 (integer division), not current / 2.0.",
+    },
+  ]}
+/>

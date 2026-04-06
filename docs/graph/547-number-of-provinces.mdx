@@ -1,0 +1,200 @@
+---
+id: 547-number-of-provinces
+title: "Number of Provinces"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import ProvincesDiagram from '@site/src/components/DSA/ProvincesDiagram';
+import WalkthroughDiagram from '@site/src/components/DSA/WalkthroughDiagram';
+
+<ProblemHeader
+  number={547}
+  title="Number of Provinces"
+  difficulty="Medium"
+  pattern="Graph DFS / Union-Find"
+  tags={["Depth-First Search", "Breadth-First Search", "Union-Find", "Graph Theory"]}
+  leetcodeUrl="https://leetcode.com/problems/number-of-provinces/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There are `n` cities. Some of them are connected, while some are not. If city `a` is connected directly with city `b`, and city `b` is connected directly with city `c`, then city `a` is connected indirectly with city `c`.
+
+A **province** is a group of directly or indirectly connected cities and no other cities outside of the group.
+
+You are given an `n x n` matrix `isConnected` where `isConnected[i][j] = 1` if the `i`-th city and the `j`-th city are directly connected, and `isConnected[i][j] = 0` otherwise.
+
+Return the total number of **provinces**.
+
+**Constraints:**
+- `1 <= n <= 200`
+- `n == isConnected.length`
+- `n == isConnected[i].length`
+- `isConnected[i][j]` is `1` or `0`.
+- `isConnected[i][i] == 1`
+- `isConnected[i][j] == isConnected[j][i]`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+Output: 2
+Explanation: Cities 0 and 1 are connected — Province 1. City 2 is alone — Province 2.
+```
+
+#### Example 2
+
+```
+Input:  isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+Output: 3
+Explanation: Each city is its own province.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is this a connected-components problem on an undirected graph?", verdict: "yes", reason: "Each province is a connected component. We need to count how many disjoint groups of cities exist." },
+    { question: "Can we traverse the graph with DFS and mark visited nodes?", verdict: "yes", reason: "Start DFS from any unvisited city, mark all reachable cities as visited. Each DFS start = one new province." },
+    { question: "Can Union-Find solve this more efficiently?", verdict: "yes", reason: "Union edges between connected cities. Count the number of remaining disjoint sets at the end." },
+  ]}
+  answer="DFS or Union-Find — count connected components in an undirected adjacency-matrix graph"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+**DFS approach:** Maintain a `visited` boolean array. Iterate all cities. If city `i` is not visited, start DFS from it — mark every reachable city visited by scanning its row in `isConnected`. Each new DFS start increments the province count.
+
+**Union-Find approach:** Initialise `n` disjoint sets (one per city). For each pair `(i, j)` where `isConnected[i][j] == 1`, unite the two sets. Decrement the province count each time a successful union merges two previously separate sets. Return the final count.
+
+<ProvincesDiagram />
+
+<Callout type="cyan" label="Adjacency matrix vs adjacency list">
+The graph is given as an n×n adjacency matrix. DFS on a matrix scans the entire row for each node — O(n) per node, O(n²) total. If the graph were sparse and given as an adjacency list, DFS would be O(n + e) where e is edges.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<WalkthroughDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise visited array and count">
+    `var visited = Array(repeating: false, count: n)`, `var results = 0`.
+  </StepItem>
+  <StepItem title="Scan all cities">
+    For each city `i`: if not yet visited, launch DFS from `i` and increment `results`.
+  </StepItem>
+  <StepItem title="DFS — mark all reachable cities">
+    `func dfs(_ cityIndex: Int)`: mark `visited[cityIndex] = true`. For each `neighborIndex` where `!visited[neighborIndex]` and `isConnected[cityIndex][neighborIndex] == 1`, recurse into `neighborIndex`.
+  </StepItem>
+  <StepItem title="Return province count">
+    Return `results`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func findCircleNum(_ isConnected: [[Int]]) -> Int {
+    var results = 0
+    var visited = Array(repeating: false, count: isConnected.count)
+
+    func dfs(_ cityIndex: Int) {
+      visited[cityIndex] = true
+      for neighborIndex in 0..<isConnected[cityIndex].count {
+        if !visited[neighborIndex], isConnected[cityIndex][neighborIndex] == 1 {
+          dfs(neighborIndex)
+        }
+      }
+    }
+
+    for cityIndex in 0..<isConnected.count {
+      if !visited[cityIndex] {
+        dfs(cityIndex)
+        results += 1
+      }
+    }
+
+    return results
+  }
+}
+```
+
+**Union-Find alternative:**
+
+```swift
+class Solution {
+  class UnionSet {
+    var parent: [Int]
+    var rank: [Int]
+
+    init(_ n: Int) {
+      parent = (0..<n).map { $0 }
+      rank = Array(repeating: 0, count: n)
+    }
+
+    func find(_ i: Int) -> Int {
+      parent[i] == i ? i : find(parent[i])
+    }
+
+    func unite(_ a: Int, _ b: Int) -> Bool {
+      let rootA = find(a), rootB = find(b)
+      guard rootA != rootB else { return false }
+      if rank[rootA] < rank[rootB] { parent[rootA] = rootB }
+      else if rank[rootA] > rank[rootB] { parent[rootB] = rootA }
+      else { parent[rootA] = rootB; rank[rootB] += 1 }
+      return true
+    }
+  }
+
+  func findCircleNum(_ isConnected: [[Int]]) -> Int {
+    var results = isConnected.count
+    let uf = UnionSet(isConnected.count)
+    for i in 0..<isConnected.count {
+      for j in i + 1..<isConnected.count {
+        if isConnected[i][j] == 1, uf.unite(i, j) {
+          results -= 1
+        }
+      }
+    }
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS", time: "O(n²)", space: "O(n)", note: "Scan full row per node; visited array O(n); recursion stack O(n)", highlight: true },
+    { approach: "Union-Find (with rank)", time: "O(n²)", space: "O(n)", note: "Check all n² pairs; union/find is near O(1) with path compression and rank" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not skipping self-loops in DFS",
+      body: "isConnected[i][i] == 1 for all i. Without the visited check, DFS would infinitely revisit the same city via its own self-loop.",
+      fix: "The visited check (!visited[neighborIndex]) prevents re-visiting, including the self-loop case.",
+    },
+    {
+      title: "Scanning the upper triangle only in Union-Find",
+      body: "Iterating j from i+1 is correct because isConnected is symmetric — uniting (i, j) handles both directions.",
+      fix: "Use j in i+1 to avoid redundant unite calls. The matrix is symmetric so each edge only needs to be processed once.",
+    },
+    {
+      title: "Missing path compression in Union-Find find()",
+      body: "Without path compression, find() can take O(n) in the worst case for a chain-shaped tree, making the overall algorithm O(n³).",
+      fix: "Add path compression: parent[i] = find(parent[i]) before returning.",
+    },
+  ]}
+/>

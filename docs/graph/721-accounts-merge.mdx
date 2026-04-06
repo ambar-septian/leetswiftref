@@ -1,0 +1,204 @@
+---
+id: 721-accounts-merge
+title: "Accounts Merge"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import { AccountsMergeDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={721}
+  title="Accounts Merge"
+  difficulty="Medium"
+  pattern="Union-Find"
+  tags={["Array", "Hash Table", "String", "Depth-First Search", "Breadth-First Search", "Union-Find", "Sorting"]}
+  leetcodeUrl="https://leetcode.com/problems/accounts-merge/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given a list of `accounts` where `accounts[i]` is a list of strings such that `accounts[i][0]` is a name and the remaining elements are **emails** for that account, merge accounts that share at least one email in common.
+
+Two accounts definitely belong to the same person if there is some common email. Note that even if two accounts have the same name, they may belong to different people since a single person can have multiple names. A person can have any number of accounts initially, but all accounts will eventually have the same name.
+
+After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in **sorted order**. The accounts themselves can be returned in any order.
+
+**Constraints:**
+- `1 <= accounts.length <= 1000`
+- `2 <= accounts[i].length <= 10`
+- `1 <= accounts[i][j].length <= 30`
+- `accounts[i][0]` consists of English letters.
+- `accounts[i][j]` (for `j > 0`) is a valid email.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+accounts = [
+  ["John","johnsmith@mail.com","john_newyork@mail.com"],
+  ["John","johnsmith@mail.com","john00@mail.com"],
+  ["Mary","mary@mail.com"],
+  ["John","johnnybravo@mail.com"]
+]
+Output:
+[
+  ["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],
+  ["Mary","mary@mail.com"],
+  ["John","johnnybravo@mail.com"]
+]
+```
+
+#### Example 2
+
+```
+Input:  accounts = [["Gabe","Gabe0@m.co","Gabe3@m.co"],["Kevin","Kevin3@m.co"],["Ethan","Ethan5@m.co"]]
+Output: [["Ethan","Ethan5@m.co"],["Gabe","Gabe0@m.co","Gabe3@m.co"],["Kevin","Kevin3@m.co"]]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to group items by shared membership (email)?", verdict: "yes", reason: "Union-Find excels at grouping — unite two accounts when they share an email, then group all emails by their root representative." },
+    { question: "Can we map emails to account indices?", verdict: "yes", reason: "A dictionary from email → first account index that owned it tells us when a collision occurs — that is our unite trigger." },
+    { question: "Why not DFS?", verdict: "no", reason: "DFS on an email adjacency graph also works, but Union-Find is simpler: process accounts linearly, unite on first shared email, then re-scan to collect." },
+  ]}
+  answer="Union-Find — unite accounts sharing an email, then group all emails by root representative"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Phase 1 — Build union-find on account indices: for each account, scan its emails. If an email has been seen before (it is in `emailToAccIndex`), `unite(currentAccountIndex, storedIndex)`. Otherwise record `emailToAccIndex[email] = currentAccountIndex`.
+
+Phase 2 — Collect: for every email in the map, find its root `unionFind.find(storedIndex)` and append the email to `emailGroup[root]`.
+
+Phase 3 — Build result: for each root, prepend the account name (`accounts[root][0]`), sort emails, and append to results.
+
+<AccountsMergeDiagram />
+
+<Callout type="cyan" label="Why index accounts, not emails?">
+Union-Find operates on indices. By assigning each account an index and uniting account indices when their emails overlap, we avoid creating a Union-Find structure over variable-length email strings. The email map acts as the bridge between emails and account indices.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='accounts = [["John","john@a.com","john@b.com"],["John","john@a.com","john@c.com"],["Mary","mary@a.com"]]'
+  expected='[["John","john@a.com","john@b.com","john@c.com"],["Mary","mary@a.com"]]'
+  steps={[
+    { label: "acc 0", text: "john@a.com → map[0]. john@b.com → map[0]. No unites." },
+    { label: "acc 1", text: "john@a.com already at 0 → unite(1,0). parent[1]=0. john@c.com → map[1]." },
+    { label: "acc 2", text: "mary@a.com → map[2]. No shared emails." },
+    { label: "group", text: "john@a→find(0)=0, john@b→find(0)=0, john@c→find(1)=0, mary@a→find(2)=2." },
+    { label: "result", text: "Group 0: sorted[john@a,john@b,john@c] → John. Group 2: [mary@a] → Mary." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise Union-Find">
+    `UnionFind(accounts.count)` — parent and rank arrays of size n.
+  </StepItem>
+  <StepItem title="Phase 1 — Map emails and unite">
+    For each `(i, account)`: for each email in `account[1...]`: if already in `emailToAccIndex`, `unite(i, emailToAccIndex[email])`; else `emailToAccIndex[email] = i`.
+  </StepItem>
+  <StepItem title="Phase 2 — Group emails by root">
+    For each `(email, i)` in `emailToAccIndex`: `let root = find(i)`. Append `email` to `emailGroup[root]`.
+  </StepItem>
+  <StepItem title="Phase 3 — Build result">
+    For each `(root, emails)` in `emailGroup`: prepend `accounts[root][0]` (the name), sort emails, append to results.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  class UnionFind {
+    var parent = [Int]()
+    var rank = [Int]()
+
+    init(_ n: Int) {
+      parent = (0..<n).map { $0 }
+      rank = Array(repeating: 0, count: n)
+    }
+
+    func find(_ i: Int) -> Int {
+      if parent[i] == i { return i }
+      parent[i] = find(parent[i])
+      return parent[i]
+    }
+
+    func unite(_ a: Int, _ b: Int) -> Bool {
+      let rootA = find(a), rootB = find(b)
+      guard rootA != rootB else { return false }
+      if rank[rootA] < rank[rootB] { parent[rootA] = rootB }
+      else if rank[rootA] > rank[rootB] { parent[rootB] = rootA }
+      else { rank[rootB] += 1; parent[rootA] = rootB }
+      return true
+    }
+  }
+
+  func accountsMerge(_ accounts: [[String]]) -> [[String]] {
+    var emailToAccIndex = [String: Int]()
+    let uf = UnionFind(accounts.count)
+
+    for (i, account) in accounts.enumerated() {
+      for j in 1..<account.count {
+        let email = account[j]
+        if let existing = emailToAccIndex[email] {
+          uf.unite(i, existing)
+        } else {
+          emailToAccIndex[email] = i
+        }
+      }
+    }
+
+    var emailGroup = [Int: [String]]()
+    for (email, i) in emailToAccIndex {
+      let root = uf.find(i)
+      emailGroup[root, default: []].append(email)
+    }
+
+    var results = [[String]]()
+    for (root, emails) in emailGroup {
+      results.append([accounts[root][0]] + emails.sorted())
+    }
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Union-Find + Hash Map", time: "O(N·K·α(N))", space: "O(N·K)", note: "N = number of accounts, K = average emails per account. α is inverse Ackermann (effectively constant). O(N·K) to store the email map and groups.", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Uniting with the wrong index",
+      body: "You must store the account index (not the email) in emailToAccIndex. Uniting email strings directly is not supported by array-based Union-Find.",
+      fix: "emailToAccIndex maps email → account index. Call unite(currentAccountIndex, storedIndex) when a collision is detected.",
+    },
+    {
+      title: "Using root as the name source",
+      body: "After grouping, the root index points to one of the original accounts. Using accounts[root][0] gives the correct name for that merged group.",
+      fix: "Access accounts[root][0] for the name — root is always one of the original account indices, so its name is valid.",
+    },
+    {
+      title: "Forgetting to sort emails",
+      body: "The problem requires emails in sorted order within each merged account.",
+      fix: "Call emails.sorted() before appending to the result.",
+    },
+  ]}
+/>

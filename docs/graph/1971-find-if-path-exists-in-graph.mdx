@@ -1,0 +1,151 @@
+---
+id: 1971-find-if-path-exists-in-graph
+title: "Find if Path Exists in Graph"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, FindPathExistsDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1971}
+  title="Find if Path Exists in Graph"
+  difficulty="Easy"
+  pattern="Graph — DFS Connectivity"
+  tags={["Depth-First Search", "Breadth-First Search", "Union-Find", "Graph Theory"]}
+  leetcodeUrl="https://leetcode.com/problems/find-if-path-exists-in-graph/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+There is a **bi-directional** graph with `n` vertices, where each vertex is labeled from `0` to `n - 1` (inclusive). The edges in the graph are represented as a 2D integer array `edges`, where each `edges[i] = [u_i, v_i]` denotes a bi-directional edge between vertex `u_i` and vertex `v_i`. Every vertex pair is connected by **at most one** edge, and no vertex has an edge to itself.
+
+You want to determine if there is a **valid path** that exists from vertex `source` to vertex `destination`.
+
+Given `edges` and the integers `n`, `source`, and `destination`, return `true` if there is a valid path from `source` to `destination`, or `false` otherwise.
+
+**Constraints:**
+- `1 <= n <= 2 * 10^5`
+- `0 <= edges.length <= 2 * 10^5`
+- `edges[i].length == 2`
+- `0 <= u_i, v_i <= n - 1`
+- `u_i != v_i`
+- `1 <= source, destination <= n - 1`
+- There are no duplicate edges.
+- There are no self-edges.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  n=3, edges=[[0,1],[1,2],[2,0]], source=0, destination=2
+Output: true
+```
+
+#### Example 2
+
+```
+Input:  n=6, edges=[[0,1],[0,2],[3,5],[5,4],[4,3]], source=0, destination=5
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is this a simple reachability question?", verdict: "yes", reason: "DFS from source — if we ever touch destination, return true. If DFS exhausts without finding it, return false." },
+    { question: "Should we use a visited array or set?", verdict: "yes", reason: "A boolean visited array (size n) is more cache-friendly than a HashSet for dense graphs." },
+    { question: "Early-exit on source == destination?", verdict: "yes", reason: "If source equals destination, no traversal needed — return true immediately." },
+  ]}
+  answer="DFS — reachability from source with early exit"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build an undirected adjacency list. DFS from `source`. At each step, if a neighbor equals `destination`, return `true`. Otherwise, mark it visited and recurse. If the DFS exhausts all reachable nodes without finding `destination`, return `false`.
+
+<Callout type="green" label="Array vs HashSet for visited">
+Using `visited = Array(repeating: false, count: n)` is faster than a Set for large n — O(1) lookup with better cache performance. Only use a HashSet when n is unknown or very large.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<FindPathExistsDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Early exit">
+    If `source == destination`, return `true` immediately.
+  </StepItem>
+  <StepItem title="Build adjacency list">
+    For each edge `[u, v]`, add `v` to `list[u]` and `u` to `list[v]`.
+  </StepItem>
+  <StepItem title="DFS from source">
+    For each unvisited neighbor: if it equals `destination`, return `true`. Otherwise mark visited and recurse.
+  </StepItem>
+  <StepItem title="Return false">
+    If DFS completes without reaching `destination`, return `false`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func validPath(_ n: Int, _ edges: [[Int]], _ source: Int, _ destination: Int) -> Bool {
+    var visited = Array(repeating: false, count: n)
+    var list = Array(repeating: [Int](), count: n)
+    guard source != destination else { return true }
+
+    for edge in edges {
+      list[edge[0]].append(edge[1])
+      list[edge[1]].append(edge[0])
+    }
+
+    func dfs(_ curr: Int) -> Bool {
+      for neighbour in list[curr] {
+        if neighbour == destination { return true }
+        if !visited[neighbour] {
+          visited[neighbour] = true
+          if dfs(neighbour) { return true }
+        }
+      }
+      return false
+    }
+
+    return dfs(source)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "DFS with adjacency list", time: "O(V + E)", space: "O(V + E)", note: "V nodes, E edges; adjacency list O(V+E), visited array O(V)", highlight: true },
+    { approach: "Union-Find", time: "O(E · α(V))", space: "O(V)", note: "α is inverse Ackermann — effectively O(1); lower constant than DFS for large sparse graphs" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Marking visited after checking destination",
+      body: "If you mark visited before checking whether the neighbor is the destination, you might accidentally mark the destination as visited and never return true from it.",
+      fix: "Check if neighbour == destination first, return true immediately. Only mark visited and recurse if it is not the destination.",
+    },
+    {
+      title: "Not marking nodes visited before recursing",
+      body: "In an undirected graph, not marking visited causes infinite cycles between connected nodes.",
+      fix: "Set visited[neighbour] = true before calling dfs(neighbour).",
+    },
+    {
+      title: "Forgetting source == destination edge case",
+      body: "If source equals destination, the path trivially exists. Without this guard, DFS from source will never match destination in the neighbor check.",
+      fix: "Guard with source != destination else return true at the top.",
+    },
+  ]}
+/>

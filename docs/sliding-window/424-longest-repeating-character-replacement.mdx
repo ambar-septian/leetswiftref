@@ -1,0 +1,160 @@
+---
+id: 424-longest-repeating-character-replacement
+title: "Longest Repeating Character Replacement"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={424}
+  title="Longest Repeating Character Replacement"
+  difficulty="Medium"
+  pattern="Sliding Window"
+  tags={["Hash Table", "String", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/longest-repeating-character-replacement/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+**Constraints:**
+- `1 <= s.length <= 10^5`
+- `s` consists of only uppercase English letters.
+- `0 <= k <= s.length`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s = "ABAB", k = 2
+Output: 4
+Explanation: Replace the two 'A's with 'B's (or vice versa).
+```
+
+#### Example 2
+
+```
+Input:  s = "AABABBA", k = 1
+Output: 4
+Explanation: Replace one 'A' in "AABA" or "ABBA" to get a window of 4.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are we looking for a longest contiguous substring satisfying a condition?", verdict: "yes", reason: "Longest contiguous subarray/substring problems are the hallmark of sliding window." },
+    { question: "Can we check validity with a single formula?", verdict: "yes", reason: "A window of length L is valid when L - (count of dominant char) less than or equal to k. We only need to track the max dominant count." },
+    { question: "Do we need to decrease dominant when the window shrinks?", verdict: "no", reason: "We never need to shrink below a previously seen valid length — so dominant never needs to decrease." },
+  ]}
+  answer="Sliding Window — expand freely, shrink when non-dominant chars exceed k"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a frequency map `dict` and track `dominant` (the highest single-character count ever seen in the current window). At each step, update the frequency of `chars[right]` and update `dominant`. If `(right - left + 1) - dominant > k`, the window has too many characters to replace — shrink from the left. Update `result` with the current window size.
+
+<Callout type="cyan" label="The dominant never decreases trick">
+`dominant` is never decremented even after shrinking the window. This is safe because we only care about the maximum valid window ever achieved. A smaller `dominant` could only give a smaller window than what we already recorded.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s = "AABABBA", k = 1'
+  expected="4"
+  steps={[
+    { label: "r=0..3", text: "r=0:'A'(A=1,dom=1,win=1); r=1:'A'(A=2,dom=2,win=2); r=2:'B'(B=1,dom=2,win=3,3-2=1<=1); r=3:'A'(A=3,dom=3,win=4,4-3=1<=1) → result=4" },
+    { label: "r=4",   text: "r=4:'B'(B=2,dom=3,win=5,5-3=2>1) → shrink: remove s[0]='A'(A=2),left=1; win=4,4-3=1<=1; result=4" },
+    { label: "r=5",   text: "r=5:'B'(B=3,dom=3,win=5,5-3=2>1) → shrink: remove s[1]='A'(A=1),left=2; win=4,4-3=1<=1; result=4" },
+    { label: "r=6",   text: "r=6:'A'(A=2,dom=3,win=5,5-3=2>1) → shrink: remove s[2]='B'(B=2),left=3; win=4,4-3=1<=1; result=4" },
+    { label: "done",  text: "return 4" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert string to character array">
+    `let chars = Array(s)`. Initialise `left = 0`, `right = 0`, `dominant = 0`, `result = 0`, `dict = [Character: Int]()`.
+  </StepItem>
+  <StepItem title="Expand right pointer">
+    Increment frequency: `dict[chars[right], default: 0] += 1`. Update `dominant = max(dominant, dict[chars[right]])`.
+  </StepItem>
+  <StepItem title="Shrink if window is invalid">
+    While `(right - left + 1) - dominant > k`: decrement `dict[chars[left]]` and increment `left`.
+  </StepItem>
+  <StepItem title="Update result">
+    `result = max(right - left + 1, result)`. Increment `right`.
+  </StepItem>
+  <StepItem title="Return result">
+    After the loop, return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func characterReplacement(_ s: String, _ k: Int) -> Int {
+    guard !s.isEmpty else { return 0 }
+
+    let chars = Array(s)
+    var left = 0
+    var right = 0
+    var dict = [Character: Int]()
+    var result = 0
+    var dominant = 0
+
+    while right < chars.count {
+      dict[chars[right], default: 0] += 1
+      dominant = max(dominant, dict[chars[right], default: 0])
+
+      while (right - left + 1) - dominant > k {
+        dict[chars[left], default: 0] -= 1
+        left += 1
+      }
+
+      result = max(right - left + 1, result)
+      right += 1
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Sliding Window", time: "O(n)", space: "O(1)", note: "n = s.length; dict holds at most 26 uppercase keys", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Recomputing dominant by scanning the full frequency map",
+      body: "Finding the true dominant after each shrink step requires iterating the map — O(26) per step — making the inner loop O(26n) instead of O(n). The solution avoids this by never decreasing dominant.",
+      fix: "Keep dominant as a high-water mark. It may become stale after shrinking, but that only causes the window to never shrink below the best-seen size, which is exactly what we want.",
+    },
+    {
+      title: "Decreasing dominant when shrinking the window",
+      body: "If dominant is decremented on shrink, it may become lower than the true dominant, allowing a larger invalid window to pass the validity check.",
+      fix: "Never decrement dominant. The algorithm is correct precisely because dominant tracks the best historical dominant count.",
+    },
+    {
+      title: "Checking window validity with dominant - window_size",
+      body: "The number of replacements needed is window_size - dominant (non-dominant chars), not dominant - window_size. The formula is (right - left + 1) - dominant > k.",
+      fix: "Use (right - left + 1) - dominant > k to check if the window needs shrinking.",
+    },
+  ]}
+/>

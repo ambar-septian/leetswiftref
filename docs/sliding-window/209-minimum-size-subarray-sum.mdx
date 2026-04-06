@@ -1,0 +1,157 @@
+---
+id: 209-minimum-size-subarray-sum
+title: "Minimum Size Subarray Sum"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={209}
+  title="Minimum Size Subarray Sum"
+  difficulty="Medium"
+  pattern="Variable-Size Sliding Window"
+  tags={["Array", "Binary Search", "Sliding Window", "Prefix Sum"]}
+  leetcodeUrl="https://leetcode.com/problems/minimum-size-subarray-sum/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of positive integers `nums` and a positive integer `target`, return the **minimal length** of a subarray whose sum is greater than or equal to `target`. If there is no such subarray, return `0` instead.
+
+**Constraints:**
+- `1 <= target <= 10^9`
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^4`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: target = 7, nums = [2,3,1,2,4,3]
+Output: 2
+Explanation: [4,3] has sum 7 with length 2.
+```
+
+#### Example 2
+
+```
+Input: target = 4, nums = [1,4,4]
+Output: 1
+```
+
+#### Example 3
+
+```
+Input: target = 11, nums = [1,1,1,1,1,1,1,1]
+Output: 0
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Are all values positive?", verdict: "yes", reason: "Positive values guarantee that shrinking the window decreases the sum and expanding it increases the sum — the window is monotonic." },
+    { question: "Is the window size fixed?", verdict: "no", reason: "We want the minimum length, so the window grows and shrinks dynamically." },
+    { question: "Can the window contain multiple valid configurations?", verdict: "yes", reason: "Multiple valid subarrays may exist; we track the minimum length seen." },
+  ]}
+  answer="Variable-size sliding window — expand right boundary, shrink left while sum meets target"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use two pointers `i` (left) and `j` (right). Advance `j` and accumulate `sum`. Whenever `sum >= target`, record `j - i + 1` as a candidate for the minimum, subtract `nums[i]`, and advance `i`. This shrinks the window from the left to find the smallest valid subarray ending at or before `j`.
+
+<Callout type="cyan" label="Why shrink inside a while loop">
+A single removal might still leave <code>sum &gt;= target</code>. Using a <code>while</code> loop (not <code>if</code>) ensures we shrink as far as possible for the current right boundary, capturing the true minimum length at this position.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="target = 7, nums = [2,3,1,2,4,3]"
+  expected="2"
+  steps={[
+    { label: "j=0", text: "sum=2; 2 < 7 → no shrink" },
+    { label: "j=1", text: "sum=5; 5 < 7 → no shrink" },
+    { label: "j=2", text: "sum=6; 6 < 7 → no shrink" },
+    { label: "j=3", text: "sum=8; 8 >= 7 → result=min(INF,4-0+1)=4; shrink: sum-=2=6 < 7; i=1" },
+    { label: "j=4", text: "sum=10; >= 7 → result=min(4,4-1+1)=4; shrink: sum-=3=7 >= 7 → result=min(4,3)=3; shrink: sum-=1=6 < 7; i=3" },
+    { label: "j=5", text: "sum=9; >= 7 → result=min(3,5-3+1)=3; shrink: sum-=2=7 >= 7 → result=min(3,2)=2; shrink: sum-=4=3 < 7; i=5" },
+    { label: "done", text: "j=5, i=5; loop ends → return 2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise pointers and accumulators">
+    `var i = 0`, `var sum = 0`, `var result = Int.max`.
+  </StepItem>
+  <StepItem title="Expand window with j">
+    Iterate `j` from 0 to `nums.count - 1`. Add `nums[j]` to `sum`.
+  </StepItem>
+  <StepItem title="Shrink from left while valid">
+    While `sum >= target`: update `result = min(result, j - i + 1)`, subtract `nums[i]`, increment `i`.
+  </StepItem>
+  <StepItem title="Return result">
+    Return `result == Int.max ? 0 : result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func minSubArrayLen(_ target: Int, _ nums: [Int]) -> Int {
+    var result = Int.max
+    var i = 0
+    var sum = 0
+
+    for j in 0..<nums.count {
+      sum += nums[j]
+
+      while sum >= target {
+        sum -= nums[i]
+        result = min(result, j - i + 1)
+        i += 1
+      }
+    }
+
+    return result == Int.max ? 0 : result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Brute force (all subarrays)", time: "O(n²)", space: "O(1)", note: "Check every subarray" },
+    { approach: "Sliding window", time: "O(n)", space: "O(1)", note: "Each element added and removed at most once", highlight: true },
+    { approach: "Binary search + prefix sum", time: "O(n log n)", space: "O(n)", note: "Binary search over sorted prefix sums" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using if instead of while for the shrink step",
+      body: "A single removal might still leave <code>sum &gt;= target</code>. Using <code>if</code> misses further valid shrinks and records a length that is too large.",
+      fix: "Always use <code>while sum &gt;= target</code> to shrink as far as possible at each right boundary.",
+    },
+    {
+      title: "Recording length before shrinking",
+      body: "Recording <code>j - i + 1</code> before subtracting <code>nums[i]</code> and incrementing <code>i</code> gives the length of the current window, not the post-shrink minimum.",
+      fix: "Capture the length first (<code>result = min(result, j - i + 1)</code>), then shrink: <code>sum -= nums[i]; i += 1</code>.",
+    },
+    {
+      title: "Not returning 0 when no valid subarray exists",
+      body: "If no subarray sums to at least <code>target</code>, <code>result</code> stays as <code>Int.max</code>.",
+      fix: "Return <code>result == Int.max ? 0 : result</code>.",
+    },
+  ]}
+/>

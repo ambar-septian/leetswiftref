@@ -1,0 +1,154 @@
+---
+id: 189-rotate-array
+title: "Rotate Array"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={189}
+  title="Rotate Array"
+  difficulty="Medium"
+  pattern="Three Reverses"
+  tags={["Array", "Math", "Two Pointers"]}
+  leetcodeUrl="https://leetcode.com/problems/rotate-array/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums`, rotate the array to the **right** by `k` steps, where `k` is non-negative.
+
+Rotating right by 1 step moves every element one position to the right, and the last element wraps around to the front.
+
+**Constraints:**
+- `1 <= nums.length <= 10^5`
+- `-2^31 <= nums[i] <= 2^31 - 1`
+- `0 <= k <= 10^5`
+- The rotation must be done **in-place** with O(1) extra space.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: nums = [1,2,3,4,5,6,7], k = 3
+Output: [5,6,7,1,2,3,4]
+Explanation: Rotate right by 3:
+  [7,1,2,3,4,5,6] (k=1)
+  [6,7,1,2,3,4,5] (k=2)
+  [5,6,7,1,2,3,4] (k=3)
+```
+
+#### Example 2
+
+```
+Input: nums = [-1,-100,3,99], k = 2
+Output: [3,99,-1,-100]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need O(1) extra space?", verdict: "yes", reason: "Extra array copies are O(n) space. The three-reverse trick operates in-place." },
+    { question: "Can reversing sub-arrays achieve the rotation?", verdict: "yes", reason: "Reverse all → reverse first k → reverse remaining: the elements end up in the rotated positions." },
+    { question: "Does k need to be reduced modulo n?", verdict: "yes", reason: "k >= n means full rotations that cancel out. k % n gives the effective rotation amount." },
+  ]}
+  answer="Three reverses — reverse all, reverse [0..k-1], reverse [k..n-1]"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Let `c = k % nums.count` (effective rotation). Then:
+1. Reverse the entire array.
+2. Reverse the first `c` elements.
+3. Reverse the remaining `nums.count - c` elements.
+
+<Callout type="cyan" label="Why three reverses work">
+After reversing all, the last k elements (which should move to the front) are now at the front but in reverse order. Reversing the first k fixes their order. Reversing the rest fixes the second half. Together, the array is exactly the k-step right rotation.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="[5,6,7,1,2,3,4]"
+  input="nums = [1,2,3,4,5,6,7], k = 3, c = 3"
+  steps={[
+    { label: "original",         text: "[1,2,3,4,5,6,7]" },
+    { label: "reverse all",      text: "[7,6,5,4,3,2,1]" },
+    { label: "reverse [0..2]",   text: "[5,6,7,4,3,2,1]" },
+    { label: "reverse [3..6]",   text: "[5,6,7,1,2,3,4]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Compute effective rotation">
+    `let c = k % nums.count`. If `c == 0`, no work needed (return immediately).
+  </StepItem>
+  <StepItem title="Reverse entire array">
+    Two-pointer swap from `l=0` to `r=nums.count-1`, swapping and converging.
+  </StepItem>
+  <StepItem title="Reverse first c elements">
+    Two-pointer swap from `l=0` to `r=c-1`.
+  </StepItem>
+  <StepItem title="Reverse remaining elements">
+    Two-pointer swap from `l=c` to `r=nums.count-1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func rotate(_ nums: inout [Int], _ k: Int) {
+    let c = k % nums.count
+    guard c > 0 else { return }
+
+    func reverse(_ l: Int, _ r: Int) {
+      var l = l, r = r
+      while l < r {
+        nums.swapAt(l, r)
+        l += 1; r -= 1
+      }
+    }
+
+    reverse(0, nums.count - 1)  // Reverse all
+    reverse(0, c - 1)           // Reverse first c
+    reverse(c, nums.count - 1)  // Reverse rest
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Three reverses", time: "O(n)", space: "O(1)", note: "Each element is swapped at most twice across the three passes", highlight: true },
+    { approach: "Extra array copy", time: "O(n)", space: "O(n)", note: "Copy nums[(n-k)..] + nums[..(n-k)] into new array" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not reducing k modulo n",
+      body: "k can be larger than nums.count. Rotating by n is a no-op; failing to reduce means reversing the wrong segment sizes.",
+      fix: "Always compute <code>c = k % nums.count</code> before the three reverses.",
+    },
+    {
+      title: "Reversing the wrong segment in pass 2",
+      body: "Pass 2 must reverse indices 0 to c-1 (the first c elements). Reversing 0 to k-1 when k was not reduced causes an index out-of-bounds for k >= n.",
+      fix: "Use <code>c = k % n</code> consistently throughout all three reverse calls.",
+    },
+    {
+      title: "Handling k = 0 or k = n",
+      body: "When c == 0 after the modulo, both reverse(0, c-1) and reverse(c, n-1) would operate on invalid or degenerate ranges.",
+      fix: "Add an early return <code>guard c > 0 else { return }</code> after computing c.",
+    },
+  ]}
+/>

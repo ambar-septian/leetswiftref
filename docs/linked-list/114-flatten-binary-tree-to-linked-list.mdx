@@ -1,0 +1,173 @@
+---
+id: 114-flatten-binary-tree-to-linked-list
+title: "Flatten Binary Tree to Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import FlattenBinaryTreeDiagram from '@site/src/components/DSA/FlattenBinaryTreeDiagram';
+
+<ProblemHeader
+  number={114}
+  title="Flatten Binary Tree to Linked List"
+  difficulty="Medium"
+  pattern="Post-order DFS"
+  tags={["Linked List", "Stack", "Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/flatten-binary-tree-to-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, flatten the tree **in-place** into a linked list that follows **preorder traversal** order. The `left` child of every node must be set to `null`, and the `right` child should point to the next node in the preorder sequence.
+
+The "linked list" uses the same `TreeNode` class where the `right` pointer plays the role of the `next` pointer.
+
+**Constraints:**
+- The number of nodes in the tree is in the range `[0, 2000]`.
+- `-100 <= Node.val <= 100`
+- You must flatten the tree **in-place** (O(1) extra space).
+
+<SectionHeader n={2} title="Examples" />
+
+<FlattenBinaryTreeDiagram />
+
+#### Example 1
+
+```
+Input: root = [1,2,5,3,4,null,6]
+Output: [1,null,2,null,3,null,4,null,5,null,6]
+Explanation: Preorder traversal: 1 → 2 → 3 → 4 → 5 → 6. Each left=nil, right=next.
+```
+
+#### Example 2
+
+```
+Input: root = []
+Output: []
+```
+
+#### Example 3
+
+```
+Input: root = [0]
+Output: [0]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the output order follow a known traversal?", verdict: "yes", reason: "Preorder (root → left → right) is the required flattened order." },
+    { question: "Can we process children before stitching the parent?", verdict: "yes", reason: "Post-order DFS — flatten left and right subtrees first, then reconnect." },
+    { question: "Do we need a return value to stitch the list?", verdict: "yes", reason: "Each DFS call returns the tail of the flattened subtree so the left tail can be joined to the right subtree." },
+  ]}
+  answer="Post-order DFS — flatten subtrees first, stitch left tail to right, set left=nil"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Recursively flatten both subtrees using a `dfs` function that returns the **tail** node of the flattened result. After flattening:
+
+1. Store `root.right` (original right subtree).
+2. Move `root.left` to `root.right`.
+3. Set `root.left = nil`.
+4. Walk to the tail of the new right chain (the `leftTail`) and attach the original right subtree there.
+
+<Callout type="cyan" label="Why return the tail?">
+After flattening the left subtree the last node needs to be connected to the right subtree. Returning the tail avoids an extra traversal to find it.
+</Callout>
+
+<Callout type="green" label="Return priority">
+`rightTail ?? leftTail ?? root` — if right subtree exists, its tail is the overall tail; else the left tail; else the node itself (leaf case).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  expected="[1,null,2,null,3,null,4,null,5,null,6]"
+  input="root = [1,2,5,3,4,null,6]"
+  steps={[
+    { label: "dfs(3)",   text: "leaf — return 3" },
+    { label: "dfs(4)",   text: "leaf — return 4" },
+    { label: "dfs(2)",   text: "leftTail=3, rightTail=4; 3.right=4, 2.right=2.left(3), 2.left=nil; return 4" },
+    { label: "dfs(6)",   text: "leaf — return 6" },
+    { label: "dfs(5)",   text: "no left; rightTail=6; return 6" },
+    { label: "dfs(1)",   text: "leftTail=4, rightTail=6; 4.right=5, 1.right=2, 1.left=nil; return 6" },
+    { label: "result",   text: "1→2→3→4→5→6, all left=nil" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    If `root` is nil, return nil.
+  </StepItem>
+  <StepItem title="Recurse post-order">
+    `let leftTail = dfs(root.left)` then `let rightTail = dfs(root.right)`. Both subtrees are fully flattened before we touch the current node.
+  </StepItem>
+  <StepItem title="Stitch left tail to right subtree">
+    If `leftTail` exists: `leftTail.right = root.right`, then `root.right = root.left`, then `root.left = nil`.
+  </StepItem>
+  <StepItem title="Return the tail">
+    Return `rightTail ?? leftTail ?? root`. This gives the caller the endpoint of this subtree's flattened list.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func flatten(_ root: TreeNode?) {
+
+    @discardableResult
+    func dfs(_ root: TreeNode?) -> TreeNode? {
+      guard let root else { return nil }
+
+      let leftTail  = dfs(root.left)
+      let rightTail = dfs(root.right)
+
+      if let leftTail {
+        leftTail.right = root.right
+        root.right = root.left
+        root.left  = nil
+      }
+
+      return rightTail ?? leftTail ?? root
+    }
+
+    dfs(root)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Post-order DFS (tail return)", time: "O(n)", space: "O(h)", note: "O(h) call stack; h = height of tree (O(log n) balanced, O(n) skewed)", highlight: true },
+    { approach: "Iterative with stack", time: "O(n)", space: "O(n)", note: "Explicit stack simulates DFS but uses O(n) extra space" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Losing the original right subtree before stitching",
+      body: "If you set <code>root.right = root.left</code> before saving <code>leftTail.right = root.right</code>, the original right subtree is lost.",
+      fix: "Always attach <code>leftTail.right = root.right</code> (old right) BEFORE overwriting <code>root.right</code> with the left subtree.",
+    },
+    {
+      title: "Not setting root.left = nil",
+      body: "After moving the left subtree to <code>root.right</code>, the <code>left</code> pointer still references the moved subtree, violating the flat list invariant.",
+      fix: "Always set <code>root.left = nil</code> after the stitch.",
+    },
+    {
+      title: "Wrong tail return order",
+      body: "Returning <code>leftTail ?? rightTail ?? root</code> is incorrect: if a right subtree exists, its tail is the last node in the flattened list, not the left tail.",
+      fix: "Return <code>rightTail ?? leftTail ?? root</code> — right tail has higher priority.",
+    },
+  ]}
+/>

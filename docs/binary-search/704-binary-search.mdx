@@ -1,0 +1,154 @@
+---
+id: 704-binary-search
+title: "Binary Search"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={704}
+  title="Binary Search"
+  difficulty="Easy"
+  pattern="Binary Search"
+  tags={["Array", "Binary Search"]}
+  leetcodeUrl="https://leetcode.com/problems/binary-search/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. If `target` exists, then return its index. Otherwise, return `-1`.
+
+You must write an algorithm with `O(log n)` runtime complexity.
+
+**Constraints:**
+- `1 <= nums.length <= 10^4`
+- `-10^4 < nums[i], target < 10^4`
+- All the integers in `nums` are **unique**.
+- `nums` is sorted in ascending order.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [-1,0,3,5,9,12], target = 9
+Output: 4
+Explanation: 9 exists in nums and its index is 4.
+```
+
+#### Example 2
+
+```
+Input:  nums = [-1,0,3,5,9,12], target = 2
+Output: -1
+Explanation: 2 does not exist in nums so return -1.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the array sorted?", verdict: "yes", reason: "Binary search requires a sorted input to eliminate half the search space each step." },
+    { question: "Are we searching for one specific value?", verdict: "yes", reason: "Compare the midpoint to target — go left if target is smaller, right if larger, return mid if equal." },
+    { question: "Can we use O(log n) time?", verdict: "yes", reason: "Each iteration halves the remaining search space, giving logarithmic time." },
+  ]}
+  answer="Binary Search — halve the search space each step based on midpoint comparison"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain `low = 0` and `high = nums.count` (exclusive upper bound). Each iteration compute `mid = (low + high) / 2`. Guard against out-of-bounds, then compare `nums[mid]` to `target`. If equal, return `mid`. If `nums[mid] < target`, set `low = mid + 1`. If `nums[mid] > target`, set `high = mid - 1`. Return `-1` if the loop exits.
+
+<Callout type="cyan" label="Exclusive vs inclusive upper bound">
+Initialising high = nums.count (exclusive) instead of nums.count - 1 (inclusive) requires a bounds guard inside the loop. Both conventions work — the inclusive form (high = nums.count - 1, while low less than or equal to high) is more conventional and avoids the guard.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [-1,0,3,5,9,12], target = 9"
+  expected="4"
+  steps={[
+    { label: "init",   text: "low=0, high=6" },
+    { label: "iter 1", text: "mid=(0+6)/2=3; nums[3]=5 < 9 → low=4" },
+    { label: "iter 2", text: "mid=(4+6)/2=5; nums[5]=12 > 9 → high=4" },
+    { label: "iter 3", text: "mid=(4+4)/2=4; nums[4]=9 == target → return 4" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise bounds">
+    `var low = 0`, `var high = nums.count`.
+  </StepItem>
+  <StepItem title="Loop while range is valid">
+    `while low less than or equal to high`.
+  </StepItem>
+  <StepItem title="Compute midpoint">
+    `let middle = (low + high) / 2`. Guard against out-of-bounds with `guard nums.count > middle else { break }`.
+  </StepItem>
+  <StepItem title="Compare and adjust">
+    If `nums[middle] == target` return `middle`. If less, `low = middle + 1`. If greater, `high = middle - 1`.
+  </StepItem>
+  <StepItem title="Not found">
+    Return `-1`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func search(_ nums: [Int], _ target: Int) -> Int {
+    var low = 0
+    var high = nums.count
+
+    while low <= high {
+      let middle = (low + high) / 2
+      guard nums.count > middle else { break }
+
+      if nums[middle] == target {
+        return middle
+      } else if nums[middle] < target {
+        low = middle + 1
+      } else {
+        high = middle - 1
+      }
+    }
+
+    return -1
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Binary Search", time: "O(log n)", space: "O(1)", note: "Search space halves each iteration; only two pointer variables", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Integer overflow when computing the midpoint",
+      body: "(low + high) / 2 can overflow when both values are close to Int.max. In Swift, Int is 64-bit so this is safe for practical inputs, but the overflow-safe form is preferred.",
+      fix: "Use low + (high - low) / 2 to compute the midpoint without overflow risk.",
+    },
+    {
+      title: "Infinite loop when low == high",
+      body: "If the loop condition is low less than high (strict), the element at the single remaining position is never checked.",
+      fix: "Use low less than or equal to high so the loop processes the final single-element range.",
+    },
+    {
+      title: "Off-by-one when narrowing the bounds",
+      body: "After determining nums[mid] != target, failing to advance past mid (using low = mid or high = mid) causes an infinite loop.",
+      fix: "Always use low = middle + 1 (not mid) and high = middle - 1 (not mid) to exclude the already-checked midpoint.",
+    },
+  ]}
+/>

@@ -1,0 +1,142 @@
+---
+id: 1768-merge-strings-alternately
+title: "Merge Strings Alternately"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1768}
+  title="Merge Strings Alternately"
+  difficulty="Easy"
+  pattern="Two Pointers — Interleave"
+  tags={["Two Pointers", "String"]}
+  leetcodeUrl="https://leetcode.com/problems/merge-strings-alternately/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given two strings `word1` and `word2`. Merge the strings by adding letters in alternating order, starting with `word1`. If a string is longer than the other, append the additional letters onto the end of the merged string.
+
+Return the merged string.
+
+**Constraints:**
+- `1 <= word1.length, word2.length <= 100`
+- `word1` and `word2` consist of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  word1 = "abc", word2 = "pqr"
+Output: "apbqcr"
+```
+
+#### Example 2
+
+```
+Input:  word1 = "ab", word2 = "pqrs"
+Output: "apbqrs"
+Explanation: word2 is longer; "rs" appended at end.
+```
+
+#### Example 3
+
+```
+Input:  word1 = "abcd", word2 = "pq"
+Output: "apbqcd"
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we interleave two sequences in lockstep?", verdict: "yes", reason: "Walk a single index i from 0 to max(len1, len2). At each i, take chars[i] from word1 if i < len1, then from word2 if i < len2." },
+    { question: "Do we need separate left/right pointers?", verdict: "no", reason: "A single index i with bounds checks for each string is simpler and sufficient." },
+  ]}
+  answer="Single index — take from each string if in bounds"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Convert both strings to character arrays for O(1) index access. Use a single loop up to `max(len1, len2)`. At each iteration, append `chars1[i]` if `i < len1`, then `chars2[i]` if `i < len2`. A pre-allocated result array avoids repeated string concatenation.
+
+<Callout type="green" label="Pre-allocate the result">
+Allocate result with capacity `len1 + len2` upfront. Appending to a pre-sized array is O(1) amortised, while string concatenation in a loop can be O(n²).
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='word1 = "ab", word2 = "pqrs"'
+  expected='"apbqrs"'
+  steps={[
+    { label: "i=0", text: "i=0 < 2 → append 'a'. i=0 < 4 → append 'p'. result=\"ap\".", state: 'result="ap"' },
+    { label: "i=1", text: "i=1 < 2 → append 'b'. i=1 < 4 → append 'q'. result=\"apbq\".", state: 'result="apbq"' },
+    { label: "i=2", text: "i=2 >= 2 → skip word1. i=2 < 4 → append 'r'. result=\"apbqr\".", state: 'result="apbqr"' },
+    { label: "i=3", text: "i=3 >= 2 → skip word1. i=3 < 4 → append 's'. result=\"apbqrs\".", state: 'result="apbqrs"' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Convert to char arrays">
+    `let chars1 = Array(word1)`, `let chars2 = Array(word2)`. Enables O(1) subscript access.
+  </StepItem>
+  <StepItem title="Initialise result">
+    Allocate `result = Array(repeating: Character(" "), count: len1 + len2)` with a write index `j = 0`.
+  </StepItem>
+  <StepItem title="Interleave">
+    Loop `i` from 0 to `max(len1, len2) - 1`. If `i < len1`, write `chars1[i]` and advance `j`. If `i < len2`, write `chars2[i]` and advance `j`.
+  </StepItem>
+  <StepItem title="Return">
+    `return String(result)`
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func mergeAlternately(_ word1: String, _ word2: String) -> String {
+    let chars1 = Array(word1)
+    let chars2 = Array(word2)
+    let count = max(chars1.count, chars2.count)
+    var result = Array(repeating: Character(" "), count: chars1.count + chars2.count)
+    var j = 0
+    for i in 0..<count {
+      if i < chars1.count { result[j] = chars1[i]; j += 1 }
+      if i < chars2.count { result[j] = chars2[i]; j += 1 }
+    }
+    return String(result)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Single index, pre-allocated result", time: "O(n+m)", space: "O(n+m)", note: "n=len(word1), m=len(word2); one pass, output size n+m", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Looping only to min(len1, len2)",
+      body: "If you stop at the shorter string's length, the tail of the longer string is silently dropped.",
+      fix: "Loop to max(len1, len2) and use bounds checks (i < len1, i < len2) inside.",
+    },
+    {
+      title: "Using string concatenation in the loop",
+      body: "Appending to a Swift String with += inside a loop reallocates the string each time — O(n²) overall.",
+      fix: "Build a Character array of the correct size upfront and fill it with a write index j.",
+    },
+  ]}
+/>

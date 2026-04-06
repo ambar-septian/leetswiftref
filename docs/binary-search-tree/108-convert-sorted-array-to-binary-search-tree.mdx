@@ -1,0 +1,148 @@
+---
+id: 108-convert-sorted-array-to-binary-search-tree
+title: "Convert Sorted Array to Binary Search Tree"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import SortedArrayToBSTDiagram from '@site/src/components/DSA/SortedArrayToBSTDiagram';
+
+<ProblemHeader
+  number={108}
+  title="Convert Sorted Array to Binary Search Tree"
+  difficulty="Easy"
+  pattern="Divide and Conquer"
+  tags={["Array", "Divide and Conquer", "Tree", "Binary Search Tree", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an integer array `nums` where the elements are sorted in **ascending order**, convert it to a **height-balanced** binary search tree.
+
+A **height-balanced** binary tree is a binary tree in which the depth of the two subtrees of every node never differs by more than one.
+
+The sorted array property guarantees that the BST ordering invariant is maintained when the midpoint is used as the root.
+
+**Constraints**
+- `1 <= nums.length <= 10^4`
+- `-10^4 <= nums[i] <= 10^4`
+- `nums` is sorted in a **strictly increasing** order.
+
+<Callout type="green" label="Core Insight">
+Always pick the midpoint of the current subarray as the root. This splits the remaining elements equally between left and right subtrees, guaranteeing height balance. Recurse on the left half for the left subtree and the right half for the right subtree.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  nums = [-10,-3,0,5,9]
+Output: [0,-3,9,-10,null,5]  (one valid answer)
+```
+
+#### Example 2
+```
+Input:  nums = [1,3]
+Output: [3,1]  or  [1,null,3]  (both valid)
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does picking the midpoint as root guarantee balance?", verdict: "yes", reason: "The midpoint splits remaining elements into two halves of equal or near-equal size — left and right subtrees differ in size by at most 1." },
+    { question: "Is the BST property preserved?", verdict: "yes", reason: "All elements left of mid are smaller (array is sorted); all elements right of mid are larger." },
+    { question: "Can we define the problem recursively on subarray bounds?", verdict: "yes", reason: "Each recursive call works on nums[l..r], picking mid = (l+r)/2 as the root." },
+  ]}
+  answer="Divide and conquer — midpoint as root, recurse on left and right halves"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Define `recursive(l, r)`. Base case: `l > r` returns nil. Compute `m = (l + r) / 2`. Create `TreeNode(nums[m])`. Set `tree.left = recursive(l, m - 1)`, `tree.right = recursive(m + 1, r)`. Return `tree`.
+
+<SortedArrayToBSTDiagram />
+
+<Callout type="cyan" label="Why floor division gives a valid balanced result">
+For even-length subarrays there are two valid midpoints. Floor division (l+r)/2 consistently picks the lower-middle element. The resulting tree is still height-balanced — both choices are accepted by LeetCode since the problem allows any valid height-balanced BST.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [-10,-3,0,5,9]"
+  expected="[0,-3,9,-10,null,5]"
+  steps={[
+    { label: "recursive(0,4)", text: "m=2, root=nums[2]=0. Left: recursive(0,1). Right: recursive(3,4).", state: "root=0" },
+    { label: "recursive(0,1)", text: "m=0, root=nums[0]=-10. Left: recursive(0,-1)=nil. Right: recursive(1,1).", state: "left child=-10" },
+    { label: "recursive(1,1)", text: "m=1, root=nums[1]=-3. Left/right nil. Return node(-3).", state: "-10.right=-3" },
+    { label: "recursive(3,4)", text: "m=3, root=nums[3]=5. Left: recursive(3,2)=nil. Right: recursive(4,4).", state: "right child=5" },
+    { label: "recursive(4,4)", text: "m=4, root=nums[4]=9. Left/right nil. Return node(9).", state: "5.right=9" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Base case">
+    If `l > r`, return nil — the subarray is empty.
+  </StepItem>
+  <StepItem title="Pick midpoint as root">
+    `let m = (l + r) / 2`. Create `TreeNode(nums[m])`.
+  </StepItem>
+  <StepItem title="Recurse on halves">
+    `tree.left = recursive(l: l, r: m - 1)`. `tree.right = recursive(l: m + 1, r: r)`.
+  </StepItem>
+  <StepItem title="Return">
+    Return `tree`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func sortedArrayToBST(_ nums: [Int]) -> TreeNode? {
+    func recursive(l: Int, r: Int) -> TreeNode? {
+      guard l <= r else { return nil }
+      let m = (l + r) / 2
+      let tree = TreeNode(nums[m])
+      tree.left  = recursive(l: l,     r: m - 1)
+      tree.right = recursive(l: m + 1, r: r)
+      return tree
+    }
+    return recursive(l: 0, r: nums.count - 1)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Divide and conquer — midpoint", time: "O(n)", space: "O(log n)", note: "Each element becomes a node exactly once; O(log n) call stack for balanced tree", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Using l > r as the guard instead of l <= r",
+      body: "A guard let l <= r protects nil return. Using l > r as the return condition (instead of the inverse l <= r as the proceed condition) is logically equivalent but ensure your guard is correct.",
+      fix: "guard l <= r else { return nil } — return nil when the range is empty.",
+    },
+    {
+      title: "Off-by-one: passing m instead of m-1 for the left subarray",
+      body: "recursive(l, m) includes the midpoint in the left subtree recursion, so it gets added twice — as both the root and a left child.",
+      fix: "Left call: recursive(l, m - 1). Right call: recursive(m + 1, r). The midpoint is the root — never included in either recursive call.",
+    },
+    {
+      title: "Picking first element as root (sorted insert approach)",
+      body: "Building a BST by inserting sorted elements in order from left to right produces a degenerate (right-skewed) tree of height n — not height-balanced.",
+      fix: "Always pick the midpoint. This is the divide-and-conquer insight — don't use sequential insertion.",
+    },
+  ]}
+/>

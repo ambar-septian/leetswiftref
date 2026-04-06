@@ -1,0 +1,161 @@
+---
+id: 567-permutation-in-string
+title: "Permutation in String"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={567}
+  title="Permutation in String"
+  difficulty="Medium"
+  pattern="Fixed-Size Sliding Window"
+  tags={["Hash Table", "Two Pointers", "String", "Sliding Window"]}
+  leetcodeUrl="https://leetcode.com/problems/permutation-in-string/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.
+
+In other words, return `true` if one of `s1`'s permutations is a substring of `s2`.
+
+**Constraints:**
+- `1 <= s1.length, s2.length <= 10^4`
+- `s1` and `s2` consist of lowercase English letters.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  s1 = "ab", s2 = "eidbaooo"
+Output: true
+Explanation: s2 contains "ba", a permutation of "ab".
+```
+
+#### Example 2
+
+```
+Input:  s1 = "ab", s2 = "eidboaoo"
+Output: false
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the candidate window always exactly s1.length wide?", verdict: "yes", reason: "A permutation of s1 must have the same length as s1 — every candidate window is a fixed size." },
+    { question: "Can we detect a permutation by comparing character frequencies?", verdict: "yes", reason: "Two strings are permutations of each other iff their character frequency maps are identical." },
+    { question: "Can we update the window frequency in O(1) per slide?", verdict: "yes", reason: "Remove the outgoing left character and add the incoming right character — two O(1) map updates per step." },
+  ]}
+  answer="Fixed-Size Sliding Window — compare frequency dictionaries as window slides"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Build `chars1Dict` for all of `s1` and `chars2Dict` for the first `s1.count` characters of `s2`. Check for a match. Then slide one character at a time: decrement the outgoing left character (remove if zero), increment the incoming right character. After each slide, compare the two maps.
+
+<Callout type="cyan" label="Relation to Problem 438">
+This problem is structurally identical to 438 (Find All Anagrams) — the only difference is that this returns a boolean on the first match rather than collecting all start indices.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='s1 = "ab", s2 = "eidbaooo"'
+  expected="true"
+  steps={[
+    { label: "init",  text: "chars1Dict={a:1,b:1}. Initial window s2[0..1]='ei': chars2Dict={e:1,i:1}. No match." },
+    { label: "i=2",   text: "Add s2[2]='d', remove s2[0]='e' → chars2Dict={i:1,d:1}. No match." },
+    { label: "i=3",   text: "Add s2[3]='b', remove s2[1]='i' → chars2Dict={d:1,b:1}. No match." },
+    { label: "i=4",   text: "Add s2[4]='a', remove s2[2]='d' → chars2Dict={b:1,a:1}. Match! return true." },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard length">
+    Return `false` if `s2.count less than s1.count`.
+  </StepItem>
+  <StepItem title="Build initial frequency maps">
+    Populate `chars1Dict` for all of `s1`, and `chars2Dict` for the first `s1.count` characters of `s2`.
+  </StepItem>
+  <StepItem title="Check initial window">
+    If `chars2Dict == chars1Dict`, return `true`.
+  </StepItem>
+  <StepItem title="Slide the window">
+    For `i` from `s1.count` to `s2.count - 1`: remove `s2[i - s1.count]` from `chars2Dict` (prune zero entries), add `s2[i]`.
+  </StepItem>
+  <StepItem title="Check match after each slide">
+    If `chars2Dict == chars1Dict`, return `true`. After the loop, return `false`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func checkInclusion(_ s1: String, _ s2: String) -> Bool {
+    let chars1 = Array(s1)
+    let chars2 = Array(s2)
+
+    guard chars2.count >= chars1.count else { return false }
+
+    var chars1Dict = [Character: Int]()
+    var chars2Dict = [Character: Int]()
+
+    for i in 0..<chars1.count {
+      chars1Dict[chars1[i], default: 0] += 1
+      chars2Dict[chars2[i], default: 0] += 1
+    }
+
+    if chars2Dict == chars1Dict { return true }
+
+    for i in chars1.count..<chars2.count {
+      let prev = i - chars1.count
+      chars2Dict[chars2[prev], default: 0] -= 1
+      if chars2Dict[chars2[prev]] == 0 {
+        chars2Dict[chars2[prev]] = nil
+      }
+      chars2Dict[chars2[i], default: 0] += 1
+
+      if chars2Dict == chars1Dict { return true }
+    }
+
+    return false
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Fixed-Size Sliding Window", time: "O(n)", space: "O(1)", note: "n = s2.length; dictionary holds at most 26 keys; dictionary comparison is O(26) = O(1)", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not removing zero-count entries from chars2Dict",
+      body: "If a character's count drops to zero but the key remains, the map equality check fails even when the windows are a true permutation match.",
+      fix: "After decrementing, set chars2Dict[char] = nil if the count reaches zero.",
+    },
+    {
+      title: "Forgetting to check the initial window",
+      body: "The sliding loop starts at index s1.count, skipping the very first window s2[0..s1.count-1].",
+      fix: "Compare chars2Dict == chars1Dict once before the loop and return true immediately if they match.",
+    },
+    {
+      title: "Off-by-one in the outgoing character index",
+      body: "When the loop index is i, the outgoing left character is at index i - s1.count, not i - 1.",
+      fix: "Use let prev = i - chars1.count to identify the character leaving the window.",
+    },
+  ]}
+/>

@@ -1,0 +1,193 @@
+---
+id: 212-word-search-ii
+title: "Word Search II"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import WordSearchIIDiagram from '@site/src/components/DSA/WordSearchIIDiagram';
+
+<ProblemHeader
+  number={212}
+  title="Word Search II"
+  difficulty="Hard"
+  pattern="Trie + DFS Backtracking"
+  tags={["Array", "String", "Backtracking", "Trie", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/word-search-ii/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an `m x n` board of characters and a list of strings `words`, return all words on the board. Each word must be constructed from letters of sequentially adjacent cells (horizontally or vertically neighbouring). The same letter cell may not be used more than once in a word.
+
+**Constraints:**
+- `m == board.length`
+- `n == board[i].length`
+- `1 <= m, n <= 12`
+- `board[i][j]` is a lowercase English letter.
+- `1 <= words.length <= 3 * 10^4`
+- `1 <= words[i].length <= 10`
+- `words[i]` consists of lowercase English letters.
+- All strings in `words` are unique.
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:
+board = [["o","a","a","n"],
+         ["e","t","a","e"],
+         ["i","h","k","r"],
+         ["i","f","l","v"]]
+words = ["oath","pea","eat","rain"]
+Output: ["eat","oath"]
+```
+
+#### Example 2
+
+```
+Input: board = [["a","b"],["c","d"]], words = ["abcb"]
+Output: []
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Would running Word Search I separately for each word be fast enough?", verdict: "no", reason: "Up to 30,000 words times O(m*n*4^L) DFS each is too slow. A trie lets all words share prefix traversal." },
+    { question: "Can we prune the DFS early?", verdict: "yes", reason: "If the current board path has no trie node, the whole subtree is dead — no word can start with this prefix." },
+    { question: "Should found words be revisited?", verdict: "no", reason: "Setting node.word = nil after collecting a word prevents duplicates without extra bookkeeping." },
+  ]}
+  answer="Build trie of all words; DFS each cell advancing a trie node — prune dead nodes after words are found"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+<WordSearchIIDiagram />
+
+Build a trie from all target words, storing the full word string at each end-of-word node. Run DFS from every cell; at each step, look up `board[r][c]` in the current trie node's children. If a child exists, mark the cell visited (`board[r][c] = "#"`), recurse in four directions, then restore the cell. When a node with a non-nil `word` is reached, collect it and nil the word to prevent duplicates. After collecting, prune leaf trie nodes bottom-up to stop revisiting exhausted branches.
+
+<Callout type="cyan" label="Why prune the trie">
+Once a word is found and its trie path has no other words branching off, those nodes are dead weight. Removing them speeds up subsequent DFS calls by cutting branches immediately.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input='board=[["a","b","c"],["d","e","f"],["g","h","i"]], words=["abc","bef","cfi"]'
+  expected='["abc","bef","cfi"]'
+  steps={[
+    { label: 'build trie',   text: 'insert "abc", "bef", "cfi" — each path ends with node.word set' },
+    { label: 'DFS (0,0)=a',  text: 'root has "a" child → follow; mark (0,0)="#"' },
+    { label: 'DFS (0,1)=b',  text: 'a-node has "b" child → follow; mark (0,1)="#"' },
+    { label: 'DFS (0,2)=c',  text: 'b-node has "c" child → node.word="abc" → collect; nil word; prune' },
+    { label: 'restore',      text: 'unmark cells; continue scan' },
+    { label: 'DFS (0,1)=b',  text: 'root has "b" child → follow path b→e→f → collect "bef"' },
+    { label: 'DFS (0,2)=c',  text: 'root has "c" child → follow path c→f→i → collect "cfi"' },
+    { label: 'done',         text: 'all cells scanned → return ["abc","bef","cfi"]' },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build the trie">
+    For each word, walk character-by-character creating nodes; store the word string on the final node.
+  </StepItem>
+  <StepItem title="DFS from every cell">
+    For each `(r, c)`, call `dfs(r, c, root)`. The root node's children represent the first characters of all words.
+  </StepItem>
+  <StepItem title="Advance trie node by board character">
+    Look up `board[r][c]` in the current node's children. If no child exists, return immediately (pruning).
+  </StepItem>
+  <StepItem title="Mark and restore visited cells">
+    Set `board[r][c] = "#"` before recursing; restore the original character afterward.
+  </StepItem>
+  <StepItem title="Collect found words and prune">
+    When `nextNode.word != nil`, collect it and set it to nil. After all four recursive calls, if the node has no word and no children, remove it from the parent's children map.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class TrieNode {
+  var children = [Character: TrieNode]()
+  var word: String?
+}
+
+class Solution {
+  func findWords(_ board: [[Character]], _ words: [String]) -> [String] {
+    let root = TrieNode()
+    for word in words {
+      var curr = root
+      for char in word {
+        if curr.children[char] == nil { curr.children[char] = TrieNode() }
+        curr = curr.children[char]!
+      }
+      curr.word = word
+    }
+
+    let rows = board.count, cols = board[0].count
+    var board = board
+    var results = [String]()
+
+    func dfs(_ r: Int, _ c: Int, _ node: TrieNode?) {
+      guard let node else { return }
+      if let word = node.word {
+        node.word = nil
+        results.append(word)
+      }
+      guard r >= 0, c >= 0, r < rows, c < cols else { return }
+      guard let nextNode = node.children[board[r][c]] else { return }
+
+      let temp = board[r][c]
+      board[r][c] = "#"
+      dfs(r+1, c, nextNode); dfs(r-1, c, nextNode)
+      dfs(r, c+1, nextNode); dfs(r, c-1, nextNode)
+      board[r][c] = temp
+
+      if nextNode.word == nil, nextNode.children.isEmpty {
+        node.children[board[r][c]] = nil
+      }
+    }
+
+    for r in 0..<rows {
+      for c in 0..<cols { dfs(r, c, root) }
+    }
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Trie + DFS backtracking", time: "O(m×n×4×3^(L-1))", space: "O(W×L)", note: "L = max word length; each step has 3 choices (not back); W = word count for trie space", highlight: true },
+    { approach: "Word Search I × W times", time: "O(W×m×n×4^L)", space: "O(L)", note: "No prefix sharing — each word searched independently" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Checking bounds before checking the trie node",
+      body: "The DFS receives a trie node, not a board cell. Out-of-bounds and cell checks belong after the trie lookup, not before — the node guard should come first.",
+      fix: "Guard the trie node first, then check bounds, then look up <code>node.children[board[r][c]]</code>.",
+    },
+    {
+      title: "Pruning using board[r][c] after restoring the cell",
+      body: "The pruning line <code>node.children[board[r][c]] = nil</code> runs after <code>board[r][c] = temp</code> restores the cell, so <code>board[r][c]</code> is back to the original character — correct for the key lookup.",
+      fix: "The restore happens before the prune check, so <code>board[r][c]</code> correctly refers to the original character used as the trie key.",
+    },
+    {
+      title: "Forgetting to nil node.word after collecting",
+      body: "Without setting <code>node.word = nil</code>, the same word can be collected multiple times if the DFS visits the same trie leaf from different board paths.",
+      fix: "Immediately after collecting a word: <code>node.word = nil</code>.",
+    },
+  ]}
+/>

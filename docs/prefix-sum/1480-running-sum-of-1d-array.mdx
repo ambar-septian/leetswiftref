@@ -1,0 +1,126 @@
+---
+id: 1480-running-sum-of-1d-array
+title: "Running Sum of 1d Array"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1480}
+  title="Running Sum of 1d Array"
+  difficulty="Easy"
+  pattern="Prefix Sum"
+  tags={["Array", "Prefix Sum"]}
+  leetcodeUrl="https://leetcode.com/problems/running-sum-of-1d-array/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given an array `nums`, define a running sum of an array as `runningSum[i] = sum(nums[0] + nums[1] + ... + nums[i])`.
+
+Return the running sum of `nums`.
+
+**Constraints:**
+- `1 <= nums.length <= 1000`
+- `-10^6 <= nums[i] <= 10^6`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  nums = [1,2,3,4]
+Output: [1,3,6,10]
+```
+
+#### Example 2
+
+```
+Input:  nums = [1,1,1,1,1]
+Output: [1,2,3,4,5]
+```
+
+#### Example 3
+
+```
+Input:  nums = [3,1,2,10,1]
+Output: [3,4,6,16,17]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is each output element a cumulative sum?", verdict: "yes", reason: "output[i] = output[i-1] + nums[i]. Classic prefix sum — one pass, O(1) per step." },
+  ]}
+  answer="Prefix Sum — accumulate running total"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Maintain a running total `temp`. For each element in `nums`, add it to `temp` and append `temp` to the result array.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="nums = [3,1,2,10,1]"
+  expected="[3,4,6,16,17]"
+  steps={[
+    { label: "3",  text: "temp = 0+3 = 3. Append 3.", state: "result=[3]" },
+    { label: "1",  text: "temp = 3+1 = 4. Append 4.", state: "result=[3,4]" },
+    { label: "2",  text: "temp = 4+2 = 6. Append 6.", state: "result=[3,4,6]" },
+    { label: "10", text: "temp = 6+10 = 16. Append 16.", state: "result=[3,4,6,16]" },
+    { label: "1",  text: "temp = 16+1 = 17. Append 17.", state: "result=[3,4,6,16,17]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialise">
+    `var temp = 0`, `var results = [Int]()`.
+  </StepItem>
+  <StepItem title="Iterate and accumulate">
+    For each `num` in `nums`: `temp += num`, `results.append(temp)`.
+  </StepItem>
+  <StepItem title="Return results">
+    Return the accumulated results array.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func runningSum(_ nums: [Int]) -> [Int] {
+    var temp = 0
+    var results = [Int]()
+    for num in nums {
+      temp += num
+      results.append(temp)
+    }
+    return results
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Prefix sum — single pass", time: "O(n)", space: "O(n)", note: "One pass; output array of size n", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Accumulating sum after appending",
+      body: "If you append before adding num to temp, each output element is off by one position.",
+      fix: "Add to temp first, then append: temp += num; results.append(temp).",
+    },
+  ]}
+/>

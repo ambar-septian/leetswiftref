@@ -1,0 +1,163 @@
+---
+id: 2130-maximum-twin-sum-of-a-linked-list
+title: "Maximum Twin Sum of a Linked List"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout, MaxTwinSumDiagram } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2130}
+  title="Maximum Twin Sum of a Linked List"
+  difficulty="Medium"
+  pattern="Linked List — Fast/Slow + Stack"
+  tags={["Linked List", "Two Pointers", "Stack"]}
+  leetcodeUrl="https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+In a linked list of size `n`, where `n` is **even**, the `i`-th node (**0-indexed**) of the linked list is known as the **twin** of the `(n-1-i)`-th node, if `0 <= i <= (n/2) - 1`.
+
+For example, if `n = 4`, then node 0 is the twin of node 3, and node 1 is the twin of node 2.
+
+The **twin sum** is defined as the sum of a node and its twin.
+
+Given the `head` of a linked list with even length, return the **maximum twin sum** of the linked list.
+
+**Constraints:**
+- The number of nodes in the list is an **even** integer in the range `[2, 10^5]`.
+- `1 <= Node.val <= 10^5`
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input:  head = [5,4,2,1]
+Output: 6
+Explanation: Twins: (5,1)=6 and (4,2)=6. Max=6.
+```
+
+#### Example 2
+
+```
+Input:  head = [4,2,2,3]
+Output: 7
+Explanation: Twins: (4,3)=7 and (2,2)=4. Max=7.
+```
+
+#### Example 3
+
+```
+Input:  head = [1,100000]
+Output: 100001
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we need to pair front and back elements?", verdict: "yes", reason: "Twin i pairs with n-1-i. Push first half onto a stack; pop while walking second half — LIFO reversal gives the correct pairing." },
+    { question: "How do we find the midpoint in one pass?", verdict: "yes", reason: "Fast/slow pointer: when fast.next and fast.next.next are both non-nil, advance both. slow stops at the last node of the first half." },
+  ]}
+  answer="Fast/slow to find midpoint, stack to reverse first half"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+Use fast/slow pointers to locate the midpoint. Walk from head to the node after slow, pushing values onto a stack. Then walk the second half, popping from the stack to get the twin value, computing `curr.val + popped` and tracking the maximum.
+
+<Callout type="green" label="Stack as a reversal tool">
+Pushing first-half values onto a stack and popping while walking the second half gives us twin i paired with twin n-1-i in order — no random access into the list needed.
+</Callout>
+
+<SectionHeader n={5} title="Examples" />
+
+<MaxTwinSumDiagram />
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Find midpoint with fast/slow">
+    While `fast.next != nil` and `fast.next.next != nil`: advance `slow = slow.next`, `fast = fast.next.next`. After the loop, `slow` is the last node of the first half.
+  </StepItem>
+  <StepItem title="Push first half onto stack">
+    Walk from `head` up to (but not including) `slow.next`, pushing each value.
+  </StepItem>
+  <StepItem title="Walk second half and compare">
+    Start at `slow.next`. For each node, pop from the stack, compute the twin sum, and update the running max.
+  </StepItem>
+  <StepItem title="Return max">
+    Return the maximum twin sum found.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func pairSum(_ head: ListNode?) -> Int {
+    var slow = head
+    var fast = head
+
+    // Find midpoint
+    while fast?.next != nil && fast?.next?.next != nil {
+      slow = slow?.next
+      fast = fast?.next?.next
+    }
+
+    // Push first half onto stack
+    var curr = head
+    var stack = [Int]()
+    var result = 0
+    var passMiddle = false
+
+    while curr != nil {
+      if !passMiddle && curr === slow?.next {
+        passMiddle = true
+      }
+      if passMiddle {
+        result = max(stack.removeLast() + curr!.val, result)
+      } else {
+        stack.append(curr!.val)
+      }
+      curr = curr?.next
+    }
+
+    return result
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Convert to array then pair", time: "O(n)", space: "O(n)", note: "Store all values; simple index arithmetic for pairing" },
+    { approach: "Fast/slow + stack", time: "O(n)", space: "O(n/2)", note: "Stack holds only first half; single traversal after midpoint find", highlight: true },
+    { approach: "Reverse second half in-place", time: "O(n)", space: "O(1)", note: "Mutates list; restoring original order requires a second reversal" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Off-by-one in midpoint finding",
+      body: "For a list of length 4, slow should stop at index 1. The condition fast.next != nil AND fast.next.next != nil ensures this for even-length lists.",
+      fix: "Use while fast?.next != nil && fast?.next?.next != nil to advance both pointers.",
+    },
+    {
+      title: "Using value comparison to detect second half start",
+      body: "Comparing curr.val == slow.next.val fails if there are duplicate values in the list.",
+      fix: "Use reference identity (===) to detect when curr reaches slow.next.",
+    },
+    {
+      title: "Popping from an empty stack",
+      body: "If the stack has fewer elements than the second half (off-by-one in midpoint detection), removeLast() crashes on an empty stack.",
+      fix: "Verify midpoint logic: stack size must equal exactly n/2 before starting the pop phase.",
+    },
+  ]}
+/>

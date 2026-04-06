@@ -1,0 +1,146 @@
+---
+id: 94-binary-tree-inorder-traversal
+title: "Binary Tree Inorder Traversal"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import InorderTraversalDiagram from '@site/src/components/DSA/InorderTraversalDiagram';
+
+<ProblemHeader
+  number={94}
+  title="Binary Tree Inorder Traversal"
+  difficulty="Easy"
+  pattern="DFS"
+  tags={["Stack", "Tree", "Depth-First Search", "Binary Tree"]}
+  leetcodeUrl="https://leetcode.com/problems/binary-tree-inorder-traversal/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the `root` of a binary tree, return the **inorder traversal** of its nodes' values.
+
+Inorder traversal visits nodes in **left → root → right** order. For a valid Binary Search Tree this produces a sorted sequence. The traversal is defined recursively: visit the entire left subtree, then the current node, then the entire right subtree.
+
+**Constraints**
+- The number of nodes in the tree is in the range `[0, 100]`.
+- `-100 <= Node.val <= 100`
+
+<Callout type="green" label="Core Insight">
+Recursively concatenate the inorder traversal of the left subtree, the root value, and the inorder traversal of the right subtree. The base case is a nil node returning an empty array.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+```
+Input:  root = [1,null,2,3]
+Output: [1,3,2]
+```
+
+#### Example 2
+```
+Input:  root = []
+Output: []
+```
+
+#### Example 3
+```
+Input:  root = [1]
+Output: [1]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is the traversal order left → root → right?", verdict: "yes", reason: "Inorder = left subtree first, then root, then right subtree — classic DFS." },
+    { question: "Can the recursion be expressed as array concatenation?", verdict: "yes", reason: "inorder(root) = inorder(root.left) + [root.val] + inorder(root.right) — functional and elegant." },
+    { question: "Base case when node is nil?", verdict: "yes", reason: "A nil node contributes no values — return empty array." },
+  ]}
+  answer="Recursive DFS — left + root + right array concatenation"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+The recursive solution is a direct translation of the definition: `inorderTraversal(root) = inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right)`. Guard against nil with an early return of `[]`.
+
+<InorderTraversalDiagram />
+
+<Callout type="cyan" label="Iterative alternative">
+An iterative solution uses an explicit stack: push nodes left as far as possible, then pop, record the value, and shift to the right child. This runs in the same O(n) time but O(h) space (h = tree height) without the function-call overhead.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="root = [4,2,6,1,3,5,7]"
+  expected="[1,2,3,4,5,6,7]"
+  steps={[
+    { label: "call(4)", text: "inorder(left=2) + [4] + inorder(right=6). Recurse left.", state: "pending root 4" },
+    { label: "call(2)", text: "inorder(left=1) + [2] + inorder(right=3). Recurse left.", state: "pending root 2" },
+    { label: "call(1)", text: "left=nil→[]. right=nil→[]. Return []+[1]+[] = [1].", state: "[1]" },
+    { label: "call(3)", text: "left=nil, right=nil. Return [3].", state: "[3]" },
+    { label: "back at 2", text: "[1] + [2] + [3] = [1,2,3].", state: "[1,2,3]" },
+    { label: "call(6)", text: "Symmetrically returns [5,6,7]. Root: [1,2,3]+[4]+[5,6,7]=[1,2,3,4,5,6,7].", state: "[1,2,3,4,5,6,7]" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Guard nil">
+    `guard let root else { return [] }` — nil node contributes nothing.
+  </StepItem>
+  <StepItem title="Recurse left">
+    `inorderTraversal(root.left)` — collect all values from the left subtree in order.
+  </StepItem>
+  <StepItem title="Add root">
+    Append `[root.val]` — the current node is visited after its entire left subtree.
+  </StepItem>
+  <StepItem title="Recurse right">
+    `inorderTraversal(root.right)` — collect all right subtree values.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func inorderTraversal(_ root: TreeNode?) -> [Int] {
+    guard let root else { return [] }
+    return inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right)
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "Recursive", time: "O(n)", space: "O(n)", note: "O(n) for output array; O(h) call stack where h is tree height (O(n) worst case for skewed tree)", highlight: true },
+    { approach: "Iterative (explicit stack)", time: "O(n)", space: "O(h)", note: "Same time; explicit stack avoids output array concatenation overhead" },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Visiting root before left subtree (preorder mistake)",
+      body: "Returning [root.val] + left + right visits the root first — that is preorder, not inorder.",
+      fix: "Order must be left + [root.val] + right for inorder.",
+    },
+    {
+      title: "Forgetting the nil guard produces a crash",
+      body: "Without the guard, accessing root.val on a nil TreeNode will crash at runtime.",
+      fix: "Always guard at the top: guard let root else { return [] }.",
+    },
+    {
+      title: "Array concatenation in Swift creates new arrays at each call level",
+      body: "The + operator creates a new array. For very deep trees this is O(n) per level, making the total O(n log n) or O(n²) in pathological cases.",
+      fix: "For large inputs, prefer an iterative solution with a pre-allocated result array and inout append.",
+    },
+  ]}
+/>

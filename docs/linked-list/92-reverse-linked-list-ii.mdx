@@ -1,0 +1,179 @@
+---
+id: 92-reverse-linked-list-ii
+title: "Reverse Linked List II"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import ReverseLinkedListIIDiagram from '@site/src/components/DSA/ReverseLinkedListIIDiagram';
+
+<ProblemHeader
+  number={92}
+  title="Reverse Linked List II"
+  difficulty="Medium"
+  pattern="Linked List"
+  tags={["Linked List"]}
+  leetcodeUrl="https://leetcode.com/problems/reverse-linked-list-ii/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+Given the head of a singly linked list and two integers `left` and `right` where `left <= right`, reverse the nodes of the list from position `left` to position `right`, and return the reversed list.
+
+Positions are 1-indexed. Nodes outside the range `[left, right]` are left untouched. The reversal must be done in one pass.
+
+**Constraints**
+- The number of nodes in the list is `n`.
+- `1 <= n <= 500`
+- `-500 <= Node.val <= 500`
+- `1 <= left <= right <= n`
+
+<Callout type="green" label="Core Insight">
+Walk to the node just before position left (lastNodeBeforeSublist) and the node at position left (lastNodeOnSublist — it becomes the tail after reversal). Reverse exactly (right - left + 1) nodes in-place using the standard iterative reversal. Re-attach the reversed sublist by connecting lastNodeBeforeSublist to the new head and lastNodeOnSublist to the first node after the sublist.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+<ReverseLinkedListIIDiagram />
+
+#### Example 1
+```
+Input:  head = [1,2,3,4,5], left = 2, right = 4
+Output: [1,4,3,2,5]
+```
+
+#### Example 2
+```
+Input:  head = [5], left = 1, right = 1
+Output: [5]
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Must the reversal be done in one pass?", verdict: "yes", reason: "Walk to the sublist start, reverse in-place, reconnect — single traversal." },
+    { question: "Do we need to track the node before the sublist?", verdict: "yes", reason: "lastNodeBeforeSublist.next must point to the reversed sublist's new head after reversal." },
+    { question: "Does the original sublist head become the tail?", verdict: "yes", reason: "The first node of the sublist (lastNodeOnSublist) ends up as the reversed tail — connect it to the node after right." },
+  ]}
+  answer="In-place sublist reversal — track boundary nodes, reverse target range, reconnect"
+/>
+
+<SectionHeader n={4} title="Approach" />
+
+**Phase 1 — Navigate to sublist start**: Walk `left - 1` steps to position `prev` just before the sublist and `curr` at the sublist start. Save `lastNodeBeforeSublist = prev` and `lastNodeOnSublist = curr`.
+
+**Phase 2 — Reverse sublist**: Run the standard iterative reversal for exactly `target = right - left + 1` iterations using `prevReversed` and `curr`.
+
+**Phase 3 — Reconnect**:
+- If `lastNodeBeforeSublist != nil`: `lastNodeBeforeSublist.next = prevReversed` (the new sublist head).
+- Else: `head = prevReversed` (reversal started from position 1 — update the overall head).
+- `lastNodeOnSublist.next = curr` (connect old sublist head — now tail — to the node after position right).
+
+<Callout type="cyan" label="Why lastNodeOnSublist is saved before reversal">
+After iterative reversal, curr points to the first node past the sublist (right+1). lastNodeOnSublist is the node that was originally at position left — it becomes the reversed tail and must point to curr. Saving it before reversal is the only way to hold this reference.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="head = [1,2,3,4,5], left = 2, right = 4"
+  expected="[1,4,3,2,5]"
+  steps={[
+    { label: "phase 1", text: "Walk 1 step (left-1=1). prev=node(1), curr=node(2). lastNodeBeforeSublist=node(1), lastNodeOnSublist=node(2).", state: "at sublist start" },
+    { label: "reverse iter 1", text: "next=node(3). node(2).next=nil (prevReversed). prevReversed=node(2). curr=node(3).", state: "reversed: [2]" },
+    { label: "reverse iter 2", text: "next=node(4). node(3).next=node(2). prevReversed=node(3). curr=node(4).", state: "reversed: [3,2]" },
+    { label: "reverse iter 3", text: "next=node(5). node(4).next=node(3). prevReversed=node(4). curr=node(5).", state: "reversed: [4,3,2]" },
+    { label: "reconnect", text: "lastNodeBeforeSublist(1).next = prevReversed(4). lastNodeOnSublist(2).next = curr(5).", state: "1→4→3→2→5" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Navigate to sublist start">
+    Walk `left - 1` steps: `prev = curr`, `curr = curr.next`. Save `lastNodeBeforeSublist = prev`, `lastNodeOnSublist = curr`.
+  </StepItem>
+  <StepItem title="Reverse target range">
+    `target = right - left + 1`. Repeat `target` times: save `next = curr.next`, set `curr.next = prevReversed`, advance `prevReversed = curr`, `curr = next`.
+  </StepItem>
+  <StepItem title="Reconnect to surrounding list">
+    If `lastNodeBeforeSublist != nil`: `lastNodeBeforeSublist.next = prevReversed`. Else: `head = prevReversed`. Then `lastNodeOnSublist.next = curr`.
+  </StepItem>
+  <StepItem title="Return head">
+    Return the (possibly updated) `head`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+```swift
+class Solution {
+  func reverseBetween(_ head: ListNode?, _ left: Int, _ right: Int) -> ListNode? {
+    var head = head
+    var curr = head
+    var prev: ListNode?
+
+    let target = right - left + 1
+
+    // Phase 1: walk to sublist start
+    for _ in 1..<left {
+      prev = curr
+      curr = curr?.next
+    }
+
+    let lastNodeBeforeSublist = prev
+    let lastNodeOnSublist = curr   // becomes the tail after reversal
+
+    // Phase 2: reverse target nodes
+    var prevReversed: ListNode?
+    for _ in 0..<target {
+      let next = curr?.next
+      curr?.next = prevReversed
+      prevReversed = curr
+      curr = next
+    }
+
+    // Phase 3: reconnect
+    if lastNodeBeforeSublist != nil {
+      lastNodeBeforeSublist?.next = prevReversed
+    } else {
+      head = prevReversed   // reversal started at position 1
+    }
+
+    lastNodeOnSublist?.next = curr
+
+    return head
+  }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<ComplexityTable
+  rows={[
+    { approach: "In-place sublist reversal", time: "O(n)", space: "O(1)", note: "Single pass; reversal uses only pointer variables", highlight: true },
+  ]}
+/>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Not handling left == 1 separately",
+      body: "When left == 1, there is no lastNodeBeforeSublist — the reversed sublist becomes the new head. Without this check, lastNodeBeforeSublist.next = prevReversed will crash on a nil dereference.",
+      fix: "After reversal, check if lastNodeBeforeSublist != nil. If nil, set head = prevReversed instead.",
+    },
+    {
+      title: "Forgetting to save lastNodeOnSublist before reversing",
+      body: "The in-place reversal overwrites curr.next pointers. After reversal, the original sublist start (now the tail) can no longer be found via traversal.",
+      fix: "Save lastNodeOnSublist = curr immediately before the reversal loop. Use it to reconnect the tail afterward.",
+    },
+    {
+      title: "Off-by-one in the navigation loop",
+      body: "The loop walks left-1 steps (not left steps). If you walk left steps, curr ends up one node too far and the reversal starts at position left+1.",
+      fix: "Loop from 1 to left-1 (exclusive): for _ in 1..<left. This positions curr exactly at the left-th node.",
+    },
+  ]}
+/>
