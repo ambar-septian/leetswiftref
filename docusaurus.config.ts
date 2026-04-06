@@ -5,10 +5,13 @@ const config: Config = {
   title: 'DSA.ref',
   tagline: 'Personal DSA reference — solved, explained, remembered.',
   favicon: 'img/favicon.ico',
-  url: 'https://your-site.com',
-  baseUrl: '/',
+  url: 'https://ambar-septian.github.io',
+  baseUrl: '/leetswiftref/',
+  organizationName: 'ambar-septian',
+  projectName: 'leetswiftref',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+  trailingSlash: false,
 
   i18n: { defaultLocale: 'en', locales: ['en'] },
 
