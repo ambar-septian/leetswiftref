@@ -5,6 +5,7 @@ hide_table_of_contents: true
 ---
 
 import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import CarFleetDiagram from '@site/src/components/DSA/CarFleetDiagram';
 
 <ProblemHeader
   number={853}
@@ -67,6 +68,8 @@ Output: 1
 />
 
 <SectionHeader n={4} title="Approach" />
+
+<CarFleetDiagram />
 
 Sort cars by position in descending order (closest to target first). For each car, compute `time = (target - position) / speed` (as a Float). Push onto a stack. If `stack.last <= stack[stack.count-2]`, the current car catches the car ahead — pop it (they form the same fleet). Final stack size is the number of distinct fleets.
 

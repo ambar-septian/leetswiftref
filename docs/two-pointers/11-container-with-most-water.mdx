@@ -5,6 +5,7 @@ hide_table_of_contents: true
 ---
 
 import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+import ContainerWithMostWaterDiagram from '@site/src/components/DSA/ContainerWithMostWaterDiagram';
 
 <ProblemHeader
   number={11}
@@ -61,6 +62,8 @@ Explanation: Only two lines. Area = min(1,1) * 1 = 1.
 />
 
 <SectionHeader n={4} title="Approach" />
+
+<ContainerWithMostWaterDiagram />
 
 Place `left` at index `0` and `right` at index `n - 1`. At each step compute `area = min(height[left], height[right]) * (right - left)` and update the running maximum. Then move whichever pointer points to the shorter line — if they are equal, move either (here we move `left`). Repeat until the pointers meet.
 

@@ -102,3 +102,5 @@ export { default as MaxTwinSumDiagram } from './MaxTwinSumDiagram';
 export { default as MergeNodesBetweenZerosDiagram } from './MergeNodesBetweenZerosDiagram';
 export { default as RemoveNodesLinkedListDiagram } from './RemoveNodesLinkedListDiagram';
 export { default as InsertGCDLinkedListDiagram } from './InsertGCDLinkedListDiagram';
+export { default as ContainerWithMostWaterDiagram } from './ContainerWithMostWaterDiagram';
+export { default as CarFleetDiagram } from './CarFleetDiagram';
