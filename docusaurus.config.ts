@@ -9,6 +9,7 @@ const config: Config = {
   baseUrl: '/leetswiftref/',
   organizationName: 'ambar-septian',
   projectName: 'leetswiftref',
+  deploymentBranch: 'gh-pages',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   trailingSlash: false,
