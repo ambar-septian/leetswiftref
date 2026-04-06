@@ -145,7 +145,7 @@ class Solution {
     {
       title: "Forgetting to check string length before index access",
       body: "If a string is shorter than the current index, subscripting it will crash. The guard must check length before accessing the character.",
-      fix: "Guard firstCharIndex < nextWord.count before computing the String.Index and accessing the character.",
+      fix: "Guard firstCharIndex &lt; nextWord.count before computing the String.Index and accessing the character.",
     },
     {
       title: "Using String subscript with integers directly",

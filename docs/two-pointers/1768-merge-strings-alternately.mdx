@@ -73,10 +73,10 @@ Allocate result with capacity `len1 + len2` upfront. Appending to a pre-sized ar
   input='word1 = "ab", word2 = "pqrs"'
   expected='"apbqrs"'
   steps={[
-    { label: "i=0", text: "i=0 < 2 → append 'a'. i=0 < 4 → append 'p'. result=\"ap\".", state: 'result="ap"' },
-    { label: "i=1", text: "i=1 < 2 → append 'b'. i=1 < 4 → append 'q'. result=\"apbq\".", state: 'result="apbq"' },
-    { label: "i=2", text: "i=2 >= 2 → skip word1. i=2 < 4 → append 'r'. result=\"apbqr\".", state: 'result="apbqr"' },
-    { label: "i=3", text: "i=3 >= 2 → skip word1. i=3 < 4 → append 's'. result=\"apbqrs\".", state: 'result="apbqrs"' },
+    { label: "i=0", text: "i=0 &lt; 2 → append 'a'. i=0 &lt; 4 → append 'p'. result=\"ap\".", state: 'result="ap"' },
+    { label: "i=1", text: "i=1 &lt; 2 → append 'b'. i=1 &lt; 4 → append 'q'. result=\"apbq\".", state: 'result="apbq"' },
+    { label: "i=2", text: "i=2 >= 2 → skip word1. i=2 &lt; 4 → append 'r'. result=\"apbqr\".", state: 'result="apbqr"' },
+    { label: "i=3", text: "i=3 >= 2 → skip word1. i=3 &lt; 4 → append 's'. result=\"apbqrs\".", state: 'result="apbqrs"' },
   ]}
 />
 
@@ -131,7 +131,7 @@ class Solution {
     {
       title: "Looping only to min(len1, len2)",
       body: "If you stop at the shorter string's length, the tail of the longer string is silently dropped.",
-      fix: "Loop to max(len1, len2) and use bounds checks (i < len1, i < len2) inside.",
+      fix: "Loop to max(len1, len2) and use bounds checks (i &lt; len1, i &lt; len2) inside.",
     },
     {
       title: "Using string concatenation in the loop",

@@ -67,9 +67,9 @@ Instead of computing `sum / k >= threshold`, compare `sum >= threshold * k`. Thi
   input="arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4"
   expected="3"
   steps={[
-    { label: "Init",    text: "Build first window [2,2,2]. sum=6. avg=6/3=2 < 4 → skip. result=0.", state: "result=0" },
-    { label: "i=3",     text: "Slide: add arr[3]=2, remove arr[0]=2. sum=6. avg=2 < 4 → skip. result=0.", state: "result=0" },
-    { label: "i=4",     text: "Slide: add arr[4]=5, remove arr[1]=2. sum=9. avg=3 < 4 → skip. result=0.", state: "result=0" },
+    { label: "Init",    text: "Build first window [2,2,2]. sum=6. avg=6/3=2 &lt; 4 → skip. result=0.", state: "result=0" },
+    { label: "i=3",     text: "Slide: add arr[3]=2, remove arr[0]=2. sum=6. avg=2 &lt; 4 → skip. result=0.", state: "result=0" },
+    { label: "i=4",     text: "Slide: add arr[4]=5, remove arr[1]=2. sum=9. avg=3 &lt; 4 → skip. result=0.", state: "result=0" },
     { label: "i=5",     text: "Slide: add arr[5]=5, remove arr[2]=2. sum=12. avg=4 >= 4 → result=1.", state: "result=1" },
     { label: "i=6",     text: "Slide: add arr[6]=5, remove arr[3]=2. sum=15. avg=5 >= 4 → result=2.", state: "result=2" },
     { label: "i=7",     text: "Slide: add arr[7]=8, remove arr[4]=5. sum=18. avg=6 >= 4 → result=3.", state: "result=3" },
@@ -128,8 +128,8 @@ class Solution {
   pitfalls={[
     {
       title: "Off-by-one on the initial window",
-      body: "Iterating 0..<k fills the first window correctly, but starting the slide loop at k (not k-1) is essential to avoid duplicate processing.",
-      fix: "Init loop: 0..<k. Slide loop starts at k.",
+      body: "Iterating 0..&lt;k fills the first window correctly, but starting the slide loop at k (not k-1) is essential to avoid duplicate processing.",
+      fix: "Init loop: 0..&lt;k. Slide loop starts at k.",
     },
     {
       title: "Wrong remove index",

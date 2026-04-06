@@ -151,7 +151,7 @@ class Solution {
     {
       title: "Forgetting the all-nines edge case",
       body: "If every digit is 9 the result needs one extra digit (e.g., [9,9] → [1,0,0]). A simple digits[last] += 1 at the end misses this.",
-      fix: "After the backward loop, check if last < 0 and insert a leading 1 if so.",
+      fix: "After the backward loop, check if last &lt; 0 and insert a leading 1 if so.",
     },
     {
       title: "Using a modular arithmetic approach without break",

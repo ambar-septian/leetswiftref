@@ -81,9 +81,9 @@ Working with plain arrays simplifies index-based access and bounds checking comp
   expected="[7,0,8]"
   steps={[
     { label: "Extract", text: "l1Values = [2,4,3], l2Values = [5,6,4]. mod = 0.", state: "index=0, mod=0" },
-    { label: "index=0", text: "2 + 5 + 0 = 7. result = [7]. 7 < 10 → mod = 0.", state: "result=[7], mod=0" },
+    { label: "index=0", text: "2 + 5 + 0 = 7. result = [7]. 7 &lt; 10 → mod = 0.", state: "result=[7], mod=0" },
     { label: "index=1", text: "4 + 6 + 0 = 10. result = [7,0]. 10 >= 10 → mod = 1.", state: "result=[7,0], mod=1" },
-    { label: "index=2", text: "3 + 4 + 1 = 8. result = [7,0,8]. 8 < 10 → mod = 0.", state: "result=[7,0,8], mod=0" },
+    { label: "index=2", text: "3 + 4 + 1 = 8. result = [7,0,8]. 8 &lt; 10 → mod = 0.", state: "result=[7,0,8], mod=0" },
     { label: "Done", text: "mod = 0, no extra node. Convert [7,0,8] to linked list.", state: "output = 7→0→8" },
   ]}
 />
@@ -186,7 +186,7 @@ class Solution {
     {
       title: "Using the shorter list length as the carry loop bound",
       body: "The addition loop must run until both arrays are exhausted. Stopping at min(l1.count, l2.count) drops digits from the longer list.",
-      fix: "Loop while index < l1Values.count || index < l2Values.count, substituting 0 for missing values.",
+      fix: "Loop while index &lt; l1Values.count || index &lt; l2Values.count, substituting 0 for missing values.",
     },
   ]}
 />

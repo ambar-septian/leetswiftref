@@ -75,9 +75,9 @@ By guarding `if i >= k` before subtracting the leaving character, a single loop 
   input='s = "abciiidef", k = 3'
   expected="3"
   steps={[
-    { label: "i=0 (a)", text: "'a' is vowel → curr=1. i<3 no removal. result=1.", state: "window=[a], curr=1" },
-    { label: "i=1 (b)", text: "'b' not vowel → curr=1. i<3 no removal. result=1.", state: "window=[a,b], curr=1" },
-    { label: "i=2 (c)", text: "'c' not vowel → curr=1. i<3 no removal. result=1.", state: "window=[a,b,c], curr=1" },
+    { label: "i=0 (a)", text: "'a' is vowel → curr=1. i&lt;3 no removal. result=1.", state: "window=[a], curr=1" },
+    { label: "i=1 (b)", text: "'b' not vowel → curr=1. i&lt;3 no removal. result=1.", state: "window=[a,b], curr=1" },
+    { label: "i=2 (c)", text: "'c' not vowel → curr=1. i&lt;3 no removal. result=1.", state: "window=[a,b,c], curr=1" },
     { label: "i=3 (i)", text: "'i' vowel → curr=2. Remove arr[0]='a' (vowel) → curr=1. result=1.", state: "window=[b,c,i], curr=1" },
     { label: "i=4 (i)", text: "'i' vowel → curr=2. Remove 'b' (not) → curr=2. result=2.", state: "window=[c,i,i], curr=2" },
     { label: "i=5 (i)", text: "'i' vowel → curr=3. Remove 'c' (not) → curr=3. result=3.", state: "window=[i,i,i], curr=3" },

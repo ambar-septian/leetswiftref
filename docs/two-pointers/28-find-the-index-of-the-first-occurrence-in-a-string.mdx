@@ -145,7 +145,7 @@ class Solution {
     {
       title: "Accessing h[right + left] without a bounds check",
       body: "When left is near the end and right > 0, right + left can exceed h.count, causing an index out-of-bounds crash.",
-      fix: "Guard right + left < h.count before the array access.",
+      fix: "Guard right + left &lt; h.count before the array access.",
     },
     {
       title: "Returning -1 when needle is empty",

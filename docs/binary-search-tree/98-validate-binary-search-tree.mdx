@@ -131,7 +131,7 @@ class Solution {
   pitfalls={[
     {
       title: "Comparing only with the direct parent",
-      body: "Checking root.val > root.left.val && root.val < root.right.val is insufficient. A node deep in the right subtree must be greater than the tree's root, not just its own parent.",
+      body: "Checking root.val > root.left.val && root.val &lt; root.right.val is insufficient. A node deep in the right subtree must be greater than the tree's root, not just its own parent.",
       fix: "Pass inherited bounds down the tree. Every node must satisfy the constraints imposed by all its ancestors.",
     },
     {
@@ -141,8 +141,8 @@ class Solution {
     },
     {
       title: "Using <= instead of < in the bounds check",
-      body: "BST property requires strictly less than and strictly greater than — equal values are not allowed. Using <= would incorrectly accept trees with duplicate values.",
-      fix: "Guard with root.val > left && root.val < right (strict inequalities).",
+      body: "BST property requires strictly less than and strictly greater than — equal values are not allowed. Using &lt;= would incorrectly accept trees with duplicate values.",
+      fix: "Guard with root.val > left && root.val &lt; right (strict inequalities).",
     },
   ]}
 />

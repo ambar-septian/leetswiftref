@@ -69,10 +69,10 @@ Maintain a frequency map `dict` and track `dominant` (the highest single-charact
   input='s = "AABABBA", k = 1'
   expected="4"
   steps={[
-    { label: "r=0..3", text: "r=0:'A'(A=1,dom=1,win=1); r=1:'A'(A=2,dom=2,win=2); r=2:'B'(B=1,dom=2,win=3,3-2=1<=1); r=3:'A'(A=3,dom=3,win=4,4-3=1<=1) → result=4" },
-    { label: "r=4",   text: "r=4:'B'(B=2,dom=3,win=5,5-3=2>1) → shrink: remove s[0]='A'(A=2),left=1; win=4,4-3=1<=1; result=4" },
-    { label: "r=5",   text: "r=5:'B'(B=3,dom=3,win=5,5-3=2>1) → shrink: remove s[1]='A'(A=1),left=2; win=4,4-3=1<=1; result=4" },
-    { label: "r=6",   text: "r=6:'A'(A=2,dom=3,win=5,5-3=2>1) → shrink: remove s[2]='B'(B=2),left=3; win=4,4-3=1<=1; result=4" },
+    { label: "r=0..3", text: "r=0:'A'(A=1,dom=1,win=1); r=1:'A'(A=2,dom=2,win=2); r=2:'B'(B=1,dom=2,win=3,3-2=1&lt;=1); r=3:'A'(A=3,dom=3,win=4,4-3=1&lt;=1) → result=4" },
+    { label: "r=4",   text: "r=4:'B'(B=2,dom=3,win=5,5-3=2>1) → shrink: remove s[0]='A'(A=2),left=1; win=4,4-3=1&lt;=1; result=4" },
+    { label: "r=5",   text: "r=5:'B'(B=3,dom=3,win=5,5-3=2>1) → shrink: remove s[1]='A'(A=1),left=2; win=4,4-3=1&lt;=1; result=4" },
+    { label: "r=6",   text: "r=6:'A'(A=2,dom=3,win=5,5-3=2>1) → shrink: remove s[2]='B'(B=2),left=3; win=4,4-3=1&lt;=1; result=4" },
     { label: "done",  text: "return 4" },
   ]}
 />

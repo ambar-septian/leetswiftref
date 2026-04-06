@@ -79,7 +79,7 @@ No collision when: ast is positive (moving right, cannot catch stack top), stack
   steps={[
     { label: "ast=10", text: "Stack empty or top not positive-vs-negative. Push 10. Stack: [10]." },
     { label: "ast=2",  text: "Both positive — no collision. Push 2. Stack: [10, 2]." },
-    { label: "ast=-5", text: "top=2 (pos) vs ast=-5 (neg). |−5|=5 > 2 → pop 2. Stack: [10]. top=10 vs ast=-5. |−5|=5 < 10 → ast=0. Stack: [10]." },
+    { label: "ast=-5", text: "top=2 (pos) vs ast=-5 (neg). |−5|=5 > 2 → pop 2. Stack: [10]. top=10 vs ast=-5. |−5|=5 &lt; 10 → ast=0. Stack: [10]." },
     { label: "done",   text: "ast=0, skip push. Return [10]." },
   ]}
 />
@@ -153,7 +153,7 @@ class Solution {
     {
       title: "Colliding same-direction asteroids",
       body: "Two positives or two negatives never collide. Triggering the collision loop for positive-vs-positive produces wrong results.",
-      fix: "The while condition must check top > 0 AND ast < 0 — only this combination represents a collision.",
+      fix: "The while condition must check top > 0 AND ast &lt; 0 — only this combination represents a collision.",
     },
     {
       title: "Pushing after ast is already zero",

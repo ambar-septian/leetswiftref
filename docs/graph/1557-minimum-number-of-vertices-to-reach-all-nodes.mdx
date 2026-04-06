@@ -123,7 +123,7 @@ class Solution {
   pitfalls={[
     {
       title: "Starting with all n nodes instead of just sources",
-      body: "If you iterate 0..<n and try to remove destinations, you correctly identify in-degree-0 nodes. The solution above uses a shorter path: only collect nodes that appeared as sources.",
+      body: "If you iterate 0..&lt;n and try to remove destinations, you correctly identify in-degree-0 nodes. The solution above uses a shorter path: only collect nodes that appeared as sources.",
       fix: "Either approach works. The key is: any node that appears as a destination has in-degree > 0 and should not be in the result.",
     },
     {

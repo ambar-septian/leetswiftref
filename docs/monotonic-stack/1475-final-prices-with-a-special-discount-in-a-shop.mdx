@@ -82,9 +82,9 @@ The discount applies when `prices[j] <= prices[i]` — note the `<=`, not just `
   expected="[4,2,4,2,3]"
   steps={[
     { label: "i=0 (8)", text: "Stack empty. Push (8,0). result=[8,4,6,2,3].", state: "stack=[(8,0)]" },
-    { label: "i=1 (4)", text: "4<=8 → pop (8,0): result[0]=8-4=4. Stack empty. Push (4,1).", state: "stack=[(4,1)], result[0]=4" },
+    { label: "i=1 (4)", text: "4&lt;=8 → pop (8,0): result[0]=8-4=4. Stack empty. Push (4,1).", state: "stack=[(4,1)], result[0]=4" },
     { label: "i=2 (6)", text: "6>4 → no pop. Push (6,2).", state: "stack=[(4,1),(6,2)]" },
-    { label: "i=3 (2)", text: "2<=6 → pop (6,2): result[2]=6-2=4. 2<=4 → pop (4,1): result[1]=4-2=2. Push (2,3).", state: "stack=[(2,3)], result[1]=2, result[2]=4" },
+    { label: "i=3 (2)", text: "2&lt;=6 → pop (6,2): result[2]=6-2=4. 2&lt;=4 → pop (4,1): result[1]=4-2=2. Push (2,3).", state: "stack=[(2,3)], result[1]=2, result[2]=4" },
     { label: "i=4 (3)", text: "3>2 → no pop. Push (3,4).", state: "stack=[(2,3),(3,4)]" },
     { label: "End", text: "Stack has (2,3) and (3,4) — no discount found. result[3]=2, result[4]=3.", state: "result=[4,2,4,2,3]" },
   ]}
@@ -143,8 +143,8 @@ class Solution {
   pitfalls={[
     {
       title: "Using strict less-than for the pop condition",
-      body: "The problem says discount applies when prices[j] <= prices[i]. Using < misses equal-price discounts.",
-      fix: "Pop when prices[i] <= top.value (less than or equal).",
+      body: "The problem says discount applies when prices[j] &lt;= prices[i]. Using &lt; misses equal-price discounts.",
+      fix: "Pop when prices[i] &lt;= top.value (less than or equal).",
     },
     {
       title: "Storing only values in the stack",

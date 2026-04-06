@@ -90,7 +90,7 @@ The solution uses a flat integer key `r * cols + c` to represent grid coordinate
   expected="[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]"
   steps={[
     { label: "Seed Pacific", text: "Enqueue all cells on the top row (row 0) and left column (col 0). These are guaranteed to reach the Pacific.", state: "queue = [0,0],[0,1],[0,2],[0,3],[0,4],[1,0],[2,0],[3,0],[4,0]" },
-    { label: "BFS Pacific", text: "Pop each cell and expand to neighbours with height >= current. E.g. from (0,4)=5 we can reach (1,4)=4? No — 4 < 5. From (2,0)=2 we reach (2,1)=4 — yes, enqueue.", state: "pacificSet grows to cover upper-left region" },
+    { label: "BFS Pacific", text: "Pop each cell and expand to neighbours with height >= current. E.g. from (0,4)=5 we can reach (1,4)=4? No — 4 &lt; 5. From (2,0)=2 we reach (2,1)=4 — yes, enqueue.", state: "pacificSet grows to cover upper-left region" },
     { label: "Seed Atlantic", text: "Enqueue all cells on the bottom row (row 4) and right column (col 4).", state: "queue = [4,0],[4,1],[4,2],[4,3],[4,4],[0,4],[1,4],[2,4],[3,4]" },
     { label: "BFS Atlantic", text: "Same uphill BFS from Atlantic borders. Cells reachable from bottom-right region are collected.", state: "atlanticSet grows to cover lower-right region" },
     { label: "Intersect", text: "Cells in both pacificSet and atlanticSet are the answer. Decode each integer key back to [row, col].", state: "result = [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]" },
@@ -188,7 +188,7 @@ class Solution {
     {
       title: "Flowing downhill instead of uphill in reverse BFS",
       body: "The BFS expands from ocean borders, so we travel in the reverse direction of water flow — uphill. The neighbour must have height >= current.",
-      fix: "Use heights[rD][cD] >= heights[grid[0]][grid[1]], not <=.",
+      fix: "Use heights[rD][cD] >= heights[grid[0]][grid[1]], not &lt;=.",
     },
     {
       title: "Off-by-one when seeding Atlantic borders",

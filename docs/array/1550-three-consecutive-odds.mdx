@@ -65,10 +65,10 @@ Once `current >= 3`, we can return immediately. The loop in the implementation d
   expected="true"
   steps={[
     { label: "1",  text: "Odd → current=1.", state: "current=1" },
-    { label: "2",  text: "Even, current=1 < 3 → reset to 0.", state: "current=0" },
-    { label: "34", text: "Even, current=0 < 3 → reset to 0.", state: "current=0" },
+    { label: "2",  text: "Even, current=1 &lt; 3 → reset to 0.", state: "current=0" },
+    { label: "34", text: "Even, current=0 &lt; 3 → reset to 0.", state: "current=0" },
     { label: "3",  text: "Odd → current=1.", state: "current=1" },
-    { label: "4",  text: "Even, current=1 < 3 → reset to 0.", state: "current=0" },
+    { label: "4",  text: "Even, current=1 &lt; 3 → reset to 0.", state: "current=0" },
     { label: "5",  text: "Odd → current=1.", state: "current=1" },
     { label: "7",  text: "Odd → current=2.", state: "current=2" },
     { label: "23", text: "Odd → current=3 >= 3 → return true.", state: "current=3 → true" },
@@ -121,8 +121,8 @@ class Solution {
   pitfalls={[
     {
       title: "Resetting counter even after 3 odds are found",
-      body: "The `else if current < 3` guard prevents resetting once the streak has already hit 3. Without this guard, a trailing even number would incorrectly reset the streak.",
-      fix: "Use else if current < 3 { current = 0 } to preserve the streak once it has reached 3.",
+      body: "The `else if current &lt; 3` guard prevents resetting once the streak has already hit 3. Without this guard, a trailing even number would incorrectly reset the streak.",
+      fix: "Use else if current &lt; 3 { current = 0 } to preserve the streak once it has reached 3.",
     },
     {
       title: "Using == 0 instead of != 0 for odd check",

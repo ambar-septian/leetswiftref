@@ -70,10 +70,10 @@ A `)` is only valid if there is an unmatched `(` to the left of it. The number o
   input="n = 2"
   expected='["(())", "()()"]'
   steps={[
-    { label: "dfs(0,0)", text: "open=0 < n=2 → add '('. path=['('].", state: "path='('" },
-    { label: "dfs(1,0)", text: "open=1 < 2 → can add '('. close=0 < open=1 → can add ')'. Try '(' first.", state: "path='((' after open branch" },
-    { label: "dfs(2,0)", text: "open=2 = n, can't add '('. close=0 < 2 → add ')'. path='(()'.", state: "path='(()'" },
-    { label: "dfs(2,1)", text: "close=1 < open=2 → add ')'. path='(())'.", state: "path='(())'" },
+    { label: "dfs(0,0)", text: "open=0 &lt; n=2 → add '('. path=['('].", state: "path='('" },
+    { label: "dfs(1,0)", text: "open=1 &lt; 2 → can add '('. close=0 &lt; open=1 → can add ')'. Try '(' first.", state: "path='((' after open branch" },
+    { label: "dfs(2,0)", text: "open=2 = n, can't add '('. close=0 &lt; 2 → add ')'. path='(()'.", state: "path='(()'" },
+    { label: "dfs(2,1)", text: "close=1 &lt; open=2 → add ')'. path='(())'.", state: "path='(())'" },
     { label: "dfs(2,2)", text: "open == close == n=2. Append '(())'. Return.", state: "results=['(())']" },
     { label: "backtrack", text: "Unwind. Back at dfs(1,0), try ')' branch. open=1, close=1. Then add '(': dfs(2,1) → add ')' → '()()'.", state: "results=['(())','()()']" },
   ]}
@@ -147,7 +147,7 @@ class Solution {
     {
       title: "Using close <= open instead of close < open",
       body: "When close == open, all opens are matched — adding ) now would create a negative balance. The guard must be strict.",
-      fix: "Use c < o (strictly less than), not c <= o.",
+      fix: "Use c &lt; o (strictly less than), not c &lt;= o.",
     },
     {
       title: "Checking the base case with path.count instead of open == n && close == n",

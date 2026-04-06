@@ -148,7 +148,7 @@ class Solution {
     {
       title: "Off-by-one on nodeAfterB",
       body: "nodeAfterB must be at index b+1. Walking to index b lands on the last node to remove, not the first to keep.",
-      fix: "Continue walking while index <= b, stopping when index == b+1.",
+      fix: "Continue walking while index &lt;= b, stopping when index == b+1.",
     },
     {
       title: "Not walking to list2 tail before splicing",

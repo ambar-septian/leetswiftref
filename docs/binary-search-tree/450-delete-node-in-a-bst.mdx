@@ -92,7 +92,7 @@ Traverse left as far as possible in the right subtree. The leftmost node in the 
   input="root = [5,3,6,2,4,null,7], key = 3"
   expected="[5,4,6,2,null,null,7]"
   steps={[
-    { label: "step 1", text: "key=3 < root.val=5 → go left: deleteNode(node(3), 3)" },
+    { label: "step 1", text: "key=3 &lt; root.val=5 → go left: deleteNode(node(3), 3)" },
     { label: "step 2", text: "key=3 == node.val=3 → both children exist; find min of right subtree" },
     { label: "step 3", text: "right child is node(4); 4.left is nil → inorder successor = 4" },
     { label: "step 4", text: "Copy successor value: node.val = 4; delete 4 from right subtree: node.right = deleteNode(node(4), 4)" },

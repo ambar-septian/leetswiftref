@@ -131,8 +131,8 @@ class Solution {
   pitfalls={[
     {
       title: "Using l > r as the guard instead of l <= r",
-      body: "A guard let l <= r protects nil return. Using l > r as the return condition (instead of the inverse l <= r as the proceed condition) is logically equivalent but ensure your guard is correct.",
-      fix: "guard l <= r else { return nil } — return nil when the range is empty.",
+      body: "A guard let l &lt;= r protects nil return. Using l > r as the return condition (instead of the inverse l &lt;= r as the proceed condition) is logically equivalent but ensure your guard is correct.",
+      fix: "guard l &lt;= r else { return nil } — return nil when the range is empty.",
     },
     {
       title: "Off-by-one: passing m instead of m-1 for the left subarray",

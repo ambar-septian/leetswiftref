@@ -69,10 +69,10 @@ The array grows indefinitely if currentIndex is never used for actual removal. T
   input="ping(1), ping(100), ping(3001), ping(3002)"
   expected="1, 2, 3, 3"
   steps={[
-    { label: "ping(1)",    text: "pings=[1]. currentIndex=0. 1-1=0<=3000 — no advance. Return 1-0=1." },
-    { label: "ping(100)",  text: "pings=[1,100]. 100-1=99<=3000 — no advance. Return 2-0=2." },
-    { label: "ping(3001)", text: "pings=[1,100,3001]. 3001-1=3000<=3000 — no advance. Return 3-0=3." },
-    { label: "ping(3002)", text: "pings=[1,100,3001,3002]. 3002-1=3001>3000 → advance idx to 1. 3002-100=2902<=3000 — stop. Return 4-1=3." },
+    { label: "ping(1)",    text: "pings=[1]. currentIndex=0. 1-1=0&lt;=3000 — no advance. Return 1-0=1." },
+    { label: "ping(100)",  text: "pings=[1,100]. 100-1=99&lt;=3000 — no advance. Return 2-0=2." },
+    { label: "ping(3001)", text: "pings=[1,100,3001]. 3001-1=3000&lt;=3000 — no advance. Return 3-0=3." },
+    { label: "ping(3002)", text: "pings=[1,100,3001,3002]. 3002-1=3001>3000 → advance idx to 1. 3002-100=2902&lt;=3000 — stop. Return 4-1=3." },
   ]}
 />
 

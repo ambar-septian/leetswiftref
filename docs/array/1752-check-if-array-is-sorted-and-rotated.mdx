@@ -82,9 +82,9 @@ Count the number of descents (positions where nums[i] greater than nums[i+1], tr
   steps={[
     { label: "i=1 (4)", text: "4 >= 3 — non-decreasing. No reset. reset=false.", state: "reset=false" },
     { label: "i=2 (5)", text: "5 >= 4 — non-decreasing. reset=false.", state: "reset=false" },
-    { label: "i=3 (1)", text: "1 < 5 — descent! i=3 != last (4). 1 <= nums[0]=3 ✓. Set reset=true.", state: "reset=true" },
+    { label: "i=3 (1)", text: "1 &lt; 5 — descent! i=3 != last (4). 1 &lt;= nums[0]=3 ✓. Set reset=true.", state: "reset=true" },
     { label: "i=4 (2)", text: "2 >= 1 — non-decreasing. reset=true so check: 2 <= nums[0]=3 ✓. Continue.", state: "reset=true, valid" },
-    { label: "Done", text: "One descent found, all post-rotation values <= nums[0]. Return true.", state: "true" },
+    { label: "Done", text: "One descent found, all post-rotation values &lt;= nums[0]. Return true.", state: "true" },
   ]}
 />
 
@@ -147,18 +147,18 @@ class Solution {
   pitfalls={[
     {
       title: "Not checking the wrap-around constraint",
-      body: "After the rotation point, every element must still be <= nums[0]. Just counting one descent is not sufficient — e.g., [3,5,1,4,2] has one descent but is invalid.",
-      fix: "After reset=true, verify each subsequent element is <= nums[0].",
+      body: "After the rotation point, every element must still be &lt;= nums[0]. Just counting one descent is not sufficient — e.g., [3,5,1,4,2] has one descent but is invalid.",
+      fix: "After reset=true, verify each subsequent element is &lt;= nums[0].",
     },
     {
       title: "Missing the last-element wrap check",
-      body: "If the descent occurs at the last index (i == n-1), nums[n-1] must still be <= nums[0] for the circular ordering to hold.",
+      body: "If the descent occurs at the last index (i == n-1), nums[n-1] must still be &lt;= nums[0] for the circular ordering to hold.",
       fix: "Add the check if i == count - 1 && curr > nums[0] { return false } inside the descent branch.",
     },
     {
       title: "Returning false for arrays of size 1 or 2",
       body: "Any array of size 1 or 2 is trivially a valid sorted rotation.",
-      fix: "Guard with if count <= 2 { return true } at the top.",
+      fix: "Guard with if count &lt;= 2 { return true } at the top.",
     },
   ]}
 />

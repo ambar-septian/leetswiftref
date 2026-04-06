@@ -80,10 +80,10 @@ A normal binary search returns immediately on finding target. Here we record the
   input="nums = [5,7,7,8,8,10], target = 8"
   expected="[3, 4]"
   steps={[
-    { label: "Left pass", text: "l=0, r=5. m=2, nums[2]=7 < 8 → l=3.", state: "l=3, r=5" },
+    { label: "Left pass", text: "l=0, r=5. m=2, nums[2]=7 &lt; 8 → l=3.", state: "l=3, r=5" },
     { label: "Left m=4", text: "m=4, nums[4]=8 == target. result=4. Left-biased → r=3.", state: "result=4, l=3, r=3" },
     { label: "Left m=3", text: "m=3, nums[3]=8 == target. result=3. Left-biased → r=2.", state: "result=3, l=3, r=2 → loop ends" },
-    { label: "Right pass", text: "l=0, r=5. m=2, nums[2]=7 < 8 → l=3.", state: "l=3, r=5" },
+    { label: "Right pass", text: "l=0, r=5. m=2, nums[2]=7 &lt; 8 → l=3.", state: "l=3, r=5" },
     { label: "Right m=4", text: "m=4, nums[4]=8 == target. result=4. Right-biased → l=5.", state: "result=4, l=5, r=5" },
     { label: "Right m=5", text: "m=5, nums[5]=10 > 8 → r=4. l=5 > r=4 → loop ends.", state: "result=4" },
     { label: "Done", text: "First = 3, Last = 4. Return [3, 4].", state: "return [3, 4]" },

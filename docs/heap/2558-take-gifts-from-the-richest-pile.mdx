@@ -139,7 +139,7 @@ class Solution {
     {
       title: "Using integer square root naively",
       body: "Integer division truncates but may not give the floor square root for all values due to floating-point precision. For example, Int(sqrt(Double(x))) can round incorrectly for large perfect squares.",
-      fix: "Use Int(Double(x).squareRoot()) and verify: if (result+1)*(result+1) <= x, use result+1.",
+      fix: "Use Int(Double(x).squareRoot()) and verify: if (result+1)*(result+1) &lt;= x, use result+1.",
     },
     {
       title: "Summing the heap array instead of tracking the running sum",

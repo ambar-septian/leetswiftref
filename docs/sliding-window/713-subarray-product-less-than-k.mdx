@@ -68,10 +68,10 @@ When the window [left, right] has product less than k, all subarrays ending at r
   input="nums = [10,5,2,6], k = 100"
   expected="8"
   steps={[
-    { label: "r=0", text: "total=10; 10<100 → add (0-0+1)=1; result=1" },
-    { label: "r=1", text: "total=10*5=50; 50<100 → add (1-0+1)=2; result=3" },
-    { label: "r=2", text: "total=50*2=100; 100>=100 → shrink: total=100/10=10, left=1; 10<100 → add (2-1+1)=2; result=5" },
-    { label: "r=3", text: "total=10*6=60; 60<100 → add (3-1+1)=3; result=8" },
+    { label: "r=0", text: "total=10; 10&lt;100 → add (0-0+1)=1; result=1" },
+    { label: "r=1", text: "total=10*5=50; 50&lt;100 → add (1-0+1)=2; result=3" },
+    { label: "r=2", text: "total=50*2=100; 100>=100 → shrink: total=100/10=10, left=1; 10&lt;100 → add (2-1+1)=2; result=5" },
+    { label: "r=3", text: "total=10*6=60; 60&lt;100 → add (3-1+1)=3; result=8" },
     { label: "done", text: "return 8" },
   ]}
 />
