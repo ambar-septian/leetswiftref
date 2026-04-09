@@ -34,6 +34,7 @@ ComplexityTable, CommonPitfalls, PatternFlowchart, WalkthroughDiagram
 - 9 sections with SectionHeader in this order: Problem Overview, Examples, Pattern Recognition, Approach, Interactive Walkthrough, Step-by-Step Solution, Code Implementation, Complexity Analysis, Common Pitfalls
 - LeetCode link in ProblemHeader
 - Common Pitfalls always last section
+- For problems in the `heap` category, always include a `<Callout type="info" label="Swift Collections Heap">` right before the Code Implementation section, explaining that the `Heap` comes from the `swift-collections` package (https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) and custom implementations might have different APIs.
 
 ## Categories
 sliding-window, linked-list, trie, backtracking, dp-multidimension, dp-1d,
