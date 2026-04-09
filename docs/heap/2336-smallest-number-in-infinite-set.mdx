@@ -104,6 +104,8 @@ The naive approach pre-fills a heap with 1..1000 at init (O(n) space, O(n log n)
 <SectionHeader n={7} title="Code Implementation" />
 
 ```swift
+import Collections
+
 class SmallestInfiniteSet {
   var heap: Heap<Int>
   var uniqueSet: Set<Int>

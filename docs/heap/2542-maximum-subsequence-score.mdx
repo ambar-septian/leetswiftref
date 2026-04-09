@@ -114,6 +114,8 @@ By processing pairs from largest to smallest nums2, we guarantee that when we co
 <SectionHeader n={7} title="Code Implementation" />
 
 ```swift
+import Collections
+
 class Solution {
   func maxScore(_ nums1: [Int], _ nums2: [Int], _ k: Int) -> Int {
     let pairs = zip(nums1, nums2).sorted { $0.1 > $1.1 }
