@@ -103,27 +103,47 @@ If the maximum pile is 1, sqrt(1) = 1 — no change. You can stop early once the
 <SectionHeader n={7} title="Code Implementation" />
 
 ```swift
-import Foundation
-
 import Collections
 
 class Solution {
   func pickGifts(_ gifts: [Int], _ k: Int) -> Int {
-    // Use negated values in a min-heap to simulate a max-heap
-    var heap = Heap(gifts.map { -$0 })
-    var total = gifts.reduce(0, +)
+    var heap = Heap<Int>()
+    let count = gifts.count
+    var result = 0
+    var left = 0
+    var right = count - 1
 
-    for _ in 0..<k {
-      guard let negMax = heap.popMin() else { break }
-      let maxVal = -negMax
-      let replacement = Int(Double(maxVal).squareRoot())
-      heap.insert(-replacement)
-      total = total - maxVal + replacement
+    while left <= right {
+      let a = gifts[left]
+
+      if left == right {
+        heap.insert(a)
+        result = result + a
+        break
+      }
+
+      let b = gifts[right]
+      heap.insert(a)
+      heap.insert(b)
+
+      left += 1
+      right -= 1
+      result = result + a + b
     }
 
-    return total
+    for _ in 0..<k {
+      guard let top = heap.popMax() else { return 0 }
+      result -= top
+
+      let sqr = Int(Double(top).squareRoot())
+      heap.insert(sqr)
+      result += sqr
+    }
+
+    return result
   }
 }
+
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
