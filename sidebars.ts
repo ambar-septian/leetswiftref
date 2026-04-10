@@ -5,6 +5,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🕸 Graph',
+      link: { type: 'generated-index', slug: '/graph' },
       items: [
         'graph/133-clone-graph',
         'graph/200-number-of-islands',
@@ -28,6 +29,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '➕ Prefix Sum',
+      link: { type: 'generated-index', slug: '/prefix-sum' },
       items: [
         'prefix-sum/238-product-of-array-except-self',
         'prefix-sum/724-find-pivot-index',
@@ -38,6 +40,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🗂 Hash Map / Set',
+      link: { type: 'generated-index', slug: '/hash-map-set' },
       items: [
         'hash-map-set/1-two-sum',
         'hash-map-set/13-roman-to-integer',
@@ -53,6 +56,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '↔️ Two Pointers',
+      link: { type: 'generated-index', slug: '/two-pointers' },
       items: [
         'two-pointers/11-container-with-most-water',
         'two-pointers/1768-merge-strings-alternately',
@@ -68,6 +72,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔍 Binary Search',
+      link: { type: 'generated-index', slug: '/binary-search' },
       items: [
         'binary-search/34-find-first-and-last-position-of-element-in-sorted-array',
         'binary-search/162-find-peak-element',
@@ -81,6 +86,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🪟 Sliding Window',
+      link: { type: 'generated-index', slug: '/sliding-window' },
       items: [
         'sliding-window/3-longest-substring-without-repeating-characters',
         'sliding-window/187-repeated-dna-sequences',
@@ -97,6 +103,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔢 Math',
+      link: { type: 'generated-index', slug: '/math' },
       items: [
         'math/9-palindrome-number',
         'math/412-fizz-buzz',
@@ -106,6 +113,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔤 String',
+      link: { type: 'generated-index', slug: '/string' },
       items: [
         'string/2490-circular-sentence',
         'string/3110-score-of-a-string',
@@ -114,6 +122,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌳 Trie',
+      link: { type: 'generated-index', slug: '/trie' },
       items: [
         'trie/14-longest-common-prefix',
         'trie/208-implement-trie-prefix-tree',
@@ -126,6 +135,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔗 Linked List',
+      link: { type: 'generated-index', slug: '/linked-list' },
       items: [
         'linked-list/2-add-two-numbers',
         'linked-list/19-remove-nth-node-from-end-of-list',
@@ -159,6 +169,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📬 Queue',
+      link: { type: 'generated-index', slug: '/queue' },
       items: [
         'queue/933-number-of-recent-calls',
       ],
@@ -166,6 +177,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🏔 Heap',
+      link: { type: 'generated-index', slug: '/heap' },
       items: [
         'heap/215-kth-largest-element-in-an-array',
         'heap/2336-smallest-number-in-infinite-set',
@@ -176,6 +188,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📊 Monotonic Stack',
+      link: { type: 'generated-index', slug: '/monotonic-stack' },
       items: [
         'monotonic-stack/84-largest-rectangle-in-histogram',
         'monotonic-stack/496-next-greater-element-i',
@@ -188,6 +201,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔙 Backtracking',
+      link: { type: 'generated-index', slug: '/backtracking' },
       items: [
         'backtracking/17-letter-combinations-of-a-phone-number',
         'backtracking/22-generate-parentheses',
@@ -209,6 +223,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📚 Stack',
+      link: { type: 'generated-index', slug: '/stack' },
       items: [
         'stack/20-valid-parentheses',
         'stack/71-simplify-path',
@@ -222,6 +237,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📈 Dynamic Programming (1D)',
+      link: { type: 'generated-index', slug: '/dp-1d' },
       items: [
         'dp-1d/42-trapping-rain-water',
         'dp-1d/70-climbing-stairs',
@@ -236,6 +252,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🧩 Array',
+      link: { type: 'generated-index', slug: '/array' },
       items: [
         'array/66-plus-one',
         'array/1295-find-numbers-with-even-number-of-digits',
@@ -253,6 +270,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌲 Binary Tree',
+      link: { type: 'generated-index', slug: '/binary-tree' },
       items: [
         'binary-tree/94-binary-tree-inorder-traversal',
         'binary-tree/100-same-tree',
@@ -281,6 +299,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔎 Binary Search Tree',
+      link: { type: 'generated-index', slug: '/binary-search-tree' },
       items: [
         'binary-search-tree/98-validate-binary-search-tree',
         'binary-search-tree/108-convert-sorted-array-to-binary-search-tree',
@@ -292,6 +311,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌿 Greedy',
+      link: { type: 'generated-index', slug: '/greedy' },
       items: [
         'greedy/135-candy',
         'greedy/334-increasing-triplet-subsequence',
@@ -301,6 +321,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔢 Bit Manipulation',
+      link: { type: 'generated-index', slug: '/bit-manipulation' },
       items: [
         'bit-manipulation/1342-number-of-steps-to-reduce-a-number-to-zero',
       ],
@@ -308,6 +329,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🗃 Matrix',
+      link: { type: 'generated-index', slug: '/matrix' },
       items: [
         'matrix/1672-richest-customer-wealth',
       ],
