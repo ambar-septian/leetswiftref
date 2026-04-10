@@ -28,6 +28,10 @@ You may assume that each input has **exactly one solution**, and you may not use
 - `-10^9 <= target <= 10^9`
 - Exactly one valid answer exists.
 
+<Callout type="amber" label="Key Constraint">
+Exactly one valid answer is guaranteed — you never need to handle zero or multiple solutions. You may not use the same element twice, so the complement must come from a different index.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 For every number `x`, we need `target - x`. Instead of scanning the whole array each time, store numbers you have already seen in a hash map so the lookup is O(1).
 </Callout>
@@ -66,7 +70,15 @@ Explanation: nums[0] + nums[1] = 3 + 3 = 6
   answer="Hash Map — Complement Lookup"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a problem asks for two indices that sum to a target, reach for a hash map — store each value and its index as you scan, then look up the complement in O(1).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+For every element x, compute complement = target - x. Storing previously seen values in a hash map lets you check for the complement in O(1). A single left-to-right pass suffices — when the second element of any valid pair is reached, the first is already in the map.
+</Callout>
 
 Use a single pass with a hash map that maps each value to its index. For every element, compute the complement (`target - nums[i]`). If the complement is already in the map, we have our answer. Otherwise, insert the current element.
 
@@ -123,7 +135,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`[Int: Int]()` creates an empty dictionary — no import required. `if let existingIndex = dict[complement]` safely unwraps the optional lookup without force-unwrap. Looking up before inserting ensures an element is never matched against itself even when `nums[i] * 2 == target`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each of the n elements is visited exactly once. Hash map lookup and insertion are both O(1) on average, so total time is O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The hash map stores at most n entries — one per element seen — giving O(n) auxiliary space in the worst case (no match found until the last element).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -131,6 +155,10 @@ class Solution {
     { approach: "Hash Map — one pass", time: "O(n)", space: "O(n)", note: "Single scan, instant complement lookup", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Hash Map over Brute Force">
+Always prefer the hash map when n is greater than a few dozen — the O(n) vs O(n²) gap grows rapidly. Brute force is only worth considering for tiny inputs or when extra memory is severely constrained.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

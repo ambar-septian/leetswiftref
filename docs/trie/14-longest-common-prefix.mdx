@@ -27,6 +27,10 @@ If there is no common prefix, return an empty string `""`.
 - `0 <= strs[i].length <= 200`
 - `strs[i]` consists of only lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+The common prefix can be at most as long as the shortest string. If any string is empty, or if the very first characters differ across strings, the answer is an empty string immediately.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use the first string as the reference. For each character position, check whether every other string has the same character at that position. Stop as soon as any string is too short or has a different character — everything up to that point is the common prefix.
 </Callout>
@@ -58,7 +62,15 @@ Explanation: There is no common prefix among the input strings.
   answer="Vertical scan — iterate column by column using the first string as reference"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When finding a common prefix across an array of strings, think vertical scan — use the first string as the column reference and stop at the first mismatch or length boundary across any other string.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Use the first string as the column reference. For each character position, check every other string at that index — stop the moment any string is too short or its character differs. Everything collected up to that point is the longest common prefix.
+</Callout>
 
 Iterate through each character index of `strs[0]`. For that index, check every other string in the array. If a string is shorter than the current index, or its character at that index differs from `strs[0]`'s character, break out of both loops immediately and return the prefix collected so far. Otherwise append the character to the result.
 
@@ -126,7 +138,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift's labeled break (`outerLoop: for ... { break outerLoop }`) is the idiomatic way to exit nested loops — cleaner than setting a flag. `String.Index` is required for subscripting Swift strings; `index(_:offsetBy:)` computes the correct index from an integer offset.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(S)">
+In the worst case every character of every string is compared — O(S) total where S is the sum of all character counts across all strings. Early exit on mismatch makes the average case much faster.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(p)">
+The results array accumulates at most p characters where p is the prefix length. No other auxiliary storage is needed.
+</Callout>
 
 <ComplexityTable
   rows={[

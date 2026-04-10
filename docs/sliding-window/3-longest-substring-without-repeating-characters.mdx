@@ -26,6 +26,10 @@ A **substring** is a contiguous non-empty sequence of characters within a string
 - `0 <= s.length <= 5 * 10^4`
 - `s` consists of English letters, digits, symbols, and spaces.
 
+<Callout type="amber" label="Key Constraint">
+The substring must be contiguous and all characters must be unique. The character set includes digits, symbols, and spaces — not just letters — so a Set of Character is required rather than a fixed-size alphabet array.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Maintain a window `[left, right]` of characters with no duplicates. Expand right freely; when a duplicate appears, shrink from the left until the duplicate is removed. Track the max window size seen.
 </Callout>
@@ -65,7 +69,15 @@ Note: "pwke" is a subsequence, not a substring.
   answer="Sliding Window — expand right, shrink left on duplicate"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked for the longest valid contiguous substring, think sliding window — expand the right pointer freely and shrink from the left the moment the validity condition (no duplicate characters) is broken.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain a sliding window [left, right] of characters with no duplicates. Expand right freely when the new character is not in the set. When a duplicate appears, remove characters from the left until the duplicate is gone — the window is then valid again. Track the maximum window size throughout.
+</Callout>
 
 Use two pointers `left` and `right` and a `Set` of characters currently in the window. Advance `right` one character at a time. If `chars[right]` is already in the set, remove `chars[left]` from the set and advance `left`. Otherwise insert `chars[right]` and update the max length. Continue until `right` reaches the end.
 
@@ -137,7 +149,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(s)` materialises the string into a Character array so all index accesses are O(1) — Swift String subscript is O(n) due to Unicode scalars, so this conversion is essential for linear time. `Set&lt;Character&gt;` provides O(1) average `insert` and `contains`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each character is inserted into and removed from the set at most once across the entire scan. Both operations are O(1) average, giving O(n) total where n is the string length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(min(n,m))">
+The set holds at most min(n, m) characters where m is the character set size (e.g. 128 for ASCII). In the worst case all characters are distinct and the set reaches O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -145,6 +169,10 @@ class Solution {
     { approach: "Sliding window with Set", time: "O(n)", space: "O(min(n,m))", note: "Each char added and removed at most once", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Sliding Window over Brute Force">
+Always prefer sliding window — brute force is O(n³) and should only be used for understanding the problem. The sliding window achieves the same result in O(n) with only O(min(n,m)) extra space.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

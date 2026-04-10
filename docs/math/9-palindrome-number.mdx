@@ -25,6 +25,10 @@ An integer is a palindrome when it reads the same forward and backward. For exam
 **Constraints**
 - `-2^31 <= x <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+Negative numbers are never palindromes — the leading minus sign makes them asymmetric. This must be caught with an early return before any digit comparison.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Convert the integer to its string representation, then use two pointers from both ends moving toward the middle. If every pair of characters matches, it is a palindrome.
 </Callout>
@@ -64,7 +68,15 @@ Explanation: Reads 01 from right to left. Therefore it is not a palindrome.
   answer="Two Pointers on string digits — compare from both ends to middle"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking if a number is a palindrome, convert to a string and use two pointers from both ends — you only need to compare to the midpoint since the second half mirrors the first.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A palindrome reads the same from both ends. Reject negatives immediately — then convert the integer to a string, build a character array, and compare index i with index count-1-i from the outside in. Stopping at the midpoint is sufficient since the second half mirrors the first.
+</Callout>
 
 Negative numbers are immediately rejected. For non-negative numbers, convert the integer to a `String`, map it to an array of single-character strings, then walk a pointer from index `0` to `count / 2`. At each step compare `array[pointer]` with `array[count - pointer - 1]`. If any pair mismatches return `false`; if all match return `true`.
 
@@ -132,7 +144,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`String(x).map(String.init)` converts each `Character` to a single-character `String`, enabling integer index access on the resulting array without `String.Index` arithmetic. Integer division `count / 2` naturally floors to the correct midpoint for both odd- and even-length numbers.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(d)">
+Converting the integer to a string takes O(d) where d is the number of digits. The comparison loop runs at most d/2 iterations. Total time is O(d).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(d)">
+The character array holds d elements. For a 32-bit integer d is at most 10, so this is effectively O(1) in practice, but O(d) in the general case.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -27,6 +27,10 @@ Given the `head` of a linked list, remove the `n`th node from the **end** of the
 - `0 <= Node.val <= 100`
 - `1 <= n <= sz`
 
+<Callout type="amber" label="Key Constraint">
+n is guaranteed valid (1 ≤ n ≤ sz), so the target node always exists. When n equals the list length, the head itself is the node to remove — a dummy head handles this uniformly without a special branch.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use a fast pointer that moves 2 steps at a time and a slow pointer that moves 1 step. When fast stops, count gives the total node count. Convert that to a 0-based front index, walk a dummy-headed cursor to the node just before the target, then skip the target with curr.next = curr.next.next.
 </Callout>
@@ -65,7 +69,15 @@ Output: [1]
   answer="Fast/slow pointers to count length, then dummy-head cursor to remove the target node"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When removing a node by position from the end of a linked list, think fast/slow pointer to encode the list length in one traversal, then use a dummy head so head-removal is handled uniformly with any other node.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+The nth node from the end has front index length - n. A fast pointer moving 2 steps and a slow pointer moving 1 step encode the list length in one traversal. A dummy node prepended before the head ensures the node-before-target always exists, making head removal identical to any other removal.
+</Callout>
 
 Start `slow` at `head` and `fast` at `head.next`, `count = 1`. Advance both while `fast != nil && fast.next != nil` (fast moves 2 steps, slow moves 1 step, count increments). After the loop, `count` encodes half the list length. Compute the true length: `count * 2`, then subtract 1 if `fast` is nil (odd-length list). The front index of the target is `length - n`. Walk a dummy-headed cursor that many steps, then unlink via `curr.next = curr.next.next`.
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Optional chaining `fast?.next?.next` compactly handles the two-step advance — if any link is nil the whole expression short-circuits to nil, stopping the loop. Declaring `dummy` as `ListNode?` lets it participate in the same optional-chaining pattern as other nodes without forced unwrapping.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+The fast/slow traversal visits at most n nodes during counting. The cursor walk to the removal point visits at most n nodes. Both passes are O(n) where n is the list length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only a constant number of pointer variables are used. The dummy node is a single allocation. No auxiliary data structures are needed.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -151,6 +175,10 @@ class Solution {
     { approach: "Fast/slow pointer — one logical pass", time: "O(n)", space: "O(1)", note: "Fast pointer encodes length in one traversal", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Fast/Slow Pointer over Two-Pass">
+Both approaches are O(n) time and O(1) space for this problem. Prefer fast/slow for its conceptual elegance — a single traversal that encodes the list length. Two-pass is simpler to reason about if the length-encoding formula feels opaque.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -29,6 +29,10 @@ An input string is valid if:
 - `1 <= s.length <= 10^4`
 - `s` consists of parentheses only `'()[]{}'`.
 
+<Callout type="amber" label="Key Constraint">
+The string contains only bracket characters — no letters or other symbols. Length can reach 10^4, so the solution must be linear. A valid string always has even length (useful as an early-exit guard).
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Push every opening bracket onto a stack. When a closing bracket is encountered, the top of the stack must be the matching opener — pop it. If the stack is empty at the end, all brackets were matched and nested correctly.
 </Callout>
@@ -64,7 +68,15 @@ Output: false
   answer="Stack — push openers, pop on matching closer, valid if stack empty at end"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Whenever a problem involves matching paired delimiters in the correct nesting order, think stack — push openers and pop when the matching closer arrives; an empty stack at the end means all brackets were paired correctly.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Push every opening bracket onto a stack. When a closing bracket arrives, check if the stack top is the matching opener — if so, pop it (matched pair); otherwise push the closer. An empty stack at the end means every opener was matched in correct nesting order.
+</Callout>
 
 Iterate through each character. For opening brackets (`{`, `[`, `(`), push onto the stack. For closing brackets, check if the stack's last element is the matching opener — if so, pop it; otherwise push the closer. After processing all characters, the string is valid if and only if the stack is empty.
 
@@ -148,7 +160,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Using `[String]` for the stack (rather than `[Character]`) allows direct comparison with string literals in the switch cases. `stack.last` is O(1) on Array and returns an Optional — always guard with `!stack.isEmpty` before comparing. `stack.removeLast()` is also O(1).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each character is processed exactly once. Each push and pop operation is O(1). Total time is O(n) where n is the string length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+In the worst case — all opening brackets — the stack holds n/2 elements before any closing bracket appears. Space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

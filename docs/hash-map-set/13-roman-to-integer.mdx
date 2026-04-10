@@ -42,6 +42,10 @@ Given a roman numeral string `s`, convert it to an integer.
 - `s` contains only the characters `I`, `V`, `X`, `L`, `C`, `D`, `M`.
 - It is guaranteed that `s` is a valid Roman numeral in the range `[1, 3999]`.
 
+<Callout type="amber" label="Key Constraint">
+Only six subtractive cases exist (IV, IX, XL, XC, CD, CM) and input is always valid — no need to validate the numeral. All other symbol sequences are purely additive from left to right.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Scan left to right, tracking the previous value. When the current value is greater than the previous, a subtractive pair has just been completed — the previous value was added once too many, so subtract it twice to correct. Otherwise just add the current value.
 </Callout>
@@ -80,7 +84,15 @@ Explanation: M = 1000, CM = 900, XC = 90, IV = 4 → 1994
   answer="Linear scan — subtract twice the previous value when a larger numeral follows"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When parsing Roman numerals, think lookbehind — if the current symbol is larger than the previous one, a subtractive pair just completed; subtract the previous value twice to correct the over-addition.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Scan left to right, adding each symbol's value optimistically. When a larger symbol follows a smaller one, the smaller was a subtractive prefix — subtract it twice (once to undo the over-addition, once for the correct subtraction). This single lookbehind check handles all six subtractive cases with no lookahead required.
+</Callout>
 
 Iterate through each character, mapping it to its integer value via a switch. Maintain `temp` (the previous character's value). If `current > temp` and `temp != 0`, a subtractive pair is complete: add `current - 2 * temp` (effectively undoing the +temp from the previous step and applying the correct subtraction). Otherwise just add `current`. Update `temp` and continue.
 
@@ -159,7 +171,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift `switch` on a `Character` must be exhaustive — the `default: number = 0` case is required even though the problem guarantees only valid symbols. Declaring `let number: Int` inside the switch then using it after keeps the mapping and the logic cleanly separated.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each character is processed exactly once with O(1) work per character. With at most 15 characters the input size is bounded, but the algorithm is O(n) in the general case.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two integer variables — result and temp — are maintained. No auxiliary data structures are needed.
+</Callout>
 
 <ComplexityTable
   rows={[

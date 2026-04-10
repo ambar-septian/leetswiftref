@@ -17,7 +17,7 @@
       "status": "done",
       "slug": "two-sum",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2,
@@ -38,7 +38,7 @@
       "status": "done",
       "slug": "add-two-numbers",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 3,
@@ -58,7 +58,7 @@
       "status": "done",
       "slug": "longest-substring-without-repeating-characters",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 9,
@@ -76,7 +76,7 @@
       "status": "done",
       "slug": "palindrome-number",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 11,
@@ -96,7 +96,7 @@
       "status": "done",
       "slug": "container-with-most-water",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 13,
@@ -116,7 +116,7 @@
       "status": "done",
       "slug": "roman-to-integer",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 14,
@@ -136,7 +136,7 @@
       "status": "done",
       "slug": "longest-common-prefix",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 17,
@@ -157,7 +157,7 @@
       "status": "done",
       "slug": "letter-combinations-of-a-phone-number",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 19,
@@ -177,7 +177,7 @@
       "status": "done",
       "slug": "remove-nth-node-from-end-of-list",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 20,
@@ -196,7 +196,7 @@
       "status": "done",
       "slug": "valid-parentheses",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 21,

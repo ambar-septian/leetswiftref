@@ -30,6 +30,10 @@ Find two lines that together with the x-axis form a container that holds the mos
 - `2 <= n <= 10^5`
 - `0 <= height[i] <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Water volume is always limited by the shorter of the two lines — you cannot slant the container. Heights can be zero, so a line may contribute nothing to any container it forms.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Start with the widest possible container (pointers at both ends). The area is always limited by the shorter line. Moving the taller line inward can only decrease width without increasing the height limit — so always move the shorter pointer inward to have any chance of finding a larger area.
 </Callout>
@@ -62,7 +66,15 @@ Explanation: Only two lines. Area = min(1,1) * 1 = 1.
   answer="Two Pointers — greedy, always move the shorter-height pointer inward"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When optimising a pair selection from a linear array where one side is always the limiting factor, think two-pointer greedy — start wide and always advance the weaker (shorter) side inward.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Start with the widest possible container (pointers at both ends). Area is always capped by the shorter line. Moving the taller pointer inward shrinks width without any possibility of raising the height cap — so always move the shorter pointer, which is the only way to potentially find a taller boundary.
+</Callout>
 
 <ContainerWithMostWaterDiagram />
 
@@ -128,7 +140,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`min(_:_:)` and `max(_:_:)` are free functions in Swift's standard library — no import needed. Using `left != right` as the loop condition is safe because the two pointers strictly converge toward each other and are guaranteed to meet without crossing.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+The two pointers together traverse the array at most n steps — left only moves right and right only moves left, each advancing by 1 per iteration. The loop runs at most n times.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only three integer variables are used — left, right, and total. No auxiliary data structures are needed.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -136,6 +160,10 @@ class Solution {
     { approach: "Two pointers — greedy", time: "O(n)", space: "O(1)", note: "Each pointer moves at most n steps total", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Two Pointers over Brute Force">
+Always prefer two pointers for this problem. Brute force is O(n²) and only useful as a baseline to verify the greedy claim. The two-pointer approach is strictly better in time with identical space.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

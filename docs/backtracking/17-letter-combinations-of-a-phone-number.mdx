@@ -34,6 +34,10 @@ A mapping of digits to letters (just like on the telephone buttons) is given bel
 - `0 <= digits.length <= 4`
 - `digits[i]` is a digit in the range `['2', '9']`.
 
+<Callout type="amber" label="Key Constraint">
+An empty input string must return an empty array — not an array containing an empty string. The maximum of 4 digits bounds the output to at most 4^4 = 256 combinations, so exhaustive backtracking is efficient.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Build each combination one character at a time. At each recursive call, append one letter mapped from the current digit, recurse to the next digit, then remove the letter (backtrack). When the path length equals the number of digits, record the combination.
 </Callout>
@@ -69,7 +73,15 @@ Output: ["a","b","c"]
   answer="Backtracking — build path letter by letter, append to results when complete, remove on return"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked to enumerate all combinations where each step picks from a small known set, think backtracking — build the path one choice at a time, recurse, then undo the last choice before trying the next.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Each digit maps to 2–4 letters. At each recursion level, try every letter for the current digit: append it to the path, recurse to the next digit, then remove it (backtrack). When the path length equals the number of digits, the combination is complete — record it and return.
+</Callout>
 
 Pre-build a dictionary mapping each digit character to its letter array. Use a recursive `backTrack(_ index: Int)` function with a shared `path` array. At each call, look up the letters for `digs[index]`, iterate over them: append the letter, recurse with `index + 1`, then remove the last element. The base case is `path.count == digits.count` — join the path and append to results.
 
@@ -149,7 +161,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `func backTrack` captures `path`, `results`, `digs`, and `consts` by reference from the enclosing function — Swift nested functions capture variables automatically, no explicit capture list needed. `path.removeLast()` is O(1) on Array since it only decrements the count without reallocation.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(4^n * n)">
+There are at most 4^n complete combinations (digit 7 and 9 map to 4 letters each). Building each combination string takes O(n) time. With n capped at 4, the practical maximum is 256 combinations of length 4.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The recursion stack goes at most n levels deep and the path array holds at most n characters. Excluding the output array, auxiliary space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

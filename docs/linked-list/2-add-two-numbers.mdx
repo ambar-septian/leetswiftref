@@ -28,6 +28,10 @@ You may assume the two numbers do not have leading zeros, except the number 0 it
 - `0 <= Node.val <= 9`
 - It is guaranteed that the list represents a number that does not have leading zeros.
 
+<Callout type="amber" label="Key Constraint">
+Digits are stored in reverse order — the head of each list is the least significant digit. The lists can have different lengths, and a carry after the last digit must produce an extra node.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Because the digits are stored in reverse order, the head of each list is the least significant digit — exactly where grade-school addition starts. Walk both lists simultaneously, summing digits and tracking the carry, then append a final carry node if needed.
 </Callout>
@@ -67,7 +71,15 @@ Explanation: 9999999 + 9999 = 10009998, stored reversed.
   answer="Iterative simulation — traverse both lists simultaneously, digit by digit with carry"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When adding two numbers stored as reversed linked lists, think iterative simulation — walk both lists simultaneously, add digit by digit with carry, and substitute 0 for missing digits in the shorter list.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Because digits are in reverse order, the head of each list is the ones digit — exactly where addition starts. Simulate grade-school addition left to right: sum each pair of digits plus the running carry, output the unit digit (total % 10), propagate the carry (total / 10), and handle lists of different lengths by substituting 0 for missing digits.
+</Callout>
 
 Extract both lists into integer arrays. Walk through both arrays index by index, summing the values plus the running carry. Store `total % 10` as the current digit and set carry to `1` if `total >= 10`, else `0`. After the loop, if carry is still `1`, append it. Convert the integer array back into a linked list by mapping each value to a `ListNode` and linking them in order.
 
@@ -162,7 +174,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`values.map(ListNode.init)` passes the memberwise initialiser as a function reference — a clean Swift idiom that avoids a trailing closure. `indices.contains(index)` is O(1) on Array since indices is a CountableRange. Marking `convert` as `static` keeps it side-effect-free and callable without an instance.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(max(m,n))">
+Both lists are extracted in one pass each, then the addition loop runs for max(m, n) iterations, then a final pass converts the result array to a linked list. All passes are O(max(m, n)) where m and n are the list lengths.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(max(m,n))">
+Two arrays hold the extracted digits and the result array holds at most max(m, n) + 1 elements for the carry. Total auxiliary space is O(max(m, n)).
+</Callout>
 
 <ComplexityTable
   rows={[
