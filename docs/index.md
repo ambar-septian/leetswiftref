@@ -6,169 +6,83 @@ hide_table_of_contents: true
 ---
 
 import Link from '@docusaurus/Link';
+import { LandingStats, LandingSectionHeader, TopicCard, RecentlyAdded } from '@site/src/components/Landing';
 
-<div style={{ textAlign: 'center', marginBottom: '40px' }}>
-  <img src={require('@site/static/img/hero-banner.png').default} alt="DSA Reference Banner" style={{ borderRadius: '12px', width: '100%', maxHeight: '260px', objectFit: 'cover', border: '1px solid var(--dsa-border)', boxShadow: '0 4px 20px rgba(74, 222, 128, 0.1)' }} />
-  
-  <h1 style={{ marginTop: '30px', fontSize: '2.5rem', color: 'var(--ifm-heading-color)' }}>Personal DSA Reference</h1>
-  <p style={{ fontSize: '1.2rem', color: 'var(--dsa-text-dim)' }}>
-    Data structures and algorithms solved, explained, and remembered in Swift.
-  </p>
+<div className="landing-hero">
+  <img
+    src={require('@site/static/img/hero-banner.png').default}
+    alt="DSA Reference Banner"
+    className="landing-hero-img"
+  />
+  <h1>Personal DSA Reference</h1>
+  <p>Data structures and algorithms solved, explained, and remembered in Swift.</p>
+  <LandingStats />
 </div>
 
-<hr style={{ margin: '40px 0' }} />
+<LandingSectionHeader tag="Topics" title="All Topics" />
 
-<div style={{ marginTop: '50px', marginBottom: '30px', textAlign: 'center' }}>
-  <h2 style={{ fontSize: '2rem' }}>📚 Topics Directory</h2>
+<div className="topics-grid">
+  <TopicCard to="/array"              emoji="🧩" label="Array"               category="array"               accent="var(--dsa-accent)"  />
+  <TopicCard to="/two-pointers"       emoji="↔️" label="Two Pointers"        category="two-pointers"        accent="var(--dsa-accent2)" />
+  <TopicCard to="/sliding-window"     emoji="🪟" label="Sliding Window"      category="sliding-window"      accent="var(--dsa-accent2)" />
+  <TopicCard to="/prefix-sum"         emoji="➕" label="Prefix Sum"          category="prefix-sum"          accent="var(--dsa-accent2)" />
+  <TopicCard to="/hash-map-set"       emoji="🗂" label="Hash Map / Set"      category="hash-map-set"        accent="var(--dsa-accent2)" />
+  <TopicCard to="/binary-search"      emoji="🔍" label="Binary Search"       category="binary-search"       accent="var(--dsa-accent3)" />
+  <TopicCard to="/math"               emoji="🔢" label="Math"                category="math"                accent="var(--dsa-accent3)" />
+  <TopicCard to="/string"             emoji="🔤" label="String"              category="string"              accent="var(--dsa-accent2)" />
+  <TopicCard to="/linked-list"        emoji="🔗" label="Linked List"         category="linked-list"         accent="var(--dsa-accent)"  />
+  <TopicCard to="/stack"              emoji="📚" label="Stack"               category="stack"               accent="var(--dsa-accent3)" />
+  <TopicCard to="/queue"              emoji="📬" label="Queue"               category="queue"               accent="var(--dsa-accent3)" />
+  <TopicCard to="/heap"               emoji="🏔" label="Heap"                category="heap"                accent="var(--dsa-accent)"  />
+  <TopicCard to="/binary-tree"        emoji="🌲" label="Binary Tree"         category="binary-tree"         accent="var(--dsa-accent)"  />
+  <TopicCard to="/binary-search-tree" emoji="🔎" label="Binary Search Tree"  category="binary-search-tree"  accent="var(--dsa-accent)"  />
+  <TopicCard to="/trie"               emoji="🌳" label="Trie"                category="trie"                accent="var(--dsa-accent)"  />
+  <TopicCard to="/graph"              emoji="🕸" label="Graph"               category="graph"               accent="var(--dsa-accent)"  />
+  <TopicCard to="/matrix"             emoji="🗃" label="Matrix"              category="matrix"              accent="var(--dsa-accent)"  />
+  <TopicCard to="/monotonic-stack"    emoji="📊" label="Monotonic Stack"     category="monotonic-stack"     accent="var(--dsa-accent3)" />
+  <TopicCard to="/backtracking"       emoji="🔙" label="Backtracking"        category="backtracking"        accent="var(--dsa-purple)"  />
+  <TopicCard to="/dp-1d"              emoji="📈" label="Dynamic Prog. (1D)"  category="dp-1d"               accent="var(--dsa-purple)"  />
+  <TopicCard to="/greedy"             emoji="🌿" label="Greedy"              category="greedy"              accent="var(--dsa-accent3)" />
+  <TopicCard to="/bit-manipulation"   emoji="⊕"  label="Bit Manipulation"    category="bit-manipulation"    accent="var(--dsa-purple)"  />
 </div>
 
-<div className="container" style={{ padding: 0, maxWidth: '900px', margin: '0 auto' }}>
-  <div className="row">
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/array" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🧩 Array</h4>
-      </Link>
+<div className="landing-cta">
+  <Link to="/graph">Browse All Problems →</Link>
+</div>
+
+<LandingSectionHeader tag="Recent" title="Recently Added" />
+
+<RecentlyAdded />
+
+<LandingSectionHeader tag="Upcoming" title="In Progress" />
+
+<div className="coming-grid">
+  <div className="coming-card">
+    <div className="coming-card-top">
+      <span className="coming-emoji">📉</span>
+      <span className="coming-name">DP Multi-dimension</span>
     </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/two-pointers" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent2)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>↔️ Two Pointers</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/sliding-window" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent3)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🪟 Sliding Window</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/binary-search" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-purple)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔍 Binary Search</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/linked-list" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔗 Linked List</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/binary-tree" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent2)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🌲 Binary Tree</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/binary-search-tree" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent3)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔎 Binary Search Tree</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/graph" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-purple)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🕸 Graph</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/dp-1d" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-red)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>📈 1D Dynamic Prog.</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/prefix-sum" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>➕ Prefix Sum</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/hash-map-set" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent2)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🗂 Hash Map / Set</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/math" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent3)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔢 Math</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/string" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-purple)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔤 String</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/trie" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🌳 Trie</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/queue" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent2)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>📬 Queue</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/heap" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent3)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🏔 Heap</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/monotonic-stack" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-purple)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>📊 Monotonic Stack</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/backtracking" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔙 Backtracking</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/stack" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent2)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>📚 Stack</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/greedy" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent3)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🌿 Greedy</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/bit-manipulation" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-purple)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🔢 Bit Manipulation</h4>
-      </Link>
-    </div>
-    <div className="col col--4 margin-bottom--md">
-      <Link to="/matrix" className="card shadow--sm padding--sm" style={{ textDecoration: 'none', color: 'inherit', background: 'var(--dsa-surface)', borderColor: 'var(--dsa-border)', borderTop: '3px solid var(--dsa-accent)' }}>
-        <h4 style={{ margin: 0, color: 'var(--dsa-text)' }}>🗃 Matrix</h4>
-      </Link>
-    </div>
+    <span className="coming-badge">Coming Soon</span>
   </div>
-</div>
-
-<div style={{ maxWidth: '900px', margin: '40px auto 50px', padding: '15px', background: 'var(--dsa-surface2)', borderRadius: '8px', borderLeft: '4px solid var(--dsa-accent)', textAlign: 'center' }}>
-  <span style={{ color: 'var(--dsa-text)', fontSize: '1.2rem' }}>
-    👉 <Link to="/graph/133-clone-graph" style={{ fontWeight: 'bold' }}>Explore All Problems →</Link>
-  </span>
-</div>
-
----
-
-<div style={{ marginTop: '50px', marginBottom: '30px', textAlign: 'center' }}>
-  <h2 style={{ fontSize: '2rem' }}>🚧 Upcoming</h2>
-  <p style={{ color: 'var(--dsa-text-muted)' }}>These categories are currently being worked on and will be available soon.</p>
-</div>
-
-<div className="container" style={{ padding: 0, maxWidth: '900px', margin: '0 auto', marginBottom: '60px' }}>
-  <div className="row">
-    <div className="col col--4 margin-bottom--md">
-      <div className="card shadow--sm padding--sm" style={{ background: 'var(--dsa-surface2)', border: '1px dashed var(--dsa-border)' }}>
-        <h5 style={{ margin: 0, color: 'var(--dsa-text-muted)' }}>🗂️ Sort</h5>
-        <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: 'var(--dsa-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Coming Soon</p>
-      </div>
+  <div className="coming-card">
+    <div className="coming-card-top">
+      <span className="coming-emoji">🗂️</span>
+      <span className="coming-name">Sort</span>
     </div>
-    <div className="col col--4 margin-bottom--md">
-      <div className="card shadow--sm padding--sm" style={{ background: 'var(--dsa-surface2)', border: '1px dashed var(--dsa-border)' }}>
-        <h5 style={{ margin: 0, color: 'var(--dsa-text-muted)' }}>⏱️ Intervals</h5>
-        <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: 'var(--dsa-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Coming Soon</p>
-      </div>
+    <span className="coming-badge">Coming Soon</span>
+  </div>
+  <div className="coming-card">
+    <div className="coming-card-top">
+      <span className="coming-emoji">⏱️</span>
+      <span className="coming-name">Intervals</span>
     </div>
-    <div className="col col--4 margin-bottom--md">
-      <div className="card shadow--sm padding--sm" style={{ background: 'var(--dsa-surface2)', border: '1px dashed var(--dsa-border)' }}>
-        <h5 style={{ margin: 0, color: 'var(--dsa-text-muted)' }}>📏 Segment Tree</h5>
-        <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: 'var(--dsa-text-dim)', textTransform: 'uppercase', letterSpacing: '1px' }}>Coming Soon</p>
-      </div>
+    <span className="coming-badge">Coming Soon</span>
+  </div>
+  <div className="coming-card">
+    <div className="coming-card-top">
+      <span className="coming-emoji">📏</span>
+      <span className="coming-name">Segment Tree</span>
     </div>
+    <span className="coming-badge">Coming Soon</span>
   </div>
 </div>
