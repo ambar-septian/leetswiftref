@@ -1,0 +1,87 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.copyButton {
+  opacity: 0;
+  transition: opacity var(--ifm-transition-fast) ease, color var(--ifm-transition-fast) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ifm-color-content-secondary);
+}
+
+:global(.theme-code-block:hover) .copyButton {
+  opacity: 1;
+}
+
+.copyButton:hover {
+  color: var(--ifm-color-content);
+}
+
+.copyButtonCopied {
+  color: #4ade80 !important;
+}
+
+.copyButtonIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+}
+
+/* Toast Notification Styles */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1a1d26;
+  color: #e8eaf0;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(74, 222, 128, 0.2);
+  z-index: 10000;
+  animation: toastIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.toastExiting {
+  animation: toastOut 0.2s ease-in forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+.toastIcon {
+  width: 16px;
+  height: 16px;
+  fill: #4ade80;
+  flex-shrink: 0;
+}
