@@ -28,6 +28,10 @@ A BST's inorder traversal yields values in ascending sorted order. The kth node 
 - `1 <= k <= n <= 10^4`
 - `0 <= Node.val <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+`1 <= k <= n` is guaranteed — a valid answer always exists. The iterative approach can return immediately on the kth node, making it more efficient than collecting all values, especially when k is small relative to n.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ Output: 3
   answer="Iterative inorder with stack — count visited nodes; return val when count == k"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a BST problem requires the kth smallest (or largest) element, reach for iterative inorder traversal with an explicit stack — it visits nodes in ascending order and can stop the moment `n == k` without continuing the traversal.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Push the entire left spine onto a stack. Pop the top, increment a counter; when the counter equals k, return that node's value. Otherwise move to the popped node's right child and repeat — pushing its left spine. This mimics inorder traversal (left → root → right) without full recursion and stops at exactly the kth node.
+</Callout>
 
 <KthSmallestBSTDiagram />
 
@@ -121,7 +133,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`stack.removeLast()` on a Swift `Array` is O(1) — no element shifting. This is why an array-as-stack is efficient here, unlike `removeFirst()` which is O(n). The `while !stack.isEmpty || curr != nil` condition correctly handles both the initial left-spine descent and subsequent right-subtree traversals.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(H + k)">
+The initial left-spine push is O(H). After that, k pop-and-advance operations are performed, each O(1). Total O(H + k) — much better than O(n) when k is small or the tree is balanced (H = log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(H)">
+The explicit stack holds the current left spine at most — O(H) nodes. H = log n for a balanced BST, O(n) for a skewed one.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -130,6 +154,10 @@ class Solution {
     { approach: "Collect all, sort, index", time: "O(n)", space: "O(n)", note: "Visits all nodes; wastes work beyond the kth node" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Iterative vs Recursive vs Collect All">
+Prefer **Iterative Inorder** for its clean early exit at the kth node — the best approach for large trees with small k. Use **Recursive Inorder** when the recursive style is clearer, but note that early exit requires threading a mutable flag through the call stack. Use **Collect All** only for tiny trees where simplicity outweighs the wasted traversal.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -26,6 +26,10 @@ The product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit i
 - `2 <= nums.length <= 10^5`
 - `-30 <= nums[i] <= 30`
 
+<Callout type="amber" label="Key Constraint">
+Division is explicitly forbidden and the algorithm must run in O(n) time. Division would also fail for arrays containing zeros. The prefix/suffix product approach handles zeros naturally and satisfies both constraints.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: [0,0,9,0,0]
   answer="Two-pass prefix/suffix product — write left products forward into result, multiply right products backward"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked for the product of all elements except self without division in O(n), use two passes over the output array: write running left-products forward, then multiply running right-products backward. No extra arrays needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+The product of everything except `nums[i]` equals the product of all elements to its left times all elements to its right. A first forward pass writes these left-products into the output array; a second reverse pass multiplies in the right-products using a single running variable. The output array itself serves as storage — no extra arrays needed.
+</Callout>
 
 **Pass 1 (left to right):** `results[i]` = product of all elements to the left of `i`. Use a running variable `left`, starting at 1.
 
@@ -127,7 +139,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`stride(from: count - 1, through: 0, by: -1)` is the idiomatic reverse loop; `(0..<count).reversed()` also works. `results[i] = results[i] * left` can be shortened to `results[i] *= left`. The output array is not counted as extra space per LeetCode convention.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Two linear passes over the n-element array: one forward for left products and one backward for right products. Each element is visited exactly twice — O(2n) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two scalar running variables (`left` and `right`) are maintained alongside the output array. The output array is not counted as extra space per the problem statement and LeetCode convention.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -135,6 +159,10 @@ class Solution {
     { approach: "Separate prefix and suffix arrays", time: "O(n)", space: "O(n)", note: "Same logic with explicit arrays — easier to read but uses O(n) extra space" },
   ]}
 />
+
+<Callout type="amber" label="Two-pass in-place vs Separate arrays — which to choose?">
+Choose the two-pass in-place approach when memory is constrained or the problem explicitly requires O(1) extra space. Choose separate prefix and suffix arrays when readability and debuggability matter more than space — the three-array version makes the left/right product split immediately obvious.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

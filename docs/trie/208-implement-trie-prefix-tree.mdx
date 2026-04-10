@@ -33,6 +33,10 @@ Implement the `Trie` class with the following operations:
 - `word` and `prefix` consist only of lowercase English letters.
 - At most `3 * 10^4` calls in total will be made to `insert`, `search`, and `startsWith`.
 
+<Callout type="amber" label="Key Constraint">
+Words and prefixes consist only of lowercase English letters (26 possible characters). This makes both hash-map children (`[Character: Node]`) and 26-slot fixed-array children viable — the choice affects constant-factor performance, not correctness.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: [null, null, true, false, true, null, true]
   answer="Trie with hash map children — isEndOfWord flag distinguishes exact search from prefix check"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a problem involves fast prefix lookups over a string dictionary, reach for a trie. Traversal depth equals the word length regardless of dictionary size — unlike a hash map, which must hash the full string on every lookup.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Each `Node` stores a dictionary of children and an `isEndOfWord` flag. Insert walks character by character, creating nodes as needed, then marks the final node. Both `search` and `startsWith` traverse identically — the only difference is the return value: `search` checks `isEndOfWord` at the final node while `startsWith` returns `true` as soon as the full path exists.
+</Callout>
 
 <ImplementTrieDiagram />
 
@@ -146,7 +158,19 @@ class Trie {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`[Character: Node]` for children leverages `Character`'s `Hashable` conformance. The `let root = Node()` stored property uses `let` safely because `Node` is a reference type — the constant reference never changes, but the node's `children` dictionary and `isEndOfWord` flag are freely mutated.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m) per operation">
+Each operation traverses at most m characters where m is the word or prefix length. Each character lookup in the `[Character: Node]` dictionary is O(1) amortised. All three operations (`insert`, `search`, `startsWith`) are O(m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m × n)">
+In the worst case, no two inserted words share any prefix. The trie stores m nodes per word for n total words: O(m × n) nodes. Each node holds a dictionary with up to 26 entries for lowercase English.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -154,6 +178,10 @@ class Trie {
     { approach: "Trie with 26-slot array children", time: "O(m) per operation", space: "O(m × n × 26)", note: "Faster constant factor for lowercase-only input; wastes memory for sparse character sets" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Hash Map vs 26-Slot Array children">
+Prefer a **hash map `[Character: Node]`** for any character set or when memory per node matters — it only allocates entries for characters actually inserted. Prefer a **26-slot fixed array** for purely lowercase input when lookup speed is critical; array indexing by ASCII offset is faster than dictionary hashing.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -26,6 +26,10 @@ Given the `head` of a linked list and an integer `val`, remove all the nodes of 
 - `1 <= Node.val <= 50`
 - `0 <= val <= 50`
 
+<Callout type="amber" label="Key Constraint">
+`val` can be `0` while node values are `1–50`, meaning the target value may match the head, tail, interior nodes, or all nodes. The dummy-head pattern handles every case uniformly without special-casing.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <RemoveElementsDiagram />
@@ -62,7 +66,15 @@ Output: []
   answer="Dummy Head — check curr.next.val; bypass with curr.next = curr.next.next; return dummy.next"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When removing nodes from a linked list (especially when the head might be removed), always start with a dummy sentinel. It eliminates the special-case head-removal logic and lets you check `curr.next.val` uniformly throughout.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Prepend a dummy node and traverse with `curr` checking `curr.next.val` instead of `curr.val`. This keeps `curr` as the predecessor of the node under inspection, enabling bypass (`curr.next = curr.next.next`) without a separate `prev` pointer — and handles head removal uniformly.
+</Callout>
 
 Prepend a dummy sentinel node before the head. Traverse with `curr` starting at the dummy. At each step, peek at `curr.next.val`: if it equals `val`, skip it by setting `curr.next = curr.next.next` (do not advance `curr`); otherwise advance `curr = curr.next`. Return `dummy.next` as the new head.
 
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Optional chaining (`curr?.next?.val`) propagates `nil` cleanly — if `curr.next` is `nil`, the entire expression short-circuits to `nil` without a crash. `var curr: ListNode? = ListNode()` allocates the dummy as an optional, and `result?.next` correctly unwraps the first real node after traversal.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each node is visited exactly once in a single traversal. Both the bypass and advance operations are O(1) pointer updates. Total time is O(n) where n is the list length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+One dummy node is allocated and a single `curr` pointer is maintained throughout. No auxiliary data structure grows with the input.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -138,6 +162,10 @@ class Solution {
     { approach: "Recursive", time: "O(n)", space: "O(n)", note: "Elegant but O(n) call stack depth for a list of length n" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Iterative vs Recursive">
+Prefer the **iterative dummy-head** approach for its O(1) space and no stack-overflow risk — the safe choice for lists up to 10,000 nodes. Use **recursion** only when an elegant base case is valued over safety; the O(n) call stack depth risks overflow on long lists.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

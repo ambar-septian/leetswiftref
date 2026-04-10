@@ -25,6 +25,10 @@ Given the `head` of a singly linked list, reverse the list, and return the rever
 - The number of nodes in the list is in the range `[0, 5000]`.
 - `-5000 <= Node.val <= 5000`
 
+<Callout type="amber" label="Key Constraint">
+The list may contain 0 nodes. The iterative approach handles this naturally — `curr` starts as `nil`, the `while` loop never executes, and `prev` (initialized to `nil`) is returned as the correct empty result.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <ReverseLinkedListDiagram />
@@ -61,7 +65,15 @@ Output: []
   answer="Iterative reversal — three-pointer technique: save next, redirect curr.next to prev, advance both"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When reversing a linked list in-place, reach for the three-pointer pattern: `prev = nil`, `curr = head`. Save `curr.next` in `temp` before redirecting, then advance both pointers.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+At each step, save `curr.next` in `temp` before overwriting it, redirect `curr.next` to `prev` (reversing the arrow), then advance `prev` to `curr` and `curr` to `temp`. When `curr` reaches `nil`, `prev` holds the last real node visited — the new head of the reversed list.
+</Callout>
 
 Maintain two pointers: `curr` (starts at `head`) and `prev` (starts as `nil`). At each step:
 1. Save `temp = curr.next` before overwriting it.
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Declaring `var prev: ListNode?` (no initializer) implicitly initializes to `nil` in Swift, matching the desired initial state — the original tail must point to `nil` after reversal. The optional chain `curr?.next` safely handles the nil traversal in one expression.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each node is visited exactly once. The four operations inside the loop (`temp` save, redirect, advance `prev`, advance `curr`) are all O(1) pointer assignments. Total time is O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Three pointer variables (`curr`, `prev`, `temp`) are used — each a fixed-size reference regardless of list length. No auxiliary data structure is allocated.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -138,6 +162,10 @@ class Solution {
     { approach: "Recursive", time: "O(n)", space: "O(n)", note: "Elegant but uses O(n) call stack depth — risk of stack overflow on very long lists" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Iterative vs Recursive">
+Prefer **Iterative** for O(1) space and no stack overflow risk — the only safe choice for lists up to 5,000 nodes. Use **Recursive** when the problem explicitly asks for it, but note the O(n) call stack depth; with n = 5000 a stack overflow is unlikely but possible depending on the environment.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

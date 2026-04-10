@@ -29,6 +29,10 @@ An **island** is surrounded by water and is formed by connecting adjacent lands 
 - `1 <= m, n <= 300`
 - `grid[i][j]` is `'0'` or `'1'`.
 
+<Callout type="amber" label="Key Constraint">
+The grid can be up to 300 × 300 (90,000 cells). Recursive DFS can reach a depth of 90,000 in the worst case (all land), risking a stack overflow. In production, prefer BFS or an iterative DFS with an explicit stack for large grids.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Output: 3
   answer="DFS sink-the-island — overwrite '1' with '0' during flood-fill; increment count each time a new '1' is found in the outer scan"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When counting connected components in a 2D grid, scan every cell and launch a flood-fill (DFS or BFS) from each unvisited land cell. Overwriting visited land with water eliminates the need for a separate visited set.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+The outer double loop counts how many times a new unvisited island is discovered. Each DFS call sinks the entire island by overwriting every connected '1' with '0'. After DFS returns, the outer loop skips those cells naturally because they are now '0' — no separate visited set required.
+</Callout>
 
 <NumberOfIslandsDiagram />
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift passes `[[Character]]` by value, so `var grid = grid` at the top creates a local mutable copy without affecting the caller. The nested `dfs` closure captures `grid`, `rows`, `cols`, and `dirs` from the outer scope — no explicit parameter passing required.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m×n)">
+Each cell is visited at most twice: once by the outer scan and once by a DFS call. The DFS overwrites cells with '0' so no cell is sunk more than once. Total work is O(m × n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m×n)">
+The DFS call stack can grow to O(m × n) in the degenerate case where the entire grid is a single island — the recursion depth equals the number of land cells. The `var grid = grid` copy is also O(m × n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -151,6 +175,10 @@ class Solution {
     { approach: "BFS with queue", time: "O(m×n)", space: "O(min(m,n))", note: "Queue holds at most the perimeter of the island at any time" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer DFS vs BFS">
+Prefer **BFS** when stack overflow is a concern — large grids filled with land can push DFS recursion depth to 90,000. BFS uses an explicit queue and avoids deep recursion. Prefer **DFS** for its concise recursive implementation when grid size is moderate.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

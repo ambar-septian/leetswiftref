@@ -31,6 +31,10 @@ Given an `m x n` board of characters and a list of strings `words`, return all w
 - `words[i]` consists of lowercase English letters.
 - All strings in `words` are unique.
 
+<Callout type="amber" label="Key Constraint">
+Up to 30,000 words on a 12×12 board. Running Word Search I independently for each word is O(W × m × n × 4^L) — too slow. A trie enables all words to share prefix traversal, pruning the DFS the moment the board path diverges from every word prefix simultaneously.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Output: []
   answer="Build trie of all words; DFS each cell advancing a trie node — prune dead nodes after words are found"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When searching for multiple words on a board, build a trie from all target words and run a single DFS pass — the trie allows early pruning whenever the current board path diverges from all word prefixes simultaneously.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Build a trie from all words, storing the full word string at each end-of-word node. DFS each board cell, advancing the trie cursor alongside. If no trie child matches the current character, prune immediately. When an end-of-word node is reached, collect the word and nil it to prevent duplicates. After DFS, prune childless nodes bottom-up to stop revisiting exhausted branches.
+</Callout>
 
 <WordSearchIIDiagram />
 
@@ -162,7 +174,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Storing `word: String?` on `TrieNode` avoids reconstructing the word from the DFS path — collect it directly when the node is reached. Setting `node.word = nil` after collection deduplicates without an extra Set. Marking cells with `"#"` reuses the `[[Character]]` board as a visited map — no additional O(m×n) memory needed. Swift's `var board = board` at the top creates a local mutable copy in O(m×n).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m×n×3^L)">
+DFS from each of the m×n cells explores at most 3^(L-1) paths (cannot backtrack to the prior cell). L = max word length. Trie pruning significantly reduces constant-factor work in practice.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(W×L)">
+The trie stores O(W × L) nodes for W words of max length L. The DFS call stack is at most O(L) deep. The `var board = board` copy is O(m×n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -170,6 +194,10 @@ class Solution {
     { approach: "Word Search I × W times", time: "O(W×m×n×4^L)", space: "O(L)", note: "No prefix sharing — each word searched independently" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Trie+DFS vs Word Search I × W">
+Prefer **Trie + DFS** when W is large (hundreds or thousands of words) — shared prefix traversal and early pruning make it vastly faster. Use **Word Search I × W** only for tiny word lists (single digits) where the trie build overhead is not justified.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

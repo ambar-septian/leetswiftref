@@ -29,6 +29,10 @@ Return the number I picked.
 - `1 <= n <= 2^31 - 1`
 - `1 <= pick <= n`
 
+<Callout type="amber" label="Key Constraint">
+`n` can be up to 2³¹ - 1. Using `(l + r) / 2` risks integer overflow when both `l` and `r` are large. The overflow-safe midpoint `l + (r - l) / 2` must be used.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Output: 1
   answer="Binary Search — halve the range each iteration based on the API response"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When searching for a hidden target in an ordered range using only a higher/lower comparison API, binary search is the direct choice: each API call eliminates half the remaining range, giving O(log n) guesses.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain `l` and `r` as the current search bounds. Each iteration computes `mid = l + (r - l) / 2` and calls `guess(mid)`. A result of `0` returns immediately; `1` (pick is higher) raises `l = mid + 1`; `-1` (pick is lower) lowers `r = mid - 1`. The problem guarantees a valid pick exists, so the loop always terminates via the inner return.
+</Callout>
 
 Maintain `l = 0` and `r = n`. Each iteration guess the midpoint `mid = (l + r) / 2`. If `guess(mid) == 0` we found the answer. If it returns `1` (guess too low), set `l = mid + 1`. If it returns `-1` (guess too high), set `r = mid - 1`. The loop runs until `guess` returns `0`.
 
@@ -126,7 +138,19 @@ class Solution: GuessGame {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The class inherits from `GuessGame`, which provides the `guess(_:)` API. The trailing `return -1` is dead code required only to satisfy the Swift compiler — the problem guarantees a valid pick always exists so the `while true` loop always exits via the inner `return`. Swift's `Int` is 64-bit on modern platforms, so `(l + r) / 2` does not overflow for the given constraints, but `l + (r - l) / 2` is the standard overflow-safe form.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+Each iteration halves the search range: after k iterations the range has size n / 2^k. The loop terminates when the range collapses to one element — after at most ⌈log₂ n⌉ iterations. Total: O(log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only four scalar variables (`l`, `r`, `middle`, `result`) are used. No auxiliary data structures are allocated regardless of n.
+</Callout>
 
 <ComplexityTable
   rows={[

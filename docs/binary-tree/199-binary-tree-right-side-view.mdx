@@ -27,6 +27,10 @@ A node is visible from the right side if it is the **rightmost node at its level
 - The number of nodes in the tree is in the range `[0, 100]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The number of nodes can be 0 (empty tree). Returning `[]` immediately when `root` is `nil` — before any BFS or DFS traversal — is a required edge-case guard.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Output: []
   answer="BFS level-order — record the last node's value at each level"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a problem asks for one representative node per level of a binary tree, BFS with a level-width snapshot is the most direct mapping — the last (or first) node dequeued per level is the answer.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Process the tree level by level using BFS. Snapshot the queue size before the inner loop so that children added during processing do not blur the level boundary. The last node dequeued per level is the rightmost visible node — append its value to the result.
+</Callout>
 
 <RightSideViewDiagram />
 
@@ -133,7 +145,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`queue.removeFirst()` on a Swift `Array` is O(n) because it shifts all elements. For production code with large trees, prefer a `Deque` from the swift-collections package (O(1) front removal). In interview contexts with the given constraint (at most 100 nodes), the `Array` approach is acceptable.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is enqueued and dequeued exactly once. The inner loop at each level does O(1) work per node. Total work is O(n) where n is the number of nodes.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The queue holds at most one full level at a time. In a complete binary tree the widest level has n/2 nodes, so queue space is O(n). The result array holds one value per level, O(h) ≤ O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -141,6 +165,10 @@ class Solution {
     { approach: "DFS (right before left)", time: "O(n)", space: "O(h)", note: "Track max depth seen; record first node at each new depth; O(h) call stack" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer BFS vs DFS">
+Prefer **BFS** when you need level-order information naturally (e.g., also tracking level indices or sums) — the level grouping is explicit. Prefer **DFS (right-first)** when call-stack depth is not a concern and you want to avoid the queue; it uses O(h) space vs O(n) for BFS on wide trees.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

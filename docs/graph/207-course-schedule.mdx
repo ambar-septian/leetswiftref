@@ -32,6 +32,10 @@ A cycle in the prerequisite graph makes it impossible to complete all courses �
 - `0 <= a, b < numCourses`
 - All the pairs `prerequisites[i]` are unique.
 
+<Callout type="amber" label="Key Constraint">
+Prerequisites can form cycles — the problem reduces entirely to cycle detection in a directed graph. If any cycle exists, at least one course can never be started, so the answer is `false`.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Explanation: Courses 0 and 1 each require the other — cycle detected.
   answer="Kahn's BFS topological sort — if processed count equals numCourses, return true; otherwise a cycle exists"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a problem asks whether all tasks can be completed given dependencies, model it as a directed graph and run Kahn's BFS topological sort — if the processed count equals the total node count, the graph is a DAG and the answer is yes.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Build an adjacency list and in-degree array. Seed the BFS queue with all zero-in-degree nodes (courses with no prerequisites). Each time a node is processed, decrement its neighbors' in-degrees and enqueue those that reach zero. If the final processed count equals `numCourses`, the graph is a DAG — no cycle exists.
+</Callout>
 
 <CourseScheduleDiagram />
 
@@ -146,7 +158,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`adjList[preq, default: []].append(course)` is idiomatic Swift — the dictionary subscript with a default value initializes missing keys in one expression without an explicit `if-else` nil check. `Array(repeating: 0, count: numCourses)` creates the in-degree array in a single line.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V + E)">
+Building the adjacency list and in-degree array is O(E). The BFS processes each node once (O(V)) and each edge once (O(E)). Total time is O(V + E) where V = numCourses and E = prerequisites.count.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V + E)">
+The adjacency list stores all edges: O(E). The in-degree array stores one entry per course: O(V). The queue and results array grow up to O(V). Total space is O(V + E).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -154,6 +178,10 @@ class Solution {
     { approach: "DFS cycle detection", time: "O(V + E)", space: "O(V)", note: "Three-color DFS (unvisited/visiting/visited); O(V) for call stack and state array" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Kahn's BFS vs DFS Cycle Detection">
+Prefer **Kahn's BFS** for its iterative implementation and the intuitive count-based cycle check — no colour-state bookkeeping required. Prefer **DFS cycle detection** when you need to reconstruct the actual cycle path — DFS naturally tracks the current path in the call stack.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

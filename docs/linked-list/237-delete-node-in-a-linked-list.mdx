@@ -33,6 +33,10 @@ Delete the given node such that:
 - The value of each node in the list is unique.
 - The node to be deleted is in the list and is not a tail node.
 
+<Callout type="amber" label="Key Constraint">
+Only the node to delete is provided — no head pointer, no predecessor access. Classic pointer reassignment is impossible without the predecessor, forcing the value-copy trick.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <DeleteNodeDiagram />
@@ -62,7 +66,15 @@ Output: [4,5,9]
   answer="Value copy — overwrite node.val with node.next.val, then node.next = node.next.next"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When you can only access the node to delete (not its predecessor), use the value-copy trick: overwrite the node's value with its successor's value, then skip the successor by relinking next.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Copy `node.next.val` into `node.val`, then set `node.next = node.next.next`. The current node now impersonates its successor — observers see a different value at the same memory address. The original successor is unlinked and garbage-collected. This works only because the problem guarantees the node is never the tail.
+</Callout>
 
 Since we cannot access the previous node, we cannot redirect a predecessor's `next` pointer. Instead, copy the value of `node.next` into `node`, then set `node.next = node.next.next`. The current node now impersonates its successor, and the real successor is unlinked.
 
@@ -105,7 +117,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Optional chaining (`node?.val`, `node?.next`) keeps the signature as `ListNode?`. The `?? 0` default on `node?.next?.val` is dead code — the problem guarantees both `node` and `node.next` are non-nil — but it satisfies the compiler without a force-unwrap.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1)">
+Two pointer operations: copy one value and update one `next` pointer. No traversal, no loop. The cost is the same regardless of list length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+No auxiliary data structures are allocated. Both operations are performed directly on the existing nodes using their existing memory.
+</Callout>
 
 <ComplexityTable
   rows={[

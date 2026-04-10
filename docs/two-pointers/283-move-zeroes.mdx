@@ -26,6 +26,10 @@ You must do this **in-place** without making a copy of the array.
 - `1 <= nums.length <= 10^4`
 - `-2^31 <= nums[i] <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+The operation must be done in-place without copying the array, and the relative order of non-zero elements must be preserved. This is a stable partition — not just any rearrangement.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: [0]
   answer="Two-pointer partition — swap each non-zero element to insertPosition, advance insertPosition"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When partitioning an array in-place with order preserved, use a slow write pointer that only advances when a qualifying element is swapped into it. A single pass handles placement and zero-filling simultaneously.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+`insertPosition` marks where the next non-zero element belongs. When `nums[i]` is non-zero, swapping it with `nums[insertPosition]` moves the non-zero forward and pushes the zero back in one step. A single forward pass handles placement and implicit zero-filling simultaneously — no second pass needed.
+</Callout>
 
 Maintain an `insertPosition` pointer starting at 0. Scan `i` from 0 to n-1. Whenever `nums[i] != 0`, swap `nums[i]` with `nums[insertPosition]` and advance `insertPosition`. After the scan, all non-zeros occupy the front in original order; all zeros have been pushed to the back.
 
@@ -107,7 +119,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift arrays are value types, so `inout` is required for in-place modification — without it, changes inside the function would not affect the caller's array. The call site uses `&nums`. `nums.swapAt(i, insertPosition)` is an O(1) built-in that is more idiomatic than a manual three-step swap.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+A single forward pass visits all n elements. Each non-zero element triggers at most one swap. Total work is proportional to the number of elements — O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only the `insertPosition` counter and loop index are used alongside the input array. All modifications are in-place with no auxiliary allocations.
+</Callout>
 
 <ComplexityTable
   rows={[

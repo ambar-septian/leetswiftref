@@ -28,6 +28,10 @@ Rotating right by 1 step moves every element one position to the right, and the 
 - `0 <= k <= 10^5`
 - The rotation must be done **in-place** with O(1) extra space.
 
+<Callout type="amber" label="Key Constraint">
+The rotation must be done in-place with O(1) extra space. This rules out creating a copy of the array and forces the three-reverse trick as the canonical constant-space solution.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -59,7 +63,15 @@ Output: [3,99,-1,-100]
   answer="Three reverses — reverse all, reverse [0..k-1], reverse [k..n-1]"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked for an in-place array rotation in O(1) space, reach for the three-reverse trick: reverse all, reverse first k, reverse the rest.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+After reversing the entire array, the last k elements (which belong at the front) are now at the front but in reverse order. A second reverse on the first k elements corrects their order; a third reverse on the remainder corrects the back half. Three O(n) passes, zero extra allocation.
+</Callout>
 
 Let `c = k % nums.count` (effective rotation). Then:
 1. Reverse the entire array.
@@ -123,7 +135,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `reverse` function closes over `nums` as an `inout [Int]` from the outer scope — Swift nested functions can mutate `inout` parameters captured from the enclosing function. This pattern keeps the swap logic reusable across all three calls without making it a separate method.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each of the three reverse passes visits every element at most once. The first pass visits all n elements; the second visits c; the third visits n − c. Together that is at most 2n swaps — O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only the loop variables `l` and `r` inside the nested `reverse` function are allocated. No copy of the array is made at any point.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -131,6 +155,10 @@ class Solution {
     { approach: "Extra array copy", time: "O(n)", space: "O(n)", note: "Copy nums[(n-k)..] + nums[..(n-k)] into new array" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Three Reverses vs Extra Array Copy">
+Prefer **Three Reverses** when O(1) space is required — it achieves in-place rotation with just pointer swaps. Use an **Extra Array Copy** when code clarity matters more than space and the constraint allows O(n) memory — simply splice the last c elements to the front.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -25,6 +25,10 @@ Given an array of positive integers `nums` and a positive integer `target`, retu
 - `1 <= nums.length <= 10^5`
 - `1 <= nums[i] <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+All values are positive integers. This is the critical guarantee that makes the sliding window valid: adding an element always increases the sum, removing one always decreases it — the window is monotonic and the two-pointer shrink invariant holds.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -60,7 +64,15 @@ Output: 0
   answer="Variable-size sliding window — expand right boundary, shrink left while sum meets target"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When all array values are positive and the problem asks for the minimum (or maximum) subarray length satisfying a sum condition, reach for a variable-size sliding window — the positivity guarantee makes the window monotonic.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Expand the window by advancing `j` and accumulating `sum`. Once `sum >= target`, shrink from the left with a `while` loop: record the current length as a candidate minimum, subtract `nums[i]`, and advance `i`. The `while` loop (not `if`) is critical — a single removal may still leave the sum above target.
+</Callout>
 
 Use two pointers `i` (left) and `j` (right). Advance `j` and accumulate `sum`. Whenever `sum >= target`, record `j - i + 1` as a candidate for the minimum, subtract `nums[i]`, and advance `i`. This shrinks the window from the left to find the smallest valid subarray ending at or before `j`.
 
@@ -125,7 +137,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Using `Int.max` as the initial sentinel for `result` avoids a separate boolean flag for the "no valid subarray" case. The final `result == Int.max ? 0 : result` ternary handles it cleanly. Swift's integer overflow protection ensures accidental arithmetic on `Int.max` traps immediately in debug builds.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each element is added to `sum` exactly once (when `j` passes over it) and removed at most once (when `i` catches up). The outer loop runs n times and the inner `while` loop's total iterations across all outer iterations is also at most n. Total time is O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only three variables (`i`, `sum`, `result`) are used regardless of input size. No auxiliary arrays or data structures are allocated.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -134,6 +158,10 @@ class Solution {
     { approach: "Binary search + prefix sum", time: "O(n log n)", space: "O(n)", note: "Binary search over sorted prefix sums" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Sliding Window vs Binary Search + Prefix Sum">
+Prefer **Sliding Window O(n)** when all values are positive — it is linear time with O(1) space. Use **Binary Search + Prefix Sum O(n log n)** when values can be negative (the sliding window invariant breaks with negatives) or when an interviewer specifically asks for the O(n log n) solution.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

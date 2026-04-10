@@ -27,6 +27,10 @@ A **leaf** is a node with no children.
 - The number of nodes in the tree is in the range `[1, 100]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The tree may contain only one node (a root that is also a leaf). The DFS leaf detection (`left == nil && right == nil`) handles this correctly, producing a single-element path `["val"]` without any special casing.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: ["1"]
   answer="Backtracking DFS — push node on entry, record at leaf, pop on exit"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When collecting all root-to-leaf paths, use backtracking DFS: push the node's value on entry, record when both children are nil, and pop on exit — the pop restores the shared path array for sibling branches.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A shared mutable `path` array carries the current root-to-node sequence. Push on entry, record the joined string when a leaf is reached, and pop before returning — this restores the path for the caller so sibling branches see a clean state. The single pop at the end handles both the leaf early-return and the normal recursion paths.
+</Callout>
 
 <BinaryTreePathsDiagram />
 
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The inner `dfs` function captures `results` and `path` from the outer scope. Swift nested functions capture `var` locals by reference, so mutations to `path` and `results` inside `dfs` are visible to the outer function — no `inout` annotation needed. `path.joined(separator: "->")` is cleaner than manual string concatenation.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n × h)">
+Each of the n nodes is visited exactly once. At every leaf, `path.joined(separator: "->")` scans the entire current path — O(h) work per leaf where h is the tree height. In the worst case (a fully right-skewed tree), there is one leaf at depth n, giving O(n × n) = O(n²). For a balanced tree h = O(log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The recursion call stack reaches depth h. The `path` array also holds at most h elements at any point. Total auxiliary space is O(h) — O(log n) for balanced trees and O(n) worst case.
+</Callout>
 
 <ComplexityTable
   rows={[

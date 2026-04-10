@@ -31,6 +31,10 @@ Return the ordering of courses you should take to finish all courses. If there a
 - `a != b`
 - All the pairs `[a, b]` are distinct.
 
+<Callout type="amber" label="Key Constraint">
+Unlike Course Schedule I, a boolean is not enough — the full topological order must be returned. If a cycle exists, return an empty array `[]`. This output format forces collecting the BFS order into a results array rather than just counting processed nodes.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Output: []  (cycle detected)
   answer="Kahn's BFS — collect processed nodes in results; return results if count == numCourses, else []"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a dependency problem asks for the actual completion order (not just feasibility), Kahn's BFS naturally produces the topological order — just collect each dequeued node into a results array and return it.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+The BFS body is identical to Course Schedule I. The only additions: collect each dequeued node into `results`, and return `results` if `results.count == numCourses` or `[]` otherwise. The same in-degree / adjacency-list construction and queue seeding apply unchanged.
+</Callout>
 
 <CourseScheduleIIDiagram />
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`adjList[prereq, default: []].append(course)` initialises missing dictionary keys in one expression — idiomatic Swift. The ternary `results.count == numCourses ? results : []` relies on Swift's type inference to resolve `[]` as `[Int]` from the function's return type — no explicit annotation needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V + E)">
+Building the adjacency list and in-degree array is O(E). The BFS processes each of the V nodes once and traverses each of the E edges once. Total O(V + E) where V = numCourses and E = prerequisites.count.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V + E)">
+The adjacency list stores all edges: O(E). The in-degree array, results array, and queue each grow to O(V). Total O(V + E).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -151,6 +175,10 @@ class Solution {
     { approach: "DFS with 3-color marking", time: "O(V + E)", space: "O(V)", note: "Track unvisited/in-progress/done; build result in reverse via stack" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Kahn's BFS vs DFS">
+Prefer **Kahn's BFS** for its iterative implementation and intuitive count-based cycle check. Prefer **DFS with 3-color marking** when you need to detect AND report the actual cycle path — DFS tracks the current path in the call stack, making it easy to reconstruct.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

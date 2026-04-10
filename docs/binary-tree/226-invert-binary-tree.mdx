@@ -25,6 +25,10 @@ Given the `root` of a binary tree, invert the tree (mirror it), and return its r
 - The number of nodes in the tree is in the range `[0, 100]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The tree may be empty (0 nodes). The nil base case `guard let node else { return nil }` handles this correctly, returning nil as the inverted empty tree — no special-casing needed outside the recursion.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -59,7 +63,15 @@ Output: []
   answer="Recursive DFS — invert subtrees recursively, then swap node.left and node.right"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a tree transformation must be applied uniformly to every node, use recursive DFS — recurse into both subtrees first (post-order), then apply the transformation at the current node.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Recurse into the left and right subtrees first (post-order). Once both return their (already inverted) roots, swap them: `node.left = right`, `node.right = left`. Return the current node. The base case returns nil for nil — the identity of an empty tree.
+</Callout>
 
 <InvertBinaryTreeDiagram />
 
@@ -119,7 +131,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `invert` function is declared inside `invertTree` and called via `return invert(root)` — keeping the public API clean. Even though `TreeNode` is a class (reference type), the swap `node.left = right; node.right = left` mutates the object in place through the constant reference, so no `inout` or `var` is needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is visited exactly once. The swap at each node is O(1). Total O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The call stack depth equals tree height h. O(h) = O(log n) for a balanced tree, O(n) for a skewed tree.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -127,6 +151,10 @@ class Solution {
     { approach: "BFS (queue)", time: "O(n)", space: "O(n)", note: "Queue holds up to one full level — O(n) in a complete tree" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Recursive DFS vs BFS">
+Prefer **Recursive DFS** for its concise, self-evident code — the swap is co-located with the recursion. Prefer **BFS** only when stack overflow on a deeply skewed tree is a concern — BFS uses an explicit queue and avoids deep recursion, at the cost of O(n) queue space.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

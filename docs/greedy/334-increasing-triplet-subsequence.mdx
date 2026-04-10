@@ -26,6 +26,10 @@ You must solve it in O(n) time and O(1) space.
 - `1 <= nums.length <= 5 * 10^5`
 - `-2^31 <= nums[i] <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+O(n) time and O(1) space are required. Dynamic programming to find the longest increasing subsequence would be O(n²). The greedy two-variable approach achieves both constraints by tracking only the two smallest values in any potential triplet.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Explanation: (1,4,6) with indices (1,4,5).
   answer="Greedy — maintain first (smallest seen) and second (smallest valid second given first); return true when a third exceeds both"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking for a length-3 increasing subsequence in O(n) / O(1), track only two greedy sentinels: the smallest first and the smallest valid second. Any element larger than second confirms a triplet — regardless of what first currently holds.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Track only two sentinels: `first` (smallest element seen) and `second` (smallest valid second element given some earlier first). When any element exceeds `second`, a triplet is confirmed. The invariant holds even when `first` updates to a smaller value — `second` still has a valid predecessor somewhere earlier in the array.
+</Callout>
 
 Maintain `first = Int.max` and `second = Int.max`. For each `num`:
 - If `num` is less than `first`, update `first`.
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Int.max` is 2^63-1 on 64-bit platforms, safely above the problem's maximum input value of 2^31-1. Comma-separated conditions in `if` (`num > first, num < second`) are short-circuit `&&`. The `for num in nums` loop without an index is idiomatic Swift — no `enumerated()` needed since only the value matters.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+A single pass over all n elements. Each element triggers at most one comparison and one assignment — O(1) per element. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two scalar variables (`first` and `second`) are maintained regardless of input length. No arrays, stacks, or auxiliary structures are used.
+</Callout>
 
 <ComplexityTable
   rows={[

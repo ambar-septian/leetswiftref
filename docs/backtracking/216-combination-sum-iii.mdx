@@ -29,6 +29,10 @@ Return a list of all possible valid combinations. The list must not contain the 
 - `2 <= k <= 9`
 - `1 <= n <= 60`
 
+<Callout type="amber" label="Key Constraint">
+Only digits 1–9 are available, each used at most once. This tiny fixed search space (9 candidates, at most k slots) bounds the total combinations by C(9, k), making exhaustive backtracking completely feasible.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -64,7 +68,15 @@ Output: []
   answer="Backtracking — choose digits in ascending order from startIndex; prune when sum exceeds n or path length exceeds k"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When choosing k elements from a small fixed set without repetition, use backtracking with a `startIndex` — always start the next loop from the element after the one just chosen to keep combinations in ascending order and avoid duplicates.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Recurse over digits 1–9 starting from `startIndex`. Append each digit to `path` and `sum`, recurse with `startIndex = i + 1` (so each digit is used at most once), then undo both additions. Record `path` when `sum == n` and `path.count == k`. Prune immediately when `sum > n`.
+</Callout>
 
 <CombinationSumIIIDiagram />
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `dfs` closure captures `path`, `sum`, and `results` as `var` from the outer scope — Swift closures capture `var` variables by reference, allowing mutation. `path.removeLast()` and `sum -= nums[i]` form the backtracking undo step. `Array(1...9)` creates the candidates array from a closed range in one expression.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(C(9,k) × k)">
+At most C(9, k) valid combinations are found. Each valid leaf requires copying a k-element path. The sum/prune condition eliminates many branches before reaching depth k. Total work is O(C(9, k) × k).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(k)">
+The recursion depth equals k (one level per chosen element). The `path` array holds at most k elements. Only O(k) stack space is needed.
+</Callout>
 
 <ComplexityTable
   rows={[

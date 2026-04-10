@@ -26,6 +26,10 @@ The vowels are `'a'`, `'e'`, `'i'`, `'o'`, `'u'`, and they can appear in both lo
 - `1 <= s.length <= 3 * 10^5`
 - `s` consists of printable ASCII characters.
 
+<Callout type="amber" label="Key Constraint">
+Vowels include both lowercase AND uppercase variants (`'a'`, `'A'`, `'e'`, `'E'`, `'i'`, `'I'`, `'o'`, `'O'`, `'u'`, `'U'`). Missing any uppercase vowel causes it to be treated as a consonant and skipped by the two-pointer scan.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: "leotcede"
   answer="Two pointers — advance each past consonants, swap when both point to vowels"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When reversing only a specific subset of characters in-place, use two inward-scanning pointers: advance each past non-target characters independently, swap when both land on targets, and repeat until they cross.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Convert the string to a `[Character]` array for O(1) index access. `left` and `right` scan inward; each iteration handles four cases: both vowels (swap, advance both), only left is a vowel (advance right), only right is a vowel (advance left), neither is a vowel (advance both). The loop exits when `left >= right`, guaranteeing every vowel pair is swapped exactly once.
+</Callout>
 
 Convert `s` to a `[Character]` array. `left` starts at 0, `right` at the last index. Advance `left` right while it points to a consonant; advance `right` left while it points to a consonant. When both point to vowels, swap and move both inward. Repeat until `left >= right`.
 
@@ -122,7 +134,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`s.map { $0 }` is a concise way to convert a `String` to `[Character]` — equivalent to `Array(s)`. `Set&lt;Character&gt;` lookup is O(1). `chars.swapAt(left, right)` is the idiomatic in-place swap. `String(chars)` converts back from `[Character]` to `String` in O(n).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Converting to a character array is O(n). The two-pointer loop visits each character at most once across all iterations — left and right together advance at most n steps in total. Converting back to a string is O(n). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The `chars` array is a full copy of the input string — O(n). The vowel `Set` holds a fixed 10 characters — O(1). Overall space is dominated by the character array copy.
+</Callout>
 
 <ComplexityTable
   rows={[

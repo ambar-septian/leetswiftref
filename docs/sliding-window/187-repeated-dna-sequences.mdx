@@ -26,6 +26,10 @@ Given a string `s` that represents a DNA sequence, return all the **10-letter-lo
 - `1 <= s.length <= 10^5`
 - `s[i]` is either `'A'`, `'C'`, `'G'`, or `'T'`.
 
+<Callout type="amber" label="Key Constraint">
+The window is fixed at exactly 10 characters. This is the critical constraint that makes a fixed-size sliding window the natural choice — the problem is not about a variable-length target but about detecting duplicate fixed-width substrings.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: ["AAAAAAAAAA"]
   answer="Fixed sliding window of size 10 — seen set tracks first occurrence, result set captures repeats"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a problem asks for all fixed-length substrings that appear more than once, use a fixed sliding window plus two sets: one to track first occurrences, one to collect repeats.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Slide a window of exactly 10 characters across the string. The first time a substring appears, add it to a "seen" set. The second time, add it to the "result" set. Two sets — not one — cleanly separate first occurrence from repetition without re-processing.
+</Callout>
 
 Use a fixed window of size 10 defined by a `left` and `right` String.Index. At each position, extract the 10-character `Substring` `s[left...right]`. If it is already in the `seen` set, add it to `result`. Otherwise add it to `seen`. Advance both indices by one. Convert the result set to `[String]` at the end.
 
@@ -61,7 +73,7 @@ Use a fixed window of size 10 defined by a `left` and `right` String.Index. At e
 Using a <code>Set</code> for results automatically deduplicates: if "AAAAAAAAAA" appears three times, it still appears once in the output.
 </Callout>
 
-<Callout type="green" label="Substring vs String hashing">
+<Callout type="green" label="Swift Notes">
 Storing <code>Substring</code> views in sets avoids copying the 10-character window on every step. The final <code>result.map(String.init)</code> materialises the strings only once.
 </Callout>
 
@@ -131,6 +143,14 @@ class Solution {
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+The outer loop runs n − 9 times (one full pass). Each `Substring` hash and equality check is O(10) = O(1) because the window length is fixed. Set insertions and lookups are O(1) amortised, giving O(n) overall.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+In the worst case every 10-character window is unique: the `seen` set holds up to n − 9 entries. Each `Substring` is a lightweight view into the original buffer rather than a copy, but the set itself scales with n.
+</Callout>
 
 <ComplexityTable
   rows={[

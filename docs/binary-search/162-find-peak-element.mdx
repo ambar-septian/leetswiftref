@@ -31,6 +31,10 @@ You must write an algorithm that runs in **O(log n)** time.
 - `-2^31 <= nums[i] <= 2^31 - 1`
 - `nums[i] != nums[i + 1]` for all valid `i` (no equal adjacent elements).
 
+<Callout type="amber" label="Key Constraint">
+No two adjacent elements are equal. This guarantees that at every midpoint, one neighbor is strictly larger — the binary search direction is always deterministic with no tie-breaking edge case.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -60,7 +64,15 @@ Explanation: Either index 1 or 5 is acceptable (nums[1]=2 and nums[5]=6 are both
   answer="Binary Search — move toward the higher neighbor to guarantee a peak in the chosen half"
 />
 
+<Callout type="green" label="Rule of Thumb">
+If a problem requires O(log n) on an array and asks you to locate any element satisfying a local condition (peak, valley, rotation point), binary search applies — move toward the side that must contain a qualifying element.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+At any midpoint, the neighbor with the higher value guarantees a peak exists on that side — an ascending slope must crest before the array ends or hits the -∞ boundary. Moving toward the higher neighbor always keeps at least one peak inside the remaining search range.
+</Callout>
 
 At each midpoint `m`, check which direction is ascending:
 - If `nums[m] < nums[m-1]` — the left side has a higher neighbor, so a peak exists there: `r = m - 1`.
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Using `l + (r - l) / 2` instead of `(l + r) / 2` prevents integer overflow when both `l` and `r` are near `Int.max`. The `guard c > 1 else { return 0 }` pattern short-circuits the trivial single-element case before entering the binary search loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+The search space halves on every iteration: each comparison moves either `l` up or `r` down by at least 1, so the loop runs at most log₂(n) iterations. The three neighbor comparisons per iteration are O(1), giving O(log n) overall.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two integer pointers (`l` and `r`) plus the midpoint `m` are allocated, regardless of array size. No auxiliary data structure is used.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -138,6 +162,10 @@ class Solution {
     { approach: "Linear Scan", time: "O(n)", space: "O(1)", note: "Check each element against its right neighbor; stop at first descent" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Binary Search vs Linear Scan">
+Prefer **Binary Search** whenever the O(log n) constraint makes a linear scan invalid — it is the required solution here. Use **Linear Scan** only as a warm-up when an O(n) solution is explicitly requested first; it is simpler to reason about but violates the time constraint.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

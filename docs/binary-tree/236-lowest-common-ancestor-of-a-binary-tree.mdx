@@ -30,6 +30,10 @@ The lowest common ancestor is defined as the lowest node in the tree that has bo
 - `p != q`
 - Both `p` and `q` exist in the tree.
 
+<Callout type="amber" label="Key Constraint">
+Both `p` and `q` are guaranteed to exist in the tree. This means the DFS is guaranteed to find both — no "not found" fallback is needed, and a node matching `p` or `q` can be returned immediately without searching its subtree.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -59,7 +63,15 @@ Explanation: LCA of nodes 5 and 4 is 5, since a node can be a descendant of itse
   answer="Post-order DFS — return node if it matches p or q; LCA is where both subtrees return non-nil"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When finding the LCA in a binary tree (not a BST), use post-order DFS — you need results from both subtrees before deciding at the current node. A node where both left and right return non-nil is the LCA.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Post-order DFS: return nil for a nil node, return `root` immediately if `root === p or root === q`. After recursing left and right: if both sides return non-nil, the current node is the split point — the LCA. If only one side is non-nil, propagate it upward via `left ?? right`.
+</Callout>
 
 <LCADiagram />
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`root === p` uses reference equality (`===`) to test that two variables point to the same object — semantically correct for node identity. `left ?? right` cleanly returns the non-nil side without an explicit `if-else`. The function signature takes `TreeNode?` optionals matching LeetCode's generated Swift template.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is visited at most once. The early return when `root === p or root === q` skips subtree traversal for the found node, but in the worst case (LCA at root) all nodes are visited.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The call stack depth equals tree height h. O(h) = O(log n) for balanced, O(n) for a skewed or path-like tree.
+</Callout>
 
 <ComplexityTable
   rows={[

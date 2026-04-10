@@ -29,6 +29,10 @@ In a complete binary tree, every level except possibly the last is completely fi
 - `0 <= Node.val <= 5 * 10^4`
 - The tree is guaranteed to be a complete binary tree.
 
+<Callout type="amber" label="Key Constraint">
+The tree is guaranteed complete — every level except possibly the last is fully filled, left-to-right. This property enables an O(log² n) optimisation using spine-height comparison, though the simple O(n) DFS is accepted within the 50,000-node limit.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Output: 1
   answer="Recursive DFS — 1 + countNodes(left) + countNodes(right); base case returns 0 for nil"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For counting nodes in any binary tree, `1 + count(left) + count(right)` is the universal recursive formula. For a complete tree specifically, compare left/right spine heights to skip perfect subtrees in O(log n) per call.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A single post-order DFS: if the node is nil return 0, otherwise return `1 + count(left) + count(right)`. Every node is visited exactly once. The complete-tree guarantee is not needed for correctness — it only enables the O(log² n) optimisation.
+</Callout>
 
 A single post-order DFS: if the node is nil return 0, otherwise return `1 + count(left) + count(right)`. Every node is visited exactly once.
 
@@ -115,7 +127,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The inner `dfs` function is nested inside `countNodes` purely for encapsulation — it captures nothing from the outer scope. `guard let root else { return 0 }` uses Swift's optional binding shorthand (omitting the `root` shadow name) introduced in Swift 5.7, equivalent to `guard let root = root else { return 0 }`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is visited exactly once. Each visit performs O(1) work. Total O(n). The O(log² n) binary-search variant can reduce this for large complete trees by skipping perfect subtrees.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The call stack depth equals tree height h. For a complete tree h = ⌊log n⌋, so O(log n) stack space.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -123,6 +147,10 @@ class Solution {
     { approach: "Binary search on last level", time: "O(log² n)", space: "O(log n)", note: "Compare spine heights to detect perfect subtrees — skips counting known-size subtrees" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Recursive DFS vs Binary Search">
+Prefer **Recursive DFS O(n)** for clarity — it works for any binary tree and is trivial to implement. Use **Binary Search O(log² n)** only when the follow-up optimisation is explicitly required or when the tree is very large and the linear overhead matters.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

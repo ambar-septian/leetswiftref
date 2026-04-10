@@ -30,6 +30,10 @@ Here **follows** means a full match, such that there is a bijection between a le
 - `1 <= s.length <= 3000`
 - `s` contains only lowercase English letters and spaces, with no leading or trailing spaces, and no two consecutive spaces.
 
+<Callout type="amber" label="Key Constraint">
+The mapping must be a bijection — one-to-one in both directions. A single char→word map is not enough: two different pattern characters could both map to the same word. A reverse word→char map enforces uniqueness in the other direction.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -64,7 +68,15 @@ Output: false
   answer="Two hash maps (char→word, word→char) — bijection check at each position"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When verifying a one-to-one (bijective) mapping, always maintain two hash maps — one in each direction. A single map misses the case where two different keys map to the same value.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Bijection requires uniqueness in both directions: each character maps to exactly one word, and each word maps back to exactly one character. At every position, either both mappings are absent (add both) or both exist and agree (continue). Any other combination — one missing, one conflicts — is a contradiction; return false immediately.
+</Callout>
 
 Split `s` into words. Guard that the number of words equals the pattern length. For each position, check `charSet[char]` and `wordSet[word]`:
 - If neither exists: add both mappings.
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`pattern.map { String($0) }` converts each `Character` to a `String` so both maps share the same `[String: String]` type. Alternatively, keep `charSet` as `[Character: String]` and `wordSet` as `[String: Character]` for slightly tighter typing. `s.components(separatedBy: " ")` is the idiomatic split for a single-character delimiter.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+One pass over n pattern-word pairs. Each hash map lookup and insertion is O(1) amortized. The upfront `components(separatedBy:)` split is O(n). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(k)">
+At most k distinct char/word pairs stored across both maps, where k ≤ min(26, n) — bounded by the 26-letter alphabet. In the worst case this is O(26) = O(1), but conventionally written as O(k) to reflect the distinct-pair count.
+</Callout>
 
 <ComplexityTable
   rows={[

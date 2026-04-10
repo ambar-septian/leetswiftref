@@ -26,6 +26,10 @@ You must solve it without sorting.
 - `1 <= k <= nums.length <= 10^5`
 - `-10^4 <= nums[i] <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+The problem explicitly forbids sorting. This steers toward a heap or Quickselect approach. The heap builds in O(n) and retrieves the kth maximum in O(k log n) — O(n + k log n) total, beating the O(n log n) sort.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: 4
   answer="Max-Heap — build in O(n), pop max k times; the kth pop is the answer"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked for the kth largest (or smallest) element without sorting, reach for a heap. A max-heap lets you pop the global maximum in O(log n) — k pops give the kth largest in O(n + k log n) total.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Heapify all elements into a max-heap in O(n). Then pop the maximum k times — each pop is O(log n). The value returned on the kth pop is the kth largest. This avoids a full sort and stops as soon as the answer is reached.
+</Callout>
 
 Build a max-heap from all elements. Call `popMax()` k times; the value returned on the kth pop is the kth largest.
 
@@ -90,8 +102,8 @@ Swift's <code>Heap</code> type (from the swift-collections package) is a min-hea
 
 <SectionHeader n={7} title="Code Implementation" />
 
-<Callout type="info" label="Swift Collections Heap">
-The `Heap` used in this solution comes from the [Swift Collections](https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) package. Note that the API might be slightly different if you implement your own heap.
+<Callout type="green" label="Swift Notes">
+`Heap` comes from the [swift-collections](https://github.com/apple/swift-collections) package. Initialise with `Heap(nums)` to heapify in O(n). It exposes both `popMin()` and `popMax()` — use `popMax()` here for the largest element. `var k = k` shadows the parameter to make it mutable; Swift function parameters are constants by default.
 </Callout>
 
 ```swift
@@ -116,6 +128,14 @@ class Solution {
 
 <SectionHeader n={8} title="Complexity Analysis" />
 
+<Callout type="cyan" label="Time Complexity — O(n + k log n)">
+Building the heap via heapify is O(n). Each of the k `popMax()` calls restores the heap property in O(log n). Total O(n + k log n) — better than O(n log n) sort when k is small.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The heap stores all n elements. No additional data structures are allocated beyond the heap itself.
+</Callout>
+
 <ComplexityTable
   rows={[
     { approach: "Sort", time: "O(n log n)", space: "O(1)", note: "Simple but uses sorting which is prohibited" },
@@ -124,6 +144,10 @@ class Solution {
     { approach: "Quickselect", time: "O(n) avg / O(n²) worst", space: "O(1)", note: "Partition-based; optimal average but degrades on adversarial input" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Max-Heap vs Min-Heap (size k) vs Quickselect">
+Prefer **Max-Heap** for clarity when k is not too small. Prefer **Min-Heap (size k)** when memory is tight — it uses O(k) space and is better when k is much smaller than n. Prefer **Quickselect** for O(n) average with O(1) space when the input is not adversarial and the constraint allows in-place mutation.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

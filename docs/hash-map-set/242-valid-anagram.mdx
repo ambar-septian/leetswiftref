@@ -26,6 +26,10 @@ An anagram is a word or phrase formed by rearranging the letters of another — 
 - `1 <= s.length, t.length <= 5 * 10^4`
 - `s` and `t` consist of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+Both strings consist only of lowercase English letters (26 possible characters). This bounded character set enables a fixed-size 26-slot frequency array instead of a general hash map — O(1) space with a faster constant factor.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: false
   answer="26-slot frequency array — increment for s, decrement for t; all zeros means anagram"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking character frequency equality on lowercase-only strings, reach for a 26-slot integer array instead of a hash map — O(1) space with a faster constant factor and no hash-collision overhead.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two strings are anagrams iff their character frequency distributions are identical. Encode this as a single delta array: increment for each character in `s` and decrement for each character in `t`. If the strings are anagrams, every counter cancels to zero. Processing both strings simultaneously with `zip` keeps the logic in one pass.
+</Callout>
 
 Guard early if lengths differ. Iterate `s` and `t` in lockstep using `zip`: increment `counts[s[i] - 'a']` and decrement `counts[t[i] - 'a']`. After the loop, all counts must be zero.
 
@@ -107,7 +119,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`sChar.asciiValue!` is force-unwrapped safely — the problem guarantees lowercase English letters only, so `asciiValue` is always non-nil. `zip(s, t)` on two `String` values produces `(Character, Character)` tuples without needing a manual index. `counts.allSatisfy { $0 == 0 }` is idiomatic for verifying every element meets a condition.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+One pass with `zip` processes both strings simultaneously — each character is visited once. The final `allSatisfy` over the 26-element array is O(26) = O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+The frequency array is always exactly 26 integers regardless of input length. No variable-size auxiliary structure is used.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -116,6 +140,10 @@ class Solution {
     { approach: "Hash map", time: "O(n)", space: "O(k)", note: "k = distinct characters; generalises to Unicode/arbitrary characters" },
   ]}
 />
+
+<Callout type="amber" label="Frequency Array vs Hash Map vs Sort — which to choose?">
+Use the 26-slot frequency array when the input is guaranteed to be lowercase English letters — O(1) space with the fastest constant factor. Use a hash map when the alphabet is larger or unknown (Unicode, arbitrary characters). Sort-then-compare is the simplest to write but O(n log n) — reach for it only when brevity matters more than efficiency.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

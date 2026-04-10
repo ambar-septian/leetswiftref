@@ -29,6 +29,10 @@ You must solve the problem in O(1) extra space complexity and O(n) time complexi
 - The number of nodes in the linked list is in the range `[0, 10^4]`.
 - `-10^6 <= Node.val <= 10^6`
 
+<Callout type="amber" label="Key Constraint">
+O(1) extra space and O(n) time are required. This rules out collecting odd/even nodes into separate arrays. The only O(1) approach is in-place pointer weaving — connecting each odd node directly to the next odd node and each even node to the next even node.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <OddEvenLinkedListDiagram />
@@ -58,7 +62,15 @@ Output: [2,3,6,7,1,5,4]
   answer="Weave odd and even chains simultaneously; save evenHead; join at end: odd.next = evenHead"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When separating a linked list into two groups in O(1) space, weave two chains simultaneously in a single loop, then join them. Save the even-chain head before the loop — it is overwritten on the first iteration.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+`odd` and `even` pointers walk their respective chains simultaneously. Each iteration: set `odd.next = even.next` (skip the even node), then set `even.next = odd.next.next` (skip the new odd node). Both pointers then advance. Saving `evenHead` before the loop preserves the entry point needed to join the two chains at the end.
+</Callout>
 
 `odd` starts at `head`, `even` starts at `head.next`, `evenHead = even`. Each iteration:
 - `odd.next = even.next` (skip even node in odd chain)
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Optional chaining (`odd?.next`, `even?.next`) makes pointer operations safe for short lists without explicit nil checks. The while condition uses comma-separated `&&` semantics: `while odd?.next != nil, even?.next != nil`. Note that `even?.next = odd?.next?.next` reads the new `odd.next` (already updated) — this is intentional and correct.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+A single pass through all n nodes: `odd` and `even` advance together, visiting every node exactly once. The final join (`odd?.next = evenHead`) is O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only three pointer variables (`odd`, `even`, `evenHead`) are used regardless of list length. All pointer modifications are on existing nodes — no new allocations.
+</Callout>
 
 <ComplexityTable
   rows={[

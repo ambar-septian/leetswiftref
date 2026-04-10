@@ -33,6 +33,10 @@ Implement the `WordDictionary` class:
 - At most `10^4` calls will be made to `addWord` and `search`.
 - At least one call will be made to `search`.
 
+<Callout type="amber" label="Key Constraint">
+Search queries may contain `'.'` wildcards that match any single letter. A standard trie path-follow cannot handle `'.'` — it must branch into every child at each wildcard position, turning the lookup into a recursive DFS.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: [null,null,null,null,false,true,true,true]
   answer="Trie + recursive DFS — branch into all children at '.' positions"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a trie search must handle wildcard characters, switch from iterative traversal to recursive DFS — at each `'.'`, branch into every child and short-circuit on the first successful match.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+`addWord` is a standard trie insert. `search` becomes a recursive DFS: for a regular character, follow the single matching child; for `'.'`, iterate all children and recurse into each, returning `true` on the first success. The base case at `index == chars.count` checks `isEndOfWord`.
+</Callout>
 
 <WordDictionaryDiagram />
 
@@ -152,7 +164,19 @@ class WordDictionary {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `dfs` function captures `chars` from the enclosing `search` scope. `guard let curr` at the top of `dfs` handles nil nodes cleanly without force-unwrapping. `curr.children.values` iterates the dictionary's values directly without needing keys — Swift's `Dictionary.Values` conforms to `Sequence`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m) / O(26^m) worst case">
+`addWord` and `search` without wildcards are O(m). `search` with all `'.'` wildcards is O(26^m) in the worst case — every node at every level is branched into. In practice, the trie depth is bounded by the word length (max 25) and the early-return on `true` prunes heavily.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m × n)">
+The trie stores O(m × n) nodes for n words of average length m. The DFS call stack reaches O(m) depth for the longest word.
+</Callout>
 
 <ComplexityTable
   rows={[

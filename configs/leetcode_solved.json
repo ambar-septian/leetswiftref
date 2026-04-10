@@ -1189,7 +1189,7 @@
       "status": "done",
       "slug": "find-peak-element",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 187,
@@ -1211,7 +1211,7 @@
       "status": "done",
       "slug": "repeated-dna-sequences",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 189,
@@ -1230,7 +1230,7 @@
       "status": "done",
       "slug": "rotate-array",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 199,
@@ -1252,7 +1252,7 @@
       "status": "done",
       "slug": "binary-tree-right-side-view",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 200,
@@ -1275,7 +1275,7 @@
       "status": "done",
       "slug": "number-of-islands",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 203,
@@ -1295,7 +1295,7 @@
       "status": "done",
       "slug": "remove-linked-list-elements",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 206,
@@ -1315,7 +1315,7 @@
       "status": "done",
       "slug": "reverse-linked-list",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 207,
@@ -1337,7 +1337,7 @@
       "status": "done",
       "slug": "course-schedule",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 208,
@@ -1359,7 +1359,7 @@
       "status": "done",
       "slug": "implement-trie-prefix-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 209,
@@ -1380,7 +1380,7 @@
       "status": "done",
       "slug": "minimum-size-subarray-sum",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 210,
@@ -1402,7 +1402,7 @@
       "status": "done",
       "slug": "course-schedule-ii",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 211,
@@ -1424,7 +1424,7 @@
       "status": "done",
       "slug": "design-add-and-search-words-data-structure",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 212,
@@ -1447,7 +1447,7 @@
       "status": "done",
       "slug": "word-search-ii",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 215,
@@ -1469,7 +1469,7 @@
       "status": "done",
       "slug": "kth-largest-element-in-an-array",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 216,
@@ -1489,7 +1489,7 @@
       "status": "done",
       "slug": "combination-sum-iii",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 222,
@@ -1510,7 +1510,7 @@
       "status": "done",
       "slug": "count-complete-tree-nodes",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 226,
@@ -1532,7 +1532,7 @@
       "status": "done",
       "slug": "invert-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 230,
@@ -1554,7 +1554,7 @@
       "status": "done",
       "slug": "kth-smallest-element-in-a-bst",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 234,
@@ -1576,7 +1576,7 @@
       "status": "done",
       "slug": "palindrome-linked-list",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 236,
@@ -1597,7 +1597,7 @@
       "status": "done",
       "slug": "lowest-common-ancestor-of-a-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 237,
@@ -1616,7 +1616,7 @@
       "status": "done",
       "slug": "delete-node-in-a-linked-list",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 238,
@@ -1635,7 +1635,7 @@
       "status": "done",
       "slug": "product-of-array-except-self",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 242,
@@ -1655,7 +1655,7 @@
       "status": "done",
       "slug": "valid-anagram",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 257,
@@ -1678,7 +1678,7 @@
       "status": "done",
       "slug": "binary-tree-paths",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 283,
@@ -1697,7 +1697,7 @@
       "status": "done",
       "slug": "move-zeroes",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 290,
@@ -1716,7 +1716,7 @@
       "status": "done",
       "slug": "word-pattern",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 328,
@@ -1735,7 +1735,7 @@
       "status": "done",
       "slug": "odd-even-linked-list",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 334,
@@ -1754,7 +1754,7 @@
       "status": "done",
       "slug": "increasing-triplet-subsequence",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 345,
@@ -1773,7 +1773,7 @@
       "status": "done",
       "slug": "reverse-vowels-of-a-string",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 374,
@@ -1791,7 +1791,7 @@
       "status": "done",
       "slug": "guess-number-higher-or-lower",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 383,

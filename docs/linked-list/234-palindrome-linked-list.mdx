@@ -25,6 +25,10 @@ Given the `head` of a singly linked list, return `true` if it is a palindrome or
 - The number of nodes in the list is in the range `[1, 10^5]`.
 - `0 <= Node.val <= 9`
 
+<Callout type="amber" label="Key Constraint">
+The follow-up asks for O(n) time and O(1) space. This rules out copying values to an array (O(n) space) and recursion (O(n) call stack). The only O(1)-space approach is in-place reversal of the second half.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <PalindromeLinkedListDiagram />
@@ -54,7 +58,15 @@ Output: false
   answer="Fast/slow to find mid → reverse second half in-place → walk both halves simultaneously"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking if a singly linked list is a palindrome in O(1) space, combine three techniques: fast/slow pointers to find the midpoint, in-place reversal of the second half, and simultaneous two-pointer comparison of both halves.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Three phases: (1) fast/slow pointers advance `slow` to the last node of the first half; (2) reverse the second half in-place starting from `slow`; (3) walk `p1` from `head` and `p2` from the reversed head simultaneously — return `false` on any mismatch. `p2` exhaustion (not `p1`) determines termination.
+</Callout>
 
 Three phases:
 1. **Find the midpoint** — move `slow` one step and `fast` two steps until `fast.next == nil` or `fast.next.next == nil`. `slow` ends at the last node of the first half.
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The reversal block (`prev`, `curr`, `next` pattern) is identical to problem 206 — recognising this avoids re-deriving it from scratch. `fast?.next != nil && fast?.next?.next != nil` uses optional chaining; both conditions must be non-nil to advance, so the conjunction short-circuits safely without force-unwrapping.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Three linear passes: O(n) to find the midpoint, O(n/2) to reverse the second half, O(n/2) to compare both halves. Total O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only a fixed number of pointer variables (`slow`, `fast`, `prev`, `curr`, `p1`, `p2`). No extra arrays or data structures are allocated.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -143,6 +167,10 @@ class Solution {
     { approach: "Recursive", time: "O(n)", space: "O(n)", note: "Elegant but O(n) call stack depth" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Fast/Slow+Reversal vs Array Copy vs Recursion">
+Prefer **Fast/Slow + In-Place Reversal** when O(1) space is required — the only constant-space option and the expected interview answer. Use **Copy to Array** when code clarity matters more than space. Use **Recursion** only when the elegant structure is valued; the O(n) call stack risks overflow on lists up to 100,000 nodes.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 
