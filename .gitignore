@@ -43,3 +43,4 @@ Desktop.ini
 
 # --- AI ---
 .claude/
+.envrc
