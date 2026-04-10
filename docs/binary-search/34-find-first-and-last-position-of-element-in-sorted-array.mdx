@@ -30,6 +30,10 @@ You must write an algorithm with **O(log n)** runtime complexity.
 - `nums` is sorted in non-decreasing order.
 - `-10^9 <= target <= 10^9`
 
+<Callout type="amber" label="Key Constraint">
+O(log n) runtime is explicitly required — a linear scan is not acceptable. The target may not exist; return [-1, -1] in that case. The array can be empty.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Run binary search twice — once biased left (when target is found, keep searching left by setting r = m-1) and once biased right (keep searching right by setting l = m+1). Each pass records the last index where target was found.
 </Callout>
@@ -67,7 +71,15 @@ Output: [-1, -1]
   answer="Binary search ×2 — one left-biased pass for first position, one right-biased pass for last"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When finding the leftmost or rightmost occurrence of a value in a sorted array, think biased binary search — on each hit, record the index and keep narrowing in the target direction instead of returning immediately.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Run binary search twice with a bias flag. When the target is found, record the index but keep narrowing: set r = m-1 to find the leftmost occurrence, or l = m+1 to find the rightmost. The last recorded index after the loop terminates is the boundary.
+</Callout>
 
 A single `binarySearch` helper takes an `isFindingMostLeft` flag. Standard binary search runs with `l=0, r=nums.count-1`. When `nums[m] == target`: record `result = m`, then bias the search — if finding the left boundary set `r = m - 1`; if finding the right boundary set `l = m + 1`. Call this helper twice and return both results.
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `func binarySearch` is defined inside `searchRange` after its call sites — Swift resolves nested function names at compile time so declaration order within the enclosing function does not matter. Passing `isFindingMostLeft: Bool` as a labeled parameter makes call sites self-documenting: `binarySearch(nums, target, isFindingMostLeft: true)`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+Each biased binary search pass halves the search space per iteration, running in O(log n). Two independent passes give O(2 log n) = O(log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only four integer variables per pass — l, r, m, result. No auxiliary data structures are needed. Space is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -151,6 +175,10 @@ class Solution {
     { approach: "Biased binary search ×2", time: "O(log n)", space: "O(1)", note: "Two independent O(log n) passes; constant space", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Biased Binary Search over Linear Scan">
+Always prefer biased binary search when O(log n) is required or n can be large (up to 10^5 here). Linear scan is only acceptable for very small arrays or when the sorted guarantee cannot be relied upon.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

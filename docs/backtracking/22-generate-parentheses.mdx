@@ -26,6 +26,10 @@ A string of parentheses is well-formed if every opening bracket has a correspond
 **Constraints**
 - `1 <= n <= 8`
 
+<Callout type="amber" label="Key Constraint">
+n is at most 8, bounding the output to the 8th Catalan number (1430 strings). Every valid string has exactly 2n characters — both the open and close counts must reach exactly n.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 At any point in building the string, you may add `(` only if the open count is below `n`, and `)` only if the close count is below the open count. These two rules together guarantee every candidate is valid — no pruning of invalid strings needed after the fact.
 </Callout>
@@ -55,7 +59,15 @@ Output: ["()"]
   answer="Backtracking — constrained DFS, add ( when open < n and ) when close < open"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When generating all well-formed bracket sequences, think constrained backtracking — add `(` only when open count is below n, and `)` only when close count is below open count. These two guards make every explored path valid by construction.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two simple rules replace the need to validate strings after the fact: add `(` only when open count is below n, and `)` only when close count is below open count. These invariants guarantee every path in the recursion tree is already a valid prefix — no pruning of invalid strings is ever needed.
+</Callout>
 
 Use a recursive `dfs(open, close)` where `open` and `close` track how many of each bracket have been added so far. Two branches exist at each call: add `(` if `open < n`, and add `)` if `close < open`. When both counts equal `n`, the path is a complete valid string — append it to results and return.
 
@@ -132,7 +144,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`path.reserveCapacity(n * 2)` pre-allocates backing storage so no reallocation occurs during backtracking — a small but worthwhile optimisation when the final path length is known. The nested `func dfs` captures `path`, `results`, and `n` by reference automatically, no explicit capture list needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(4^n / √n)">
+The number of valid strings is the nth Catalan number, which grows as O(4^n / n^(3/2)). Building each string takes O(n). Total time is O(4^n / √n * n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The recursion depth is at most 2n (the length of one complete string). The path array holds at most 2n characters. Excluding the output array, auxiliary space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -140,6 +164,10 @@ class Solution {
     { approach: "Backtracking with open/close guards", time: "O(4^n / √n)", space: "O(n)", note: "Catalan number of valid strings; pruning eliminates invalid branches early", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Backtracking over Brute Force">
+Always prefer backtracking — it generates only valid strings by construction, visiting roughly Catalan(n) leaves. Brute force generates all 2^(2n) binary strings and filters, which for n=8 means 65536 candidates reduced to 1430 valid ones — about 45x more work.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -27,6 +27,10 @@ Inorder traversal visits nodes in **left → root → right** order. For a valid
 - The number of nodes in the tree is in the range `[0, 100]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The tree can be empty (root = nil) — the base case must return [] without crashing. Inorder traversal of a valid BST always produces a sorted sequence, a property often tested alongside the traversal itself.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Recursively concatenate the inorder traversal of the left subtree, the root value, and the inorder traversal of the right subtree. The base case is a nil node returning an empty array.
 </Callout>
@@ -62,7 +66,15 @@ Output: [1]
   answer="Recursive DFS — left + root + right array concatenation"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Inorder traversal = left then root then right. If you see "inorder" and the tree is a BST, expect the output to be sorted — that's the key property driving many BST interview problems.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Inorder traversal is a direct structural recursion: inorderTraversal(root) = inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right). Guard nil with an early return of []. The iterative alternative uses an explicit stack to simulate the call stack, trading recursion depth for a manual loop.
+</Callout>
 
 The recursive solution is a direct translation of the definition: `inorderTraversal(root) = inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right)`. Guard against nil with an early return of `[]`.
 
@@ -115,7 +127,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let root else { return [] }` uses Swift 5.7 shorthand — equivalent to `guard let root = root`. The `+` operator on arrays creates a new array at each call level; for very deep trees an iterative solution with `result.append(contentsOf:)` is more memory-efficient.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both approaches — every node is visited exactly once. The recursive version has the additional overhead of array concatenation at each level, making it O(n log n) or O(n²) in degenerate cases; the iterative version with a pre-allocated result array avoids this.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the recursive approach: O(n) output array plus O(h) call stack (O(n) for a skewed tree). O(h) for the iterative approach's explicit stack, with O(n) for the output. For balanced trees h = O(log n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -123,6 +147,10 @@ class Solution {
     { approach: "Iterative (explicit stack)", time: "O(n)", space: "O(h)", note: "Same time; explicit stack avoids output array concatenation overhead" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer recursive vs iterative">
+Use **recursive** for simplicity and readability — it is a direct one-liner in Swift. Prefer **iterative** when the tree may be very deep (stack overflow risk) or when you need to avoid array-concatenation overhead for a pre-allocated result buffer.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

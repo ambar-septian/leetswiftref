@@ -30,6 +30,10 @@ A queen attacks any cell in the same row, column, positive diagonal (top-left to
 **Constraints**
 - `1 <= n <= 9`
 
+<Callout type="amber" label="Key Constraint">
+n is at most 9, so the board is at most 9×9. A queen attacks any cell in the same row, column, or either diagonal — three independent constraints must all be satisfied for every placement.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Place exactly one queen per row using DFS row by row. Track three sets — colSet (columns used), posDigSet (r+c values), negDigSet (r-c values) — to check in O(1) whether a column is safe. When row r == n, all queens are placed validly.
 </Callout>
@@ -59,7 +63,15 @@ Output: [["Q"]]
   answer="Backtracking DFS row-by-row — colSet + diagonal sets for O(1) conflict detection"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When asked to place N non-attacking pieces row-by-row on a grid, backtracking with O(1) conflict sets — one per constraint dimension — is the go-to pattern. Each set encodes a different attack direction.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Place exactly one queen per row, recursing row by row. Three O(1) set lookups cover all attack directions: a column set, a positive-diagonal set (r+c), and a negative-diagonal set (r-c). Any column that fires any of the three sets is skipped, pruning entire subtrees before recursing.
+</Callout>
 
 Represent the board as `[[String]]` initialised to `"."`. The recursive function `dfs(_ r: Int)` iterates over all `n` columns for row `r`. For each column `c`, check:
 - `colSet.contains(c)` — column already has a queen
@@ -147,7 +159,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`board.map { $0.joined() }` at the base case converts the 2D `[[String]]` board into `[String]` rows in one expression without a for loop. `Array(repeating: Array(repeating: ".", count: n), count: n)` correctly initialises an independent 2D array — each inner array is a separate copy, so mutating one row does not affect others.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N!)">
+O(N!) in the worst case. The first row has N choices, the second at most N-1 (one column eliminated), and so on — giving N × (N-1) × ... × 1 = N! leaves. In practice, diagonal pruning eliminates far more branches, making actual runtime significantly lower for small N.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N²)">
+O(N²) for the board itself. The three conflict sets and the recursion stack are each O(N). Since N ≤ 9, total memory usage is negligible.
+</Callout>
 
 <ComplexityTable
   rows={[

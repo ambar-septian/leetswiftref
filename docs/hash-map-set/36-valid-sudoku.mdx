@@ -34,6 +34,10 @@ Determine if a `9 x 9` Sudoku board is valid. Only the filled cells need to be v
 - `board[i].length == 9`
 - `board[i][j]` is a digit `1-9` or `'.'`.
 
+<Callout type="amber" label="Key Constraint">
+The board is always 9×9 — both time and space are bounded by the constant 81 cells. Only filled cells (non-'.') need validation; a partially filled board is a valid input and does not need to be solvable.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 One pass over all 81 cells. For each filled cell, check and insert into three sets — one for its row, one for its column, and one for its 3×3 box. The box index is derived by the formula `(row / 3) * 3 + (col / 3)`, mapping each cell to one of nine boxes.
 </Callout>
@@ -76,7 +80,15 @@ Output: false
   answer="Hash set ×27 — one pass, three simultaneous duplicate checks per cell using box index formula"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When validating multiple independent constraint groups simultaneously, think one set per group — check and insert for row, column, and box in a single pass using the box index formula `(row/3)*3 + (col/3)`.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+One pass over all 81 cells. For each filled cell, check and insert into three independent sets simultaneously — one for its row, one for its column, and one for its 3×3 box. The box is identified by the formula `(row/3)*3 + (col/3)`, which maps each cell to one of nine boxes numbered 0–8.
+</Callout>
 
 Initialise three arrays of 9 empty sets: `rows`, `cols`, `boxes`. Iterate over every cell `(i, j)`. Skip `'.'`. For each digit, check containment in `rows[i]`, `cols[j]`, and `boxes[(i/3)*3 + (j/3)]` — return `false` on any hit. Otherwise insert into all three. Return `true` after the full traversal.
 
@@ -152,7 +164,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(repeating: Set<Character>(), count: 9)` creates 9 independent Set values — because Array and Set are value types in Swift, each element is a distinct copy, not an alias of the same set. `guard item != "." else { continue }` cleanly skips empty cells without extra nesting.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1)">
+Exactly 81 cells are processed with O(1) set operations per cell. The board size is fixed at 9×9, so the total number of operations is bounded by a constant — time is O(1).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+27 sets (9 rows + 9 cols + 9 boxes) each holding at most 9 digit characters. The total storage is bounded by 243 entries — a constant. Space is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

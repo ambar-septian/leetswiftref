@@ -27,6 +27,10 @@ Level order traversal visits all nodes at depth 0 (root), then all nodes at dept
 - The number of nodes in the tree is in the range `[0, 2000]`.
 - `-1000 <= Node.val <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+The result must group nodes by level — the inner list order within each level is left-to-right. The tree can be empty (return []). Snapshotting the queue size before each level is the key to correctly separating levels.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 BFS with a queue. At the start of each while-loop iteration, snapshot the current queue size — that is exactly the number of nodes at the current level. Process only that many nodes, appending their children. Collect values into a level array, then append to the result.
 </Callout>
@@ -62,7 +66,15 @@ Output: []
   answer="BFS with level-size snapshot — process count nodes per iteration"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Any time results must be grouped by depth, BFS with a level-size snapshot is the pattern — snapshot queue.count before the inner loop, process exactly that many nodes, collect them into a level array.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+BFS naturally visits nodes level by level. The key is snapshotting count = queue.count before the inner loop — this number is exactly the current level's size. Process only that many nodes, collect their values, then append to the result. Children added during the inner loop belong to the next level.
+</Callout>
 
 Initialise `queue = [root]`. Each while-loop iteration: record `count = queue.count`. Loop exactly `count` times: dequeue, skip nils, append value to `curr`, enqueue both children. After the inner loop, if `curr` is non-empty append it to `result`.
 
@@ -128,7 +140,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`queue.removeFirst()` on a Swift Array is O(n) — acceptable here since n ≤ 2000, but for large inputs use an index pointer (`var head = 0; queue[head]; head += 1`) to make dequeue O(1). `guard let item = queue.removeFirst() else { continue }` cleanly skips nil children without a separate if-let.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — each of the n nodes is enqueued and dequeued exactly once. The level-snapshot and inner loop add no extra traversal: every node is processed in exactly one inner-loop iteration.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the queue, which holds at most one complete level at a time. For a perfect binary tree the last level has n/2 nodes — the maximum queue size is O(n). The result array is also O(n) total.
+</Callout>
 
 <ComplexityTable
   rows={[

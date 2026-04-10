@@ -28,6 +28,10 @@ A permutation is an arrangement of all elements in every possible order. For `n`
 - `-10 <= nums[i] <= 10`
 - All the integers of `nums` are **unique**.
 
+<Callout type="amber" label="Key Constraint">
+All integers are distinct — no duplicate-skipping logic is needed. With at most 6 elements there are at most 6! = 720 permutations. Every element must appear in every permutation exactly once.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Unlike combination problems there is no startIndex — every position can pick any unused element. Use a boolean `used[]` array to track which elements are in the current path. When `path.count == nums.count` we have a complete permutation.
 </Callout>
@@ -63,7 +67,15 @@ Output: [[1]]
   answer="Backtracking — used[] array, iterate all indices, no startIndex"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When generating all permutations of distinct elements, think backtracking with a used[] array and no startIndex — iterate from index 0 every call and rely solely on used[] to avoid placing the same element twice in one path.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Unlike combinations, permutations are order-sensitive — [1,2] and [2,1] are distinct results, so there is no startIndex. Every recursive call iterates from index 0 and skips elements already in the current path via used[]. When path length equals nums.length, a complete permutation is recorded.
+</Callout>
 
 Maintain a `path` array and a `used: [Bool]` array of the same length as `nums`. The recursive function `backTrack()` (no index parameter) iterates over every index `i` from `0` to `nums.count - 1`. Skip `i` if `used[i]` is true. Otherwise: mark `used[i] = true`, append `nums[i]` to `path`, recurse, then undo — `path.removeLast()`, `used[i] = false`.
 
@@ -141,7 +153,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(repeating: false, count: nums.count)` initialises the used array — all elements are false by default. `guard !used[i] else { continue }` is idiomatic Swift for skipping already-picked indices. Swift Array is a value type so `results.append(path)` copies the current path without needing an explicit `.copy()` call.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N * N!)">
+There are N! permutations and recording each one takes O(N) work. The recursion tree has at most N * N! nodes in total. Time is O(N * N!).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N)">
+The recursion depth is N (one level per element placed). The used array and path each hold N elements. Excluding the output array, auxiliary space is O(N).
+</Callout>
 
 <ComplexityTable
   rows={[

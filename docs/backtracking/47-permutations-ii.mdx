@@ -27,6 +27,10 @@ Unlike Permutations I where all elements are distinct, this problem requires ded
 - `1 <= nums.length <= 8`
 - `-10 <= nums[i] <= 10`
 
+<Callout type="amber" label="Key Constraint">
+The input may contain duplicate values — the output must not contain duplicate permutations. Every element must appear in every permutation exactly once; the challenge is deduplication, not reuse prevention.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Sort nums so duplicates are adjacent. Use a used[] array as in Permutations I. Add a skip condition: if sorted[i] == sorted[i-1] and used[i-1] is true, skip index i. This ensures that when two identical values are available at the same recursion level, only the first one is ever chosen.
 </Callout>
@@ -56,7 +60,15 @@ Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
   answer="Backtracking — sort, used[], skip when sorted[i]==sorted[i-1] and used[i-1]"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Spot duplicate-permutation problems by the phrase "might contain duplicates" paired with "unique permutations" — sort the input and add a same-level skip guard to prune duplicate subtrees before they are explored.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Sort the array so duplicate values are adjacent. Reuse the used[] tracking from Permutations I and add one guard: if sorted[i] == sorted[i-1] and used[i-1] is true (same value was just used as an ancestor in the current path), skip index i. This ensures duplicate subtrees are never explored twice.
+</Callout>
 
 Sort `nums` so duplicates are adjacent. Use the same `used[]` + `path` structure as Permutations I. Inside the loop, before picking index `i`, apply the deduplication guard:
 
@@ -144,7 +156,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The `used` array is a value-type `Array<Bool>`. The nested `dfs` closure captures the outer `var used` by reference, so mutations inside dfs (used[i] = true / false) are visible across all recursive frames without any extra copying.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N × N!)">
+O(N × N!) in the worst case (all distinct elements), where N! is the number of leaves in the recursion tree and each leaf requires O(N) to copy into results. Duplicate values reduce the actual number of valid permutations — and therefore explored paths — so the practical runtime is well below this upper bound.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N)">
+O(N) auxiliary space: the recursion stack goes at most N levels deep, and the used[] array and path hold at most N elements. The output array is O(N × N!) in the worst case but is not counted as auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

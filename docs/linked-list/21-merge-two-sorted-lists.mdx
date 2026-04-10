@@ -30,6 +30,10 @@ Return the head of the merged linked list.
 - `-100 <= Node.val <= 100`
 - Both `list1` and `list2` are sorted in **non-decreasing** order.
 
+<Callout type="amber" label="Key Constraint">
+Either or both lists can be empty — the dummy head handles this uniformly since the while loop simply never executes. Lists can have different lengths; the longer list's remaining nodes are attached directly without iteration.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use a dummy head node so the first real node can be appended uniformly. At each step compare the current heads of both lists, attach the smaller one to the tail of the merged list, and advance that list's pointer. Append any remaining nodes directly once one list is exhausted.
 </Callout>
@@ -67,7 +71,15 @@ Output: [0]
   answer="Iterative merge — dummy head, compare current heads, attach smaller node, advance pointer"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When merging two sorted linked lists, think dummy head + iterative compare — greedily attach the smaller head at each step, then link the remaining non-nil list directly once one is exhausted.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Both lists are already sorted, so the smallest remaining element is always at one of the two heads. Greedily pick the smaller head at each step. A dummy sentinel node makes attaching the very first node identical to every subsequent one — no special head-initialisation needed.
+</Callout>
 
 Create a `dummy` sentinel node and keep a `tail` pointer at it. While both lists are non-nil, compare `list1.val` and `list2.val`. Attach the node with the smaller value to `tail.next` and advance that list's head pointer. Advance `tail` to its new last node. Once one list is exhausted, attach the remaining non-nil list directly to `tail.next`. Return `dummy.next` to skip the sentinel.
 
@@ -141,7 +153,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var list1 = list1` shadows the parameter with a mutable local copy — Swift function parameters are `let` constants by default. `tail?.next = list1 ?? list2` uses the nil-coalescing operator to attach whichever remaining list is non-nil in a single expression.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m+n)">
+Each node from list1 and list2 is visited at most once — the while loop runs at most m + n iterations. Attaching the remainder is O(1). Total time is O(m + n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two pointer variables (dummy and tail) plus the two advancing head pointers are used. No new nodes are allocated — existing nodes are re-wired. Space is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

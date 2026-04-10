@@ -37,6 +37,10 @@ The simplified canonical path must:
 - `path` consists of English letters, digits, period `.`, slash `/`, or underscore `_`.
 - `path` is a valid absolute Unix path.
 
+<Callout type="amber" label="Key Constraint">
+`..` at root level must not go above root — guard stack pops. `...` (three dots) is a valid directory name, not a navigation command. Multiple consecutive slashes are treated as a single slash.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Scan the path character by character. When a slash is encountered, process the accumulated token: push valid directory names onto a stack, pop on '..', and ignore '.' and empty tokens. Reconstruct the canonical path from the stack with '/' separators.
 </Callout>
@@ -85,7 +89,15 @@ Explanation: "..." is a valid directory name.
   answer="Stack — push directory names, pop on '..', ignore '.' and empty tokens"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Path simplification with '..' navigation is a classic stack problem — push directory names, pop on '..', and ignore '.' and empty tokens. The stack's last-in-first-out order naturally models filesystem navigation.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Scan character by character, accumulating between slashes, and call a process function on each slash and after the loop ends. Process pushes valid directory names onto a stack, pops on '..', and ignores '.' and empty tokens. Join the final stack with '/' and prepend a leading '/' to reconstruct the canonical path.
+</Callout>
 
 Iterate through each character. If the character is not `'/'`, accumulate it into `current`. When a `'/'` is hit (or at the end of the string), call `process(&current, &stack)`:
 - `'..'` → pop the stack if non-empty
@@ -162,7 +174,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`current.removeAll()` preserves the string's allocated buffer capacity — faster than `current = ""` which reallocates on the next append. The `inout` parameters let `process` mutate both the accumulator and the stack without return values, keeping the call sites clean.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) where n is the path length. Each character is visited exactly once in the scan loop; each token is processed once in process() — push, pop, and string operations are all amortised O(1) per character.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the stack, which holds at most n/2 directory components (every other character being a slash), and for the current accumulator string. The reconstructed result string is O(n) but is the output, not auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

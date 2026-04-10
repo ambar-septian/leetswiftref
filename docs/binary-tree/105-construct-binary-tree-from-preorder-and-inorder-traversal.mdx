@@ -35,6 +35,10 @@ These two traversals together uniquely determine a binary tree (assuming all val
 - `preorder` is **guaranteed** to be the preorder traversal of the tree.
 - `inorder` is **guaranteed** to be the inorder traversal of the tree.
 
+<Callout type="amber" label="Key Constraint">
+All values are unique — this is what makes reconstruction possible. Without uniqueness, the root's position in the inorder array would be ambiguous. Preorder and inorder together uniquely determine the binary tree when values are distinct.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 preorder[0] is always the root. Find that value's position (mid) in inorder — everything left of mid is the left subtree and everything right is the right subtree. A shared preIndex advances through preorder as each root is consumed; a hash map gives O(1) inorder lookups.
 </Callout>
@@ -64,7 +68,15 @@ Output: [-1]
   answer="Divide and conquer — consume preorder root, split inorder, recurse on subranges"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Whenever you are given two traversals and asked to reconstruct the tree, use the first-element-is-root property of preorder plus the split-at-root property of inorder. Build a hash map for O(1) inorder lookups to avoid O(n²) total.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+preorder[preIndex] is always the current root. Its position (mid) in inorder splits the array: inorder[inLeft..mid-1] is the left subtree and inorder[mid+1..inRight] is the right. A hash map gives O(1) lookups; a shared preIndex advances globally as each root is consumed — no array slicing needed.
+</Callout>
 
 Build `hash[inorder[i]] = i` for all `i`. Use a shared `preIndex = 0` variable. Define `recursive(inLeft, inRight)`:
 1. If `inLeft > inRight` return nil.
@@ -135,7 +147,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var preIndex = 0` captured by the nested `recursive` closure is mutated with `preIndex += 1` — Swift closures capture variables by reference, so each recursive call shares and advances the same counter without needing `inout` parameters. `hash[rootVal]!` force-unwraps safely because the problem guarantees all preorder values appear in inorder.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for the hash-map approach. Building the hash map is O(n). Each of the n recursive calls does O(1) work (hash lookup, node creation, preIndex increment), giving O(n) total. The naive linear-search approach is O(n²) because each call scans up to n elements.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the hash map storing all n inorder positions. The recursion stack is O(h) — O(n) for a skewed tree, O(log n) for a balanced tree. The output tree itself is O(n) nodes but is the required result.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -143,6 +167,10 @@ class Solution {
     { approach: "Hash map + shared preIndex", time: "O(n)", space: "O(n)", note: "O(1) inorder lookup; O(h) call stack; O(n) hash map", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer naive vs hash map">
+Always use the **hash map + shared preIndex** approach. The naive O(n²) solution is only acceptable for n ≤ 100 or as a conceptual starting point. For n = 3000 (the constraint limit), O(n²) is 9 million operations versus O(n) = 3000 — the hash map is strictly better.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

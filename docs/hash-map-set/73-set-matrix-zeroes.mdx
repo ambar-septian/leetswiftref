@@ -28,6 +28,10 @@ The key constraint is that the zeroing must be based on the **original** positio
 - `1 <= m, n <= 200`
 - `-2^31 <= matrix[i][j] <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+Zeroing must be based on the original positions of zeros only — zeros introduced during the operation must not trigger further zeroing. The modification must be done in-place.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Two-pass approach: first scan the matrix to record which rows and columns contain zeros into sets. Second pass: for every cell, if its row or column index is in either set, zero it out. The sets capture original zero positions before any modification.
 </Callout>
@@ -57,7 +61,15 @@ Output: [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
   answer="Two-pass — record zero positions in sets, then zero out rows and columns"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When in-place matrix modification must not cascade, a two-pass approach — record first, modify second — prevents false positives. If you zero during the scan, newly introduced zeros become indistinguishable from original ones.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Never zero cells during the first scan. Record which rows and columns originally contained zeros into two integer sets. In the second pass, zero any cell whose row or column index appears in either set. This guarantees only original zeros drive the changes — newly introduced zeros cannot cascade.
+</Callout>
 
 **Pass 1**: Iterate all cells. When `matrix[i][j] == 0`, insert `i` into `rowSet` and `j` into `colSet`.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Set<Int>` provides O(1) average-case `contains`, `insert`. The function takes `matrix: inout [[Int]]` — Swift passes the 2D array by reference so mutations are visible to the caller without copying the entire matrix. Iterating with `0..<matrix[i].count` rather than a fixed column count handles non-rectangular matrices safely.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m × n)">
+O(m × n) for all approaches — two full matrix traversals regardless of strategy. Set insertions and lookups are O(1) amortised, so the two-pass approach adds no overhead beyond the traversal itself.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m + n) / O(1)">
+O(m + n) for the two-pass approach storing row and column index sets. The O(1) follow-up reuses the first row and first column of the matrix itself as flags, eliminating all auxiliary data structures at the cost of extra bookkeeping logic.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -133,6 +157,10 @@ class Solution {
     { approach: "O(1) space (first row/col markers)", time: "O(m*n)", space: "O(1)", note: "Use matrix edges as flags — tricky to implement correctly" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two-pass sets vs O(1) markers">
+Use **two-pass with sets** for interviews and production code — it is easy to reason about and impossible to get wrong. Use **O(1) markers** only under explicit memory constraints; the implementation requires careful ordering to avoid overwriting the flags before they are read, making it error-prone.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

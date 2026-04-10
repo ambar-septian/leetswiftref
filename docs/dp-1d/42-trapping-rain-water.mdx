@@ -28,6 +28,10 @@ The amount of water trapped above position `i` is determined by the minimum of t
 - `1 <= n <= 2 * 10^4`
 - `0 <= height[i] <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+Heights are non-negative — a position with height 0 can still trap water if bounded by taller bars on both sides. Water is computed globally across the entire elevation map, not independently per column.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Maintain a left pointer and a right pointer with their respective running maximums. The side with the smaller maximum is the bottleneck — advance that pointer inward and accumulate `max - height[pointer]` as trapped water. No extra arrays needed.
 </Callout>
@@ -57,7 +61,15 @@ Output: 9
   answer="Two Pointers — advance weaker side, accumulate trapped water in O(1) space"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When computing trapped water between elevation bars, think two pointers with running maximums — always advance the side with the smaller max, since that side is the bottleneck and its water contribution is already fully determined.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Water at any position equals min(leftMax, rightMax) - height[i]. The two-pointer approach eliminates the need for prefix/suffix max arrays by maintaining running maxima. The key invariant: when processing the left pointer, rightMax >= leftMax, so leftMax is the true cap and we can safely accumulate leftMax - height[l] without needing to know what lies to the right.
+</Callout>
 
 <TrappingRainWaterDiagram />
 
@@ -136,7 +148,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard !height.isEmpty else { return 0 }` prevents unsafe access to `height[0]` and `height[count-1]` on an empty array. Updating `leftMax = max(leftMax, height[l])` before accumulating ensures the difference is always non-negative — `max(_:_:)` is a free function in Swift's standard library requiring no import.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each element is visited at most once — the left pointer only moves right and the right pointer only moves left, together traversing the array in a single pass. Total time is O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only four scalar variables are used — l, r, leftMax, rightMax — plus the result accumulator. No prefix or suffix arrays are needed. Space is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -145,6 +169,10 @@ class Solution {
     { approach: "Two Pointers", time: "O(n)", space: "O(1)", note: "Single pass, running max variables only", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Two Pointers over DP">
+Both Two Pointers and DP are O(n) time, but Two Pointers uses O(1) space while DP prefix/suffix arrays use O(n). Prefer Two Pointers when memory is constrained. Prefer DP if you need the leftMax and rightMax arrays for further computation, or if the two-pointer invariant is hard to explain to reviewers.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

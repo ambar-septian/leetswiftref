@@ -24,6 +24,10 @@ Given two strings `haystack` and `needle`, return the index of the **first occur
 - `1 <= haystack.length, needle.length <= 10^4`
 - `haystack` and `needle` consist of only lowercase English characters.
 
+<Callout type="amber" label="Key Constraint">
+Return the index of the first occurrence, or -1 if not found. Both strings can be up to 10^4 characters — the naive O(n*m) approach is acceptable here, but note that KMP achieves O(n+m) for repeated queries with the same needle.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Anchor a left pointer at each starting position in haystack. Use a right pointer to match characters of needle one by one from that anchor. On full match return left; on any mismatch reset right to 0 and advance left by one.
 </Callout>
@@ -55,7 +59,15 @@ Explanation: "leeto" does not occur in "leetcode".
   answer="Sliding two pointers — anchor left, extend right to match needle, reset on mismatch"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When searching for a fixed-length pattern in a string, think sliding two-pointer match — anchor left at each candidate start, extend right to match character by character, and reset right to 0 on any mismatch.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Anchor left at each candidate start position in haystack. Use right to track how many needle characters have been matched. Index into haystack with `left + right` to avoid substring copying — O(1) per comparison. On full match return left; on any mismatch reset right to 0 and advance left by 1.
+</Callout>
 
 Convert both strings to character arrays for O(1) access. Maintain `left` as the current starting index in haystack and `right` as how many characters of needle have been matched so far. At each step, compare `h[left + right]` with `n[right]`. On match advance `right` and check if `right == n.count` (full match — return `left`). On mismatch reset `right = 0` and advance `left`. Return `-1` if left exhausts the haystack.
 
@@ -125,7 +137,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`.map { String($0) }` converts each `Character` to a single-character `String`, enabling O(1) integer indexing on the resulting array. Alternatively, `Array(s)` with `Character` elements is more memory-efficient but requires `Character` comparisons instead of `String` comparisons.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n*m)">
+In the worst case every starting position in haystack is tried and the full needle length is compared each time — O(n * m) where n is haystack length and m is needle length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n+m)">
+Converting both strings to character arrays uses O(n + m) auxiliary space. The pointer variables themselves are O(1).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -133,6 +157,10 @@ class Solution {
     { approach: "KMP algorithm", time: "O(n+m)", space: "O(m)", note: "Builds failure function to avoid redundant comparisons — optimal but more complex", highlight: false },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Naive over KMP">
+The naive O(n*m) approach is simpler and sufficient for single-query searches where both strings are up to 10^4 characters. Prefer KMP when the same needle is searched across many haystacks, or when pathological inputs (long repeated patterns) are expected — KMP guarantees O(n+m) regardless of input.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

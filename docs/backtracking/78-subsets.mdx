@@ -30,6 +30,10 @@ A **subset** is any selection of zero or more elements from the array. The empty
 - `-10 <= nums[i] <= 10`
 - All the numbers of `nums` are **unique**.
 
+<Callout type="amber" label="Key Constraint">
+All elements are unique — no deduplication logic is needed. The output always contains exactly 2^n subsets, including the empty set and the full array.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 At each index make a binary decision: include nums[i] in the current path or exclude it. After deciding for every element (i >= nums.count), the current path is one complete subset. This generates all 2^n subsets exactly once.
 </Callout>
@@ -59,7 +63,15 @@ Output: [[],[0]]
   answer="Backtracking — binary include/exclude at each index, collect every leaf"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When you need all 2^n combinations of include/exclude decisions over n elements, binary decision-tree backtracking collecting at every leaf is the direct approach — unlike combination problems, there is no filtering condition.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+At each index make exactly two recursive calls: one including nums[i] (append, recurse, removeLast) and one excluding it (recurse directly without modifying path). Collect the path only when i reaches nums.count — every leaf of this binary decision tree is a valid subset, so no filtering condition is needed.
+</Callout>
 
 The recursive function `backTrack(_ i: Int)` processes one element at a time. When `i >= nums.count` we have processed every element — append a copy of `path` to `results` and return.
 
@@ -133,7 +145,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`results.append(path)` appends a copy of the value-type array — no explicit `copy()` call needed. Swift's value semantics ensure that subsequent mutations to `path` (append/removeLast) do not affect the already-stored snapshot in `results`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N × 2^N)">
+O(N × 2^N). There are exactly 2^N leaves in the binary decision tree (one per subset). At each leaf, copying the current path takes O(N). The internal nodes of the tree add O(2^N) append/removeLast operations total, which is dominated by the leaf-copy cost.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N × 2^N)">
+O(N × 2^N) for the output storing all subsets. The recursion stack is O(N) deep, and path holds at most N elements at any point — both are negligible compared to the output size.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -30,6 +30,10 @@ The word can be constructed from letters of sequentially adjacent cells, where a
 - `1 <= word.length <= 15`
 - `board` and `word` consist of only lowercase and uppercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+The same cell may not be used more than once in a single path. The board is at most 6×6 = 36 cells and the word is at most 15 characters — backtracking with in-place visited marking is efficient enough.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 DFS from every starting cell. At each step check bounds, character match, and whether the cell has already been visited. Mark a visited cell by replacing it with '#' in-place, then restore after backtracking — no separate visited set needed.
 </Callout>
@@ -70,7 +74,15 @@ Output: false
   answer="Backtracking DFS — in-place '#' visited marker, prune on mismatch or bounds"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Grid path problems with no-reuse constraints pattern directly to DFS backtracking with in-place visited marking — replacing a cell with '#' eliminates a separate visited set and is impossible to accidentally leave un-restored.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+From every cell matching word[0], launch DFS. At each step validate bounds, character match, and '#' (already visited). Mark the cell '#' before recursing into four neighbors; restore it after all four recursive calls return. Return true as soon as charIndex reaches word.count — no further exploration needed.
+</Callout>
 
 Find all cells where `board[r][c] == word[0]`. For each starting cell call `dfs(r, c, 0)`. The DFS:
 1. If `charIndex == word.count` — all characters matched, return `true`.
@@ -159,6 +171,15 @@ class Solution {
     return false
   }
 
+}
+```
+
+<Callout type="green" label="Swift Notes">
+`var board = board` creates a mutable local copy since Swift 2D arrays are value types. The nested `dfs` closure captures this `var` by reference, so `board[r][c] = "#"` and the restore mutate the same array across all recursion frames without extra copying.
+</Callout>
+
+```swift
+extension Solution {
   func firstCharInGrid(_ board: [[Character]], _ word: String) -> [(Int, Int)] {
     var freq = [Character: Int]()
     var positions = [(Int, Int)]()
@@ -182,6 +203,14 @@ class Solution {
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N × 3^L)">
+O(N × 3^L) where N is the total number of cells and L is the word length. DFS is launched from each of the N starting cells. At each step there are at most 3 directions to explore (cannot revisit the cell we came from), giving 3^L paths per start. The optional frequency pruning can eliminate many starting cells before DFS begins.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N + L)">
+O(L) for the recursion stack depth (one frame per matched character). O(N) if frequency pruning builds a character-count map over the board. No separate visited structure is needed — the '#' in-place marker uses the existing board array.
+</Callout>
 
 <ComplexityTable
   rows={[

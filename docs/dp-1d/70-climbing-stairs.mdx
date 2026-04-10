@@ -23,6 +23,10 @@ You are climbing a staircase. It takes `n` steps to reach the top. Each time you
 **Constraints**
 - `1 <= n <= 45`
 
+<Callout type="amber" label="Key Constraint">
+n is at most 45. Naive recursion without memoization is O(2^n) and will time-out for large n. The 45th Fibonacci number (1,836,311,903) fits comfortably in a 32-bit integer.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 The number of ways to reach step n equals the number of ways to reach step n-1 (then take 1 step) plus the number of ways to reach step n-2 (then take 2 steps). This recurrence is identical to the Fibonacci sequence: climbStairs(n) = climbStairs(n-1) + climbStairs(n-2).
 </Callout>
@@ -60,7 +64,15 @@ Output: 8
   answer="1D DP / Memoized Recursion — Fibonacci recurrence"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When the count of ways to reach a state depends only on the previous two states, the recurrence is Fibonacci — reach for bottom-up DP with two rolling variables for O(n) time and O(1) space.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Ways(n) = Ways(n-1) + Ways(n-2). This is structurally identical to the Fibonacci sequence. Top-down memoization caches each subproblem after its first computation; bottom-up iteratively updates two rolling variables — both run in O(n) time with the iterative version using O(1) space.
+</Callout>
 
 Use top-down DP with a `memo` dictionary. For `n == 0` or `n == 1` return 1. Otherwise check `memo[n]`; if found return it. Otherwise compute `climbStairs(n-1) + climbStairs(n-2)`, store in `memo[n]`, and return.
 
@@ -118,7 +130,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`memo` is stored as a class property, which persists across LeetCode test cases in the multi-test runner. Prefer a local `var memo = [Int: Int]()` inside the function, or use the bottom-up two-variable iterative approach which has no shared state and is simpler to reason about.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both memoized top-down and iterative bottom-up approaches. Each of the n distinct subproblems is computed exactly once. Naive recursion without memoization is O(2^n) because the same subproblem (e.g., climbStairs(3)) is recomputed in every branch that needs it.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n) / O(1)">
+O(n) for the memoization dictionary and recursion stack in the top-down approach. O(1) for the bottom-up two-variable approach — only the two rolling variables are maintained regardless of n.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -127,6 +151,10 @@ class Solution {
     { approach: "Bottom-up DP (two variables)", time: "O(n)", space: "O(1)", note: "Iterative Fibonacci — optimal space" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer top-down vs bottom-up">
+**Naive recursion**: never in production — O(2^n) will TLE for n above ~30. **Top-down memoization**: natural if you think recursively; O(n) space. **Bottom-up two-variable**: the optimal choice for this problem — O(n) time and O(1) space, no risk of class-level memo state pollution across test cases.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

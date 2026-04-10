@@ -32,6 +32,10 @@ Note: comparing only with the immediate parent is not sufficient. Every node in 
 - The number of nodes in the tree is in the range `[1, 10^4]`.
 - `-2^31 <= Node.val <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+Node values can reach the full Int32 range (-2^31 to 2^31 - 1). Initial bounds must use Int.min / Int.max (64-bit) to avoid false failures on nodes at the extremes. The BST property requires strict inequality — duplicate values make a tree invalid.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Pass valid (min, max) bounds down the tree. At each node verify that its value is strictly within those bounds. Recurse left with the current node's value as the new upper bound; recurse right with it as the new lower bound.
 </Callout>
@@ -62,7 +66,15 @@ Explanation: Node 4 is in the right subtree of root 5, but 4 < 5.
   answer="DFS with inherited (min, max) bounds — narrow range at each level"
 />
 
+<Callout type="green" label="Rule of Thumb">
+BST validation requires global ancestor constraints, not just local parent-child checks. Whenever a problem asks whether a tree satisfies a structural invariant at every node, pass inherited bounds down the DFS rather than comparing with the immediate parent.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Pass inherited (min, max) bounds down every recursive call. At each node verify root.val is strictly within the bounds. Recurse left with the current node's value as the new upper bound and right with it as the new lower bound. Start with (Int.min, Int.max) at the root.
+</Callout>
 
 Define `isValid(_ root: TreeNode?, left: Int, right: Int)`. If `root` is nil, return `true`. Check `root.val > left && root.val < right` — if either fails, return `false`. Recurse: left child with `(left, root.val)` and right child with `(root.val, right)`. Initial call: `isValid(root, left: Int.min, right: Int.max)`.
 
@@ -118,7 +130,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `isValid` function captures `root` from the outer scope but takes its own parameters — a clean way to add helper arguments without exposing them in the public API. `guard root.val > left, root.val < right else { return false }` chains two conditions in one guard with a comma, equivalent to `&&` but more idiomatic Swift.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — each node is visited exactly once. Short-circuit &&-evaluation means the first invalid node terminates the DFS immediately, making typical runtime much lower than the worst case.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursion call stack where h is the tree height. O(n) for a skewed tree (degenerate linked list), O(log n) for a balanced tree.
+</Callout>
 
 <ComplexityTable
   rows={[

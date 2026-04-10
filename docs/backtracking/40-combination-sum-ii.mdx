@@ -28,6 +28,10 @@ Each number in `candidates` may only be used **once** in the combination. The so
 - `1 <= candidates[i] <= 50`
 - `1 <= target <= 30`
 
+<Callout type="amber" label="Key Constraint">
+Each element may be used at most once, and the input may contain duplicate values. The output must not contain duplicate combinations — sort first and skip duplicates at the same recursion level to enforce this.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Sort the candidates first. Use `dfs(i+1)` to prevent reusing the same element. Skip duplicates at the same recursion level with `if i > index && candidates[i] == candidates[i-1]` — this prevents generating identical combinations from different positions.
 </Callout>
@@ -57,7 +61,15 @@ Output: [[1,2,2],[5]]
   answer="Backtracking — sort, dfs(i+1) for no-reuse, skip duplicate at same level"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When input has duplicates and each element can only be used once, think sort + skip — sort so duplicates are adjacent, advance with dfs(i+1) to prevent reuse, and skip `candidates[i] == candidates[i-1]` when `i > index` to prevent duplicate combinations.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Sort candidates so duplicates are adjacent. Advance with dfs(i+1) to prevent element reuse. Skip a candidate at position i when it equals the previous candidate at the same recursion level (i > index and candidates[i] == candidates[i-1]) — this eliminates duplicate combinations without a visited set.
+</Callout>
 
 Sort `candidates` so that duplicates are adjacent. Maintain a `path` array and a `sum` running total. The recursive function `dfs(_ index)` iterates from `index` to the end:
 
@@ -141,7 +153,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`candidates.sorted()` returns a new sorted array without modifying the original — the value-type copy means sorting is safe. The multi-condition `if i > index, c == cn[i - 1]` uses a comma-separated condition (equivalent to `&&`) — idiomatic Swift for combining guards without nesting.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(2^N * N)">
+In the worst case all 2^N subsets are explored, each with O(N) work to record the result. Sorting adds O(N log N) but is dominated by the backtracking. Total is O(2^N * N).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N)">
+The recursion stack goes at most N levels deep and the path array holds at most N elements at any time. Space is O(N).
+</Callout>
 
 <ComplexityTable
   rows={[

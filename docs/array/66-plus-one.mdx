@@ -27,6 +27,10 @@ Increment the large integer by one and return the resulting array of digits.
 - `0 <= digits[i] <= 9`
 - `digits` does not contain any leading zeros.
 
+<Callout type="amber" label="Key Constraint">
+The array can represent up to 100 digits — far beyond any integer type. Never convert to Int or Int64. The all-nines case (e.g., [9,9,9]) is the only input that produces a result array longer than the input.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Walk backward through the digits. If the last digit is not 9, simply increment it and stop. If it is 9, set it to 0 and carry — keep going left while digits are 9. If all digits were 9, every digit is now 0 and we need to insert a leading 1.
 </Callout>
@@ -68,7 +72,15 @@ Output: [1,0,0,0]
   answer="Backward linear scan — increment or propagate carry, insert leading 1 only when all nines"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When adding 1 to a digit array, scan backward and propagate carry — only the all-nines case expands the array length. A direct backward scan is always sufficient; no integer conversion is needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Walk from the last digit to the first. Increment and return immediately if the digit is not 9. Set to 0 and continue left if it is 9 (carry propagates). If the loop completes without returning, all digits were 9 and have been zeroed — insert a leading 1 at index 0.
+</Callout>
 
 Iterate from the last index down to 0. If `digits[last] != 9`, increment it and immediately return. If it is 9, set it to 0 and continue left (carry propagates). After the loop exits — which means we fell off the left end, i.e., all digits were 9 — every digit is now 0, so insert a 1 at index 0.
 
@@ -132,7 +144,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var digits = digits` at the top creates a local mutable copy — Swift arrays are value types so the function parameter is immutable by default. `digits.insert(1, at: 0)` is an O(n) operation that shifts all elements right; it is reached at most once per call and only for the all-nines input.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) in the worst case (all-nines input), where the loop traverses every digit once. For typical inputs the loop exits early at the first non-nine digit — the amortised cost across random inputs is O(1) since the probability of carry cascading all the way to the front decreases exponentially.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+O(1) auxiliary space. The only allocation is the local digits copy which is the output itself. The insert(1, at: 0) for the all-nines case does not count as extra space — it is the result array being extended by one element.
+</Callout>
 
 <ComplexityTable
   rows={[

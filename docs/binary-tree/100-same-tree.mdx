@@ -27,6 +27,10 @@ Two binary trees are considered the same if they are structurally identical, and
 - The number of nodes in both trees is in the range `[0, 100]`.
 - `-10^4 <= Node.val <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Both structure and values must match at every position. A nil node in one tree at a position where the other has a node makes them different — structural differences must be captured, not just value differences. Both trees can be empty.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Serialize both trees into preorder arrays including null sentinels (to capture structure). Two trees are identical if and only if their serialized arrays are equal. Alternatively, recurse directly: two trees match if both nodes are nil, or both are non-nil with the same value and matching subtrees.
 </Callout>
@@ -62,7 +66,15 @@ Output: false
   answer="DFS serialisation — preorder array with nulls, then compare"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Two trees are identical iff their preorder serialisations with null sentinels are equal. The serialisation approach is easy to generalise; the direct recursive comparison is more memory-efficient.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Serialize both trees into preorder arrays with null sentinels ([nil] for nil nodes). Two trees are identical iff their serialized arrays are equal — structural differences show up as mismatches in sentinel placement, not just value differences. Alternatively, recurse directly without intermediate arrays.
+</Callout>
 
 Define `dfs(_ tree: TreeNode?) -> [Int?]`. If `tree` is nil return `[nil]`. Otherwise return `[tree.val] + dfs(tree.left) + dfs(tree.right)`. Call on both `p` and `q` and compare the resulting arrays.
 
@@ -109,7 +121,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`[Int?]` arrays support `==` with element-wise nil-safe comparison in Swift — `Optional(1) == Optional(1)` is true and `nil == nil` is true, so the array comparison correctly handles sentinel nil nodes without custom logic.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both approaches — every node in both trees is visited once. The serialisation approach also performs a final array comparison in O(n), which does not change the overall complexity.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n) / O(h)">
+O(n) for the serialisation approach: two arrays of length n+1 (n nodes plus null sentinels) plus O(h) call stack. O(h) for the direct recursive comparison — no intermediate arrays, only the call stack.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -117,6 +141,10 @@ class Solution {
     { approach: "Direct recursive comparison", time: "O(n)", space: "O(h)", note: "No intermediate arrays — O(h) stack only" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer serialisation vs direct comparison">
+Use **direct recursive comparison** for memory efficiency — O(h) vs O(n) space. Use **serialisation** when you want to generalise to comparing more than two trees (serialize once, compare many), or when the serialised form is useful for debugging. For a simple pairwise check, direct comparison is preferred.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

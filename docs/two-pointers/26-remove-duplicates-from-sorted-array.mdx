@@ -30,6 +30,10 @@ Consider the number of unique elements of `nums` to be `k`. To get accepted, you
 - `-100 <= nums[i] <= 100`
 - `nums` is sorted in **non-decreasing** order.
 
+<Callout type="amber" label="Key Constraint">
+The array is sorted — duplicates are always adjacent. The modification must be done in-place with O(1) extra space; only the first k elements of the result matter, the rest can be anything.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Because the array is sorted, duplicates are always adjacent. A slow pointer marks the boundary of the unique prefix. A fast pointer scans ahead — whenever it finds a value different from slow, copy it to slow+1 and advance slow.
 </Callout>
@@ -61,7 +65,15 @@ Explanation: Five unique elements.
   answer="Two Pointers — slow marks unique prefix boundary, fast scans for new values"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When removing duplicates in-place from a sorted array, think slow/fast two pointers — slow marks the end of the unique prefix, fast scans forward and copies each new value to slow+1 when it differs.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Sorted order guarantees duplicates are adjacent, so comparing only nums[slow] with nums[fast] is sufficient to detect every new unique value. The slow pointer marks the tail of the unique prefix; when fast finds a new value, copy it to slow+1 and advance slow. The result is a compacted unique prefix written in-place.
+</Callout>
 
 Start `slow = 0`, `fast = 1`. Walk `fast` through the array. When `nums[fast] != nums[slow]` a new unique value is found: advance `slow` and copy `nums[fast]` into `nums[slow]`. When equal, just advance `fast`. Return `slow + 1` (the count of unique elements written).
 
@@ -127,7 +139,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The `inout` parameter (`_ nums: inout [Int]`) passes the array by reference using copy-in/copy-out semantics — mutations are written back to the caller's variable on return. `guard !nums.isEmpty else { return 0 }` is idiomatic Swift for an early exit without nesting the entire function body in an `if`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Each element is visited exactly once by the fast pointer. The slow pointer only advances when a new unique value is found. Total time is O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two index variables (slow and fast) are maintained. No additional array is allocated — unique values are written directly into the input array. Space is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

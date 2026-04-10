@@ -29,6 +29,10 @@ A tree is symmetric if the left subtree is a mirror reflection of the right subt
 - The number of nodes in the tree is in the range `[1, 1000]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The tree always has at least one node. Symmetry is not just adjacent children matching — at every depth, l1.left must mirror l2.right and l1.right must mirror l2.left. A structurally asymmetric nil placement breaks symmetry even if values happen to match.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use BFS with a queue that stores mirror pairs. Start with (root.left, root.right). At each step dequeue two nodes (l1, l2) that should mirror each other. Verify their values match, then enqueue the next mirror pairs: (l1.left, l2.right) and (l1.right, l2.left).
 </Callout>
@@ -58,7 +62,15 @@ Output: false
   answer="BFS mirror-pair queue — enqueue (l1.left, l2.right) and (l1.right, l2.left)"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Symmetry checks require comparing mirror-image node pairs. Queue pairs of nodes that should reflect each other — always cross-pair children: (l1.left, l2.right) and (l1.right, l2.left).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+BFS processes mirror pairs level by level. Seed the queue with (root.left, root.right). Each dequeued pair (l1, l2) must have equal values; enqueue their children as the next mirror pairs: (l1.left, l2.right) and (l1.right, l2.left) — always cross-pairing across the axis.
+</Callout>
 
 Initialise the queue with `[root.left, root.right]`. While the queue is not empty: dequeue `l1` and `l2` (always in pairs). If both nil, continue. If one is nil or values differ, return `false`. Enqueue `l1.left, l2.right` and `l1.right, l2.left` — the next level's mirror pairs.
 
@@ -122,7 +134,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`queue.append(contentsOf: [l1?.left, l2?.right, l1?.right, l2?.left])` appends four optional TreeNode? elements in one call. Optional chaining on `l1?.left` is safe — nil children are appended as nil and handled by the both-nil continue on the next dequeue.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — each node is enqueued and dequeued exactly once. The queue processes all n nodes before concluding. Short-circuit returns false immediately on the first mismatch, making typical runtime lower than worst case.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the queue, which holds at most one full level of nodes at a time. For a complete binary tree the widest level has n/2 nodes — O(n) total. The recursion-based alternative uses O(h) stack space where h is the tree height.
+</Callout>
 
 <ComplexityTable
   rows={[

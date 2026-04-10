@@ -28,6 +28,10 @@ Unlike problem 82 (which removes all occurrences), this problem **keeps one copy
 - `-100 <= Node.val <= 100`
 - The list is guaranteed to be **sorted** in ascending order.
 
+<Callout type="amber" label="Key Constraint">
+In a sorted list, duplicates of any value are always adjacent. The head is always kept — only the extra occurrences are removed. No dummy head is needed because the first node is never deleted.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 In a sorted list, duplicates are always adjacent. Maintain a curr pointer. While curr.next has the same value as curr, skip curr.next by setting curr.next = curr.next.next (bypassing the duplicate). When the values differ, advance curr to curr.next.
 </Callout>
@@ -59,7 +63,15 @@ Output: 1 → 2 → 3 → null
   answer="Iterative traversal — skip next node while it matches current value"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When duplicates are guaranteed to be adjacent (sorted list), a single pointer with an inner skip loop is sufficient — no hash set, no dummy head, no extra space needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain a curr pointer. While curr.next has the same value as curr, bypass it by setting curr.next = curr.next.next. When values differ, advance curr to curr.next. No dummy head is needed — the first occurrence of every value is always kept.
+</Callout>
 
 Start with `curr = head`. For each node, use an inner pointer `item = curr`. While `item.next` exists and `item.next.val == item.val`, set `item.next = item.next.next` (bypass the duplicate). After the inner loop, advance `curr = item.next`.
 
@@ -121,7 +133,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`item?.next?.val` uses optional chaining — when `item?.next` is nil, the entire expression short-circuits to nil, making the while condition `item?.val == item?.next?.val` evaluate to `Optional(val) == nil`, which is false, safely terminating the inner loop without a nil crash.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — each node is visited at most twice: once by the outer loop advancing curr, and once by the inner loop bypassing a duplicate. Total work is proportional to the number of nodes.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+O(1) auxiliary space. Re-linking next pointers in-place uses only a constant number of pointer variables (curr, item, result). No new nodes are created.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -29,6 +29,10 @@ Positions are 1-indexed. Nodes outside the range `[left, right]` are left untouc
 - `-500 <= Node.val <= 500`
 - `1 <= left <= right <= n`
 
+<Callout type="amber" label="Key Constraint">
+Positions are 1-indexed. left == 1 means reversal starts at the head — there is no predecessor node, so head itself must be updated after reversal. The constraint 1 <= left <= right <= n guarantees at least one node is reversed.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Walk to the node just before position left (lastNodeBeforeSublist) and the node at position left (lastNodeOnSublist — it becomes the tail after reversal). Reverse exactly (right - left + 1) nodes in-place using the standard iterative reversal. Re-attach the reversed sublist by connecting lastNodeBeforeSublist to the new head and lastNodeOnSublist to the first node after the sublist.
 </Callout>
@@ -60,7 +64,15 @@ Output: [5]
   answer="In-place sublist reversal — track boundary nodes, reverse target range, reconnect"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For partial list reversal, save the boundary nodes (predecessor and old tail) before reversing, then reconnect in phase 3. The three-phase structure — navigate, reverse, reconnect — prevents pointer corruption.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Three phases: navigate to the node just before position left, saving the boundary references (lastNodeBeforeSublist and lastNodeOnSublist). Then reverse exactly (right - left + 1) nodes in-place. Finally reconnect: lastNodeBeforeSublist to the new head, and the old sublist head (now tail) to the first node after position right.
+</Callout>
 
 **Phase 1 — Navigate to sublist start**: Walk `left - 1` steps to position `prev` just before the sublist and `curr` at the sublist start. Save `lastNodeBeforeSublist = prev` and `lastNodeOnSublist = curr`.
 
@@ -149,7 +161,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var head = head` at the top creates a mutable local copy of the parameter — Swift function parameters are immutable by default. `lastNodeBeforeSublist?.next = prevReversed` uses optional chaining to guard the nil case (left == 1) without a separate if-let, keeping the reconnect logic concise.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — the navigation phase walks at most left-1 steps and the reversal phase walks right-left+1 steps. Total steps is at most n, covered in a single pass.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+O(1) auxiliary space. The in-place reversal uses only a fixed set of pointer variables: prev, curr, prevReversed, next, lastNodeBeforeSublist, lastNodeOnSublist. No new nodes are allocated.
+</Callout>
 
 <ComplexityTable
   rows={[

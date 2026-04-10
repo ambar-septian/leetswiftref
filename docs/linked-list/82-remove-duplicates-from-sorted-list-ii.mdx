@@ -28,6 +28,10 @@ Unlike problem 83 (which keeps one copy of each duplicate), this problem removes
 - `-100 <= Node.val <= 100`
 - The list is guaranteed to be **sorted** in ascending order.
 
+<Callout type="amber" label="Key Constraint">
+All occurrences of any duplicated value must be removed — not just the extras. The list can be empty or consist entirely of duplicates. Sorted order guarantees all copies of a value are adjacent.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use a dummy head and a fast pointer. When a consecutive pair of equal values is detected, record the duplicate value. Skip the fast pointer forward past all nodes with that value. Only nodes whose value does not match the recorded duplicate value are appended to the result list.
 </Callout>
@@ -65,7 +69,15 @@ Output: 2 → 3 → null
   answer="Single pass — dummy head, record duplicate value, skip all nodes with that value"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To remove all nodes of any duplicated value from a sorted list, a dummy head and a fast pointer that records the duplicate value let you skip entire runs in a single pass — no second pass needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Use a dummy head so the original head can be removed without special-casing. Advance a fast pointer one step at a time: on consecutive equal values, record the duplicate value and skip fast forward; on a node whose value matches the recorded duplicate, skip it; otherwise build a new node and attach to the result tail.
+</Callout>
 
 Use a `dummy` node pointing to `head` and a `result` pointer tracking the tail of the output list. Advance `fast` one node at a time:
 
@@ -142,7 +154,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Building new `ListNode` instances instead of re-linking avoids mutating `.next` pointers mid-traversal, which can create cycles. Swift's optional chaining (`fast?.val`, `fast?.next?.val`) cleanly handles nil-termination without explicit nil guards on every access.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — each node is visited exactly once by the fast pointer. The duplicate-detection and skip logic are both O(1) per node, so the single pass over all n nodes dominates.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the new nodes built in the output list — one new node per unique-value node retained. The four pointer variables (dummy, result, fast, duplValue) are O(1) auxiliary space. The input list nodes are left unmodified.
+</Callout>
 
 <ComplexityTable
   rows={[

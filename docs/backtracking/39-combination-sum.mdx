@@ -31,6 +31,10 @@ The test cases are generated such that the number of unique combinations that su
 - All elements of `candidates` are **distinct**.
 - `1 <= target <= 40`
 
+<Callout type="amber" label="Key Constraint">
+Candidates are distinct and each can be reused an unlimited number of times. All candidates are positive (≥ 2), so a running sum that exceeds the target can never recover — prune immediately.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Use DFS starting from a `startIndex` that never moves backwards. Recurse with `dfs(i)` — not `dfs(i+1)` — to allow reusing the current element. Prune immediately when the running sum exceeds the target.
 </Callout>
@@ -66,7 +70,15 @@ Output: []
   answer="Backtracking — DFS with startIndex, reuse via dfs(i), prune when sum exceeds target"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When combinations allow unlimited element reuse, think backtracking with `dfs(i)` (not i+1) to permit reuse, plus a startIndex to ensure elements are picked in non-decreasing order so [2,3] and [3,2] are not both generated.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Use a startIndex so each recursive call only considers candidates from the current index onward — this ensures combinations are always built in non-decreasing index order, preventing [2,3] and [3,2] from both appearing. Pass dfs(i) rather than dfs(i+1) to allow reusing the same element. Prune immediately when the running sum exceeds the target.
+</Callout>
 
 Maintain a shared `paths` array and a `sums` running total. The recursive function `dfs(_ startIndex)` iterates from `startIndex` to the end of `candidates`. For each candidate `c`: append it, add to `sums`, recurse with `dfs(i)` (same index — allows reuse), then remove and subtract (backtrack). Base cases: `sums == target` → record result; `sums > target` → prune.
 
@@ -139,7 +151,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift Array is a value type, so `results.append(paths)` copies the current path automatically — no `Array(paths)` wrapping is needed unlike reference-type languages. The nested `func dfs` captures `paths`, `sums`, `results`, and `candidates` by reference from the enclosing function scope.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N^(T/M))">
+The recursion tree has branching factor N and maximum depth T/M (where T is target and M is the minimum candidate value). Upper bound on nodes explored is O(N^(T/M)), each doing O(1) work.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(T/M)">
+The recursion stack depth is at most T/M levels. The path array holds at most T/M elements at any time. Space is O(T/M).
+</Callout>
 
 <ComplexityTable
   rows={[

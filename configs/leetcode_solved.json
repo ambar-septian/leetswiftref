@@ -216,7 +216,7 @@
       "status": "done",
       "slug": "merge-two-sorted-lists",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 22,
@@ -237,7 +237,7 @@
       "status": "done",
       "slug": "generate-parentheses",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 26,
@@ -256,7 +256,7 @@
       "status": "done",
       "slug": "remove-duplicates-from-sorted-array",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 28,
@@ -276,7 +276,7 @@
       "status": "done",
       "slug": "find-the-index-of-the-first-occurrence-in-a-string",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 34,
@@ -295,7 +295,7 @@
       "status": "done",
       "slug": "find-first-and-last-position-of-element-in-sorted-array",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 36,
@@ -316,7 +316,7 @@
       "status": "done",
       "slug": "valid-sudoku",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 39,
@@ -334,7 +334,7 @@
       "status": "done",
       "slug": "combination-sum",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 40,
@@ -352,7 +352,7 @@
       "status": "done",
       "slug": "combination-sum-ii",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 42,
@@ -373,7 +373,7 @@
       "status": "done",
       "slug": "trapping-rain-water",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 46,
@@ -391,7 +391,7 @@
       "status": "done",
       "slug": "permutations",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 47,
@@ -410,7 +410,7 @@
       "status": "done",
       "slug": "permutations-ii",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 49,
@@ -430,7 +430,7 @@
       "status": "done",
       "slug": "group-anagrams",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 51,
@@ -448,7 +448,7 @@
       "status": "done",
       "slug": "n-queens",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 66,
@@ -466,7 +466,7 @@
       "status": "done",
       "slug": "plus-one",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 70,
@@ -485,7 +485,7 @@
       "status": "done",
       "slug": "climbing-stairs",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 71,
@@ -503,7 +503,7 @@
       "status": "done",
       "slug": "simplify-path",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 73,
@@ -522,7 +522,7 @@
       "status": "done",
       "slug": "set-matrix-zeroes",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 78,
@@ -541,7 +541,7 @@
       "status": "done",
       "slug": "subsets",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 79,
@@ -562,7 +562,7 @@
       "status": "done",
       "slug": "word-search",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 82,
@@ -580,7 +580,7 @@
       "status": "done",
       "slug": "remove-duplicates-from-sorted-list-ii",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 83,
@@ -597,7 +597,7 @@
       "status": "done",
       "slug": "remove-duplicates-from-sorted-list",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 84,
@@ -616,7 +616,7 @@
       "status": "done",
       "slug": "largest-rectangle-in-histogram",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 92,
@@ -633,7 +633,7 @@
       "status": "done",
       "slug": "reverse-linked-list-ii",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 94,
@@ -653,7 +653,7 @@
       "status": "done",
       "slug": "binary-tree-inorder-traversal",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 98,
@@ -673,7 +673,7 @@
       "status": "done",
       "slug": "validate-binary-search-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 100,
@@ -693,7 +693,7 @@
       "status": "done",
       "slug": "same-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 101,
@@ -713,7 +713,7 @@
       "status": "done",
       "slug": "symmetric-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 102,
@@ -732,7 +732,7 @@
       "status": "done",
       "slug": "binary-tree-level-order-traversal",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 104,
@@ -752,7 +752,7 @@
       "status": "done",
       "slug": "maximum-depth-of-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 105,
@@ -773,7 +773,7 @@
       "status": "done",
       "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 108,

@@ -27,6 +27,10 @@ A rectangle must be formed by consecutive bars and its height is limited by the 
 - `1 <= heights.length <= 10^5`
 - `0 <= heights[i] <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Heights can be 0, which effectively terminates any rectangle spanning that position. The array can have up to 10^5 bars — an O(n²) brute-force approach will TLE. Each bar pushed and popped at most once guarantees the O(n) monotonic-stack solution.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Maintain a monotonically increasing stack of (startIndex, height) pairs. When a shorter bar arrives, every taller bar on the stack can no longer extend rightward — pop each one and compute its rectangle. The popped bar's startIndex also becomes the new bar's leftward reach, since the new shorter bar could have started there.
 </Callout>
@@ -56,7 +60,15 @@ Output: 4
   answer="Monotonic stack (increasing) — pop taller bars on smaller arrival, track extendable start index"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a shorter element arriving from the right triggers a reckoning for all taller elements to its left, reach for a monotonic increasing stack — each element pops when it can no longer extend rightward.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain a monotonically increasing stack of (startIndex, height) pairs. When a shorter bar arrives, every taller bar on the stack can no longer extend rightward — pop each one, compute its rectangle, and use the popped bar's startIndex as the new bar's left reach. After the loop, drain remaining entries extending to the right edge.
+</Callout>
 
 Iterate left to right. Maintain a stack of `(startIndex, height)` pairs in strictly increasing height order. For each bar at index `i` with height `h`:
 
@@ -135,7 +147,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The stack stores named tuples `(index: Int, height: Int)`, accessed as `top.height` and `top.index` — more readable than index-based access. `stack.removeLast()` is O(1); `stack.last` peeks without removing. The `while let top = stack.last` pattern combines the non-empty check and destructuring in one guard.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for the monotonic stack approach. Each bar is pushed onto the stack exactly once and popped at most once, giving O(2n) total push/pop operations. The drain loop at the end visits the remaining entries — also at most n total. Brute force is O(n²) checking every pair of left/right boundaries.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the stack, which holds at most n entries (all bars in the worst case when the array is strictly increasing). Brute force uses O(1) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -143,6 +167,10 @@ class Solution {
     { approach: "Monotonic stack", time: "O(n)", space: "O(n)", note: "Each bar pushed and popped at most once", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer brute force vs monotonic stack">
+Never use **brute force** for n = 10^5 — O(n²) will TLE. The **monotonic stack** is the standard O(n) solution for all interview and competitive contexts. Brute force is only useful as a correctness reference for testing the stack solution against small inputs.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

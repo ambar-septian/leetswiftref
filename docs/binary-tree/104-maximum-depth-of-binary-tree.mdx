@@ -27,6 +27,10 @@ A binary tree's maximum depth is the number of nodes along the longest path from
 - The number of nodes in the tree is in the range `[0, 10^4]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The tree can be empty (root = nil) — depth is 0. Maximum depth counts nodes along the path, not edges: a single-node tree has depth 1. The definition matches height of the root, not depth from a specific node.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 The maximum depth is 1 (for the current node) plus the greater of the depths of its left and right subtrees. Base case: a nil node has depth 0.
 </Callout>
@@ -56,7 +60,15 @@ Output: 2
   answer="Recursive post-order DFS — 1 + max(left depth, right depth)"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Tree depth or height problems almost always reduce to 1 + max(left, right) — a post-order DFS that bubbles up the answer from leaves to root. When you see "longest path from root to leaf", reach for this pattern.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Depth of a node = 1 + max(depth of left subtree, depth of right subtree). This post-order recursion computes depths bottom-up — leaves return 1, nil returns 0. The BFS alternative counts completed levels and is equally valid.
+</Callout>
 
 Recursive DFS `dfs(_ node: TreeNode?) -> Int`. If node is nil return 0. Recursively compute `left = dfs(node.left)` and `right = dfs(node.right)`. Return `1 + max(left, right)`.
 
@@ -113,7 +125,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `dfs` function is defined after the `return dfs(root)` call — Swift allows using a nested function before its declaration within the same scope. `guard let root else { return 0 }` at the outer function handles the empty-tree case before the nested dfs is ever called.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — every node is visited exactly once. Both the recursive DFS and BFS alternative are O(n) since no node can be skipped when computing the true maximum depth.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursive call stack, where h is the tree height. O(log n) for a balanced tree and O(n) for a skewed tree. The BFS alternative uses O(n) space for the queue (widest level can have n/2 nodes).
+</Callout>
 
 <ComplexityTable
   rows={[

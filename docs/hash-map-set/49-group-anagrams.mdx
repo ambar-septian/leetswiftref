@@ -27,6 +27,10 @@ An **anagram** is a word or phrase formed by rearranging the letters of a differ
 - `0 <= strs[i].length <= 100`
 - `strs[i]` consists of lowercase English letters
 
+<Callout type="amber" label="Key Constraint">
+All strings consist of only lowercase English letters. Output groups can appear in any order and within each group the strings can appear in any order — only membership in the correct anagram bucket matters.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Two strings are anagrams if and only if their sorted characters are identical. Sort each string to produce a canonical key and group all strings that share the same key into the same bucket in a hash map.
 </Callout>
@@ -62,7 +66,15 @@ Output: [["a"]]
   answer="Hash Map — sorted-character canonical key bucketing"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Whenever the goal is to bucket items that are rearrangements of each other, reach for a hash map with a canonical sorted key — O(n × k log k) total, one pass through the input.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two strings are anagrams iff sorting their characters yields the same canonical key. Build a [String: [String]] dictionary keyed by sorted characters, append each original string to its bucket in a single pass, then return all dictionary values as the grouped result.
+</Callout>
 
 Build a dictionary mapping `String → [String]`. For every input string, sort its characters to produce the canonical key. Append the original string to the array at that key (creating the array if absent). Return all values of the dictionary.
 
@@ -119,7 +131,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`dict[key, default: []].append(str)` is idiomatic Swift — the subscript-with-default inserts an empty array if the key is absent and appends in one expression, avoiding a separate `if dict[key] == nil` check. `Array(dict.values)` wraps the dictionary values collection into an array in O(n).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n × k log k)">
+O(n × k log k) for the hash-map sorted-key approach, where n is the number of strings and k is the maximum string length. Each string is sorted in O(k log k); dictionary lookup and insertion are O(k) for hashing the key. The frequency-key variant reduces sorting to O(k) per string but adds implementation complexity.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n × k)">
+O(n × k) for the dictionary storing all n input strings across their buckets, plus O(k) per string for the sorted key. Total dictionary space is O(n × k) regardless of which key strategy is used.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -128,6 +152,10 @@ class Solution {
     { approach: "Hash Map — frequency key", time: "O(n * k)", space: "O(n * k)", note: "26-char frequency array as key, no sorting" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer sorted key vs frequency key">
+Use **sorted key** for simplicity and readability — O(k log k) per string is negligible for strings up to length 100. Prefer **frequency key** (O(k)) only when string lengths are large enough that sorting becomes a measurable bottleneck, or when you want to avoid any O(k log k) work. Avoid **brute force** entirely — O(n² × k) is too slow for n = 10⁴.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 
