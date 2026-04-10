@@ -1,0 +1,170 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.modal {
+  background: #111318;
+  border: 1px solid #1e2330;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1e2330;
+  gap: 10px;
+}
+
+.searchIcon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: #e8eaf0;
+  caret-color: #4ade80;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.escKey {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #6b7280;
+  background: #181c24;
+  border: 1px solid #1e2330;
+  border-radius: 4px;
+  padding: 2px 7px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.results {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.groupLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
+  padding: 8px 12px 4px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.resultSelected {
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.resultId {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #6b7280;
+  width: 34px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.resultCategoryIcon {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #22d3ee;
+  width: 34px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.resultTitle {
+  flex: 1;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  color: #e8eaf0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultBadge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.07);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.resultDifficulty {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: 28px 16px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.footer {
+  border-top: 1px solid #1e2330;
+  padding: 8px 14px;
+  display: flex;
+  gap: 16px;
+}
+
+.footerHint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.footerKey {
+  background: #181c24;
+  border: 1px solid #1e2330;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
