@@ -30,6 +30,10 @@ Return the head of the copied linked list.
 - `-10^4 <= Node.val <= 10^4`
 - `Node.random` is `null` or points to some node in the linked list.
 
+<Callout type="amber" label="Key Constraint">
+The random pointer can be null or point to any node in the list — including the node itself. Node values are not unique, so identity (not value) must be used when mapping originals to clones. An empty list (null head) must return null.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <CopyRandomListDiagram />
@@ -67,7 +71,15 @@ Output: []
   answer="3-pass interleave — insert clones inline, set randoms via node.next, detach two lists"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When cloning a list with random pointers, interleaving clones (orig → clone → orig.next) lets you set any random pointer via node.random?.next — eliminating the need for a hash map and reducing space to O(1).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Interleave each clone directly after its original node (orig → clone → orig.next). This makes every node's clone accessible at node.next, so any random pointer's clone is at node.random?.next. Three passes: interleave clones, wire random pointers, then detach the two lists. No hash map needed.
+</Callout>
 
 **Pass 1 — Interleave:** For each original node, create a clone and insert it immediately after the original: `clone.next = orig.next; orig.next = clone`.
 
@@ -151,7 +163,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`node.random?.next` uses optional chaining — when `node.random` is nil, the entire expression short-circuits to nil, correctly setting the clone's random to nil. `while let orig = curr` binds and unwraps `curr` in one step, guaranteeing the loop body works with a non-nil value. The dummy `headCopy` node is discarded via `headCopy?.next`, returning only the real clone head.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — three separate linear passes over the list, each doing O(1) work per node. Total is 3n node accesses regardless of the random pointer targets.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) / O(n)">
+O(1) auxiliary space for the interleave approach — no hash map or queue; the clone references are embedded directly in the original list during pass 1 and extracted in pass 3. O(n) for the hash map approach which stores one entry per node.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -159,6 +183,10 @@ class Solution {
     { approach: "Hash map (ObjectIdentifier)", time: "O(n)", space: "O(n)", note: "Maps original node references to their clones" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer interleave vs hash map">
+Use the **interleave approach** when O(1) space is required — it is the intended optimal solution. Use the **hash map approach** when clarity matters more than space: one pass to create clones, one pass to wire pointers. The hash map version is easier to reason about and extend to non-list structures.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -31,6 +31,10 @@ Return a string of the words in reverse order concatenated by a single space.
 - `s` contains English letters (upper-case and lower-case), digits, and spaces.
 - There is at least one word in `s`.
 
+<Callout type="amber" label="Key Constraint">
+There is guaranteed to be at least one word — an empty result is impossible. Leading, trailing, and multiple consecutive spaces must all be stripped; the output contains exactly one space between words.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -67,7 +71,15 @@ Explanation: Multiple spaces between words are reduced to a single space.
   answer="Two-pointer scan — skip spaces with i, find word end with j, collect Substrings, join reversed"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To reverse words in a string with irregular spacing: collect words using two indices (skip spaces, scan word end), reverse the array, join with a single space. Swift's Substring avoids copying during the scan phase.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Walk the string with one index, skipping spaces to find word starts and scanning to find word ends. Collect each word as a Substring (zero-copy view into the original string). After one pass, reverse the collected array and join — no intermediate string copies until the final join.
+</Callout>
 
 Walk the string with index `i`. Skip all spaces to find the start of a word, then advance `j` until the next space or end of string. Collect `s[i..<j]` as a `Substring`. After all words are collected, reverse the array and join with a single space.
 
@@ -141,7 +153,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift `String` is not integer-indexed — `s.index(after:)` must be used to advance a `String.Index`. `Substring` is a zero-copy view into the original string, so collecting words as `[Substring]` avoids allocations during the scan. The final `words.reversed().joined(separator: " ")` materialises all substrings into one output string in a single allocation.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — one pass to collect words (each character visited at most twice: once in the space-skip loop, once in the word-scan loop). Reversing the word array is O(w) where w is the number of words. Joining is O(n) to produce the output string.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the Substring array (proportional to the number of words) and for the final output string. The Substrings themselves are zero-copy views — no extra string copies until the final join.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -149,6 +173,10 @@ class Solution {
     { approach: "split + filter + reverse + join", time: "O(n)", space: "O(n)", note: "components(separatedBy:\" \").filter{!$0.isEmpty}.reversed().joined — concise but multiple passes" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two-pointer vs split+filter+join">
+Use **split + filter + join** for readability — `s.split(separator: " ").reversed().joined(separator: " ")` is one line and handles spaces automatically. Use the **two-pointer scan** when you want a single pass that avoids the intermediate split array, or when you need more control over the scanning logic.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

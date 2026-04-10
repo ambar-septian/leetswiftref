@@ -33,6 +33,10 @@ The intersection is by **reference**, not by value — it is the node object (sa
 - `0 <= skipA, skipB <= 3 * 10^4` (offset to intersection node)
 - **Follow-up:** Can you solve it in O(n) time and use only O(1) memory?
 
+<Callout type="amber" label="Key Constraint">
+Intersection is by reference (same node object), not by value. The original list structures must not be modified after the function returns. If no intersection exists, return null — not a node with a matching value.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <IntersectionListDiagram />
@@ -64,7 +68,15 @@ Explanation: No intersection.
   answer="Two-pointer redirect — each pointer walks its list then the other's; they meet at intersection or nil"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To find the intersection of two lists in O(1) space: redirect each pointer to the other list's head after reaching nil. Both pointers travel the same total distance and meet at the intersection — or both reach nil simultaneously if no intersection exists.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Each pointer walks its own list, then is redirected to the other list's head when it reaches nil. After the redirect, both pointers have walked the same total distance (|A| + |B|). They arrive at the intersection node simultaneously — or both reach nil simultaneously if no intersection exists.
+</Callout>
 
 Advance `tailA` and `tailB` simultaneously. When `tailA` reaches nil (and has not yet redirected), set `tailA = headB`. When `tailB` reaches nil, set `tailB = headA`. After the redirect, both pointers have effectively walked `|A| + |B|` total steps — they are synchronised. If an intersection exists, they land on the same node. If not, both land on nil simultaneously.
 
@@ -138,7 +150,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`tailA === tailB` uses reference equality (===) to compare node identity — value equality (==) would produce false positives for nodes with the same val at different positions. `tailA?.next` uses optional chaining safely. The boolean flags `hasLoopToB` and `hasLoopToA` guard against infinite redirects when no intersection exists.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m+n)">
+O(m+n) — each pointer walks its own list (m or n steps) and then at most the other list (n or m steps). In total each pointer travels at most m+n steps before both either meet at the intersection or simultaneously reach nil.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) / O(m)">
+O(1) for the two-pointer redirect — only four pointer variables and two boolean flags. O(m) for the hash set approach, which stores a reference for every node in list A.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -146,6 +170,10 @@ class Solution {
     { approach: "Hash set", time: "O(m+n)", space: "O(m)", note: "Store all of list A's nodes; scan list B for first match" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two-pointer vs hash set">
+Use the **two-pointer redirect** when O(1) space is required — it is the follow-up solution. Use the **hash set** when simplicity matters: store all of list A's nodes, then scan list B for the first node already in the set. The hash set is easier to reason about and has no boolean guard flags.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

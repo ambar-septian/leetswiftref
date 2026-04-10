@@ -30,6 +30,10 @@ The sorted array property guarantees that the BST ordering invariant is maintain
 - `-10^4 <= nums[i] <= 10^4`
 - `nums` is sorted in a **strictly increasing** order.
 
+<Callout type="amber" label="Key Constraint">
+The output must be height-balanced — every node's subtree depths differ by at most 1. The input is strictly increasing (no duplicates), which guarantees the BST invariant when the midpoint is chosen as root. Multiple valid answers are accepted.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Always pick the midpoint of the current subarray as the root. This splits the remaining elements equally between left and right subtrees, guaranteeing height balance. Recurse on the left half for the left subtree and the right half for the right subtree.
 </Callout>
@@ -59,7 +63,15 @@ Output: [3,1]  or  [1,null,3]  (both valid)
   answer="Divide and conquer — midpoint as root, recurse on left and right halves"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To build a height-balanced BST from a sorted array, always pick the midpoint as root — this is the only element position that guarantees equal-sized left and right subtrees at every level.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Pick the middle element of the current subarray as the root. Elements left of mid form the left subtree; elements right form the right subtree. Recursing on both halves guarantees height balance because the two halves differ in size by at most 1, and the BST invariant holds because the array is sorted.
+</Callout>
 
 Define `recursive(l, r)`. Base case: `l > r` returns nil. Compute `m = (l + r) / 2`. Create `TreeNode(nums[m])`. Set `tree.left = recursive(l, m - 1)`, `tree.right = recursive(m + 1, r)`. Return `tree`.
 
@@ -118,7 +130,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `recursive` function captures `nums` from the outer scope — no need to pass it as a parameter at every level. Named parameters `l:` and `r:` at the call site (`recursive(l: 0, r: nums.count - 1)`) make the bounds explicit and prevent argument-order mistakes.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — every element in the array becomes exactly one tree node, and each node is created in O(1). The total number of recursive calls equals n.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(log n)">
+O(log n) for the recursion call stack — the tree is height-balanced so the maximum recursion depth is O(log n). The output tree itself is O(n) nodes but is the required result, not auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -28,6 +28,10 @@ The "linked list" uses the same `TreeNode` class where the `right` pointer plays
 - `-100 <= Node.val <= 100`
 - You must flatten the tree **in-place** (O(1) extra space).
 
+<Callout type="amber" label="Key Constraint">
+Flattening must be done in-place with O(1) extra space. The left pointer of every node must be set to nil. The flattened order follows preorder traversal (root then left then right), not inorder or postorder.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <FlattenBinaryTreeDiagram />
@@ -65,7 +69,15 @@ Output: [0]
   answer="Post-order DFS — flatten subtrees first, stitch left tail to right, set left=nil"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To flatten a tree in-place into a linked list following preorder, use post-order DFS — flatten children first, then stitch. Returning the tail from each call avoids a second traversal to find the join point.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Post-order DFS gives you the tails of both flattened subtrees before you modify any pointers. Stitch: leftTail.right = original right subtree; root.right = root.left; root.left = nil. Return rightTail ?? leftTail ?? root so the caller knows where this subtree ends.
+</Callout>
 
 Recursively flatten both subtrees using a `dfs` function that returns the **tail** node of the flattened result. After flattening:
 
@@ -142,7 +154,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`@discardableResult` on the nested `dfs` suppresses the compiler warning when its return value is ignored at the outer `dfs(root)` call site. The outer `flatten` function returns `Void` — the in-place mutation is the only observable effect.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both approaches — every node is visited exactly once. The post-order DFS avoids the extra tail-finding traversal by returning the tail from each call, keeping the constant factor low.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h) / O(n)">
+O(h) for the recursive post-order DFS call stack — O(log n) for a balanced tree, O(n) for a skewed tree. The iterative approach uses O(n) explicit stack space in the worst case.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -150,6 +174,10 @@ class Solution {
     { approach: "Iterative with stack", time: "O(n)", space: "O(n)", note: "Explicit stack simulates DFS but uses O(n) extra space" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer recursive vs iterative">
+Use the **post-order DFS** — O(h) space and no auxiliary data structure. Use the **iterative stack** only when you need to avoid recursion due to stack-overflow risk on very deep skewed trees. For the given constraint (n ≤ 2000), recursion is safe.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

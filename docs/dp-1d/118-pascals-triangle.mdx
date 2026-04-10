@@ -25,6 +25,10 @@ In Pascal's triangle, each number is the sum of the two numbers directly above i
 **Constraints:**
 - `1 <= numRows <= 30`
 
+<Callout type="amber" label="Key Constraint">
+numRows can be as small as 1 — the single-row case must be handled. The first and last element of every row are always 1. All values fit comfortably in a 32-bit integer for numRows up to 30.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -52,7 +56,15 @@ Output: [[1]]
   answer="DP — initialise row as all-1s, fill interior from previous row"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Pascal's triangle is a pure DP recurrence: each interior element is the sum of the two elements directly above. Initialise rows as all-1s and only overwrite interior positions — boundaries handle themselves.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Each row is initialised as an array of 1s. Interior elements at index j are computed as result[i-1][j-1] + result[i-1][j] — reading from the completed previous row. The first and last positions stay 1, so no boundary special-casing is needed.
+</Callout>
 
 Initialise each new row as an array of `1`s of length `i + 1`. Iterate over the interior positions `j` from `1` to `rs.count - 2` and set `rs[j] = result[i-1][j-1] + result[i-1][j]`. Append the completed row to `result`.
 
@@ -117,7 +129,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(repeating: 1, count: i + 1)` creates each row pre-filled with 1s — both the boundary values and the interior defaults. `result[i] = rs` assigns the completed row by value copy. Pre-allocating `result` with `Array(repeating: [Int](), count: numRows)` lets rows be assigned by index rather than appended.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n²)">
+O(n²) — the total number of elements across all n rows is 1 + 2 + ... + n = n(n+1)/2. Each element is computed in O(1), giving O(n²) total work.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n²)">
+O(n²) for the output — all n rows must be returned and stored. If only the last row were needed, space could be reduced to O(n) by keeping only the previous row, but the problem requires the full triangle.
+</Callout>
 
 <ComplexityTable
   rows={[

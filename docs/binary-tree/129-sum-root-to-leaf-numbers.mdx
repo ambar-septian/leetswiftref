@@ -32,6 +32,10 @@ A **leaf** is a node with no children.
 - `0 <= Node.val <= 9`
 - The depth of the tree will not exceed `10`.
 
+<Callout type="amber" label="Key Constraint">
+The tree depth will not exceed 10, so path numbers have at most 10 digits. Node values are digits 0–9 only. The problem guarantees the total sum fits in a 32-bit integer — no overflow handling is needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Explanation: 4→9→5 = 495. 4→9→1 = 491. 4→0 = 40. Sum = 495 + 491 + 40 
   answer="DFS — pass accumulated number down; return it at leaves; sum left + right at internal nodes"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a root-to-leaf path forms a number (digit by digit), pass the accumulated value top-down as prev * 10 + val. Return it at leaves; sum left and right at internal nodes. No need to store the full path.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+At each node compute curr = prev * 10 + node.val. This shifts the accumulated number one decimal place left and appends the new digit — identical to how numbers are formed in decimal notation. At a leaf, curr is the complete number for that path. At an internal node, return the sum of both subtree results.
+</Callout>
 
 <SumRootToLeafDiagram />
 
@@ -129,7 +141,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let root else { return 0 }` returns 0 for nil — nil children contribute nothing to the sum. The nested `dfs` closure captures no mutable state from the outer scope (only the immutable `root` parameter), so it behaves purely functionally with no side effects.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — every node is visited exactly once. Each visit does O(1) work (multiply, add, check leaf condition). No backtracking or re-traversal is needed since the accumulated value is passed top-down.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursion call stack where h is the tree height. With the depth constraint of at most 10, this is at most O(10) = O(1) in practice. For general trees it is O(log n) balanced or O(n) skewed.
+</Callout>
 
 <ComplexityTable
   rows={[

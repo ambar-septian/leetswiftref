@@ -28,6 +28,10 @@ A **leaf** is a node with no children.
 - `-1000 <= Node.val <= 1000`
 - `-1000 <= targetSum <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+All matching root-to-leaf paths must be collected — not just the first. Node values can be negative, so a running sum can decrease as you go deeper. The path must end at a leaf (no children) — internal-node paths do not count.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: []
   answer="Backtracking DFS — build path array, record at matching leaf, undo on return"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Collect-all-paths problems use backtracking DFS: append on entry, record at matching leaves, removeLast on return. Never return early after recording — always let execution fall through to the backtrack step.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Append the current value on entry and remove it on return — the shared path array reflects exactly the current root-to-node path at every point. Record a copy of path only when a leaf with the correct cumulative sum is reached. Both recursive calls (left and right) must happen before removeLast, regardless of whether the leaf condition was met.
+</Callout>
 
 <PathSumIIDiagram />
 
@@ -142,7 +154,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift value semantics: `results.append(paths)` stores a copy of the array — no explicit `Array(paths)` needed. The nested `dfs` closure captures `results` and `paths` by reference (both are `var`), so mutations inside dfs are visible across all recursion frames without `inout` parameters.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n²)">
+O(n²) for the mutable backtracking approach. Every node is visited once — O(n) — but each valid leaf triggers a copy of the current path in O(n). In the worst case (all paths are valid) this gives O(n × n). The pure functional approach has the same asymptotic time but worse constant factors due to per-node allocation.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the mutable approach: the shared path array holds at most h (height) elements at any time, and the recursion stack is O(h). Output storage is additional but proportional to the number and length of matching paths.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -150,6 +174,10 @@ class Solution {
     { approach: "Pure functional (no mutation)", time: "O(n²)", space: "O(n²)", note: "Allocates a new array at every node for prepending" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer mutable backtracking vs pure functional">
+Use **mutable backtracking** — it is the standard approach, uses O(n) auxiliary space, and is straightforward to reason about. The **pure functional** variant is academically cleaner but allocates O(n) arrays at every node, making it significantly slower in practice despite identical asymptotic complexity.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

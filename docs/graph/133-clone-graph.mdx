@@ -32,6 +32,10 @@ Your clone must be an entirely new set of node objects. Changing the original gr
 - There are no repeated edges and no self-loops.
 - The graph is connected, and all nodes can be visited starting from the given node.
 
+<Callout type="amber" label="Key Constraint">
+Node values are unique (1 to 100) — use val as the clone dictionary key. The graph is guaranteed connected, so a single DFS from the given node reaches all nodes. The empty graph (nil input) must return nil.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -69,7 +73,15 @@ Explanation: Empty graph.
   answer="DFS + dict — create clone on first visit, store immediately, reuse on revisit"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When cloning a cyclic structure, store the clone in a map immediately after creation — before recursing into neighbors. This single rule prevents both infinite recursion and duplicate node objects.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A DFS clone of each node is stored in a dictionary immediately after creation — before recursing into its neighbors. When a neighbor is already in the dict (cycle or shared edge), the existing clone is reused. This guarantees each node is cloned exactly once and all edges are correctly reproduced.
+</Callout>
 
 <CloneGraphDiagram />
 
@@ -146,7 +158,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let neighbor else { continue }` handles optional elements in `[Node?]`. The nested `dfs` closure captures `dict` by reference so the dictionary is shared across all recursive calls without being passed as `inout`. Using `oldNode.val` as the dictionary key works because val is guaranteed unique per the problem constraints.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V + E)">
+O(V + E) — every node is visited exactly once (the dict prevents revisits) and every edge is traversed once when iterating each node's neighbors. V is the number of nodes, E the number of edges.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V)">
+O(V) for the clone dictionary, which stores one entry per node. The DFS call stack is O(V) in the worst case (a chain graph). The cloned graph itself is not counted as auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -154,6 +178,10 @@ class Solution {
     { approach: "BFS + hash map", time: "O(V + E)", space: "O(V)", note: "Same complexity; queue replaces call stack" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer DFS vs BFS">
+Both DFS and BFS produce identical asymptotic complexity. Use **DFS** for simpler recursive code that directly mirrors the problem structure. Use **BFS** if the graph is very deep (risking a stack overflow) or when you need level-by-level processing order.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

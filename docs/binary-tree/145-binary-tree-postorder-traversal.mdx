@@ -28,6 +28,10 @@ Postorder traversal visits nodes in the order: **left subtree → right subtree 
 - `-100 <= Node.val <= 100`
 - **Follow-up:** Recursive solution is trivial. Can you do it iteratively?
 
+<Callout type="amber" label="Key Constraint">
+The follow-up asks for an iterative solution. Postorder processes children before the parent — the root is always last in the output. An empty tree (nil root) must return an empty array.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: [1]
   answer="Recursive DFS — concatenate left, then right subtree, then append root"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Postorder traversal (left-right-root) maps directly to postorder(left) + postorder(right) + [root.val]. The iterative trick: compute root-right-left (reversed preorder), then reverse the entire result.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Postorder is defined recursively: full left subtree first, then full right subtree, then root. postorder(left) + postorder(right) + [root.val] encodes this directly. The iterative trick exploits the fact that postorder is the reversal of a modified preorder (root-right-left).
+</Callout>
 
 <PostorderTraversalDiagram />
 
@@ -112,7 +124,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`postorderTraversal(root.left) + postorderTraversal(root.right) + [root.val]` uses Swift array concatenation with `+`, creating a new array at each step. For large trees an iterative approach with `append` avoids intermediate allocations. The single-element literal `[root.val]` is the idiomatic way to wrap a scalar value for array concatenation.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — every node is visited exactly once. Each visit does O(1) work: two recursive calls and a single-element array literal. Array concatenation copies O(n) elements in total across all calls.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h) / O(n)">
+O(h) for the recursion call stack where h is the tree height. The iterative approach uses O(n) space for the intermediate result array before reversal. The output array is O(n) but is not counted as auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -120,6 +144,10 @@ class Solution {
     { approach: "Iterative (modified preorder reversed)", time: "O(n)", space: "O(n)", note: "Reverse of root-right-left preorder gives left-right-root postorder" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer recursive vs iterative">
+Use the **recursive approach** for clarity — it directly encodes the postorder definition. Use the **iterative approach** for very deep trees to avoid stack overflow, or when the follow-up explicitly asks for it. The iterative trick (root-right-left + reverse) is O(n) space vs O(h) for recursive.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

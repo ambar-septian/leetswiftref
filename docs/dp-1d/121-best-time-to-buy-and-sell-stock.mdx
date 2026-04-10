@@ -29,6 +29,10 @@ Return the **maximum profit** you can achieve from this transaction. If you cann
 - `0 <= prices[i] <= 10^4`
 - You must buy before you sell (buy on day `i`, sell on day `j > i`).
 
+<Callout type="amber" label="Key Constraint">
+You must buy before you sell — selling on the same day you buy is not allowed. Only one transaction is permitted. If no profit is possible (prices only decrease), return 0.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: Prices only decrease; no profitable transaction is possible.
   answer="Two Pointers — left=buy candidate, right scans forward; shift left only on a new low"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Best time to buy and sell (single transaction) is a two-pointer problem: left tracks the minimum price seen so far, right scans forward for a sell price. Move left only when a strictly cheaper price is found — never move left backward.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Left pointer tracks the best buy day (minimum price seen so far). At each right position: if prices[right] > prices[left], compute profit and update maximum. If prices[right] is lower or equal, it is a better buy candidate — move left to right. This guarantees buy-before-sell in a single pass.
+</Callout>
 
 Use two pointers starting at indices 0 and 1. At every step: if `prices[right] > prices[left]`, compute the profit and update the maximum. Otherwise, a cheaper buy day has been found — move `left` to `right`. Advance `right` each iteration.
 
@@ -125,7 +137,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`max(maxProfit, profit)` is idiomatic Swift for tracking a running maximum — no if-comparison needed. Initialising `maxProfit = 0` naturally handles the all-decreasing case: no profit update ever fires and 0 is returned as required.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for the two-pointer single pass — right advances exactly once through the array while left only moves forward (never backward), giving at most 2n total pointer movements. Brute force is O(n²) checking every (buy, sell) pair.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+O(1) for both approaches — only a constant number of integer variables (left, right, maxProfit) are maintained regardless of input size.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -133,6 +157,10 @@ class Solution {
     { approach: "Brute Force (all pairs)", time: "O(n²)", space: "O(1)", note: "Check every (buy, sell) pair" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two pointers vs brute force">
+Always use the **two-pointer single pass** — O(n) vs O(n²) with the same O(1) space. For n = 10^5, brute force is 10^10 operations and will TLE. Brute force is only useful as a correctness reference for testing against the optimised solution on small inputs.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

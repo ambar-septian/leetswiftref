@@ -28,6 +28,10 @@ A **leaf** is a node with no children. The path must start at the root and end a
 - `-1000 <= Node.val <= 1000`
 - `-1000 <= targetSum <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+The path must start at the root and end at a leaf — a node with no children. Paths to internal nodes do not count. An empty tree has no root-to-leaf path, so return false even if targetSum is 0.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Accumulate a running sum down each branch via DFS. When a leaf is reached, check if the accumulated sum equals targetSum. Return true as soon as any root-to-leaf path matches — no need to explore further.
 </Callout>
@@ -64,7 +68,15 @@ Output: false
   answer="DFS with running sum — check at leaves, short-circuit on match"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Tree path-existence problems (does any root-to-leaf path satisfy condition X?) map directly to DFS with a running value passed down. Check the condition only at leaves; short-circuit with || means the first matching path ends the search.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Accumulate a running sum as you recurse down. At every leaf, check if the sum matches targetSum and return true immediately if it does. Use || when recursing both branches — the first true terminates the entire search without exploring remaining paths.
+</Callout>
 
 Define `calculate(_ root: TreeNode?, _ sum: Int, _ targetSum: Int) -> Bool`. If `root` is nil return `false`. Compute `sm = sum + root.val`. If root is a leaf (`left == nil && right == nil`), return `sm == targetSum`. Otherwise return `calculate(left, sm, targetSum) || calculate(right, sm, targetSum)`.
 
@@ -127,7 +139,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Swift's `||` short-circuits: `calculate(root.left, sm, targetSum)` is evaluated first, and `calculate(root.right, ...)` is only called if the left branch returned false. This means the right subtree is skipped entirely once a valid path is found in the left subtree.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) in the worst case — all nodes are visited when no path matches. Short-circuit evaluation with || means the right subtree is skipped as soon as a matching path is found in the left subtree, making typical runtime much lower.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursion call stack where h is the tree height. O(log n) for a balanced tree, O(n) for a skewed tree. No additional data structures are needed — the running sum is passed as a parameter.
+</Callout>
 
 <ComplexityTable
   rows={[

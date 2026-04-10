@@ -35,6 +35,10 @@ Implement the `LRUCache` class:
 - `0 <= value <= 10^5`
 - At most `2 * 10^5` calls will be made to `get` and `put`.
 
+<Callout type="amber" label="Key Constraint">
+Both get and put must run in O(1) average time — an O(n) scan on any operation is too slow for 2*10^5 calls. The LRU key to evict is the one whose most recent access (get or put) was furthest in the past.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <LRUCacheDiagram />
@@ -72,7 +76,15 @@ get(4) → 4
   answer="Hash map + doubly linked list — map for O(1) lookup, list for O(1) ordering and eviction"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For any LRU cache: O(1) lookup requires a hash map; O(1) reordering and eviction require a doubly linked list. Sentinel nodes at both ends eliminate all boundary checks on insert and remove.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A hash map gives O(1) access to any node by key. A doubly linked list maintains recency order: the LRU node is always adjacent to the left sentinel, the MRU node adjacent to the right sentinel. Two dummy sentinels eliminate all edge-case null checks — insert always wires just before right, remove always stitches prev and next.
+</Callout>
 
 Maintain a doubly linked list between two dummy sentinels: `left` (LRU end) and `right` (MRU end). Nodes adjacent to `right` are most recently used; nodes adjacent to `left` are least recently used.
 
@@ -174,7 +186,19 @@ class LRUCache {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Node` is a class (reference type) — `cache[key] = node` stores a reference, not a copy. Mutating `var` properties on `let` sentinel nodes is valid in Swift because `let` on a class instance means the reference is constant, not the object's state. `cache[lru.key] = nil` is the idiomatic Swift way to remove a dictionary entry.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1)">
+O(1) per operation — hash map lookup is O(1) average; doubly linked list insert and remove are O(1) because nodes have direct prev/next pointers. No traversal is ever needed.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(capacity)">
+O(capacity) — the cache holds at most `capacity` nodes at any time. Each node stores a key, value, and two pointers. The hash map and doubly linked list together use O(capacity) space.
+</Callout>
 
 <ComplexityTable
   rows={[

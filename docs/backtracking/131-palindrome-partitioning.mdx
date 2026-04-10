@@ -27,6 +27,10 @@ A **palindrome** is a string that reads the same forward and backward.
 - `1 <= s.length <= 16`
 - `s` consists of only lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+The string length is at most 16 — the exponential 2^n cost is bounded in practice. Each position can be a cut point or not, giving at most 2^15 possible partitions. A single character is always a palindrome, so the base case is always reachable.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: [["a"]]
   answer="Backtracking — try every prefix from current index, recurse only on palindromes, cache results"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When you need all partitions of a string where each part satisfies a property, use backtracking: try every prefix, recurse only on valid ones, backtrack after each recursion. Cache repeated substring checks to avoid O(n) recomputation per branch.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Try every prefix starting at the current index. If the prefix is a palindrome, append it to the path and recurse on the remainder. On return, remove the prefix (backtrack). A cache from [i,j] → substring avoids re-checking the same range and re-slicing the string on repeated visits.
+</Callout>
 
 <PalindromePartitioningDiagram />
 
@@ -151,7 +163,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`[[Int]: String]` uses a two-element array as a dictionary key — arrays are `Hashable` in Swift when their elements are Hashable. `results.append(part)` is safe without explicit copying because Swift arrays use value semantics — each append captures the current state of `part`. The nested `dfs` closure captures `chars`, `cache`, `part`, and `results` by reference, allowing mutation without `inout` parameters.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n · 2^n)">
+O(n · 2^n) — there are at most 2^(n-1) ways to place cut points in a string of length n. For each valid partition we spend O(n) copying the path. The palindrome cache reduces repeated checks to O(1), eliminating an additional O(n) factor per branch compared to the uncached version.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n²)">
+O(n²) for the cache — up to n²/2 distinct (i,j) pairs each storing a substring of average length n/2. The recursion stack is O(n) deep (at most n cuts). The result array holds all valid partitions but is excluded from auxiliary space analysis.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -159,6 +183,10 @@ class Solution {
     { approach: "Backtracking without cache", time: "O(n² · 2^n)", space: "O(n)", note: "Each palindrome check is O(n) in the worst case without memoisation" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer cached vs uncached">
+Always use the **cached version** — the cache reduces each palindrome check from O(n) to O(1) and each substring slice from O(n) to O(1) on repeated visits. For n=16 the uncached version does up to 16 × 2^16 = 1M extra operations. The space cost of O(n²) is negligible for n ≤ 16.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

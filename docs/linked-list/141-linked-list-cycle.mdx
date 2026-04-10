@@ -31,6 +31,10 @@ Return `true` if there is a cycle in the linked list. Otherwise, return `false`.
 - `pos` is `-1` (no cycle) or a valid index in the linked list.
 - **Follow-up:** Can you solve it using O(1) memory?
 
+<Callout type="amber" label="Key Constraint">
+The follow-up asks for O(1) memory — Floyd's algorithm uses only two pointers. pos is not passed as a parameter; it only describes where the tail connects back to. A list with a single node and pos = -1 must correctly return false.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <LinkedListCycleDiagram />
@@ -68,7 +72,15 @@ Output: false
   answer="Floyd's cycle detection — slow moves 1 step, fast moves 2; they meet iff a cycle exists"
 />
 
+<Callout type="green" label="Rule of Thumb">
+To detect a cycle in O(1) space: use Floyd's algorithm — slow moves 1 step, fast moves 2. They meet inside the cycle if one exists; fast reaches nil if not. Start fast at head.next to avoid an immediate false positive on the first check.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two pointers move at different speeds through the list. If a cycle exists, the faster pointer eventually laps the slower one and they meet inside the cycle. If no cycle, the faster pointer reaches nil. The speed difference of 1 step per iteration guarantees meeting within one cycle length.
+</Callout>
 
 Initialise `slow = head` and `fast = head.next`. Each iteration: advance `slow` one step and `fast` two steps. If they ever point to the same node (`===`), a cycle exists. If `fast` or `fast.next` becomes nil, the list is acyclic.
 
@@ -131,7 +143,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`slow === fast` uses reference equality (===) to compare node identity — two nodes with the same val at different positions must not match. `fast?.next?.next` uses optional chaining: if `fast` or `fast.next` is nil, the chain short-circuits to nil without a crash. Initialising `fast = head?.next` rather than `head` avoids an immediate false positive on the first equality check.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — in the no-cycle case, fast reaches the end in n/2 iterations. In the cycle case, once fast enters the cycle it takes at most cycle_length iterations to catch slow. Total steps are bounded by O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) / O(n)">
+O(1) for Floyd's algorithm — only two pointer variables regardless of list length. O(n) for the hash set approach which stores one ObjectIdentifier per visited node.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -139,6 +163,10 @@ class Solution {
     { approach: "Hash set (visited nodes)", time: "O(n)", space: "O(n)", note: "Store ObjectIdentifier of each visited node" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Floyd's vs hash set">
+Use **Floyd's algorithm** when O(1) space is required — it is the standard interview solution. Use the **hash set** when you also need to identify which node the cycle starts at, or when code clarity is prioritised over space efficiency.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

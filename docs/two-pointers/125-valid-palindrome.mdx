@@ -26,6 +26,10 @@ Given a string `s`, return `true` if it is a palindrome, or `false` otherwise.
 - `1 <= s.length <= 2 * 10^5`
 - `s` consists only of printable ASCII characters.
 
+<Callout type="amber" label="Key Constraint">
+Non-alphanumeric characters (spaces, punctuation) are ignored entirely — only letters and digits are compared. Case is ignored. A string that is empty after filtering is a valid palindrome.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Explanation: After removing non-alphanumeric characters, s is empty "". An empty
   answer="Two Pointers — left and right converge, skipping non-alphanumeric chars and lowercasing before compare"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Valid palindrome with character filtering is a two-pointer problem: independently advance each pointer past non-alphanumeric characters, then compare the pair. Using continue after each skip re-evaluates the full loop condition cleanly.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two pointers converge from both ends. Before comparing, each pointer independently skips non-alphanumeric characters using its own continue branch. Once both land on alphanumeric characters, lowercase both and compare — mismatch returns false immediately, match advances both inward.
+</Callout>
 
 Convert the string to a character array. Use `left` starting at index 0 and `right` starting at the last index. Before comparing, independently advance each pointer past any character that is neither a letter (`a`–`z`, ASCII 97–122) nor a digit (`0`–`9`, ASCII 48–57). If both are alphanumeric and match (lowercased), advance both. If they do not match, return `false`.
 
@@ -143,7 +155,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Character(array[left].lowercased())` produces a `Character` from the lowercased string — the extra wrapping is needed because `String.lowercased()` returns a `String`, not a `Character`. `a.asciiValue ?? 0` safely unwraps the optional ASCII value; 0 fails both alphanumeric range checks, treating unknown characters as non-alphanumeric.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both approaches — every character is visited at most once. The two-pointer approach skips non-alphanumeric characters inline; the filter-and-reverse approach processes all characters in separate passes but remains O(n) total.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the character array conversion in the two-pointer approach (`Array(s)` for O(1) index access). The filter-and-reverse approach also uses O(n) for the cleaned string and its reversal. Neither approach is O(1) space due to Swift String's non-random-access nature.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -151,6 +175,10 @@ class Solution {
     { approach: "Filter + reverse", time: "O(n)", space: "O(n)", note: "Build clean string, compare with reversed — simpler but more allocations" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two pointers vs filter + reverse">
+Use **filter + reverse** for simplicity and readability — `s.filter { $0.isLetter || $0.isNumber }.lowercased()` is concise and produces identical asymptotic complexity. Use **two pointers** when you want to avoid the intermediate string allocations or need early-exit behavior on the first mismatch.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

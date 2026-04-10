@@ -28,6 +28,10 @@ Initially all `next` pointers are set to `null`. Populate every `next` pointer t
 - `-1000 <= Node.val <= 1000`
 - **Follow-up:** You may only use **constant extra space** (the recursion stack does not count for this purpose).
 
+<Callout type="amber" label="Key Constraint">
+The tree is guaranteed to be perfect — every parent has exactly two children and all leaves are at the same level. This guarantee makes the O(1)-space cross-parent link curr.right.next = curr.next.left always safe. The follow-up asks for constant extra space.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 <NextRightPointersDiagram />
@@ -58,7 +62,15 @@ Output: []
   answer="O(1)-space level-by-level: outer loop descends levels, inner loop links children using existing next pointers"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For a perfect binary tree, next pointers can be linked in O(1) space by using already-set next pointers on the current level to traverse and connect children — no queue needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Outer loop descends one level at a time via leftMost = leftMost.left. Inner loop walks the current level via curr = curr.next (using next pointers set in the previous iteration). Two links per node: curr.left.next = curr.right (siblings) and curr.right.next = curr.next.left (cross-parent, using the already-populated curr.next).
+</Callout>
 
 Maintain a `leftMost` pointer that starts at the root and descends one level per outer loop iteration. An inner `curr` pointer walks the current level using `curr.next`:
 
@@ -135,7 +147,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The node type here is `Node?` (with a `next` pointer), not the standard `TreeNode`. `curr?.left?.next = curr?.right` uses optional chaining throughout — safe even if any pointer in the chain is nil, though for a perfect binary tree all accesses are guaranteed non-nil inside the loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for both approaches — every node is visited once in the inner loop. The outer loop iterates once per level (log n levels for a perfect tree), and the inner loop processes each node on that level exactly once.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) / O(n)">
+O(1) for the level-walk approach — no auxiliary data structure, only a constant number of pointer variables. O(n) for BFS since the queue holds up to n/2 nodes (the widest level of a perfect binary tree).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -143,6 +167,10 @@ class Solution {
     { approach: "BFS with queue", time: "O(n)", space: "O(n)", note: "Queue holds up to one full level at a time" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer O(1) level walk vs BFS">
+Use the **O(1) level walk** — it is the intended solution for this problem and exploits the perfect-tree guarantee. Use **BFS with a queue** only if the tree may be imperfect (problem 117) or when you need a simpler implementation and space is not a constraint.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

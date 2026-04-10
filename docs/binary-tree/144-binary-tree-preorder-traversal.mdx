@@ -28,6 +28,10 @@ Preorder traversal visits nodes in the order: **root → left subtree → right 
 - `-100 <= Node.val <= 100`
 - **Follow-up:** Recursive solution is trivial. Can you do it iteratively?
 
+<Callout type="amber" label="Key Constraint">
+The follow-up asks for an iterative solution. The recursive approach uses O(h) call stack space where h is the tree height — O(n) for a skewed tree. An empty tree (nil root) must return an empty array.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: [1]
   answer="Recursive DFS — prepend root, concatenate left and right subtree results"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Preorder traversal (root-left-right) maps directly to [root.val] + preorder(left) + preorder(right). When implementing iteratively, push right before left onto the stack so left is processed (popped) first.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Preorder is defined recursively: root first, then the full left subtree in preorder, then the full right subtree. [root.val] + preorder(left) + preorder(right) encodes this directly — no auxiliary state needed.
+</Callout>
 
 <PreorderTraversalDiagram />
 
@@ -114,7 +126,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`[root.val] + preorderTraversal(root.left) + preorderTraversal(root.right)` uses Swift's array `+` operator, which creates a new array at each concatenation. For large trees this allocates O(n) intermediate arrays; an iterative approach using `append` and an explicit stack avoids this. `guard let root else { return [] }` short-circuits cleanly for nil nodes.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — every node is visited exactly once. Each visit does O(1) work: append root.val, then concatenate two recursive results. The total number of array element copies across all concatenations is also O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursion call stack where h is the tree height — O(log n) for a balanced tree, O(n) for a skewed tree. The output array itself is O(n) but is not counted as auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -122,6 +146,10 @@ class Solution {
     { approach: "Iterative (explicit stack)", time: "O(n)", space: "O(h)", note: "Same complexity; push right then left so left is processed first" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer recursive vs iterative">
+Use the **recursive approach** for clarity — it directly encodes the preorder definition in one line. Use the **iterative approach** for very deep trees where the recursion stack depth could cause a stack overflow, or when the follow-up explicitly requires it.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

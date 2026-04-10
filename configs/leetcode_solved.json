@@ -794,7 +794,7 @@
       "status": "done",
       "slug": "convert-sorted-array-to-binary-search-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 110,
@@ -813,7 +813,7 @@
       "status": "done",
       "slug": "balanced-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 112,
@@ -833,7 +833,7 @@
       "status": "done",
       "slug": "path-sum",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 113,
@@ -854,7 +854,7 @@
       "status": "done",
       "slug": "path-sum-ii",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 114,
@@ -876,7 +876,7 @@
       "status": "done",
       "slug": "flatten-binary-tree-to-linked-list",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 116,
@@ -898,7 +898,7 @@
       "status": "done",
       "slug": "populating-next-right-pointers-in-each-node",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 118,
@@ -916,7 +916,7 @@
       "status": "done",
       "slug": "pascals-triangle",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 121,
@@ -934,7 +934,7 @@
       "status": "done",
       "slug": "best-time-to-buy-and-sell-stock",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 125,
@@ -952,7 +952,7 @@
       "status": "done",
       "slug": "valid-palindrome",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 129,
@@ -972,7 +972,7 @@
       "status": "done",
       "slug": "sum-root-to-leaf-numbers",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 131,
@@ -992,7 +992,7 @@
       "status": "done",
       "slug": "palindrome-partitioning",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 133,
@@ -1013,7 +1013,7 @@
       "status": "done",
       "slug": "clone-graph",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 135,
@@ -1031,7 +1031,7 @@
       "status": "done",
       "slug": "candy",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 138,
@@ -1050,7 +1050,7 @@
       "status": "done",
       "slug": "copy-list-with-random-pointer",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 141,
@@ -1070,7 +1070,7 @@
       "status": "done",
       "slug": "linked-list-cycle",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 144,
@@ -1091,7 +1091,7 @@
       "status": "done",
       "slug": "binary-tree-preorder-traversal",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 145,
@@ -1112,7 +1112,7 @@
       "status": "done",
       "slug": "binary-tree-postorder-traversal",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 146,
@@ -1133,7 +1133,7 @@
       "status": "done",
       "slug": "lru-cache",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 151,
@@ -1151,7 +1151,7 @@
       "status": "done",
       "slug": "reverse-words-in-a-string",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 160,
@@ -1171,7 +1171,7 @@
       "status": "done",
       "slug": "intersection-of-two-linked-lists",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 162,

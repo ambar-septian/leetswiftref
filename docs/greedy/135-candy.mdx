@@ -32,6 +32,10 @@ Return the **minimum number of candies** you need to have to distribute the cand
 - `1 <= n <= 2 * 10^4`
 - `0 <= ratings[i] <= 2 * 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Every child must receive at least one candy — the minimum baseline is 1. The higher-rating constraint applies only between immediate neighbors with strict inequality: equal ratings impose no candy constraint relative to each other.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Explanation: [1,2,1] — child 1 gets more than child 0 (ascending). Child 2 get
   answer="Greedy two-pass — L-to-R for ascending, R-to-L for descending, max at each position"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a constraint depends on both the left and right neighbors independently, solve each direction in a separate pass and take the element-wise maximum. One pass cannot satisfy both directions simultaneously.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Initialise all candies to 1. Make one left-to-right pass to satisfy ascending constraints: if ratings[i] > ratings[i-1], give child i one more candy than child i-1. Then make one right-to-left pass for descending constraints, taking the max with what the first pass already assigned so neither constraint overrides the other.
+</Callout>
 
 Initialise `result` as all `1`s (minimum one candy each).
 
@@ -137,7 +149,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`stride(from: ratings.count - 2, through: 0, by: -1)` is the idiomatic Swift reverse range — Swift range literals cannot go backwards so `stride` is required. `result.reduce(0, +)` sums the array in one expression. `Array(repeating: 1, count:)` initialises all elements to 1 in a single allocation.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) — two linear passes over the ratings array, each doing O(1) work per element. The total is exactly 2n comparisons and at most 2n assignment operations regardless of the input.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+O(n) for the result array that stores one candy count per child. No additional data structures are needed beyond the output array itself.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -145,6 +169,10 @@ class Solution {
     { approach: "Brute force (repeat until stable)", time: "O(n²)", space: "O(n)", note: "Repeatedly adjust until no violations remain" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer two-pass vs brute force">
+Always use the **two-pass greedy** — it is O(n) vs O(n²) with the same O(n) space. The brute force repeatedly scans until no adjustment is needed, which can take O(n) rounds for a fully descending array. For n = 2*10^4, brute force is 4*10^8 operations and will TLE.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

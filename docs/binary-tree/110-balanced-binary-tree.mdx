@@ -29,6 +29,10 @@ The check must apply at every node, not just the root. A tree where the root's s
 - The number of nodes in the tree is in the range `[0, 5000]`.
 - `-10^4 <= Node.val <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Balance must hold at every node, not just the root — a subtree can be unbalanced even when the root's heights differ by 0. An empty tree (root = nil) is always considered balanced.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Return a (isBalanced, height) tuple from each node. Post-order DFS: compute left and right tuples first. A node is balanced if both subtrees are balanced AND their height difference is at most 1. Short-circuit: if either subtree is already unbalanced, propagate false immediately without further computation.
 </Callout>
@@ -64,7 +68,15 @@ Output: true
   answer="Post-order DFS — return (isBalanced, height) tuple, short-circuit on imbalance"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Whenever you need both a status flag and a numeric result propagated bottom-up through a tree, bundle them in a tuple returned from a single post-order DFS — never make two separate traversals.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A single post-order DFS returns (isBalanced, height) together. At each node: isBalanced = leftBalanced AND rightBalanced AND (|leftHeight - rightHeight| ≤ 1). If either child is unbalanced, false propagates up through the AND chain without any additional work at ancestor nodes.
+</Callout>
 
 Define `dfs(_ root: TreeNode?) -> (Bool, Int)`. Nil returns `(true, 0)`. Recursively compute `left = dfs(root.left)` and `right = dfs(root.right)`. Compute:
 - `balanced = abs(left.height - right.height) <= 1`
@@ -133,7 +145,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Tuple return `(Bool, Int)` is accessed by index (`.0` for balance, `.1` for height). For clarity you can use a named tuple `(isBalanced: Bool, height: Int)` and access `.isBalanced` and `.height`. `dfs(root).0` extracts just the balance result without a separate destructuring step.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+O(n) for the post-order tuple DFS — every node is visited exactly once. The naive two-pass approach is O(n²) because it recomputes height for each isBalanced check, leading to repeated subtree traversals.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+O(h) for the recursion call stack where h is the tree height. O(log n) for a balanced tree, O(n) for a skewed tree. No additional data structures are used.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -141,6 +165,10 @@ class Solution {
     { approach: "Post-order tuple DFS", time: "O(n)", space: "O(h)", note: "Each node visited once; height and balance computed together", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="When to prefer naive vs post-order tuple">
+Never use the **naive two-pass** approach in production — O(n²) for skewed trees. The **post-order tuple DFS** is strictly better: same O(h) space and O(n) time. The naive approach is only useful as a conceptual first draft to understand the problem before optimising.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 
