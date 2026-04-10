@@ -36,6 +36,10 @@ Return the total number of **provinces**.
 - `isConnected[i][i] == 1`
 - `isConnected[i][j] == isConnected[j][i]`
 
+<Callout type="amber" label="Key Constraint">
+  The matrix is <strong>symmetric</strong> (if A→B, then B→A) and the diagonal is always 1 — every city is connected to itself. This guarantees an <em>undirected</em> graph — you never need to check both directions of an edge.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Explanation: Each city is its own province.
   answer="DFS or Union-Find — count connected components in an undirected adjacency-matrix graph"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  <strong>Matrix that encodes relationships (not a grid to walk)</strong> = adjacency matrix = Graph problem. Row index <em>i</em> is the source node; column index <em>j</em> is the destination. This is the clearest signal to reach for graph traversal.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Counting connected components is the most classic graph traversal problem. Pick any unvisited node, run DFS from it to mark every reachable node as visited, then increment a counter. Repeat for all remaining unvisited nodes. Each fresh traversal = one new province.
+</Callout>
 
 **DFS approach:** Maintain a `visited` boolean array. Iterate all cities. If city `i` is not visited, start DFS from it — mark every reachable city visited by scanning its row in `isConnected`. Each new DFS start increments the province count.
 
@@ -73,8 +85,12 @@ Explanation: Each city is its own province.
 
 <ProvincesDiagram />
 
+<Callout type="purple" label="DFS vs Union-Find — which to choose?">
+  Both solve this problem with identical O(n²) time. DFS is simpler to write and reason about for static graphs. Prefer Union-Find when edges arrive <em>incrementally</em> and you need to answer "are these two nodes connected?" after each addition — the amortised O(α(n)) per query makes it the right tool for dynamic connectivity problems.
+</Callout>
+
 <Callout type="cyan" label="Adjacency matrix vs adjacency list">
-The graph is given as an n×n adjacency matrix. DFS on a matrix scans the entire row for each node — O(n) per node, O(n²) total. If the graph were sparse and given as an adjacency list, DFS would be O(n + e) where e is edges.
+  The graph is given as an n×n adjacency matrix. DFS on a matrix scans the entire row for each node — O(n) per node, O(n²) total. If the graph were sparse and given as an adjacency list, DFS would be O(n + e) where e is edges.
 </Callout>
 
 <SectionHeader n={5} title="Interactive Walkthrough" />
@@ -127,6 +143,10 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  The nested <code>dfs</code> is a closure capturing outer-scope variables — idiomatic Swift that avoids polluting the class with a helper method. Use a multi-condition <code>if</code> or <code>guard</code> to short-circuit: check the edge exists before checking <code>visited</code>, so the boolean array is only accessed when a connection is confirmed.
+</Callout>
+
 **Union-Find alternative:**
 
 ```swift
@@ -171,12 +191,24 @@ class Solution {
 
 <SectionHeader n={8} title="Complexity Analysis" />
 
+<Callout type="cyan" label="Time Complexity — O(n²)">
+  The adjacency matrix has n² cells. Every cell is read exactly once — either during the DFS neighbor scan or the Union-Find double loop. There is no way to solve this faster than O(n²) because we must read every cell of the input at least once.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The <code>visited</code> array is O(n). The DFS call stack is at most O(n) deep — worst case is one fully-connected province where DFS visits all n cities before unwinding. Union-Find stores <code>parent</code> and <code>rank</code>, both O(n). No additional data structures needed.
+</Callout>
+
 <ComplexityTable
   rows={[
     { approach: "DFS", time: "O(n²)", space: "O(n)", note: "Scan full row per node; visited array O(n); recursion stack O(n)", highlight: true },
     { approach: "Union-Find (with rank)", time: "O(n²)", space: "O(n)", note: "Check all n² pairs; union/find is near O(1) with path compression and rank" },
   ]}
 />
+
+<Callout type="amber" label="When to prefer Union-Find">
+  DFS is simpler and sufficient for this static problem. Prefer Union-Find when edges arrive one at a time and you need to answer "same component?" after each addition, or when merging and querying components must be interleaved. The O(n²) matrix scan dominates regardless of which algorithm you choose.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

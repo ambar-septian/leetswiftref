@@ -34,7 +34,24 @@ ComplexityTable, CommonPitfalls, PatternFlowchart, WalkthroughDiagram
 - 9 sections with SectionHeader in this order: Problem Overview, Examples, Pattern Recognition, Approach, Interactive Walkthrough, Step-by-Step Solution, Code Implementation, Complexity Analysis, Common Pitfalls
 - LeetCode link in ProblemHeader
 - Common Pitfalls always last section
-- For problems in the `heap` category, always include a `<Callout type="info" label="Swift Collections Heap">` right before the Code Implementation section, explaining that the `Heap` comes from the `swift-collections` package (https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) and custom implementations might have different APIs.
+- For problems in the `heap` category, replace any `<Callout type="info" label="Swift Collections Heap">` with a `<Callout type="green" label="Swift Notes">` that covers both the swift-collections Heap API note and Swift-specific idioms (see Callout conventions below)
+
+## Callout conventions (required in every page)
+Use `<Callout>` from `@site/src/components/DSA`. Insert these in the sections below — do not remove existing content, only add where missing.
+
+| Section | type | label | Content |
+|---|---|---|---|
+| Problem Overview | `amber` | `Key Constraint` | The single most critical constraint that shapes the solution (symmetry, bounds, value guarantees, edge-case gotcha) |
+| Pattern Recognition | `green` | `Rule of Thumb` | One memorable trigger sentence for recognising this pattern — place after PatternFlowchart |
+| Approach | `cyan` | `Core Insight` | 2–3 sentences: the core algorithm insight / mental model (flood-fill, sliding window shrink, etc.) — place at top of section |
+| Approach | `purple` | `[A] vs [B] — which to choose?` | Only when the page shows multiple algorithms. Explain when to prefer each and why |
+| Code Implementation | `green` | `Swift Notes` | Swift-specific idioms in the solution: nested closures, guard short-circuit order, value-type semantics, etc. — place after the primary code block |
+| Complexity Analysis | `cyan` | `Time Complexity — O(...)` | One-paragraph explanation of *why* the complexity is what it is — place before ComplexityTable |
+| Complexity Analysis | `green` | `Space Complexity — O(...)` | One-paragraph explanation — place before ComplexityTable, after Time callout |
+| Complexity Analysis | `amber` | `When to prefer [approach]` | Only when multiple approaches exist. Practical trade-off guidance — place after ComplexityTable |
+
+## When asked to "enrich" a page
+Read the target MDX file, identify which callouts from the table above are missing, and add them. Do not restructure sections or remove existing content.
 
 ## Categories
 sliding-window, linked-list, trie, backtracking, dp-multidimension, dp-1d,
