@@ -51,7 +51,14 @@ Use `<Callout>` from `@site/src/components/DSA`. Insert these in the sections be
 | Complexity Analysis | `amber` | `When to prefer [approach]` | Only when multiple approaches exist. Practical trade-off guidance — place after ComplexityTable |
 
 ## When asked to "enrich" a page
-Read the target MDX file, identify which callouts from the table above are missing, and add them. Do not restructure sections or remove existing content.
+Read the target MDX file, identify which callouts from the table above are missing, and add them. Do not restructure sections or remove existing content. After saving the file, set `"enriched": true` on that problem's entry in configs/leetcode_solved.json.
+
+## When asked to "enrich next N" (batch enrichment)
+1. Read configs/leetcode_solved.json
+2. Collect all problems where `status === "done"` and `enriched === false`, take the first N
+3. For each: read its MDX file, add missing callouts, save, then set `enriched: true` in the JSON
+4. Save leetcode_solved.json once after all N are processed
+This lets you run "enrich next 10" repeatedly across sessions — progress is always saved in the JSON.
 
 ## Categories
 sliding-window, linked-list, trie, backtracking, dp-multidimension, dp-1d,

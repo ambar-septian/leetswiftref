@@ -16,7 +16,8 @@
       "category": "hash-map-set",
       "status": "done",
       "slug": "two-sum",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2,
@@ -36,7 +37,8 @@
       "category": "linked-list",
       "status": "done",
       "slug": "add-two-numbers",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 3,
@@ -55,7 +57,8 @@
       "category": "sliding-window",
       "status": "done",
       "slug": "longest-substring-without-repeating-characters",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 9,
@@ -72,7 +75,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "palindrome-number",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 11,
@@ -91,7 +95,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "container-with-most-water",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 13,
@@ -110,7 +115,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "roman-to-integer",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 14,
@@ -129,7 +135,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "longest-common-prefix",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 17,
@@ -149,7 +156,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "letter-combinations-of-a-phone-number",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 19,
@@ -168,7 +176,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "remove-nth-node-from-end-of-list",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 20,
@@ -186,7 +195,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "valid-parentheses",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 21,
@@ -205,7 +215,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "merge-two-sorted-lists",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 22,
@@ -225,7 +236,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "generate-parentheses",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 26,
@@ -243,7 +255,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "remove-duplicates-from-sorted-array",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 28,
@@ -262,7 +275,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-the-index-of-the-first-occurrence-in-a-string",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 34,
@@ -280,7 +294,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "find-first-and-last-position-of-element-in-sorted-array",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 36,
@@ -300,7 +315,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "valid-sudoku",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 39,
@@ -317,7 +333,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "combination-sum",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 40,
@@ -334,7 +351,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "combination-sum-ii",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 42,
@@ -354,7 +372,8 @@
       "difficulty": "Hard",
       "status": "done",
       "slug": "trapping-rain-water",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 46,
@@ -371,7 +390,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "permutations",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 47,
@@ -389,7 +409,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "permutations-ii",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 49,
@@ -408,7 +429,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "group-anagrams",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 51,
@@ -425,7 +447,8 @@
       "difficulty": "Hard",
       "status": "done",
       "slug": "n-queens",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 66,
@@ -442,7 +465,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "plus-one",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 70,
@@ -460,7 +484,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "climbing-stairs",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 71,
@@ -477,7 +502,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "simplify-path",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 73,
@@ -495,7 +521,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "set-matrix-zeroes",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 78,
@@ -513,7 +540,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "subsets",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 79,
@@ -533,7 +561,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "word-search",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 82,
@@ -550,7 +579,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "remove-duplicates-from-sorted-list-ii",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 83,
@@ -566,7 +596,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "remove-duplicates-from-sorted-list",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 84,
@@ -584,7 +615,8 @@
       "difficulty": "Hard",
       "status": "done",
       "slug": "largest-rectangle-in-histogram",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 92,
@@ -600,7 +632,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "reverse-linked-list-ii",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 94,
@@ -619,7 +652,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "binary-tree-inorder-traversal",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 98,
@@ -638,7 +672,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "validate-binary-search-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 100,
@@ -657,7 +692,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "same-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 101,
@@ -676,7 +712,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "symmetric-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 102,
@@ -694,7 +731,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "binary-tree-level-order-traversal",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 104,
@@ -713,7 +751,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "maximum-depth-of-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 105,
@@ -733,7 +772,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 108,
@@ -753,7 +793,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "convert-sorted-array-to-binary-search-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 110,
@@ -771,7 +812,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "balanced-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 112,
@@ -790,7 +832,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "path-sum",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 113,
@@ -810,7 +853,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "path-sum-ii",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 114,
@@ -831,7 +875,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "flatten-binary-tree-to-linked-list",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 116,
@@ -852,7 +897,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "populating-next-right-pointers-in-each-node",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 118,
@@ -869,7 +915,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "pascals-triangle",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 121,
@@ -886,7 +933,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "best-time-to-buy-and-sell-stock",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 125,
@@ -903,7 +951,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "valid-palindrome",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 129,
@@ -922,7 +971,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "sum-root-to-leaf-numbers",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 131,
@@ -941,7 +991,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "palindrome-partitioning",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 133,
@@ -961,7 +1012,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "clone-graph",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 135,
@@ -978,7 +1030,8 @@
       "difficulty": "Hard",
       "status": "done",
       "slug": "candy",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 138,
@@ -996,7 +1049,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "copy-list-with-random-pointer",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 141,
@@ -1015,7 +1069,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "linked-list-cycle",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 144,
@@ -1035,7 +1090,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "binary-tree-preorder-traversal",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 145,
@@ -1055,7 +1111,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "binary-tree-postorder-traversal",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 146,
@@ -1075,7 +1132,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "lru-cache",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 151,
@@ -1092,7 +1150,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "reverse-words-in-a-string",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 160,
@@ -1111,7 +1170,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "intersection-of-two-linked-lists",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 162,
@@ -1128,7 +1188,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "find-peak-element",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 187,
@@ -1149,7 +1210,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "repeated-dna-sequences",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 189,
@@ -1167,7 +1229,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "rotate-array",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 199,
@@ -1188,7 +1251,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "binary-tree-right-side-view",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 200,
@@ -1210,7 +1274,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "number-of-islands",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 203,
@@ -1229,7 +1294,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "remove-linked-list-elements",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 206,
@@ -1248,7 +1314,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "reverse-linked-list",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 207,
@@ -1269,7 +1336,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "course-schedule",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 208,
@@ -1290,7 +1358,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "implement-trie-prefix-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 209,
@@ -1310,7 +1379,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "minimum-size-subarray-sum",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 210,
@@ -1331,7 +1401,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "course-schedule-ii",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 211,
@@ -1352,7 +1423,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "design-add-and-search-words-data-structure",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 212,
@@ -1374,7 +1446,8 @@
       "difficulty": "Hard",
       "status": "done",
       "slug": "word-search-ii",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 215,
@@ -1395,7 +1468,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "kth-largest-element-in-an-array",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 216,
@@ -1414,7 +1488,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "combination-sum-iii",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 222,
@@ -1434,7 +1509,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "count-complete-tree-nodes",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 226,
@@ -1455,7 +1531,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "invert-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 230,
@@ -1476,7 +1553,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "kth-smallest-element-in-a-bst",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 234,
@@ -1497,7 +1575,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "palindrome-linked-list",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 236,
@@ -1517,7 +1596,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "lowest-common-ancestor-of-a-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 237,
@@ -1535,7 +1615,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "delete-node-in-a-linked-list",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 238,
@@ -1553,7 +1634,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "product-of-array-except-self",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 242,
@@ -1572,7 +1654,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "valid-anagram",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 257,
@@ -1594,7 +1677,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "binary-tree-paths",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 283,
@@ -1612,7 +1696,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "move-zeroes",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 290,
@@ -1630,7 +1715,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "word-pattern",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 328,
@@ -1648,7 +1734,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "odd-even-linked-list",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 334,
@@ -1666,7 +1753,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "increasing-triplet-subsequence",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 345,
@@ -1684,7 +1772,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "reverse-vowels-of-a-string",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 374,
@@ -1701,7 +1790,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "guess-number-higher-or-lower",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 383,
@@ -1719,7 +1809,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "ransom-note",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 392,
@@ -1737,7 +1828,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "is-subsequence",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 394,
@@ -1755,7 +1847,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "decode-string",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 399,
@@ -1778,7 +1871,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "evaluate-division",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 412,
@@ -1796,7 +1890,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "fizz-buzz",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 417,
@@ -1817,7 +1912,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "pacific-atlantic-water-flow",
-      "submittedAt": "2026-04-03T00:00:00.000Z"
+      "submittedAt": "2026-04-03T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 424,
@@ -1835,7 +1931,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "longest-repeating-character-replacement",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 438,
@@ -1853,7 +1950,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "find-all-anagrams-in-a-string",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 450,
@@ -1872,7 +1970,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "delete-node-in-a-bst",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 496,
@@ -1891,7 +1990,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "next-greater-element-i",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 509,
@@ -1910,7 +2010,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "fibonacci-number",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 515,
@@ -1930,7 +2031,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "find-largest-value-in-each-tree-row",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 543,
@@ -1949,7 +2051,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "diameter-of-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 547,
@@ -1968,7 +2071,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "number-of-provinces",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": true
     },
     {
       "id": 567,
@@ -1987,7 +2091,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "permutation-in-string",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 572,
@@ -2008,7 +2113,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "subtree-of-another-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 605,
@@ -2025,7 +2131,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "can-place-flowers",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 617,
@@ -2045,7 +2152,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "merge-two-binary-trees",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 622,
@@ -2065,7 +2173,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "design-circular-queue",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 637,
@@ -2085,7 +2194,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "average-of-levels-in-binary-tree",
-      "submittedAt": "2026-04-04T00:00:00.000Z"
+      "submittedAt": "2026-04-04T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 643,
@@ -2103,7 +2213,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "maximum-average-subarray-i",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 648,
@@ -2124,7 +2235,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "replace-words",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 682,
@@ -2143,7 +2255,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "baseball-game",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 684,
@@ -2164,7 +2277,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "redundant-connection",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 695,
@@ -2186,7 +2300,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "max-area-of-island",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 700,
@@ -2206,7 +2321,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "search-in-a-binary-search-tree",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 704,
@@ -2224,7 +2340,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "binary-search",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 705,
@@ -2246,7 +2363,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "design-hashset",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 706,
@@ -2268,7 +2386,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "design-hashmap",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 713,
@@ -2288,7 +2407,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "subarray-product-less-than-k",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 721,
@@ -2312,7 +2432,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "accounts-merge",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 724,
@@ -2330,7 +2451,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-pivot-index",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 735,
@@ -2349,7 +2471,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "asteroid-collision",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 739,
@@ -2368,7 +2491,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "daily-temperatures",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 784,
@@ -2388,7 +2512,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "letter-case-permutation",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 797,
@@ -2409,7 +2534,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "all-paths-from-source-to-target",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 841,
@@ -2429,7 +2555,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "keys-and-rooms",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 853,
@@ -2449,7 +2576,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "car-fleet",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 872,
@@ -2469,7 +2597,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "leaf-similar-trees",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 876,
@@ -2488,7 +2617,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "middle-of-the-linked-list",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 901,
@@ -2508,7 +2638,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "online-stock-span",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 933,
@@ -2527,7 +2658,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "number-of-recent-calls",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 981,
@@ -2547,7 +2679,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "time-based-key-value-store",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 994,
@@ -2567,7 +2700,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "rotting-oranges",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1047,
@@ -2585,7 +2719,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "remove-all-adjacent-duplicates-in-string",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1071,
@@ -2603,7 +2738,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "greatest-common-divisor-of-strings",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1091,
@@ -2623,7 +2759,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "shortest-path-in-binary-matrix",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1137,
@@ -2642,7 +2779,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "n-th-tribonacci-number",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1161,
@@ -2663,7 +2801,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "maximum-level-sum-of-a-binary-tree",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1268,
@@ -2686,7 +2825,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "search-suggestions-system",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1295,
@@ -2704,7 +2844,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-numbers-with-even-number-of-digits",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1342,
@@ -2722,7 +2863,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "number-of-steps-to-reduce-a-number-to-zero",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1343,
@@ -2740,7 +2882,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1431,
@@ -2757,7 +2900,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "kids-with-the-greatest-number-of-candies",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1448,
@@ -2778,7 +2922,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "count-good-nodes-in-binary-tree",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1456,
@@ -2796,7 +2941,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1466,
@@ -2816,7 +2962,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1475,
@@ -2835,7 +2982,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "final-prices-with-a-special-discount-in-a-shop",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1480,
@@ -2853,7 +3001,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "running-sum-of-1d-array",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1550,
@@ -2870,7 +3019,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "three-consecutive-odds",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1557,
@@ -2888,7 +3038,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "minimum-number-of-vertices-to-reach-all-nodes",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1669,
@@ -2906,7 +3057,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "merge-in-between-linked-lists",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1672,
@@ -2925,7 +3077,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "richest-customer-wealth",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1732,
@@ -2943,7 +3096,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-the-highest-altitude",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1752,
@@ -2960,7 +3114,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "check-if-array-is-sorted-and-rotated",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1768,
@@ -2978,7 +3133,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "merge-strings-alternately",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1920,
@@ -2996,7 +3152,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "build-array-from-permutation",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1926,
@@ -3016,7 +3173,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "nearest-exit-from-entrance-in-maze",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 1971,
@@ -3037,7 +3195,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-if-path-exists-in-graph",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2095,
@@ -3056,7 +3215,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "delete-the-middle-node-of-a-linked-list",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2130,
@@ -3076,7 +3236,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "maximum-twin-sum-of-a-linked-list",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2176,
@@ -3093,7 +3254,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "count-equal-and-divisible-pairs-in-an-array",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2181,
@@ -3112,7 +3274,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "merge-nodes-in-between-zeros",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2215,
@@ -3130,7 +3293,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-the-difference-of-two-arrays",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2300,
@@ -3150,7 +3314,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "successful-pairs-of-spells-and-potions",
-      "submittedAt": "2026-04-05T00:00:00.000Z"
+      "submittedAt": "2026-04-05T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2336,
@@ -3169,7 +3334,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "smallest-number-in-infinite-set",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2390,
@@ -3187,7 +3353,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "removing-stars-from-a-string",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2487,
@@ -3207,7 +3374,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "remove-nodes-from-linked-list",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2490,
@@ -3223,7 +3391,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "circular-sentence",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2542,
@@ -3242,7 +3411,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "maximum-subsequence-score",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2558,
@@ -3260,7 +3430,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "take-gifts-from-the-richest-pile",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2807,
@@ -3279,7 +3450,8 @@
       "difficulty": "Medium",
       "status": "done",
       "slug": "insert-greatest-common-divisors-in-linked-list",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2900,
@@ -3298,7 +3470,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "longest-unequal-adjacent-groups-subsequence-i",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 2942,
@@ -3315,7 +3488,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "find-words-containing-character",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 3105,
@@ -3331,7 +3505,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "longest-strictly-increasing-or-strictly-decreasing-subarray",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 3110,
@@ -3347,7 +3522,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "score-of-a-string",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 3151,
@@ -3363,7 +3539,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "special-array-i",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     },
     {
       "id": 3392,
@@ -3379,7 +3556,8 @@
       "difficulty": "Easy",
       "status": "done",
       "slug": "count-subarrays-of-length-three-with-a-condition",
-      "submittedAt": "2026-04-06T00:00:00.000Z"
+      "submittedAt": "2026-04-06T00:00:00.000Z",
+      "enriched": false
     }
   ]
 }
