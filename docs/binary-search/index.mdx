@@ -1,0 +1,80 @@
+---
+id: binary-search-index
+title: "Binary Search"
+sidebar_label: "Binary Search"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BinarySearchDiagram from '@site/src/components/DSA/BinarySearchDiagram';
+
+<CategoryHeader
+  emoji="🔍"
+  title="Binary Search"
+  description="A divide-and-conquer search algorithm that halves the search space at each step, achieving O(log n) time on sorted arrays or on any monotone predicate. The fundamental idea extends far beyond looking up a value — it applies whenever you can definitively eliminate half the remaining candidates."
+  tags={["Sorted Array", "O(log n)", "Boundary Finding", "Monotone Predicate"]}
+/>
+
+<SectionHeader n={1} title="What is Binary Search?" />
+
+Binary search exploits **sorted order**: if the middle element is too small, everything to the left is also too small and can be discarded; if too large, everything to the right can be discarded. This halving means even a billion-element array requires at most 30 comparisons (log₂(10⁹) ≈ 30).
+
+**Key properties:**
+
+| Property | Value |
+|---|---|
+| Time complexity | O(log n) |
+| Space complexity | O(1) iterative · O(log n) recursive call stack |
+| Prerequisite | Array must be sorted (or have a monotone predicate) |
+| Common variants | Exact match · Left boundary · Right boundary · Peak finding |
+
+<Callout type="amber" label="Key Constraint">
+  Binary search requires a **monotone** structure: there must be a clear dividing line where everything on the left satisfies the predicate and everything on the right does not (or vice versa). If the search space has no such structure, binary search does not apply.
+</Callout>
+
+<BinarySearchDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **lo / left** | Inclusive lower bound of the current search space |
+| **hi / right** | Inclusive upper bound of the current search space |
+| **mid** | `lo + (hi - lo) / 2` — avoids integer overflow vs `(lo + hi) / 2` |
+| **Exact match** | Return index of target if found, else -1 |
+| **Left boundary** | Index of the first element satisfying the condition (first true in `F F F T T T`) |
+| **Right boundary** | Index of the last element satisfying the condition (last true) |
+| **Search on answer** | Binary search over a value range (not an array index) — "smallest k such that f(k) is true" |
+| **Monotone predicate** | A function `f(x)` where once it becomes true it stays true (or vice versa) across the domain |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Binary Search"
+    description="Exact match, left/right boundary search, peak finding, and search-on-answer — all built on the same halving template. Covers every common variant with the single universal loop pattern."
+    href="/binary-search/binary-search"
+    time="O(log n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the brute-force is O(n) scan over a sorted or monotone space — binary search cuts it to O(log n). If you find yourself writing "find the smallest x such that condition(x) is true", that's binary search on the answer.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 34,   title: "Find First and Last Position of Element in Sorted Array", slug: "find-first-and-last-position-of-element-in-sorted-array", category: "binary-search", difficulty: "Medium" },
+  { id: 162,  title: "Find Peak Element",                                       slug: "find-peak-element",                                       category: "binary-search", difficulty: "Medium" },
+  { id: 222,  title: "Count Complete Tree Nodes",                               slug: "count-complete-tree-nodes",                               category: "binary-search", difficulty: "Easy" },
+  { id: 374,  title: "Guess Number Higher or Lower",                            slug: "guess-number-higher-or-lower",                            category: "binary-search", difficulty: "Easy" },
+  { id: 704,  title: "Binary Search",                                           slug: "binary-search",                                           category: "binary-search", difficulty: "Easy" },
+  { id: 981,  title: "Time Based Key-Value Store",                              slug: "time-based-key-value-store",                              category: "binary-search", difficulty: "Medium" },
+  { id: 2300, title: "Successful Pairs of Spells and Potions",                  slug: "successful-pairs-of-spells-and-potions",                  category: "binary-search", difficulty: "Medium" },
+]} />

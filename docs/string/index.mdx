@@ -1,0 +1,74 @@
+---
+id: string-index
+title: "String"
+sidebar_label: "String"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import StringPatternsDiagram from '@site/src/components/DSA/StringPatternsDiagram';
+
+<CategoryHeader
+  emoji="🔤"
+  title="String"
+  description="Problems that operate on sequences of characters — iteration, boundary checks, ASCII arithmetic, and pattern recognition. In Swift, the critical first step is always converting a String to [Character] so you can index it in O(1)."
+  tags={["Character Array", "ASCII", "Boundary", "Iteration"]}
+/>
+
+<SectionHeader n={1} title="What is a String Problem?" />
+
+String problems ask you to inspect or transform sequences of characters. They differ from array problems mainly in that Swift's `String` type does not support integer subscript access — you must convert to `[Character]` (or use `String.Index`) to iterate by position.
+
+**Key properties of Swift strings:**
+
+| Property | Detail |
+|---|---|
+| **Subscript access** | Not supported with integers — use `Array(s)` to convert first |
+| **Character comparison** | `Character` conforms to `Comparable` — `<`, `==` work directly |
+| **ASCII value** | `ch.asciiValue` returns `UInt8?` — unwrap with `!` when certain it is ASCII |
+| **String building** | `String(chars)` converts `[Character]` back to `String` |
+| **Immutability** | `String` is a value type; modifying requires `var` and explicit mutation |
+
+<Callout type="amber" label="Key Constraint">
+  Swift `String` uses Unicode scalars internally — accessing by integer index is O(n), not O(1). Always convert with `let chars = Array(s)` before any index-based logic. This one-time O(n) conversion unlocks O(1) random access for the rest of the algorithm.
+</Callout>
+
+<StringPatternsDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **`Array(s)`** | Convert `String` to `[Character]` — enables O(1) index access |
+| **`String(chars)`** | Convert `[Character]` back to `String` |
+| **`ch.asciiValue`** | `UInt8?` — the ASCII code of the character; `Int(ch.asciiValue!)` for arithmetic |
+| **Word boundary** | Index where a word starts or ends — typically a space or the last index |
+| **Circular sentence** | A sentence where the last character of each word equals the first of the next |
+| **Character score** | Absolute difference of adjacent character ASCII values |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="String Patterns"
+    description="Character array conversion, ASCII arithmetic, boundary traversal, and word-level iteration. The patterns used across all LeetCode string manipulation problems in Swift."
+    href="/string/string-patterns"
+    time="O(n)"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  For any string problem in Swift: convert to `[Character]` first, iterate by index, use `ch.asciiValue` for numeric comparisons, and convert back at the end. This one conversion unlocks every other string technique.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 2490, title: "Circular Sentence",  slug: "circular-sentence",  category: "string", difficulty: "Easy" },
+  { id: 3110, title: "Score of a String",  slug: "score-of-a-string",  category: "string", difficulty: "Easy" },
+]} />

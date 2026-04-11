@@ -1,0 +1,186 @@
+---
+id: binary-search
+title: "Binary Search"
+sidebar_label: "Binary Search"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BinarySearchDiagram from '@site/src/components/DSA/BinarySearchDiagram';
+
+<AlgoPageHeader
+  title="Binary Search"
+  description="Repeatedly halve the search space by comparing the middle element to the target. Runs in O(log n) on any sorted array or monotone predicate. A single loop template covers exact match, left boundary, right boundary, peak finding, and search on the answer."
+  category="Binary Search"
+  categoryHref="/binary-search"
+  time="O(log n)"
+  space="O(1)"
+  tags={["Divide and Conquer", "Sorted Array", "Boundary", "Monotone Predicate"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Binary search answers one question: **"where is the boundary between the elements that satisfy a condition and those that don't?"** Every variant — exact match, lower bound, upper bound, peak — reduces to finding that boundary.
+
+When to use binary search:
+- Input is sorted (or can be sorted as preprocessing).
+- You need to find a target or boundary in O(log n) instead of O(n).
+- The problem asks for "the smallest/largest x such that f(x) is true" — binary search over the answer space.
+- The brute-force is a linear scan that can be cut to logarithmic by exploiting monotonicity.
+
+<Callout type="cyan" label="Core Insight">
+  Every binary search maintains the **invariant**: the answer is always within `[lo, hi]`. At each step, computing `mid = lo + (hi - lo) / 2` and evaluating the condition at `mid` lets you eliminate exactly half the remaining space. The loop terminates when `lo > hi` (no answer) or the condition is satisfied.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **lo / hi invariant** | Answer always lies in `[lo, hi]`; loop ends when they cross |
+| **Mid computation** | `lo + (hi - lo) / 2` — avoids overflow that `(lo + hi) / 2` can cause for large indices |
+| **Left boundary** | First index where `nums[i] >= target` — `hi = mid - 1` when equal, `lo = mid + 1` when less |
+| **Right boundary** | Last index where `nums[i] <= target` — `lo = mid + 1` when equal, `hi = mid - 1` when greater |
+| **Search on answer** | lo/hi are values, not indices; predicate is "does f(mid) satisfy the requirement?" |
+| **Off-by-one errors** | The most common binary search bugs; choosing `<` vs `<=` and how to update lo/hi |
+
+<Callout type="amber" label="Key Constraint">
+  Always use `mid = lo + (hi - lo) / 2`, not `(lo + hi) / 2`. In Swift, `Int` is 64-bit and overflow is a runtime crash — not silent wraparound. For very large search spaces (search-on-answer with values up to 10^18), this matters.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<BinarySearchDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Exact match — return index or -1:**
+
+```swift
+func binarySearch(_ nums: [Int], _ target: Int) -> Int {
+    var lo = 0, hi = nums.count - 1
+    while lo <= hi {
+        let mid = lo + (hi - lo) / 2
+        if nums[mid] == target { return mid }
+        if nums[mid] < target  { lo = mid + 1 }
+        else                   { hi = mid - 1 }
+    }
+    return -1
+}
+```
+
+**Left boundary — first index where nums[i] >= target:**
+
+```swift
+func lowerBound(_ nums: [Int], _ target: Int) -> Int {
+    var lo = 0, hi = nums.count  // hi = count, not count-1
+    while lo < hi {              // note: strict <, not <=
+        let mid = lo + (hi - lo) / 2
+        if nums[mid] < target { lo = mid + 1 }
+        else                  { hi = mid }      // mid could be the answer
+    }
+    return lo  // lo == hi == first index where nums[i] >= target
+}
+```
+
+**Right boundary — last index where `nums[i] <= target`:**
+
+```swift
+func upperBound(_ nums: [Int], _ target: Int) -> Int {
+    var lo = 0, hi = nums.count
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2
+        if nums[mid] <= target { lo = mid + 1 }
+        else                   { hi = mid }
+    }
+    return lo - 1  // last index where nums[i] <= target
+}
+```
+
+**Peak finding — any peak in an unsorted array with no equal neighbours:**
+
+```swift
+func findPeakElement(_ nums: [Int]) -> Int {
+    var lo = 0, hi = nums.count - 1
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2
+        if nums[mid] > nums[mid + 1] { hi = mid }       // peak is at mid or left
+        else                         { lo = mid + 1 }   // peak is to the right
+    }
+    return lo
+}
+```
+
+**Search on answer — smallest capacity k such that ships can be loaded in D days:**
+
+```swift
+func shipWithinDays(_ weights: [Int], _ days: Int) -> Int {
+    var lo = weights.max()!, hi = weights.reduce(0, +)
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2
+        if canShip(weights, days, mid) { hi = mid }
+        else                           { lo = mid + 1 }
+    }
+    return lo
+}
+
+func canShip(_ weights: [Int], _ days: Int, _ capacity: Int) -> Bool {
+    var daysNeeded = 1, current = 0
+    for w in weights {
+        if current + w > capacity { daysNeeded += 1; current = 0 }
+        current += w
+    }
+    return daysNeeded <= days
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Swift's integer division truncates toward zero — `lo + (hi - lo) / 2` always rounds down, giving the lower of the two midpoints when the range has even length. This is correct for all four templates above. For `lowerBound` and `upperBound`, use `hi = nums.count` (not `count - 1`) and `while lo < hi` (strict) so the loop terminates cleanly when `lo == hi`. The `Array.sorted()` and `Array.binarySearch` are not in stdlib — implement the templates above directly.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+  Each iteration halves the search space: n → n/2 → n/4 → … → 1. After log₂(n) steps the space is exhausted. For search-on-answer, n is the size of the value range (hi - lo), not the array length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only `lo`, `hi`, and `mid` are needed — three integers regardless of input size. Recursive binary search uses O(log n) call stack; the iterative form above is strictly O(1).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Exact match',           time: 'O(log n)', space: 'O(1)' },
+    { approach: 'Left / right boundary', time: 'O(log n)', space: 'O(1)' },
+    { approach: 'Peak finding',          time: 'O(log n)', space: 'O(1)' },
+    { approach: 'Search on answer',      time: 'O(log V · f(V))', space: 'O(1)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Any time you think "I need to find the smallest/largest value satisfying some condition" — that is binary search. If the search space is sorted or monotone and a linear scan would be O(n), binary search cuts it to O(log n).
+</Callout>
+
+| Scenario | Template |
+|---|---|
+| Find exact value in sorted array | Exact match — `lo <= hi`, return `mid` when equal |
+| First occurrence / left boundary | Lower bound — `hi = nums.count`, `while lo < hi` |
+| Last occurrence / right boundary | Upper bound — return `lo - 1` after loop |
+| Any peak in array | Peak — compare `nums[mid]` vs `nums[mid+1]` |
+| Minimum capacity / days / speed | Search on answer — lo = min feasible, hi = max feasible |
+| Rotated sorted array | Modified binary search — identify which half is sorted first |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 34,   title: "Find First and Last Position of Element in Sorted Array", slug: "find-first-and-last-position-of-element-in-sorted-array", category: "binary-search", difficulty: "Medium" },
+  { id: 162,  title: "Find Peak Element",                                       slug: "find-peak-element",                                       category: "binary-search", difficulty: "Medium" },
+  { id: 222,  title: "Count Complete Tree Nodes",                               slug: "count-complete-tree-nodes",                               category: "binary-search", difficulty: "Easy" },
+  { id: 374,  title: "Guess Number Higher or Lower",                            slug: "guess-number-higher-or-lower",                            category: "binary-search", difficulty: "Easy" },
+  { id: 704,  title: "Binary Search",                                           slug: "binary-search",                                           category: "binary-search", difficulty: "Easy" },
+  { id: 981,  title: "Time Based Key-Value Store",                              slug: "time-based-key-value-store",                              category: "binary-search", difficulty: "Medium" },
+  { id: 2300, title: "Successful Pairs of Spells and Potions",                  slug: "successful-pairs-of-spells-and-potions",                  category: "binary-search", difficulty: "Medium" },
+]} />

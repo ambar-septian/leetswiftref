@@ -1,0 +1,147 @@
+---
+id: opposite-ends
+title: "Opposite Ends"
+sidebar_label: "Opposite Ends"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import OppositeEndsDiagram from '@site/src/components/DSA/OppositeEndsDiagram';
+
+<AlgoPageHeader
+  title="Opposite Ends"
+  description="Two pointers start at the two ends of the array (or string) and converge toward the center. Each step moves at least one pointer inward, guaranteeing O(n) time. Used for palindromes, sorted-array pair sums, and greedy area maximisation."
+  category="Two Pointers"
+  categoryHref="/two-pointers"
+  time="O(n)"
+  space="O(1)"
+  tags={["Converging", "Palindrome", "Sorted Array", "Greedy"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Place `L = 0` and `R = n - 1`. At each step examine the pair `(nums[L], nums[R])` and decide which pointer to advance:
+
+- If the pair satisfies the condition → record result, advance both or return.
+- If `nums[L]` is the "weaker" side → move `L` right.
+- If `nums[R]` is the "weaker" side → move `R` left.
+
+The loop terminates when `L >= R` (pointers cross or meet). Every element is examined at most once → O(n).
+
+<Callout type="cyan" label="Core Insight">
+  Opposite-ends works because moving the **weaker pointer inward** can only improve (or maintain) the answer — moving the stronger one inward can only make it worse. This greedy argument is the proof of correctness for problems like Container With Most Water: moving the taller side inward cannot produce a larger container (the height is still bounded by the shorter side and the width has decreased), so we must move the shorter side.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Convergence** | Pointers always move inward — loop terminates in at most n/2 steps |
+| **Greedy argument** | Advancing the "worse" pointer is safe because keeping it cannot yield a better answer |
+| **Sorted precondition** | Pair-sum problems require a sorted array so you can predict the effect of each move |
+| **Symmetric structure** | Palindrome problems do not need sorting — they rely on symmetry around the center |
+| **Two-pass reversal** | Use two opposite-end scans to reverse in-place without extra memory |
+
+<Callout type="amber" label="Key Constraint">
+  Pair-sum problems **require a sorted array**. On an unsorted array you cannot infer whether moving L right increases or decreases the sum — use a hash map (Two Sum) instead. Palindrome checks do not require sorting because equality is symmetric.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+Watch left and right pointers converge on "racecar":
+
+<OppositeEndsDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Palindrome check (characters, skip non-alphanumeric):**
+
+```swift
+func isPalindrome(_ s: String) -> Bool {
+    let chars = Array(s.lowercased())
+    var L = 0, R = chars.count - 1
+    while L < R {
+        while L < R && !chars[L].isLetter && !chars[L].isNumber { L += 1 }
+        while L < R && !chars[R].isLetter && !chars[R].isNumber { R -= 1 }
+        if chars[L] != chars[R] { return false }
+        L += 1; R -= 1
+    }
+    return true
+}
+```
+
+**Container with most water (greedy: move shorter side):**
+
+```swift
+func maxArea(_ height: [Int]) -> Int {
+    var L = 0, R = height.count - 1
+    var best = 0
+    while L < R {
+        let area = min(height[L], height[R]) * (R - L)
+        best = max(best, area)
+        if height[L] < height[R] { L += 1 } else { R -= 1 }
+    }
+    return best
+}
+```
+
+**In-place reverse (swap while converging):**
+
+```swift
+func reverse(_ chars: inout [Character]) {
+    var L = 0, R = chars.count - 1
+    while L < R {
+        chars.swapAt(L, R)
+        L += 1; R -= 1
+    }
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  `chars.swapAt(L, R)` is the idiomatic way to swap elements in a Swift array — no temporary variable needed. For string palindrome problems, `Array(s)` converts to `[Character]` for O(1) index access (Swift `String.Index` navigation is O(n)). Skip non-alphanumeric with `ch.isLetter || ch.isNumber` from Foundation — no import needed in LeetCode's Swift environment.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each iteration advances at least one pointer by 1. Since L starts at 0 and R at n-1 and they can only move inward, the total number of steps across the entire loop is at most n. Every element is examined exactly once.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only two integer pointer variables. No auxiliary data structures. In-place reversal and palindrome checks both achieve O(1) space.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Palindrome check',           time: 'O(n)', space: 'O(1)' },
+    { approach: 'Container with most water',  time: 'O(n)', space: 'O(1)' },
+    { approach: 'In-place reverse',           time: 'O(n)', space: 'O(1)' },
+    { approach: 'Sorted pair sum',            time: 'O(n)', space: 'O(1)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Opposite-ends when the problem involves a **pair of elements from both sides** — palindrome, reverse, two-sum on a sorted array, or "maximise/minimise some function of (L, R)". Same-direction when you need to **partition or overwrite** elements in a single left-to-right pass.
+</Callout>
+
+| Problem shape | Use opposite ends? |
+|---|---|
+| Palindrome / symmetric structure | Yes |
+| Two elements summing to target (sorted input) | Yes |
+| Maximise area / minimise distance between endpoints | Yes |
+| In-place reversal | Yes |
+| Remove duplicates / move zeroes (unsorted or in-order pass) | No — use same direction |
+| Find pair in unsorted array | No — use hash map |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 11,  title: "Container With Most Water",  slug: "container-with-most-water",  category: "two-pointers", difficulty: "Medium" },
+  { id: 125, title: "Valid Palindrome",           slug: "valid-palindrome",           category: "two-pointers", difficulty: "Easy" },
+  { id: 189, title: "Rotate Array",               slug: "rotate-array",               category: "two-pointers", difficulty: "Medium" },
+  { id: 345, title: "Reverse Vowels of a String", slug: "reverse-vowels-of-a-string", category: "two-pointers", difficulty: "Easy" },
+]} />

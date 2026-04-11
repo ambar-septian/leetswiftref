@@ -1,0 +1,165 @@
+---
+id: prefix-sum
+title: "Prefix Sum"
+sidebar_label: "Prefix Sum"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import PrefixSumDiagram from '@site/src/components/DSA/PrefixSumDiagram';
+
+<AlgoPageHeader
+  title="Prefix Sum"
+  description="Precompute cumulative sums over an array in O(n) so that any range sum query can be answered in O(1). The foundational technique behind a wide class of subarray and range problems."
+  category="Prefix Sum"
+  categoryHref="/prefix-sum"
+  time="O(n) build · O(1) query"
+  space="O(n)"
+  tags={["Array", "Preprocessing", "Range Query", "Cumulative Sum"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A **prefix sum** (also called a cumulative sum) is an array where each entry stores the sum of all elements before it. Once built, you can find the sum of any subarray `nums[l..r]` by a single subtraction — no loop required.
+
+When to reach for prefix sum:
+- The problem asks for **subarray sums** or **range sums**.
+- You need to check whether any subarray sum equals a target.
+- Multiple queries are made over the same array and you want to amortise the cost.
+- The brute-force is O(n²) because of a nested loop over start/end indices.
+
+<Callout type="cyan" label="Core Insight">
+  Store the sum of `nums[0..i-1]` in `prefix[i]`, with `prefix[0] = 0` as a sentinel. Then the sum of `nums[l..r]` is simply `prefix[r+1] - prefix[l]`. Subtraction "cancels out" everything before index l — like cancelling common factors in a fraction.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Prefix array** | `prefix[i] = nums[0] + nums[1] + … + nums[i-1]`; length n+1 |
+| **Sentinel zero** | `prefix[0] = 0` lets range queries starting at index 0 work without a special case |
+| **Range sum formula** | `sum(l, r) = prefix[r+1] - prefix[l]` (both indices inclusive) |
+| **Running sum** | In-place variant: overwrite `nums[i] += nums[i-1]`; destroys original but saves space |
+| **Difference array** | Inverse pattern: store deltas, apply range updates in O(1), then prefix-sum to reconstruct |
+| **2D prefix sum** | Extend to matrices: `pre[r][c]` = sum of rectangle from `(0,0)` to `(r-1,c-1)` |
+
+<Callout type="amber" label="Key Constraint">
+  Prefix sums only work for **invertible aggregates**. Subtraction undoes addition, XOR undoes XOR — both work. But you cannot compute `rangeMax(l, r) = prefixMax[r+1] - prefixMax[l]` because max has no inverse. Use a Sparse Table or Segment Tree for range min/max queries.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+Step through building the prefix array on `[2, 3, −1, 4, 2]`, then watch a O(1) range query:
+
+<PrefixSumDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Standard 1D prefix sum (recommended — length n+1 with sentinel):**
+
+```swift
+func buildPrefix(_ nums: [Int]) -> [Int] {
+    var prefix = [Int](repeating: 0, count: nums.count + 1)
+    for i in 0..<nums.count {
+        prefix[i + 1] = prefix[i] + nums[i]
+    }
+    return prefix
+}
+
+// Range sum query — O(1)
+func rangeSum(_ prefix: [Int], _ l: Int, _ r: Int) -> Int {
+    prefix[r + 1] - prefix[l]
+}
+```
+
+**Running sum (in-place, overwrites input):**
+
+```swift
+func runningSum(_ nums: inout [Int]) {
+    for i in 1..<nums.count {
+        nums[i] += nums[i - 1]
+    }
+}
+```
+
+**Difference array — O(1) range updates, O(n) reconstruction:**
+
+```swift
+// Apply +delta to nums[l..r] for multiple range updates, then reconstruct
+var diff = [Int](repeating: 0, count: n + 1)
+diff[l] += delta
+diff[r + 1] -= delta
+
+// Reconstruct after all updates
+var result = [Int](repeating: 0, count: n)
+result[0] = diff[0]
+for i in 1..<n {
+    result[i] = result[i - 1] + diff[i]
+}
+```
+
+**Subarray sum equals target — use prefix sum + hash map:**
+
+```swift
+func subarraySum(_ nums: [Int], _ k: Int) -> Int {
+    var count = 0
+    var prefixCount = [0: 1]  // prefix sum → frequency
+    var running = 0
+    for n in nums {
+        running += n
+        count += prefixCount[running - k, default: 0]
+        prefixCount[running, default: 0] += 1
+    }
+    return count
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `[Int](repeating: 0, count: nums.count + 1)` for the n+1 prefix array — the extra slot at index 0 is the sentinel that avoids special-casing queries starting at index 0. Swift's `Dictionary` subscript with `default:` is ideal for the frequency map variant: `prefixCount[running - k, default: 0]` reads zero without forcing an unwrap.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n) build · O(1) query">
+  Building the prefix array requires one pass through `nums` — O(n). Each range query is a single array lookup and subtraction — O(1). If you make Q queries after building, total time is O(n + Q). The brute-force O(n) per query would cost O(n·Q).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The prefix array has n+1 elements. The running-sum variant operates in-place at O(1) extra space, but it destroys the original array. The subarray-sum-equals-k pattern adds an O(n) hash map for the frequency counts.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Build prefix array',      time: 'O(n)',    space: 'O(n)' },
+    { approach: 'Range sum query',          time: 'O(1)',    space: 'O(1)' },
+    { approach: 'Running sum (in-place)',   time: 'O(n)',    space: 'O(1)' },
+    { approach: 'Difference array update',  time: 'O(1)',    space: 'O(n)' },
+    { approach: 'Subarray sum = k',         time: 'O(n)',    space: 'O(n)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  See a subarray sum, a range query, or a "does any contiguous block sum to k?" question — build a prefix array first. If the problem also asks for multiple independent queries over the same data, prefix sum pays for itself immediately.
+</Callout>
+
+| Scenario | Approach |
+|---|---|
+| Single range sum query | Prefix array: O(n) build, O(1) query |
+| Multiple range sum queries | Prefix array amortises build cost across all queries |
+| Subarray sum equals k (unsorted) | Prefix sum + hash map for frequency of past prefix sums |
+| Range min / max queries | Sparse Table (static) or Segment Tree (dynamic updates) |
+| Range update + point query | Difference array + prefix reconstruction |
+| 2D rectangle sum queries | 2D prefix sum |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 238,  title: "Product of Array Except Self",  slug: "product-of-array-except-self",  category: "prefix-sum", difficulty: "Medium" },
+  { id: 724,  title: "Find Pivot Index",              slug: "find-pivot-index",              category: "prefix-sum", difficulty: "Easy" },
+  { id: 1480, title: "Running Sum of 1d Array",       slug: "running-sum-of-1d-array",       category: "prefix-sum", difficulty: "Easy" },
+  { id: 1732, title: "Find the Highest Altitude",     slug: "find-the-highest-altitude",     category: "prefix-sum", difficulty: "Easy" },
+]} />

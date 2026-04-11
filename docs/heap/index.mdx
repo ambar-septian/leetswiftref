@@ -1,0 +1,81 @@
+---
+id: heap-index
+title: "Heap"
+sidebar_label: "Heap"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import HeapDiagram from '@site/src/components/DSA/HeapDiagram';
+
+<CategoryHeader
+  emoji="🏔"
+  title="Heap"
+  description="A binary heap is a complete binary tree stored as an array where every parent has higher priority than its children. It gives O(log n) insert and O(log n) remove-top, with O(1) peek at the top element. Used whenever a problem asks for the k-th largest, k-th smallest, or repeated top-element access."
+  tags={["Priority Queue", "Min-Heap", "Max-Heap", "O(log n)", "Top-K"]}
+/>
+
+<SectionHeader n={1} title="What is a Heap?" />
+
+A heap is stored as a plain array — no pointers needed. The tree structure is implicit from the index relationships:
+
+```
+parent(i)      = (i - 1) / 2
+leftChild(i)   = 2 * i + 1
+rightChild(i)  = 2 * i + 2
+```
+
+**Min-heap vs Max-heap:**
+
+| Property | Min-Heap | Max-Heap |
+|---|---|---|
+| Root element | Smallest | Largest |
+| Heap property | `parent <= children` | `parent >= children` |
+| Use case | Kth largest, Dijkstra | Kth smallest, scheduling |
+| Priority function | `{ $0 < $1 }` | `{ $0 > $1 }` |
+
+<Callout type="amber" label="Key Constraint">
+  Swift's standard library does **not** include a heap or priority queue. For LeetCode you have two options: implement a lightweight `Heap` struct (shown below — straightforward and interview-ready), or add the **Swift Collections** package (`import Collections`) which provides `Heap` with a modern API but requires a package dependency. The custom implementation is recommended for interviews.
+</Callout>
+
+<HeapDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Complete binary tree** | All levels full except possibly the last, which is filled left to right |
+| **Heap property** | Every node has higher priority than its children (min or max depending on type) |
+| **Sift up** | After insert: bubble the new element up until the heap property is restored |
+| **Sift down** | After remove-top: push the replacement element down until property is restored |
+| **Build heap** | Convert an arbitrary array into a heap in O(n) by sifting down from the middle |
+| **Priority function** | Closure `(Element, Element) -> Bool` that defines which element has higher priority |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Heap"
+    description="Custom Heap struct with a priority function closure — supports both min-heap and max-heap from a single implementation. Covers enqueue (sift up), dequeue (sift down), buildHeap in O(n), and top-K patterns."
+    href="/heap/heap"
+    time="O(log n) enqueue/dequeue"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Reach for a heap whenever a problem repeatedly asks for the current minimum or maximum of a changing set. If the problem says "k largest", "k smallest", "kth element", or requires a greedy always-pick-the-best approach — that is a heap.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 215,  title: "Kth Largest Element in an Array",  slug: "kth-largest-element-in-an-array",  category: "heap", difficulty: "Medium" },
+  { id: 2336, title: "Smallest Number in Infinite Set",  slug: "smallest-number-in-infinite-set",  category: "heap", difficulty: "Medium" },
+  { id: 2542, title: "Maximum Subsequence Score",        slug: "maximum-subsequence-score",        category: "heap", difficulty: "Medium" },
+  { id: 2558, title: "Take Gifts From the Richest Pile", slug: "take-gifts-from-the-richest-pile", category: "heap", difficulty: "Easy"   },
+]} />

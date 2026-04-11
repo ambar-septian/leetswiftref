@@ -1,0 +1,136 @@
+---
+id: string-patterns
+title: "String Patterns"
+sidebar_label: "String Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import StringPatternsDiagram from '@site/src/components/DSA/StringPatternsDiagram';
+
+<AlgoPageHeader
+  title="String Patterns"
+  description="The three patterns behind almost every Swift string problem: convert to [Character] for O(1) index access, use ASCII arithmetic for character comparison, and traverse word boundaries with a single pass. All three run in O(n) time and O(n) space for the character array."
+  category="String"
+  categoryHref="/string"
+  time="O(n)"
+  space="O(n)"
+  tags={["Character Array", "ASCII", "Boundary Traversal", "Word Iteration"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Swift's `String` type is Unicode-aware and does not expose integer subscripts. Every string algorithm in Swift starts with the same conversion:
+
+```swift
+let chars = Array(s)   // O(n) — [Character], O(1) index access after this
+```
+
+Once you have `[Character]`, the three patterns below cover the rest.
+
+<Callout type="cyan" label="Core Insight">
+  Swift strings are not arrays — but `[Character]` is. The single `Array(s)` conversion pays O(n) once and unlocks O(1) indexed access, ASCII arithmetic via `ch.asciiValue`, and straightforward index-based iteration. Every string pattern below assumes this conversion has already been done.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **`Array(s)`** | Convert `String` → `[Character]`; enables `chars[i]` in O(1) |
+| **`String(chars)`** | Convert `[Character]` → `String` for the final return value |
+| **ASCII arithmetic** | `Int(ch.asciiValue!) - Int(other.asciiValue!)` — difference between character codes |
+| **Word boundary** | `chars[i] == " "` or `i == chars.count - 1` — marks where a word ends |
+| **Circular boundary** | Check that `chars.last == chars.first` and each word's last char equals next word's first |
+
+<Callout type="amber" label="Key Constraint">
+  `ch.asciiValue` returns `UInt8?` — it is `nil` for non-ASCII characters (emoji, accented letters). Force-unwrap only when the problem guarantees ASCII input. For Unicode-safe comparison, use `ch.unicodeScalars.first!.value`.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<StringPatternsDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**ASCII arithmetic — score of a string (sum of adjacent ASCII differences):**
+
+```swift
+func scoreOfString(_ s: String) -> Int {
+    let chars = Array(s)
+    var score = 0
+    for i in 0..<chars.count - 1 {
+        score += abs(Int(chars[i].asciiValue!) - Int(chars[i + 1].asciiValue!))
+    }
+    return score
+}
+```
+
+**Word boundary traversal — circular sentence check:**
+
+```swift
+func isCircularSentence(_ sentence: String) -> Bool {
+    let chars = Array(sentence)
+    // Last char of sentence must equal first char
+    guard chars.last == chars.first else { return false }
+    // Every space must be surrounded by matching chars
+    for i in 1..<chars.count - 1 {
+        if chars[i] == " " && chars[i - 1] != chars[i + 1] {
+            return false
+        }
+    }
+    return true
+}
+```
+
+**Building a result string from [Character]:**
+
+```swift
+// After manipulating chars array...
+return String(chars)   // O(n) — allocates a new String
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `abs(Int(a.asciiValue!) - Int(b.asciiValue!))` for character distance — cast to `Int` before subtracting because `UInt8` subtraction wraps around on underflow (no crash, wrong answer). For `isCircularSentence`, the space-boundary check `chars[i-1] != chars[i+1]` compares the last char of one word to the first char of the next — exactly what "circular" means for the transition between words.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  The `Array(s)` conversion is O(n). Every pattern above iterates the character array once — O(n) total. The `String(chars)` conversion at the end is also O(n). The overall complexity is O(n) regardless of how many patterns are combined.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The `[Character]` array holds n elements. If you build a result array it is also O(n). There is no way to avoid this O(n) space in Swift string problems because `String` itself does not expose mutable indexed access.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Score of string (adjacent diff)',  time: 'O(n)', space: 'O(n)', note: 'One pass after Array conversion' },
+    { approach: 'Circular sentence (boundary)',     time: 'O(n)', space: 'O(n)', note: 'One pass checking space transitions', highlight: true },
+    { approach: 'String reversal',                  time: 'O(n)', space: 'O(n)', note: 'Convert, reverse in-place, convert back' },
+    { approach: 'Substring / prefix match',         time: 'O(n·m)', space: 'O(n)', note: 'n = text, m = pattern; use KMP for O(n)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Any Swift string problem: convert to `[Character]` first. Use ASCII arithmetic when the problem talks about character values or differences. Use index-based boundary traversal when the problem involves words, spaces, or circular structure.
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| Sum / diff of character values | ASCII arithmetic on adjacent pairs |
+| Word-level checks (first/last char of each word) | Space boundary traversal |
+| Circular or wrap-around checks | Compare `chars.last` and `chars.first`, then space transitions |
+| Build a transformed string | Mutate `[Character]`, return `String(chars)` |
+| Palindrome / symmetry | Two pointers on `[Character]` (see Two Pointers) |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 2490, title: "Circular Sentence",  slug: "circular-sentence",  category: "string", difficulty: "Easy" },
+  { id: 3110, title: "Score of a String",  slug: "score-of-a-string",  category: "string", difficulty: "Easy" },
+]} />

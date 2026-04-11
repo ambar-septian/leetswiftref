@@ -1,0 +1,100 @@
+---
+id: linked-list-index
+title: "Linked List"
+sidebar_label: "Linked List"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import LinkedListStructureDiagram from '@site/src/components/DSA/LinkedListStructureDiagram';
+
+<CategoryHeader
+  emoji="🔗"
+  title="Linked List"
+  description="A sequence of nodes where each node holds a value and a pointer to the next node. Unlike arrays, linked lists support O(1) insertion and deletion at known positions — but require O(n) traversal to reach a node by index. Most LeetCode linked list problems reduce to pointer manipulation and two-pointer traversal."
+  tags={["Pointer Manipulation", "Two Pointers", "Sentinel Head", "In-place"]}
+/>
+
+<SectionHeader n={1} title="What is a Linked List?" />
+
+A linked list stores elements in nodes scattered throughout memory, connected by `next` pointers. The trade-off vs arrays:
+
+| Operation | Array | Linked List |
+|---|---|---|
+| Access by index | O(1) | O(n) |
+| Insert / delete at known node | O(n) shift | O(1) pointer update |
+| Insert / delete at head | O(n) shift | O(1) |
+| Memory layout | Contiguous | Scattered |
+| Extra memory | O(1) | O(n) for pointers |
+
+<Callout type="amber" label="Key Constraint">
+  Linked list problems almost always require **in-place** pointer manipulation — no extra array is allowed. The two most useful tools are the **sentinel (dummy) head** (eliminates edge cases for head removal/insertion) and the **fast/slow pointer** (finds middle, detects cycles, removes nth-from-end in one pass).
+</Callout>
+
+**Fast / slow pointer — finding the middle node:**
+
+<LinkedListStructureDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **ListNode** | A node with `val: Int` and `next: ListNode?` |
+| **Head** | The first node; the entry point to the list |
+| **Tail** | The last node; `tail.next == nil` |
+| **Sentinel / dummy head** | A fake node before the real head; simplifies insert/delete without special-casing the head |
+| **Slow pointer** | Advances one step per iteration |
+| **Fast pointer** | Advances two steps per iteration — reaches the end when slow is at the middle |
+| **In-place** | Rearranging nodes by updating `next` pointers without allocating new nodes |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Linked List Patterns"
+    description="Sentinel head, fast/slow two-pointer (middle, cycle, nth-from-end), in-place reversal, and merge. The four techniques that underlie every LeetCode linked list problem."
+    href="/linked-list/linked-list-patterns"
+    time="O(n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Reach for the **sentinel head** when the problem modifies the list head (removal, insertion at front). Reach for **fast/slow pointers** when the problem asks for middle, cycle, or nth-from-end. Use **in-place reversal** when the problem asks you to reverse a sublist or alternate segments.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 2,    title: "Add Two Numbers",                          slug: "add-two-numbers",                          category: "linked-list", difficulty: "Medium" },
+  { id: 19,   title: "Remove Nth Node From End of List",         slug: "remove-nth-node-from-end-of-list",         category: "linked-list", difficulty: "Medium" },
+  { id: 21,   title: "Merge Two Sorted Lists",                   slug: "merge-two-sorted-lists",                   category: "linked-list", difficulty: "Easy"   },
+  { id: 82,   title: "Remove Duplicates from Sorted List II",    slug: "remove-duplicates-from-sorted-list-ii",    category: "linked-list", difficulty: "Medium" },
+  { id: 83,   title: "Remove Duplicates from Sorted List",       slug: "remove-duplicates-from-sorted-list",       category: "linked-list", difficulty: "Easy"   },
+  { id: 92,   title: "Reverse Linked List II",                   slug: "reverse-linked-list-ii",                   category: "linked-list", difficulty: "Medium" },
+  { id: 114,  title: "Flatten Binary Tree to Linked List",       slug: "flatten-binary-tree-to-linked-list",       category: "linked-list", difficulty: "Medium" },
+  { id: 116,  title: "Populating Next Right Pointers in Each Node", slug: "populating-next-right-pointers-in-each-node", category: "linked-list", difficulty: "Medium" },
+  { id: 138,  title: "Copy List with Random Pointer",            slug: "copy-list-with-random-pointer",            category: "linked-list", difficulty: "Medium" },
+  { id: 141,  title: "Linked List Cycle",                        slug: "linked-list-cycle",                        category: "linked-list", difficulty: "Easy"   },
+  { id: 146,  title: "LRU Cache",                                slug: "lru-cache",                                category: "linked-list", difficulty: "Medium" },
+  { id: 160,  title: "Intersection of Two Linked Lists",         slug: "intersection-of-two-linked-lists",         category: "linked-list", difficulty: "Easy"   },
+  { id: 203,  title: "Remove Linked List Elements",              slug: "remove-linked-list-elements",              category: "linked-list", difficulty: "Easy"   },
+  { id: 206,  title: "Reverse Linked List",                      slug: "reverse-linked-list",                      category: "linked-list", difficulty: "Easy"   },
+  { id: 234,  title: "Palindrome Linked List",                   slug: "palindrome-linked-list",                   category: "linked-list", difficulty: "Easy"   },
+  { id: 237,  title: "Delete Node in a Linked List",             slug: "delete-node-in-a-linked-list",             category: "linked-list", difficulty: "Medium" },
+  { id: 328,  title: "Odd Even Linked List",                     slug: "odd-even-linked-list",                     category: "linked-list", difficulty: "Medium" },
+  { id: 622,  title: "Design Circular Queue",                    slug: "design-circular-queue",                    category: "linked-list", difficulty: "Medium" },
+  { id: 705,  title: "Design HashSet",                           slug: "design-hashset",                           category: "linked-list", difficulty: "Easy"   },
+  { id: 706,  title: "Design HashMap",                           slug: "design-hashmap",                           category: "linked-list", difficulty: "Easy"   },
+  { id: 876,  title: "Middle of the Linked List",                slug: "middle-of-the-linked-list",                category: "linked-list", difficulty: "Easy"   },
+  { id: 1669, title: "Merge In Between Linked Lists",            slug: "merge-in-between-linked-lists",            category: "linked-list", difficulty: "Medium" },
+  { id: 2095, title: "Delete the Middle Node of a Linked List",  slug: "delete-the-middle-node-of-a-linked-list",  category: "linked-list", difficulty: "Medium" },
+  { id: 2130, title: "Maximum Twin Sum of a Linked List",        slug: "maximum-twin-sum-of-a-linked-list",        category: "linked-list", difficulty: "Medium" },
+  { id: 2181, title: "Merge Nodes in Between Zeros",             slug: "merge-nodes-in-between-zeros",             category: "linked-list", difficulty: "Medium" },
+  { id: 2487, title: "Remove Nodes From Linked List",            slug: "remove-nodes-from-linked-list",            category: "linked-list", difficulty: "Medium" },
+  { id: 2807, title: "Insert Greatest Common Divisors in Linked List", slug: "insert-greatest-common-divisors-in-linked-list", category: "linked-list", difficulty: "Medium" },
+]} />

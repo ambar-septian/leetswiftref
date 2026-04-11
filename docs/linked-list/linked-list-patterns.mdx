@@ -1,0 +1,189 @@
+---
+id: linked-list-patterns
+title: "Linked List Patterns"
+sidebar_label: "Linked List Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import LinkedListStructureDiagram from '@site/src/components/DSA/LinkedListStructureDiagram';
+
+<AlgoPageHeader
+  title="Linked List Patterns"
+  description="Four pointer techniques cover all LeetCode linked list problems: sentinel head (eliminates head edge cases), fast/slow two-pointer (middle, cycle, nth-from-end), in-place reversal (reverse a sublist without extra space), and merge (interleave two sorted lists). All run in O(n) time and O(1) space."
+  category="Linked List"
+  categoryHref="/linked-list"
+  time="O(n)"
+  space="O(1)"
+  tags={["Sentinel Head", "Fast/Slow Pointer", "In-place Reversal", "Merge"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Every linked list problem reduces to moving and reconnecting `next` pointers. The challenge is keeping track of multiple pointers simultaneously without losing nodes. Four patterns handle the full problem space:
+
+1. **Sentinel head** — a dummy node before the real head eliminates special cases when the head itself might be removed or when building a new list.
+2. **Fast / slow pointer** — fast moves twice as fast as slow; when fast reaches the end, slow is at the middle.
+3. **In-place reversal** — three pointers (`prev`, `curr`, `next`) reverse a sublist without extra memory.
+4. **Merge** — advance two pointers in parallel, always picking the smaller node.
+
+<Callout type="cyan" label="Core Insight">
+  Linked list problems are pure pointer arithmetic. Before writing any code, draw the before/after state of the pointers — the code is almost always a direct translation of that diagram. The sentinel head is the single most important trick: prepend `let dummy = ListNode(0); dummy.next = head` and return `dummy.next` at the end, eliminating every "is this the head?" check.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Sentinel head** | `let dummy = ListNode(0, head)` — a fake node before the real head so you never special-case head removal |
+| **`prev` / `curr`** | The two pointers for in-place traversal and reversal; always update `next` before moving |
+| **Fast / slow** | `fast = fast.next.next`, `slow = slow.next` — fast exits when `fast == nil` or `fast.next == nil` |
+| **Cycle detection** | If `slow == fast` at any point (after start), a cycle exists (Floyd's algorithm) |
+| **Nth from end** | Give fast an n-step head start; when fast reaches the end, slow is at the target |
+| **Reverse direction** | `next = curr.next; curr.next = prev; prev = curr; curr = next` — four-pointer shuffle |
+
+<Callout type="amber" label="Key Constraint">
+  In Swift, `ListNode` is a `class` (reference type) — assigning a node variable copies the reference, not the node. This means `prev.next = curr` and `curr = curr.next` are safe in any order as long as you save `curr.next` before overwriting `curr.next`. Always save the next pointer first: `let next = curr.next`.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<LinkedListStructureDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Sentinel head — remove all nodes with value `val`:**
+
+```swift
+func removeElements(_ head: ListNode?, _ val: Int) -> ListNode? {
+    let dummy = ListNode(0, head)
+    var curr: ListNode? = dummy
+    while let node = curr?.next {
+        if node.val == val {
+            curr?.next = node.next  // skip the node
+        } else {
+            curr = curr?.next       // advance only when not removing
+        }
+    }
+    return dummy.next
+}
+```
+
+**Fast / slow pointer — find middle node:**
+
+```swift
+func middleNode(_ head: ListNode?) -> ListNode? {
+    var slow = head, fast = head
+    while fast != nil && fast?.next != nil {
+        slow = slow?.next
+        fast = fast?.next?.next
+    }
+    return slow
+}
+```
+
+**In-place reversal — reverse the entire list:**
+
+```swift
+func reverseList(_ head: ListNode?) -> ListNode? {
+    var prev: ListNode? = nil
+    var curr = head
+    while curr != nil {
+        let next = curr?.next   // save before overwriting
+        curr?.next = prev       // reverse the pointer
+        prev = curr             // advance prev
+        curr = next             // advance curr
+    }
+    return prev  // prev is now the new head
+}
+```
+
+**Nth from end — remove the nth node from the end:**
+
+```swift
+func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
+    let dummy = ListNode(0, head)
+    var fast: ListNode? = dummy
+    var slow: ListNode? = dummy
+    // Give fast an n-step head start
+    for _ in 0...n { fast = fast?.next }
+    while fast != nil {
+        fast = fast?.next
+        slow = slow?.next
+    }
+    slow?.next = slow?.next?.next  // remove the nth node
+    return dummy.next
+}
+```
+
+**Merge two sorted lists:**
+
+```swift
+func mergeTwoLists(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
+    let dummy = ListNode(0)
+    var curr: ListNode? = dummy
+    var a = l1, b = l2
+    while a != nil && b != nil {
+        if a!.val <= b!.val { curr?.next = a; a = a?.next }
+        else                 { curr?.next = b; b = b?.next }
+        curr = curr?.next
+    }
+    curr?.next = a ?? b  // attach remaining nodes
+    return dummy.next
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Swift optional chaining (`curr?.next`) is clean for linked list traversal but watch out for forced unwraps inside loops — use `while let node = curr?.next` to bind and check in one step. For cycle detection, `slow == fast` uses reference equality (same object in memory) since `ListNode` is a class — no need to compare `val`. When doing reversal, save `let next = curr?.next` as the very first line inside the loop before any pointer is modified.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Every pattern above traverses each node at most once (or twice for fast/slow, which is still O(n)). Reversal, merge, and sentinel-based removal all visit n nodes in a single pass. The only exception is reversal of a sublist from position m to n — that is still O(n) for the full traversal even though only O(n-m) pointers are flipped.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  All patterns use only a constant number of pointer variables (`prev`, `curr`, `next`, `slow`, `fast`, `dummy`). No auxiliary arrays or recursion stacks — everything happens in-place by updating `next` pointers.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Sentinel head (removal / insertion)',  time: 'O(n)', space: 'O(1)', note: 'One pass, no head special-case' },
+    { approach: 'Fast / slow pointer (middle, cycle)',  time: 'O(n)', space: 'O(1)', note: 'Two pointers, single pass', highlight: true },
+    { approach: 'In-place reversal (full or partial)',  time: 'O(n)', space: 'O(1)', note: 'Three-pointer shuffle' },
+    { approach: 'Merge two sorted lists',              time: 'O(n+m)', space: 'O(1)', note: 'Interleave in one pass' },
+    { approach: 'Nth from end',                        time: 'O(n)', space: 'O(1)', note: 'Two pointers, n-step offset' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Draw the before/after pointer diagram before coding. If the problem modifies the head — use a sentinel. If it asks for middle, cycle, or kth from end — use fast/slow. If it asks to reverse a segment — use the three-pointer shuffle. If it asks to combine two lists — use merge with a sentinel result head.
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| Remove all nodes with value / remove head | Sentinel head |
+| Find middle node | Fast / slow (2:1 speed) |
+| Detect cycle | Fast / slow (meet = cycle) |
+| Remove nth from end | Fast gets n-step head start |
+| Reverse entire list or sublist | Three-pointer in-place reversal |
+| Merge two sorted lists | Sentinel result + two-pointer merge |
+| Palindrome list | Fast/slow to find middle + reverse second half |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 21,  title: "Merge Two Sorted Lists",             slug: "merge-two-sorted-lists",             category: "linked-list", difficulty: "Easy"   },
+  { id: 19,  title: "Remove Nth Node From End of List",   slug: "remove-nth-node-from-end-of-list",   category: "linked-list", difficulty: "Medium" },
+  { id: 141, title: "Linked List Cycle",                  slug: "linked-list-cycle",                  category: "linked-list", difficulty: "Easy"   },
+  { id: 206, title: "Reverse Linked List",                slug: "reverse-linked-list",                category: "linked-list", difficulty: "Easy"   },
+  { id: 876, title: "Middle of the Linked List",          slug: "middle-of-the-linked-list",          category: "linked-list", difficulty: "Easy"   },
+  { id: 234, title: "Palindrome Linked List",             slug: "palindrome-linked-list",             category: "linked-list", difficulty: "Easy"   },
+  { id: 92,  title: "Reverse Linked List II",             slug: "reverse-linked-list-ii",             category: "linked-list", difficulty: "Medium" },
+  { id: 203, title: "Remove Linked List Elements",        slug: "remove-linked-list-elements",        category: "linked-list", difficulty: "Easy"   },
+]} />

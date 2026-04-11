@@ -1,0 +1,88 @@
+---
+id: prefix-sum-index
+title: "Prefix Sum"
+sidebar_label: "Prefix Sum"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import PrefixSumDiagram from '@site/src/components/DSA/PrefixSumDiagram';
+
+<CategoryHeader
+  emoji="➕"
+  title="Prefix Sum"
+  description="A preprocessing technique that computes cumulative sums (or products, XORs, etc.) over an array so that range queries can be answered in O(1) instead of O(n). Build the prefix array once in O(n), then answer any number of range queries instantly."
+  tags={["Array", "Preprocessing", "Range Query", "O(1) Query"]}
+/>
+
+<SectionHeader n={1} title="What is a Prefix Sum?" />
+
+A **prefix sum array** stores the cumulative sum of elements from the start of the array up to each index. Given `nums`, the prefix array is defined as:
+
+```
+prefix[0] = 0
+prefix[i] = prefix[i-1] + nums[i-1]   (1-indexed from input)
+```
+
+This one-off O(n) build lets you answer "what is the sum of `nums[l..r]`?" in O(1):
+
+```
+rangeSum(l, r) = prefix[r + 1] - prefix[l]
+```
+
+**Key properties:**
+
+| Property | Value |
+|---|---|
+| Build time | O(n) |
+| Range query time | O(1) per query |
+| Extra space | O(n) for the prefix array |
+| Works for | Sum, product, XOR, count — any invertible aggregate |
+
+<Callout type="amber" label="Key Constraint">
+  The prefix sum trick requires that the **aggregate operation is invertible** (addition is; max/min are not). For range minimum/maximum queries you need a Sparse Table or Segment Tree instead.
+</Callout>
+
+**Visualisation — build the array step by step, then answer a range query:**
+
+<PrefixSumDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Prefix sum** | `prefix[i]` = sum of `nums[0..i-1]`; `prefix[0] = 0` |
+| **Range query** | "What is the sum of elements from index l to r (inclusive)?" |
+| **Off-by-one sentinel** | `prefix[0] = 0` avoids a special case for queries starting at index 0 |
+| **Running sum** | Simpler variant: compute prefix in-place, overwriting the input array |
+| **2D prefix sum** | Extends the idea to matrices for rectangle sum queries |
+| **Difference array** | The inverse: stores deltas so range updates are O(1) and point queries are O(n) after prefix reconstruction |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Prefix Sum"
+    description="Precompute cumulative sums to answer range sum queries in O(1). The single core technique — covers 1D arrays, running sums, and the difference array inverse pattern."
+    href="/prefix-sum/prefix-sum"
+    time="O(n) build, O(1) query"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem asks for **range sums**, **subarray sums equal to a target**, or mentions **multiple queries over the same array** — build a prefix sum first.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 238,  title: "Product of Array Except Self",  slug: "product-of-array-except-self",  category: "prefix-sum", difficulty: "Medium" },
+  { id: 724,  title: "Find Pivot Index",              slug: "find-pivot-index",              category: "prefix-sum", difficulty: "Easy" },
+  { id: 1480, title: "Running Sum of 1d Array",       slug: "running-sum-of-1d-array",       category: "prefix-sum", difficulty: "Easy" },
+  { id: 1732, title: "Find the Highest Altitude",     slug: "find-the-highest-altitude",     category: "prefix-sum", difficulty: "Easy" },
+]} />

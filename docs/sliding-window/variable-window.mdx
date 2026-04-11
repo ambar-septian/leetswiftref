@@ -1,0 +1,181 @@
+---
+id: variable-window
+title: "Variable Window"
+sidebar_label: "Variable Window"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import VariableWindowDiagram from '@site/src/components/DSA/VariableWindowDiagram';
+
+<AlgoPageHeader
+  title="Variable Window"
+  description="A sliding window whose size is not fixed: R advances to grow the window until a constraint is met, then L advances to shrink the window while the constraint still holds. Each element is added and removed at most once, giving O(n) overall."
+  category="Sliding Window"
+  categoryHref="/sliding-window"
+  time="O(n)"
+  space="O(1) or O(k)"
+  tags={["Shrink and Expand", "Shortest", "Longest", "Frequency Map"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Variable-window problems ask for the **optimal window size**: "shortest subarray with sum ≥ k" or "longest substring with all unique characters." The window grows and shrinks dynamically:
+
+1. **Expand**: move `R` right, add `nums[R]` to the window state.
+2. **Check**: if the window now satisfies the constraint — record the candidate answer.
+3. **Shrink** (for minimum-length problems): while the window still satisfies the constraint, move `L` right and update the answer.
+4. **Shrink** (for maximum-length problems): while the window *violates* the constraint, move `L` right to restore validity.
+
+<Callout type="cyan" label="Core Insight">
+  The variable window works because the window property is **monotone**: once `R` makes the window valid, shrinking from `L` can only make it invalid (or equal). Once `L` makes the window invalid, advancing `R` can only make it valid again. This one-directional behaviour means `L` and `R` together traverse at most 2n positions — O(n) total.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Expand then shrink** | For minimum problems: expand until valid, shrink while valid to find tightest window |
+| **Expand until invalid** | For maximum problems: expand while valid, shrink once when violated |
+| **Window state** | Running sum, product, frequency map, distinct-count — whatever tracks the constraint |
+| **Distinct count** | Integer counting how many unique elements are in the window; avoids iterating the map |
+| **Monotone property** | Adding an element can only worsen (or maintain) validity; removing can only improve it |
+
+<Callout type="amber" label="Key Constraint">
+  Variable window requires a **monotone constraint**. "Sum of positive integers ≥ k" is monotone — adding more elements always helps. "Sum equals exactly k on an array with negatives" is not monotone — use prefix sum + hash map instead.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<VariableWindowDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Minimum size subarray with sum ≥ target (positive integers only):**
+
+```swift
+func minSubArrayLen(_ target: Int, _ nums: [Int]) -> Int {
+    var L = 0, windowSum = 0, best = Int.max
+    for R in 0..<nums.count {
+        windowSum += nums[R]                       // expand
+        while windowSum >= target {                // shrink while valid
+            best = min(best, R - L + 1)
+            windowSum -= nums[L]
+            L += 1
+        }
+    }
+    return best == Int.max ? 0 : best
+}
+```
+
+**Longest substring without repeating characters:**
+
+```swift
+func lengthOfLongestSubstring(_ s: String) -> Int {
+    let chars = Array(s)
+    var freq = [Character: Int]()
+    var L = 0, best = 0
+    for R in 0..<chars.count {
+        freq[chars[R], default: 0] += 1           // expand
+        while freq[chars[R]]! > 1 {               // shrink while invalid
+            freq[chars[L]]! -= 1
+            L += 1
+        }
+        best = max(best, R - L + 1)
+    }
+    return best
+}
+```
+
+**Longest repeating character replacement (at most k changes allowed):**
+
+```swift
+func characterReplacement(_ s: String, _ k: Int) -> Int {
+    let chars = Array(s)
+    var freq = [Character: Int]()
+    var L = 0, maxFreq = 0, best = 0
+    for R in 0..<chars.count {
+        freq[chars[R], default: 0] += 1
+        maxFreq = max(maxFreq, freq[chars[R]]!)
+        // window size - maxFreq = number of replacements needed
+        let windowSize = R - L + 1
+        if windowSize - maxFreq > k {             // shrink: too many replacements
+            freq[chars[L]]! -= 1
+            L += 1
+        }
+        best = max(best, R - L + 1)
+    }
+    return best
+}
+```
+
+**Subarray product less than k (LeetCode 713):**
+
+```swift
+func numSubarrayProductLessThanK(_ nums: [Int], _ k: Int) -> Int {
+    guard k > 1 else { return 0 }
+    var L = 0, product = 1, count = 0
+    for R in 0..<nums.count {
+        product *= nums[R]                        // expand
+        while product >= k {                      // shrink while invalid
+            product /= nums[L]
+            L += 1
+        }
+        count += R - L + 1  // all subarrays ending at R with L..R as left bound
+    }
+    return count
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `freq[ch, default: 0] += 1` and `freq[ch]! -= 1` for frequency maps — the `default:` subscript on read, forced-unwrap (`!`) on decrement (you know the key exists). For the character-replacement pattern, `maxFreq` need not be decremented when shrinking — it can only stay the same or grow, which is safe because a window with the same `maxFreq` but one smaller width will only be accepted if the constraint still holds. This is a common O(n) optimisation to avoid recomputing `maxFreq` on every shrink.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  `R` advances from 0 to n-1 — n steps. `L` also advances from 0 to at most n-1 — n more steps. Every element enters the window once and leaves at most once, so total work is O(2n) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) or O(k)">
+  For sum/product windows: O(1) — just a running aggregate. For character-frequency windows: O(alphabet size) — O(26) for lowercase letters. For arbitrary distinct elements: O(k) where k is the number of distinct elements in the window.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Min subarray sum >= target (positive)',   time: 'O(n)', space: 'O(1)' },
+    { approach: 'Longest substring no repeating chars',    time: 'O(n)', space: 'O(26) = O(1)' },
+    { approach: 'Longest replacing up to k chars',         time: 'O(n)', space: 'O(26) = O(1)' },
+    { approach: 'Count subarrays with product < k',        time: 'O(n)', space: 'O(1)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Variable window when the problem says "shortest", "longest", "minimum length", "maximum length", "at most k distinct", or "at least sum S" — any time the optimal window size is unknown and must be discovered by growing and shrinking.
+</Callout>
+
+<Callout type="purple" label="Fixed vs Variable — which to choose?">
+  **Fixed window** when k is given explicitly ("subarrays of length k"). **Variable window** when you're optimising k ("shortest", "longest"). If the constraint involves negatives or requires exact equality — consider prefix sum + hash map instead of sliding window.
+</Callout>
+
+| Problem shape | Window type |
+|---|---|
+| Minimum subarray with sum ≥ S (positive nums) | Variable — shrink while valid |
+| Longest substring with all unique chars | Variable — shrink when duplicate found |
+| Longest substring with at most k distinct chars | Variable — shrink when distinct count exceeds k |
+| Longest with at most k replacements | Variable — shrink when replacements exceed k |
+| Subarray product less than k | Variable — shrink while product >= k |
+| Exact window size k given | Fixed — slide without shrink logic |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 3,   title: "Longest Substring Without Repeating Characters",  slug: "longest-substring-without-repeating-characters",  category: "sliding-window", difficulty: "Medium" },
+  { id: 209, title: "Minimum Size Subarray Sum",                       slug: "minimum-size-subarray-sum",                       category: "sliding-window", difficulty: "Medium" },
+  { id: 424, title: "Longest Repeating Character Replacement",         slug: "longest-repeating-character-replacement",         category: "sliding-window", difficulty: "Medium" },
+  { id: 713, title: "Subarray Product Less Than K",                    slug: "subarray-product-less-than-k",                    category: "sliding-window", difficulty: "Medium" },
+]} />

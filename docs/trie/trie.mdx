@@ -1,0 +1,189 @@
+---
+id: trie
+title: "Trie"
+sidebar_label: "Trie"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import TrieStructureDiagram from '@site/src/components/DSA/TrieStructureDiagram';
+
+<AlgoPageHeader
+  title="Trie"
+  description="A prefix tree where each node represents one character and each root-to-terminal path spells a stored word. Insert, search, and startsWith all run in O(L) time — independent of the number of stored words. Enables prefix queries and autocomplete that a hash set cannot support efficiently."
+  category="Trie"
+  categoryHref="/trie"
+  time="O(L) per operation"
+  space="O(SIGMA · N · L)"
+  tags={["Prefix Tree", "Insert", "Search", "startsWith", "Wildcard"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A trie answers two questions a hash set cannot: **"does any stored word start with this prefix?"** and **"what are all words with this prefix?"** Every character on a path from root to a node is shared among all words that have that prefix — this prefix sharing is the trie's core advantage.
+
+When to use a trie:
+- The problem involves **prefix lookup** or **autocomplete**.
+- You need to **prune DFS/backtracking** early by checking if a prefix exists (Word Search II).
+- Multiple words share common beginnings and you want to avoid re-checking the shared part.
+- The problem asks for the **shortest prefix** that uniquely identifies a word (Replace Words).
+
+<Callout type="cyan" label="Core Insight">
+  A trie is a tree where the path from root to any node encodes a string. Nodes do not store the character — the **edge** (the choice of child) carries the character. Each node only needs a children map and an `isEnd` flag. Insert traces the path, creating nodes as needed. Search traces the same path and checks `isEnd` at the end.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **TrieNode** | `children: [Character: TrieNode]`, `isEnd: Bool` — the entire data structure |
+| **Insert** | For each character in word: if child missing, create it; then advance. Set `isEnd = true` at the last node |
+| **Search (exact)** | Traverse character by character; return `false` if any child is missing; return `node.isEnd` at the end |
+| **startsWith** | Same as search but return `true` as long as the traversal completes (ignore `isEnd`) |
+| **Wildcard '.'** | At a `.` character, recurse into **all** children — used in Design Add and Search Words |
+| **Word pruning** | In backtracking (Word Search II), delete the word from the trie once found to avoid re-reporting |
+
+<Callout type="amber" label="Key Constraint">
+  Using a `class` (reference type) for `TrieNode` is essential — child nodes are shared across paths and must be mutated in-place. A `struct` would copy on assignment, breaking the tree structure. Always declare `TrieNode` as a `class` in Swift.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<TrieStructureDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Core Trie — insert, search, startsWith:**
+
+```swift
+class TrieNode {
+    var children = [Character: TrieNode]()
+    var isEnd = false
+}
+
+class Trie {
+    private let root = TrieNode()
+
+    func insert(_ word: String) {
+        var node = root
+        for ch in word {
+            if node.children[ch] == nil {
+                node.children[ch] = TrieNode()
+            }
+            node = node.children[ch]!
+        }
+        node.isEnd = true
+    }
+
+    func search(_ word: String) -> Bool {
+        var node = root
+        for ch in word {
+            guard let next = node.children[ch] else { return false }
+            node = next
+        }
+        return node.isEnd
+    }
+
+    func startsWith(_ prefix: String) -> Bool {
+        var node = root
+        for ch in prefix {
+            guard let next = node.children[ch] else { return false }
+            node = next
+        }
+        return true  // prefix exists regardless of isEnd
+    }
+}
+```
+
+**Wildcard search — '.' matches any character (LeetCode 211):**
+
+```swift
+func search(_ word: String) -> Bool {
+    return dfs(Array(word), 0, root)
+}
+
+private func dfs(_ chars: [Character], _ i: Int, _ node: TrieNode) -> Bool {
+    if i == chars.count { return node.isEnd }
+    let ch = chars[i]
+    if ch == "." {
+        return node.children.values.contains { dfs(chars, i + 1, $0) }
+    } else {
+        guard let next = node.children[ch] else { return false }
+        return dfs(chars, i + 1, next)
+    }
+}
+```
+
+**Prefix replacement — replace each word with its shortest root (LeetCode 648):**
+
+```swift
+func replaceWords(_ dictionary: [String], _ sentence: String) -> String {
+    let trie = Trie()
+    dictionary.forEach { trie.insert($0) }
+    return sentence.split(separator: " ").map { word -> String in
+        var node = trie.root
+        for (i, ch) in word.enumerated() {
+            guard let next = node.children[ch] else { break }
+            node = next
+            if node.isEnd { return String(word.prefix(i + 1)) }
+        }
+        return String(word)
+    }.joined(separator: " ")
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Declare `TrieNode` as a `class`, not a `struct` — you need reference semantics so that `node = node.children[ch]!` advances a pointer, not a copy. Use `[Character: TrieNode]()` for the children dictionary; it handles arbitrary alphabets cleanly. The `node.children[ch] == nil` check before insertion is necessary because Swift dictionaries return `nil` for missing keys, not a default. For `replaceWords`, `sentence.split(separator: " ")` returns `[Substring]` — wrap with `String(...)` before inserting into the trie.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(L) per operation">
+  Each insert, search, and startsWith operation traverses at most L nodes, where L is the length of the word or prefix. There is no dependency on the number of words already in the trie — every operation is O(L) regardless of trie size. For wildcard search with `.`, the worst case is O(SIGMA^L) if every node has every child and every character is `.`, but in practice the branching is bounded by the actual words stored.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(SIGMA · N · L)">
+  In the worst case every word shares no prefix — each of the N words contributes L nodes, each holding a children dictionary of up to SIGMA entries. For 26 lowercase letters and typical word lengths, the constant is small. In the best case (all words share a long common prefix), the space approaches O(L_max).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Insert',           time: 'O(L)',          space: 'O(L)',           note: 'Creates at most L new nodes' },
+    { approach: 'Search (exact)',   time: 'O(L)',          space: 'O(1)',           note: 'No allocation, just traversal', highlight: true },
+    { approach: 'startsWith',       time: 'O(L)',          space: 'O(1)',           note: 'Same as search without isEnd check' },
+    { approach: 'Wildcard search',  time: 'O(SIGMA^L)',    space: 'O(L)',          note: 'Worst case; bounded by actual branching' },
+    { approach: 'Replace words',    time: 'O(N·L + M)',    space: 'O(N·L)',        note: 'N roots in trie, M sentence chars' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="Trie vs Hash Set — which to choose?">
+  **Use a hash set** when you only need exact-word lookup — `O(1)` average, simpler implementation. **Use a trie** when you need prefix lookup (`startsWith`), autocomplete (all words with prefix), shortest prefix replacement, or backtracking pruning (check if a partial board path could ever spell a stored word). The trie trades extra space for richer prefix queries.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem mentions **prefix**, **autocomplete**, **common beginning**, or you need to **prune a DFS early** by checking if a string-in-progress is a prefix of any stored word — use a trie.
+</Callout>
+
+| Problem shape | Approach |
+|---|---|
+| Implement prefix-tree insert / search / startsWith | Core trie with `isEnd` |
+| Search with wildcard `.` matching any character | DFS over all children at `.` nodes |
+| Replace words with shortest matching root | Traverse trie, return prefix on first `isEnd` |
+| Find all words on a board (Word Search II) | DFS + trie for prefix pruning |
+| Autocomplete / search suggestions | Collect all words reachable from the prefix node |
+| Longest common prefix of a set of strings | Insert all, find deepest node with one child and no `isEnd` |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 14,   title: "Longest Common Prefix",                         slug: "longest-common-prefix",                         category: "trie", difficulty: "Easy"   },
+  { id: 208,  title: "Implement Trie (Prefix Tree)",                  slug: "implement-trie-prefix-tree",                    category: "trie", difficulty: "Medium" },
+  { id: 211,  title: "Design Add and Search Words Data Structure",     slug: "design-add-and-search-words-data-structure",    category: "trie", difficulty: "Medium" },
+  { id: 212,  title: "Word Search II",                                 slug: "word-search-ii",                                category: "trie", difficulty: "Hard"   },
+  { id: 648,  title: "Replace Words",                                  slug: "replace-words",                                 category: "trie", difficulty: "Medium" },
+  { id: 1268, title: "Search Suggestions System",                      slug: "search-suggestions-system",                     category: "trie", difficulty: "Medium" },
+]} />

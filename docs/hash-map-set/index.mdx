@@ -1,0 +1,84 @@
+---
+id: hash-map-set-index
+title: "Hash Map / Set"
+sidebar_label: "Hash Map / Set"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import HashMapDiagram from '@site/src/components/DSA/HashMapDiagram';
+
+<CategoryHeader
+  emoji="🗂"
+  title="Hash Map / Set"
+  description="Hash-based data structures that provide O(1) average-case lookup, insertion, and deletion. A Hash Map (Dictionary) maps keys to values; a Hash Set stores keys only for membership testing. Together they eliminate the need for nested loops in a huge class of array and string problems."
+  tags={["O(1) Lookup", "Frequency Count", "Complement Pattern", "Grouping", "Membership"]}
+/>
+
+<SectionHeader n={1} title="What is a Hash Map / Set?" />
+
+Both structures are backed by a **hash table**: an array of buckets indexed by `hash(key) % capacity`. A **good hash function** distributes keys uniformly so that each bucket holds ≈ 1 entry, giving O(1) average performance.
+
+**Key properties:**
+
+| Property | Hash Map (Dictionary) | Hash Set |
+|---|---|---|
+| Stores | key → value pairs | keys only |
+| Lookup | O(1) average | O(1) average |
+| Insert | O(1) average | O(1) average |
+| Delete | O(1) average | O(1) average |
+| Use case | Frequency count, complement lookup, grouping | Membership test, duplicate detection, visited tracking |
+| Swift type | `Dictionary` | `Set` |
+
+<Callout type="amber" label="Key Constraint">
+  Hash map operations are O(1) **on average** but O(n) in the worst case (all keys collide into one bucket). For problems requiring guaranteed worst-case O(log n) lookups, use a balanced BST (Swift's `SortedDictionary` via swift-collections) instead.
+</Callout>
+
+<HashMapDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Hash function** | Maps a key to a bucket index: `index = hash(key) % capacity` |
+| **Collision** | Two different keys map to the same bucket |
+| **Chaining** | Resolve collisions by storing a linked list of entries in each bucket |
+| **Open addressing** | Resolve collisions by probing to the next free bucket |
+| **Load factor** | `n / capacity` — when this exceeds a threshold (~0.75) the table resizes |
+| **Frequency map** | `[Element: Int]` dictionary that counts occurrences of each element |
+| **Complement pattern** | Store seen elements; check if `target - current` is already in the map (Two Sum) |
+| **Grouping** | Use a derived key (sorted chars, sorted digits) as map key to group anagrams or equivalents |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Hash Map and Hash Set"
+    description="Core operations, frequency counting, the complement lookup pattern, grouping with derived keys, and when to choose Map vs Set. Covers all hash-table-backed problem patterns."
+    href="/hash-map-set/hash-map-set"
+    time="O(n) typical"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If you are about to write a nested loop to check every pair or search for a complement — stop and ask: "can I store what I've seen so far in a hash map/set to make this O(1)?" Almost always yes.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 1,    title: "Two Sum",                           slug: "two-sum",                            category: "hash-map-set", difficulty: "Easy" },
+  { id: 13,   title: "Roman to Integer",                  slug: "roman-to-integer",                   category: "hash-map-set", difficulty: "Easy" },
+  { id: 36,   title: "Valid Sudoku",                      slug: "valid-sudoku",                       category: "hash-map-set", difficulty: "Medium" },
+  { id: 49,   title: "Group Anagrams",                    slug: "group-anagrams",                     category: "hash-map-set", difficulty: "Medium" },
+  { id: 73,   title: "Set Matrix Zeroes",                 slug: "set-matrix-zeroes",                  category: "hash-map-set", difficulty: "Medium" },
+  { id: 242,  title: "Valid Anagram",                     slug: "valid-anagram",                      category: "hash-map-set", difficulty: "Easy" },
+  { id: 290,  title: "Word Pattern",                      slug: "word-pattern",                       category: "hash-map-set", difficulty: "Easy" },
+  { id: 383,  title: "Ransom Note",                       slug: "ransom-note",                        category: "hash-map-set", difficulty: "Easy" },
+  { id: 2215, title: "Find the Difference of Two Arrays", slug: "find-the-difference-of-two-arrays",  category: "hash-map-set", difficulty: "Easy" },
+]} />

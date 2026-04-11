@@ -1,0 +1,78 @@
+---
+id: trie-index
+title: "Trie"
+sidebar_label: "Trie"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import TrieStructureDiagram from '@site/src/components/DSA/TrieStructureDiagram';
+
+<CategoryHeader
+  emoji="🌳"
+  title="Trie"
+  description="A tree where each edge is a character, so paths from root to terminal nodes spell out stored words. Insert, search, and prefix-check all run in O(L) where L is the word length — independent of how many words are stored."
+  tags={["Prefix Tree", "String Search", "Autocomplete", "O(L) Operations"]}
+/>
+
+<SectionHeader n={1} title="What is a Trie?" />
+
+A **trie** (prefix tree) stores strings character by character. Each node represents one character position; children represent possible next characters. A node marked `isEnd = true` signals that the path from root to that node forms a complete word.
+
+**Key properties:**
+
+| Property | Detail |
+|---|---|
+| **Insert** | Follow / create one node per character — O(L) |
+| **Search (exact)** | Traverse character by character; check `isEnd` at the last node — O(L) |
+| **StartsWith (prefix)** | Same traversal without the `isEnd` check — O(L) |
+| **Space** | O(SIGMA · N · L) worst case — SIGMA = alphabet size, N = word count, L = avg length |
+| **Advantage over hash map** | Supports prefix queries and autocomplete in O(L); hash map needs O(N) scan |
+
+<Callout type="amber" label="Key Constraint">
+  A trie node needs one child slot per possible character. For lowercase English only, a `[Character: TrieNode]` dictionary or a fixed 26-element array works. Using a dictionary is safer for arbitrary alphabets; the fixed array is faster in practice.
+</Callout>
+
+<TrieStructureDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Root** | The top-level node; stores no character itself |
+| **Edge** | The character label on the path from parent to child |
+| **Terminal / word-end** | A node where `isEnd = true` — a complete word ends here |
+| **Prefix** | Any path from root that does not require `isEnd` — all words sharing a prefix pass through the same nodes |
+| **TrieNode** | The building block: a dictionary (or array) of children + an `isEnd` flag |
+| **SIGMA** | The alphabet size — 26 for lowercase English |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Trie"
+    description="The core prefix-tree data structure: TrieNode with children map and isEnd flag. Covers insert, exact search, prefix search, wildcard matching (. matches any char), and word pruning."
+    href="/trie/trie"
+    time="O(L) per operation"
+    space="O(SIGMA · N · L)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Use a trie whenever the problem involves **common prefixes**, **autocomplete**, **word lookup by prefix**, or **prefix pruning during search**. If every query is exact lookup with no prefix structure, a hash set is simpler.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 14,   title: "Longest Common Prefix",                         slug: "longest-common-prefix",                         category: "trie", difficulty: "Easy"   },
+  { id: 208,  title: "Implement Trie (Prefix Tree)",                  slug: "implement-trie-prefix-tree",                    category: "trie", difficulty: "Medium" },
+  { id: 211,  title: "Design Add and Search Words Data Structure",     slug: "design-add-and-search-words-data-structure",    category: "trie", difficulty: "Medium" },
+  { id: 212,  title: "Word Search II",                                 slug: "word-search-ii",                                category: "trie", difficulty: "Hard"   },
+  { id: 648,  title: "Replace Words",                                  slug: "replace-words",                                 category: "trie", difficulty: "Medium" },
+  { id: 1268, title: "Search Suggestions System",                      slug: "search-suggestions-system",                     category: "trie", difficulty: "Medium" },
+]} />

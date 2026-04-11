@@ -1,0 +1,73 @@
+---
+id: math-index
+title: "Math"
+sidebar_label: "Math"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import MathPatternsDiagram from '@site/src/components/DSA/MathPatternsDiagram';
+
+<CategoryHeader
+  emoji="🔢"
+  title="Math"
+  description="Problems solved primarily with arithmetic, number theory, and integer properties — no complex data structures required. The key skill is recognising which mathematical primitive (modulo, GCD, digit extraction, or integer reversal) reduces the problem to a one-liner."
+  tags={["Modulo", "Digit Manipulation", "GCD", "Integer Properties"]}
+/>
+
+<SectionHeader n={1} title="What is a Math Problem?" />
+
+Math problems on LeetCode rely on properties of integers rather than on data-structure traversal. They are usually O(log n) or O(n) in complexity, but the insight is purely mathematical.
+
+**Four recurring primitives:**
+
+| Primitive | Swift idiom | Typical use |
+|---|---|---|
+| **Modulo / remainder** | `n % k` | FizzBuzz, cycle detection, circular indexing |
+| **Digit extraction** | `n % 10`, `n / 10` | Palindrome number, digit sum, reverse integer |
+| **GCD (Euclidean)** | `gcd(a, b)` via `while b != 0` | GCD of strings, coprime checks |
+| **Integer palindrome** | Reverse half, compare | Palindrome Number without string conversion |
+
+<Callout type="amber" label="Key Constraint">
+  Most math problems have an **integer overflow trap**. In Swift, `Int` is 64-bit on all modern platforms, so `Int.max ≈ 9.2 × 10¹⁸` — this covers the vast majority of LeetCode constraints. When a problem says values can exceed `2³¹ - 1`, check whether the intermediate computation overflows `Int` before reaching the result.
+</Callout>
+
+<MathPatternsDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Modulo** | `a % b` — the remainder after dividing a by b; always in `[0, b-1]` for positive b |
+| **Integer division** | `a / b` — truncates toward zero in Swift (`-7 / 2 == -3`, not `-4`) |
+| **GCD** | Greatest common divisor — largest integer dividing both a and b with no remainder |
+| **Digit extraction** | Repeatedly taking `n % 10` to read the last digit, then `n / 10` to shift right |
+| **Overflow** | Result exceeds the type's representable range; Swift traps on overflow by default |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Math Patterns"
+    description="Modulo arithmetic, digit extraction, GCD via Euclidean algorithm, and integer palindrome check without string conversion. The four primitives that cover nearly every LeetCode math problem."
+    href="/math/math-patterns"
+    time="O(log n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem works entirely on **integer values** with no array or string structure — modulo, digit sums, divisibility, GCD — reach for a math primitive before considering any data structure.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 9,    title: "Palindrome Number",                     slug: "palindrome-number",                     category: "math", difficulty: "Easy"   },
+  { id: 412,  title: "Fizz Buzz",                             slug: "fizz-buzz",                             category: "math", difficulty: "Easy"   },
+  { id: 1071, title: "Greatest Common Divisor of Strings",    slug: "greatest-common-divisor-of-strings",    category: "math", difficulty: "Easy"   },
+]} />

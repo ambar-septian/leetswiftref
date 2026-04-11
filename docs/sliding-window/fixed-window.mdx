@@ -1,0 +1,175 @@
+---
+id: fixed-window
+title: "Fixed Window"
+sidebar_label: "Fixed Window"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import FixedWindowDiagram from '@site/src/components/DSA/FixedWindowDiagram';
+
+<AlgoPageHeader
+  title="Fixed Window"
+  description="A sliding window of constant size k. Initialise the first window in O(k), then slide one position at a time: add the incoming element at R and remove the outgoing element at L. Each element enters and leaves at most once, giving O(n) total time."
+  category="Sliding Window"
+  categoryHref="/sliding-window"
+  time="O(n)"
+  space="O(1) or O(k)"
+  tags={["Constant k", "Subarray", "Substring", "Frequency Map"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Fixed-window problems have this shape: **"given an array and a window size k, compute something over every contiguous subarray of length k."** The naive approach recomputes from scratch each step in O(k), giving O(n·k) total. The sliding window reduces this to O(n) by maintaining a running aggregate:
+
+```
+add element at R (right edge enters)
+remove element at L (left edge exits)
+L = R - k + 1 (left edge of current window)
+```
+
+<Callout type="cyan" label="Core Insight">
+  The transition between adjacent windows of size k differs by exactly two elements: one enters on the right, one exits on the left. For a sum this is `windowSum += nums[R] - nums[R - k]`. For a frequency map it is `freq[in] += 1; freq[out] -= 1`. Maintaining the aggregate incrementally costs O(1) per step, not O(k).
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Window initialisation** | Sum (or frequency map) of the first k elements before the slide loop |
+| **Slide step** | `windowSum += nums[R] - nums[R - k]` — add incoming, subtract outgoing |
+| **L computation** | `L = R - k + 1` — derived from R; no separate L pointer needed |
+| **Frequency map window** | Track character counts inside window; compare to target count map in O(1) via a `matches` counter |
+| **Matches counter** | Integer tracking how many characters currently have the correct frequency — avoids O(26) map comparison each step |
+
+<Callout type="amber" label="Key Constraint">
+  The window size k must be **known upfront and fixed**. If k changes, or the problem asks for the optimal k ("find the longest window"), use the variable-window pattern instead.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<FixedWindowDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Maximum sum of k consecutive elements:**
+
+```swift
+func maxSumSubarray(_ nums: [Int], _ k: Int) -> Int {
+    var windowSum = nums[0..<k].reduce(0, +)  // initialise first window
+    var best = windowSum
+    for R in k..<nums.count {
+        windowSum += nums[R] - nums[R - k]    // slide: add incoming, remove outgoing
+        best = max(best, windowSum)
+    }
+    return best
+}
+```
+
+**Count subarrays of size k whose average ≥ threshold (LeetCode 1343):**
+
+```swift
+func numOfSubarrays(_ arr: [Int], _ k: Int, _ threshold: Int) -> Int {
+    let target = threshold * k
+    var windowSum = arr[0..<k].reduce(0, +)
+    var count = windowSum >= target ? 1 : 0
+    for R in k..<arr.count {
+        windowSum += arr[R] - arr[R - k]
+        if windowSum >= target { count += 1 }
+    }
+    return count
+}
+```
+
+**Find all anagrams using a frequency-map window (LeetCode 438):**
+
+```swift
+func findAnagrams(_ s: String, _ p: String) -> [Int] {
+    let s = Array(s), p = Array(p)
+    guard s.count >= p.count else { return [] }
+    let k = p.count
+    var need = [Character: Int]()
+    var have = [Character: Int]()
+    for ch in p { need[ch, default: 0] += 1 }
+
+    var matches = 0           // chars where have[ch] == need[ch]
+    var result  = [Int]()
+
+    // Initialise first window
+    for i in 0..<k {
+        let ch = s[i]
+        have[ch, default: 0] += 1
+        if have[ch] == need[ch] { matches += 1 }
+    }
+    if matches == need.count { result.append(0) }
+
+    for R in k..<s.count {
+        // Add incoming
+        let inCh = s[R]
+        have[inCh, default: 0] += 1
+        if have[inCh] == need[inCh] { matches += 1 }
+        else if have[inCh] == (need[inCh] ?? 0) + 1 { matches -= 1 }  // overshot
+
+        // Remove outgoing
+        let outCh = s[R - k]
+        if have[outCh] == need[outCh] { matches -= 1 }                // was correct, now short
+        have[outCh]! -= 1
+        if have[outCh] == need[outCh] { matches += 1 }                // now correct again
+
+        let L = R - k + 1
+        if matches == need.count { result.append(L) }
+    }
+    return result
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `arr[0..<k].reduce(0, +)` to initialise the first window cleanly. The `matches` counter is the key optimisation for character-frequency windows: instead of comparing the full 26-character map each step (O(26)), track how many characters are currently at the required count. Increment when a character hits its target, decrement when it goes above or falls below. When `matches == need.count`, the window is an anagram.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Initialising the first window costs O(k). The slide loop runs n - k times, each iteration doing O(1) work (update sum or frequency map). Total: O(k) + O(n - k) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) or O(k)">
+  For sum-based windows: O(1) extra space (just the running sum). For frequency-map windows: O(alphabet size) — O(26) for lowercase letters, O(k) for arbitrary elements.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Max / min / sum window',     time: 'O(n)',    space: 'O(1)' },
+    { approach: 'Anagram / permutation check', time: 'O(n)',    space: 'O(26) = O(1)' },
+    { approach: 'Count windows matching k',   time: 'O(n)',    space: 'O(1)' },
+    { approach: 'Repeated k-length substrings (hashing)', time: 'O(n)', space: 'O(n)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Fixed window when k is given explicitly. If the problem mentions "exactly k elements", "every subarray of length k", or "window of size k" — that's a fixed-window signal. Variable window when the problem asks for the optimal k.
+</Callout>
+
+| Problem shape | Fixed window? |
+|---|---|
+| Maximum/minimum sum over all k-length subarrays | Yes |
+| Count k-length windows satisfying a threshold | Yes |
+| Find all anagrams / permutations of p in s | Yes (k = p.count) |
+| Repeated DNA sequences of length k | Yes |
+| Shortest subarray with sum ≥ target | No — variable window |
+| Longest substring with at most k distinct chars | No — variable window |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 187,  title: "Repeated DNA Sequences",                                                    slug: "repeated-dna-sequences",                                                    category: "sliding-window", difficulty: "Medium" },
+  { id: 438,  title: "Find All Anagrams in a String",                                             slug: "find-all-anagrams-in-a-string",                                             category: "sliding-window", difficulty: "Medium" },
+  { id: 567,  title: "Permutation in String",                                                     slug: "permutation-in-string",                                                     category: "sliding-window", difficulty: "Medium" },
+  { id: 643,  title: "Maximum Average Subarray I",                                                slug: "maximum-average-subarray-i",                                                category: "sliding-window", difficulty: "Easy" },
+  { id: 1343, title: "Number of Sub-arrays of Size K and Average Greater Than or Equal to Threshold", slug: "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold", category: "sliding-window", difficulty: "Medium" },
+  { id: 1456, title: "Maximum Number of Vowels in a Substring of Given Length",                   slug: "maximum-number-of-vowels-in-a-substring-of-given-length",                   category: "sliding-window", difficulty: "Medium" },
+]} />

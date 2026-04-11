@@ -40,8 +40,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '➕ Prefix Sum',
-      link: { type: 'generated-index', slug: '/prefix-sum' },
+      link: { type: 'doc', id: 'prefix-sum/prefix-sum-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'prefix-sum/prefix-sum',
+          ],
+        },
         'prefix-sum/238-product-of-array-except-self',
         'prefix-sum/724-find-pivot-index',
         'prefix-sum/1480-running-sum-of-1d-array',
@@ -51,8 +59,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🗂 Hash Map / Set',
-      link: { type: 'generated-index', slug: '/hash-map-set' },
+      link: { type: 'doc', id: 'hash-map-set/hash-map-set-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'hash-map-set/hash-map-set',
+          ],
+        },
         'hash-map-set/1-two-sum',
         'hash-map-set/13-roman-to-integer',
         'hash-map-set/36-valid-sudoku',
@@ -67,8 +83,17 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '↔️ Two Pointers',
-      link: { type: 'generated-index', slug: '/two-pointers' },
+      link: { type: 'doc', id: 'two-pointers/two-pointers-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'two-pointers/opposite-ends',
+            'two-pointers/same-direction',
+          ],
+        },
         'two-pointers/11-container-with-most-water',
         'two-pointers/1768-merge-strings-alternately',
         'two-pointers/26-remove-duplicates-from-sorted-array',
@@ -83,8 +108,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔍 Binary Search',
-      link: { type: 'generated-index', slug: '/binary-search' },
+      link: { type: 'doc', id: 'binary-search/binary-search-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'binary-search/binary-search',
+          ],
+        },
         'binary-search/34-find-first-and-last-position-of-element-in-sorted-array',
         'binary-search/162-find-peak-element',
         'binary-search/222-count-complete-tree-nodes',
@@ -97,8 +130,17 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🪟 Sliding Window',
-      link: { type: 'generated-index', slug: '/sliding-window' },
+      link: { type: 'doc', id: 'sliding-window/sliding-window-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'sliding-window/fixed-window',
+            'sliding-window/variable-window',
+          ],
+        },
         'sliding-window/3-longest-substring-without-repeating-characters',
         'sliding-window/187-repeated-dna-sequences',
         'sliding-window/209-minimum-size-subarray-sum',
@@ -114,8 +156,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔢 Math',
-      link: { type: 'generated-index', slug: '/math' },
+      link: { type: 'doc', id: 'math/math-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'math/math-patterns',
+          ],
+        },
         'math/9-palindrome-number',
         'math/412-fizz-buzz',
         'math/1071-greatest-common-divisor-of-strings',
@@ -124,8 +174,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔤 String',
-      link: { type: 'generated-index', slug: '/string' },
+      link: { type: 'doc', id: 'string/string-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'string/string-patterns',
+          ],
+        },
         'string/2490-circular-sentence',
         'string/3110-score-of-a-string',
       ],
@@ -133,8 +191,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌳 Trie',
-      link: { type: 'generated-index', slug: '/trie' },
+      link: { type: 'doc', id: 'trie/trie-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'trie/trie',
+          ],
+        },
         'trie/14-longest-common-prefix',
         'trie/208-implement-trie-prefix-tree',
         'trie/211-design-add-and-search-words-data-structure',
@@ -146,8 +212,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔗 Linked List',
-      link: { type: 'generated-index', slug: '/linked-list' },
+      link: { type: 'doc', id: 'linked-list/linked-list-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'linked-list/linked-list-patterns',
+          ],
+        },
         'linked-list/2-add-two-numbers',
         'linked-list/19-remove-nth-node-from-end-of-list',
         'linked-list/21-merge-two-sorted-lists',
@@ -180,16 +254,32 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📬 Queue',
-      link: { type: 'generated-index', slug: '/queue' },
+      link: { type: 'doc', id: 'queue/queue-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'queue/queue',
+          ],
+        },
         'queue/933-number-of-recent-calls',
       ],
     },
     {
       type: 'category',
       label: '🏔 Heap',
-      link: { type: 'generated-index', slug: '/heap' },
+      link: { type: 'doc', id: 'heap/heap-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'heap/heap',
+          ],
+        },
         'heap/215-kth-largest-element-in-an-array',
         'heap/2336-smallest-number-in-infinite-set',
         'heap/2542-maximum-subsequence-score',

@@ -1,0 +1,146 @@
+---
+id: queue
+title: "Queue"
+sidebar_label: "Queue"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import QueueDiagram from '@site/src/components/DSA/QueueDiagram';
+
+<AlgoPageHeader
+  title="Queue"
+  description="A FIFO container backed by a Swift array with a front-index pointer for O(1) dequeue. Queues drive BFS level-order traversal and recent-calls sliding-window counting. When the window also needs O(1) maximum/minimum, upgrade to a monotonic deque."
+  category="Queue"
+  categoryHref="/queue"
+  time="O(1) amortised"
+  space="O(n)"
+  tags={["FIFO", "Index Pointer", "BFS", "Sliding Window Count"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A queue guarantees that items are processed in the order they were inserted. This property is essential for:
+- **BFS** — process all nodes at depth d before any at depth d+1.
+- **Sliding window count** — track how many events fall within a recent time window by dequeuing expired entries from the front.
+- **Producer / consumer simulation** — process jobs in arrival order.
+
+<Callout type="cyan" label="Core Insight">
+  Swift's `Array.removeFirst()` is O(n) because it shifts all remaining elements. The fix is an **index pointer**: keep the array and advance `front += 1` instead of removing. This gives O(1) amortised dequeue with no extra data structure. For problems that require many dequeues inside a hot loop, this matters.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Index pointer** | `var front = 0` — increment instead of removing; O(1) dequeue |
+| **`queue[front]`** | Peek at the front element without removing |
+| **Sliding window count** | Dequeue entries whose timestamp has expired; count remaining entries |
+| **BFS queue** | Each level: dequeue all nodes at current depth, enqueue their children |
+| **Monotonic deque** | Elements kept in sorted order; remove from back before adding if order violated |
+
+<Callout type="amber" label="Key Constraint">
+  The index-pointer trick trades O(n) wasted space (the consumed front of the array) for O(1) dequeue. This is fine for problems where the queue drains completely. If the queue lives for the entire program lifetime and grows unboundedly, prefer a linked-list deque or `Collections.Deque`.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<QueueDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Index-pointer queue — O(1) dequeue without removeFirst:**
+
+```swift
+var queue = [Int]()
+var front = 0
+
+// Enqueue
+queue.append(x)
+
+// Dequeue
+let val = queue[front]
+front += 1
+
+// Peek
+let top = queue[front]
+
+// Is empty
+front == queue.count
+```
+
+**Sliding window count — number of recent calls in last 3000 ms (LeetCode 933):**
+
+```swift
+class RecentCounter {
+    private var queue = [Int]()
+    private var front = 0
+
+    func ping(_ t: Int) -> Int {
+        queue.append(t)
+        while queue[front] < t - 3000 {  // expire old entries
+            front += 1
+        }
+        return queue.count - front        // elements in window [t-3000, t]
+    }
+}
+```
+
+**BFS level-order traversal (queue usage pattern):**
+
+```swift
+var queue = [root]
+var front = 0
+while front < queue.count {
+    let levelSize = queue.count - front   // nodes at current depth
+    for _ in 0..<levelSize {
+        let node = queue[front]; front += 1
+        if let left  = node.left  { queue.append(left)  }
+        if let right = node.right { queue.append(right) }
+    }
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Prefer the `front` index pattern over `removeFirst()` whenever the queue is consumed in a loop — `removeFirst()` is O(n) and can turn an O(n) BFS into O(n²). For the `RecentCounter` problem, `queue[front] < t - 3000` compares the oldest timestamp to the window boundary; once all expired entries are skipped, `queue.count - front` is the window size in O(1). Note that `front` never resets — the array grows monotonically and old slots are just ignored.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1) amortised">
+  `append` is O(1) amortised (Swift array doubles capacity). Advancing `front` is O(1). In the sliding-window pattern, each element enters and leaves the window at most once — so n pings cost O(n) total, or O(1) amortised per ping.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The queue array grows to hold all elements that have been enqueued but not yet evicted. In the sliding-window pattern, at most W elements are alive at any time (W = window size), but the array never shrinks — worst-case O(n) for n total calls. Using a true circular buffer or linked-list deque would keep it at O(W).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Array + removeFirst (naive)',      time: 'O(n) per dequeue', space: 'O(n)', note: 'Shifts all elements — avoid in loops' },
+    { approach: 'Array + front index pointer',      time: 'O(1) amortised',   space: 'O(n)', note: 'Best Swift default', highlight: true },
+    { approach: 'Linked list (manual)',             time: 'O(1) guaranteed',  space: 'O(n)', note: 'O(1) dequeue, but higher constant' },
+    { approach: 'Collections.Deque (Swift pkg)',    time: 'O(1) guaranteed',  space: 'O(n)', note: 'True O(1) both ends; requires package' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Use a queue when items must be processed in arrival order. Use BFS (queue + level-size loop) for shortest paths and level-order traversal. Upgrade to a monotonic deque when you additionally need the max or min within the current window.
+</Callout>
+
+| Problem shape | Queue type |
+|---|---|
+| Count events in a sliding time window | Array + front pointer, dequeue expired |
+| BFS / level-order traversal | Array + front pointer, enqueue children |
+| Sliding window maximum | Monotonic deque (see Monotonic Stack category) |
+| Design a queue from stacks | Two stacks (amortised O(1) per op) |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 933, title: "Number of Recent Calls",  slug: "number-of-recent-calls",  category: "queue", difficulty: "Easy" },
+]} />

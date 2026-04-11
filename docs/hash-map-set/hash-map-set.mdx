@@ -1,0 +1,183 @@
+---
+id: hash-map-set
+title: "Hash Map and Hash Set"
+sidebar_label: "Hash Map & Hash Set"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import HashMapDiagram from '@site/src/components/DSA/HashMapDiagram';
+
+<AlgoPageHeader
+  title="Hash Map and Hash Set"
+  description="Hash-table-backed structures that give O(1) average lookup, insert, and delete. A Hash Map (Dictionary) pairs keys with values; a Hash Set records keys alone for membership testing. They eliminate nested loops across a huge class of array and string problems."
+  category="Hash Map / Set"
+  categoryHref="/hash-map-set"
+  time="O(n) typical"
+  space="O(n)"
+  tags={["Dictionary", "Set", "Frequency Count", "Complement", "Grouping"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Most hash map problems fall into one of four patterns:
+
+1. **Frequency count** — count how many times each element appears (anagram, ransom note).
+2. **Complement / seen-so-far lookup** — store elements as you scan; check whether `target - x` has been seen (Two Sum).
+3. **Grouping** — derive a canonical key from each element (sort its characters, sort its digits) and group elements that share it (Group Anagrams).
+4. **Bidirectional mapping** — maintain two maps (word ↔ pattern) to enforce one-to-one correspondence (Word Pattern).
+
+<Callout type="cyan" label="Core Insight">
+  A hash map trades **space for time**. Instead of re-scanning what you have already seen (O(n) per check), you store it in a map and look it up in O(1). The pattern is always: "scan once, record as you go, answer in O(1) using what you recorded."
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Hash function** | Maps any key to a bucket index; Swift's `Hashable` protocol |
+| **Load factor** | `count / capacity`; Swift's Dictionary resizes automatically around 0.75 |
+| **Collision** | Two keys map to the same bucket; resolved by chaining in Swift's stdlib |
+| **Frequency map** | `[Element: Int]` — count occurrences; `map[x, default: 0] += 1` |
+| **Complement pattern** | `seen[target - x]` — O(1) answer to "have I seen the other half?" |
+| **Canonical key** | A normalised representation used to group equivalents (sorted chars → group anagrams) |
+| **Bidirectional map** | Two dictionaries `word→char` and `char→word` to enforce bijection (Word Pattern) |
+
+<Callout type="amber" label="Key Constraint">
+  Swift `Dictionary` and `Set` require keys to conform to **`Hashable`**. Built-in types (`Int`, `String`, `Character`, `Array` of hashable types) are hashable. Custom structs need an explicit `Hashable` conformance. When using arrays as dictionary keys, convert them to `String` or a tuple — raw `[Int]` is not `Hashable` in Swift.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<HashMapDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Frequency count — the universal pattern:**
+
+```swift
+// Count character frequencies
+var freq = [Character: Int]()
+for ch in s {
+    freq[ch, default: 0] += 1
+}
+```
+
+**Complement / seen-so-far (Two Sum):**
+
+```swift
+func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
+    var seen = [Int: Int]()  // value → index
+    for (i, n) in nums.enumerated() {
+        let complement = target - n
+        if let j = seen[complement] {
+            return [j, i]
+        }
+        seen[n] = i
+    }
+    return []
+}
+```
+
+**Grouping with a canonical key (Group Anagrams):**
+
+```swift
+func groupAnagrams(_ strs: [String]) -> [[String]] {
+    var groups = [[Character]: [String]]()
+    for s in strs {
+        let key = s.sorted()    // canonical key
+        groups[key, default: []].append(s)
+    }
+    return Array(groups.values)
+}
+```
+
+**Bidirectional mapping (Word Pattern):**
+
+```swift
+func wordPattern(_ pattern: String, _ s: String) -> Bool {
+    let words = s.split(separator: " ").map(String.init)
+    guard pattern.count == words.count else { return false }
+    var charToWord = [Character: String]()
+    var wordToChar = [String: Character]()
+    for (ch, word) in zip(pattern, words) {
+        if let mapped = charToWord[ch], mapped != word { return false }
+        if let mapped = wordToChar[word], mapped != ch { return false }
+        charToWord[ch] = word
+        wordToChar[word] = ch
+    }
+    return true
+}
+```
+
+**Hash Set — membership and de-duplication:**
+
+```swift
+// De-duplicate while preserving order
+func unique<T: Hashable>(_ arr: [T]) -> [T] {
+    var seen = Set<T>()
+    return arr.filter { seen.insert($0).inserted }
+}
+
+// Find elements only in one array (symmetric difference)
+let setA = Set(nums1)
+let setB = Set(nums2)
+let onlyInA = setA.subtracting(setB)
+let onlyInB = setB.subtracting(setA)
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `dict[key, default: 0] += 1` — the `default:` subscript variant reads the existing value or returns the default without inserting, making frequency counting a one-liner. `Set.insert(_:)` returns a tuple `(inserted: Bool, memberAfterInsert: T)` — the `inserted` flag is perfect for "filter to first occurrence only" patterns. Prefer `Set` over `[T: Bool]` for membership; it is more expressive and slightly faster.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over n elements, with O(1) average hash map operations at each step, gives O(n) total. The grouping pattern adds a factor of O(k log k) per element where k is the element size (sorting characters for the canonical key), giving O(n · k log k). For fixed-alphabet strings (ASCII), this is still O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The hash map or set stores at most n entries — O(n). For frequency counting over a fixed alphabet (26 letters, 10 digits), the map is bounded by a constant, effectively O(1) space.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Lookup / insert / delete (average)', time: 'O(1)',        space: 'O(n)' },
+    { approach: 'Lookup / insert / delete (worst)',   time: 'O(n)',        space: 'O(n)' },
+    { approach: 'Frequency count (n elements)',        time: 'O(n)',        space: 'O(n)' },
+    { approach: 'Group anagrams (n strings, len k)',   time: 'O(n·k log k)', space: 'O(n·k)' },
+    { approach: 'Two Sum (complement pattern)',         time: 'O(n)',        space: 'O(n)' },
+    { approach: 'Set membership test',                 time: 'O(1) avg',    space: 'O(n)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Any time you are about to write a nested loop to search for an element or check a condition — ask first: "can I record what I've seen in a map/set and look it up in O(1)?" If yes, the hash map eliminates the inner loop entirely.
+</Callout>
+
+| Scenario | Structure | Pattern |
+|---|---|---|
+| Count element frequencies | `[T: Int]` | `map[x, default: 0] += 1` |
+| Two-element pair summing to target | `[Int: Int]` | Complement lookup |
+| Group elements by a shared property | `[Key: [T]]` | Canonical key grouping |
+| Enforce one-to-one mapping | Two `[T: U]` maps | Bidirectional check |
+| Deduplicate or test membership | `Set<T>` | `set.contains(x)` |
+| Track visited nodes in graph/grid | `Set<T>` | `visited.insert(node)` |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 1,    title: "Two Sum",                           slug: "two-sum",                            category: "hash-map-set", difficulty: "Easy" },
+  { id: 13,   title: "Roman to Integer",                  slug: "roman-to-integer",                   category: "hash-map-set", difficulty: "Easy" },
+  { id: 36,   title: "Valid Sudoku",                      slug: "valid-sudoku",                       category: "hash-map-set", difficulty: "Medium" },
+  { id: 49,   title: "Group Anagrams",                    slug: "group-anagrams",                     category: "hash-map-set", difficulty: "Medium" },
+  { id: 73,   title: "Set Matrix Zeroes",                 slug: "set-matrix-zeroes",                  category: "hash-map-set", difficulty: "Medium" },
+  { id: 242,  title: "Valid Anagram",                     slug: "valid-anagram",                      category: "hash-map-set", difficulty: "Easy" },
+  { id: 290,  title: "Word Pattern",                      slug: "word-pattern",                       category: "hash-map-set", difficulty: "Easy" },
+  { id: 383,  title: "Ransom Note",                       slug: "ransom-note",                        category: "hash-map-set", difficulty: "Easy" },
+  { id: 2215, title: "Find the Difference of Two Arrays", slug: "find-the-difference-of-two-arrays",  category: "hash-map-set", difficulty: "Easy" },
+]} />

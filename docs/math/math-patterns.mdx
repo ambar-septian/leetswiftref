@@ -1,0 +1,139 @@
+---
+id: math-patterns
+title: "Math Patterns"
+sidebar_label: "Math Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import MathPatternsDiagram from '@site/src/components/DSA/MathPatternsDiagram';
+
+<AlgoPageHeader
+  title="Math Patterns"
+  description="Four arithmetic primitives cover almost every LeetCode math problem: modulo for remainders and cycles, digit extraction for working with individual digits, the Euclidean algorithm for GCD, and half-reversal for integer palindromes. All run in O(log n) time and O(1) space."
+  category="Math"
+  categoryHref="/math"
+  time="O(log n)"
+  space="O(1)"
+  tags={["Modulo", "Digit Extraction", "GCD", "Palindrome"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Math problems share a common shape: the answer follows directly from an arithmetic property of the input, with no traversal or search required. The challenge is identifying **which primitive** applies.
+
+When to reach for a math pattern:
+- The input is a single integer or two integers (no arrays).
+- The problem asks about divisibility, remainders, or digit structure.
+- The problem mentions "without extra space" — digit work is inherently O(1).
+- String conversion is explicitly forbidden (palindrome number, reverse integer).
+
+<Callout type="cyan" label="Core Insight">
+  Every digit-based problem reduces to two operations repeated in a loop: `n % 10` extracts the last digit and `n / 10` discards it. Every divisibility problem reduces to GCD. Every integer palindrome reduces to comparing the number to its reversed half. Recognising the primitive is the entire solution.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **`n % 10`** | Last digit of n; use inside `while n > 0` loop to peel digits right-to-left |
+| **`n / 10`** | Shift n one digit to the right (integer division truncates) |
+| **Euclidean GCD** | `gcd(a, b) = gcd(b, a % b)`; base case `gcd(a, 0) = a` |
+| **Half-reversal** | Reverse only the second half of the number; stop when reversed >= remaining |
+| **Negative check** | Negative numbers are never palindromes; numbers ending in 0 (except 0 itself) are not |
+
+<Callout type="amber" label="Key Constraint">
+  Swift's integer division truncates toward zero: `-7 / 2 == -3`, not `-4`. For digit extraction, always work with the absolute value of the input to avoid negative remainder surprises (`-123 % 10 == -3` in Swift, not `7`).
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<MathPatternsDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Modulo — FizzBuzz:**
+
+```swift
+func fizzBuzz(_ n: Int) -> [String] {
+    (1...n).map { i in
+        if i % 15 == 0      { return "FizzBuzz" }
+        else if i % 3 == 0  { return "Fizz" }
+        else if i % 5 == 0  { return "Buzz" }
+        else                 { return String(i) }
+    }
+}
+```
+
+**Digit extraction — integer palindrome without string conversion:**
+
+```swift
+func isPalindrome(_ x: Int) -> Bool {
+    if x < 0 || (x % 10 == 0 && x != 0) { return false }
+    var num = x, reversed = 0
+    while num > reversed {           // stop at the halfway point
+        reversed = reversed * 10 + num % 10
+        num /= 10
+    }
+    return num == reversed || num == reversed / 10  // even / odd digit count
+}
+```
+
+**GCD (Euclidean) — greatest common divisor of strings:**
+
+```swift
+func gcdOfStrings(_ str1: String, _ str2: String) -> String {
+    // A string t divides both iff concatenation is commutative
+    guard str1 + str2 == str2 + str1 else { return "" }
+    func gcd(_ a: Int, _ b: Int) -> Int { b == 0 ? a : gcd(b, a % b) }
+    let len = gcd(str1.count, str2.count)
+    return String(str1.prefix(len))
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Swift has no built-in `gcd` in the standard library (it's in `Foundation` as `__gcd` — avoid). Write the two-line recursive version directly. For digit extraction, use `var` copies of the input since Swift function parameters are `let` by default. The `(1...n).map` idiom for FizzBuzz is idiomatic Swift and avoids an explicit for loop and a mutable array.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+  Digit extraction loops while `n > 0`, dividing by 10 each iteration — that is `log₁₀(n)` steps. The Euclidean GCD also runs in O(log(min(a,b))) by Lamé's theorem (each two steps reduce the argument by at least half). FizzBuzz is the exception at O(n) since it must emit n outputs.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  All patterns use only a fixed number of integer variables. No auxiliary arrays or recursion stacks — the recursive GCD call depth is O(log n) but can trivially be written iteratively with `while b != 0`.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'FizzBuzz (modulo)',           time: 'O(n)',      space: 'O(n)', note: 'Output array is size n' },
+    { approach: 'Integer palindrome',          time: 'O(log n)',  space: 'O(1)', note: 'Loops over half the digits', highlight: true },
+    { approach: 'GCD (Euclidean)',             time: 'O(log n)',  space: 'O(1)', note: "Lame's theorem bound" },
+    { approach: 'GCD of strings',             time: 'O(n + m)',  space: 'O(1)', note: 'Concat check is O(n+m)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem is about the **numeric structure** of an integer (its digits, its divisors, its remainder when divided by k) — use a math primitive. If the input is an array or string of numbers, look at two pointers, prefix sum, or hash map first.
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| FizzBuzz, circular indexing, cycle detection | Modulo |
+| Reverse integer, digit sum, palindrome number | Digit extraction loop |
+| Common prefix length, divisibility by length | GCD |
+| Check if two strings share a repeating unit | Concatenation commutativity + GCD |
+| Count digits, leading zeros | `log10` or digit extraction |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 9,    title: "Palindrome Number",                     slug: "palindrome-number",                     category: "math", difficulty: "Easy" },
+  { id: 412,  title: "Fizz Buzz",                             slug: "fizz-buzz",                             category: "math", difficulty: "Easy" },
+  { id: 1071, title: "Greatest Common Divisor of Strings",    slug: "greatest-common-divisor-of-strings",    category: "math", difficulty: "Easy" },
+]} />

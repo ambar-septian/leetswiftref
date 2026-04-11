@@ -1,0 +1,72 @@
+---
+id: queue-index
+title: "Queue"
+sidebar_label: "Queue"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import QueueDiagram from '@site/src/components/DSA/QueueDiagram';
+
+<CategoryHeader
+  emoji="📬"
+  title="Queue"
+  description="A First-In First-Out (FIFO) data structure: elements are added at the rear and removed from the front. Queues power BFS level-order traversal, sliding window deques, and any problem that requires processing items in the order they arrive."
+  tags={["FIFO", "BFS", "Sliding Window", "O(1) Enqueue/Dequeue"]}
+/>
+
+<SectionHeader n={1} title="What is a Queue?" />
+
+A queue enforces ordering: the first element added is the first one removed. This FIFO discipline is the natural model for level-order traversal (process all nodes at depth d before any at depth d+1) and for "recent calls" / sliding-window-count problems.
+
+**Key properties:**
+
+| Property | Detail |
+|---|---|
+| **Enqueue (append)** | Add to rear — O(1) amortised with Swift `Array.append` |
+| **Dequeue (removeFirst)** | Remove from front — O(n) for `Array`, O(1) for linked-list or `Deque` |
+| **Peek** | Inspect front without removing — O(1) |
+| **FIFO guarantee** | Elements leave in exactly the order they entered |
+
+<Callout type="amber" label="Key Constraint">
+  Swift's built-in `Array.removeFirst()` is O(n) because it shifts all remaining elements. For problems requiring many dequeues (BFS, sliding window), use an **index pointer** instead of removing (`var front = 0; front += 1`) or use `Collections.Deque` from Swift Collections for true O(1) dequeue.
+</Callout>
+
+<QueueDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Enqueue** | Add an element to the rear of the queue |
+| **Dequeue** | Remove and return the element at the front |
+| **Peek / front** | Inspect the front element without removing it |
+| **FIFO** | First In, First Out — the defining property of a queue |
+| **Deque** | Double-ended queue — supports O(1) insert/remove at both ends |
+| **Monotonic deque** | A deque where elements are kept in sorted order; used for sliding window maximum |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Queue"
+    description="FIFO queue using Swift array with an index pointer (avoids O(n) removeFirst). Covers the recent-calls pattern, BFS level processing, and when to upgrade to a Deque for sliding window problems."
+    href="/queue/queue"
+    time="O(1) amortised"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Use a queue (or BFS) whenever the problem processes items in arrival order or level by level. Use a **monotonic deque** when you additionally need to track the maximum or minimum within a sliding window.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 933, title: "Number of Recent Calls",  slug: "number-of-recent-calls",  category: "queue", difficulty: "Easy" },
+]} />

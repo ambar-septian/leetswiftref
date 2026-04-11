@@ -1,0 +1,169 @@
+---
+id: same-direction
+title: "Same Direction"
+sidebar_label: "Same Direction"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import SameDirectionDiagram from '@site/src/components/DSA/SameDirectionDiagram';
+
+<AlgoPageHeader
+  title="Same Direction"
+  description="Slow (write) and fast (read) pointers both start at the left and advance rightward. The fast pointer scans every element; the slow pointer only advances when a valid element is found, overwriting in-place. Achieves O(n) time and O(1) space for partition and deduplication problems."
+  category="Two Pointers"
+  categoryHref="/two-pointers"
+  time="O(n)"
+  space="O(1)"
+  tags={["In-place", "Partition", "Deduplication", "Slow-Fast"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+The same-direction pattern maintains a clean **invariant**:
+
+> Everything at indices `[0, slow)` satisfies the condition (unique, non-zero, matching, etc.). Everything at `[slow, fast)` has been scanned and discarded. `fast` is the current element being inspected.
+
+At each step:
+- If `nums[fast]` is **valid** → write it to `nums[slow]`, advance `slow`, advance `fast`.
+- If `nums[fast]` is **invalid** (duplicate, zero, etc.) → skip: advance `fast` only.
+
+When `fast` reaches the end, `slow` is the count of valid elements.
+
+<Callout type="cyan" label="Core Insight">
+  Think of `slow` as the "write head" and `fast` as the "read head". The write head only advances when it has something worth keeping. By the time the read head finishes, every valid element has been compacted to the front in-place — no extra array needed.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Slow pointer** | The next write position; `nums[0..slow-1]` holds the result |
+| **Fast pointer** | Reads every element; checks validity before deciding to write |
+| **Invariant** | `nums[0..slow-1]` is always a valid prefix (deduplicated, non-zero, etc.) |
+| **In-place** | Result occupies the front of the original array; return `slow` as the new length |
+| **Partition** | A variant where elements are split into two groups (0s / non-0s, negatives / positives) |
+
+<Callout type="amber" label="Key Constraint">
+  The same-direction pattern produces a **stable** result (relative order of kept elements is preserved) only when `fast` scans left to right and writes to `slow` in the same order. If you need an unstable partition (e.g. Dutch National Flag), use a three-way partition instead.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+Watch slow and fast pointers compact the unique elements of `[0, 0, 1, 1, 2, 2, 3]`:
+
+<SameDirectionDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Remove duplicates from sorted array:**
+
+```swift
+func removeDuplicates(_ nums: inout [Int]) -> Int {
+    guard !nums.isEmpty else { return 0 }
+    var slow = 1
+    for fast in 1..<nums.count {
+        if nums[fast] != nums[fast - 1] {   // new unique value
+            nums[slow] = nums[fast]
+            slow += 1
+        }
+    }
+    return slow
+}
+```
+
+**Move zeroes to end (stable order of non-zeroes):**
+
+```swift
+func moveZeroes(_ nums: inout [Int]) -> Void {
+    var slow = 0
+    for fast in 0..<nums.count {
+        if nums[fast] != 0 {
+            nums[slow] = nums[fast]
+            slow += 1
+        }
+    }
+    // fill rest with 0
+    while slow < nums.count {
+        nums[slow] = 0
+        slow += 1
+    }
+}
+```
+
+**Merge strings alternately (two arrays, same-direction):**
+
+```swift
+func mergeAlternately(_ word1: String, _ word2: String) -> String {
+    let a = Array(word1), b = Array(word2)
+    var i = 0, j = 0
+    var result = [Character]()
+    while i < a.count || j < b.count {
+        if i < a.count { result.append(a[i]); i += 1 }
+        if j < b.count { result.append(b[j]); j += 1 }
+    }
+    return String(result)
+}
+```
+
+**Rotate array in-place (triple reverse):**
+
+```swift
+func rotate(_ nums: inout [Int], _ k: Int) {
+    let k = k % nums.count
+    nums.reverse()
+    nums[0..<k].reverse()
+    nums[k...].reverse()
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Swift's `inout` arrays are passed by value-copy-on-write — mutations inside the function propagate back to the caller through `inout`. Use `nums[slow] = nums[fast]` directly (no swap needed when you are discarding the old value at `slow`). For `removeDuplicates`, comparing `nums[fast] != nums[fast - 1]` is idiomatic; you do not need to track the last written value separately because the comparison against the previous array slot is equivalent.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  The fast pointer advances exactly once per element — n steps total. The slow pointer advances at most n times. Combined, both pointers make at most 2n moves, giving O(n) time.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  The result is written back into the original array. Only two integer pointers are needed as extra state — O(1) space regardless of input size.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Remove duplicates (sorted)',   time: 'O(n)', space: 'O(1)' },
+    { approach: 'Move zeroes',                  time: 'O(n)', space: 'O(1)' },
+    { approach: 'Rotate array (triple reverse)', time: 'O(n)', space: 'O(1)' },
+    { approach: 'Merge two sorted arrays',       time: 'O(n+m)', space: 'O(n+m)' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Same-direction when you need to **compact valid elements to the front in one pass** — deduplication, filtering, partitioning. Opposite-ends when the problem involves a pair from both sides of the array (palindrome, max area, sorted pair sum).
+</Callout>
+
+| Problem shape | Use same direction? |
+|---|---|
+| Remove duplicates from sorted array | Yes |
+| Move all zeroes to the end | Yes |
+| Filter elements matching a condition in-place | Yes |
+| Merge two arrays alternately | Yes (two fast pointers, one per array) |
+| In-place reverse or palindrome check | No — use opposite ends |
+| Pair sum in sorted array | No — use opposite ends |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 26,   title: "Remove Duplicates from Sorted Array",                slug: "remove-duplicates-from-sorted-array",                 category: "two-pointers", difficulty: "Easy" },
+  { id: 28,   title: "Find the Index of the First Occurrence in a String", slug: "find-the-index-of-the-first-occurrence-in-a-string",  category: "two-pointers", difficulty: "Easy" },
+  { id: 151,  title: "Reverse Words in a String",                          slug: "reverse-words-in-a-string",                          category: "two-pointers", difficulty: "Medium" },
+  { id: 189,  title: "Rotate Array",                                       slug: "rotate-array",                                       category: "two-pointers", difficulty: "Medium" },
+  { id: 283,  title: "Move Zeroes",                                        slug: "move-zeroes",                                        category: "two-pointers", difficulty: "Easy" },
+  { id: 1768, title: "Merge Strings Alternately",                          slug: "merge-strings-alternately",                          category: "two-pointers", difficulty: "Easy" },
+]} />

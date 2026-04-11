@@ -119,3 +119,16 @@ export { default as UnionFindOperationDiagram } from './UnionFindOperationDiagra
 export { default as TopologicalSortDiagram } from './TopologicalSortDiagram';
 export { default as DijkstraStepDiagram } from './DijkstraStepDiagram';
 export { default as GraphTypesDiagram } from './GraphTypesDiagram';
+export { default as PrefixSumDiagram } from './PrefixSumDiagram';
+export { default as HashMapDiagram } from './HashMapDiagram';
+export { default as OppositeEndsDiagram } from './OppositeEndsDiagram';
+export { default as SameDirectionDiagram } from './SameDirectionDiagram';
+export { default as BinarySearchDiagram } from './BinarySearchDiagram';
+export { default as FixedWindowDiagram } from './FixedWindowDiagram';
+export { default as VariableWindowDiagram } from './VariableWindowDiagram';
+export { default as TrieStructureDiagram } from './TrieStructureDiagram';
+export { default as MathPatternsDiagram } from './MathPatternsDiagram';
+export { default as StringPatternsDiagram } from './StringPatternsDiagram';
+export { default as HeapDiagram } from './HeapDiagram';
+export { default as LinkedListStructureDiagram } from './LinkedListStructureDiagram';
+export { default as QueueDiagram } from './QueueDiagram';

@@ -1,0 +1,94 @@
+---
+id: sliding-window-index
+title: "Sliding Window"
+sidebar_label: "Sliding Window"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import FixedWindowDiagram from '@site/src/components/DSA/FixedWindowDiagram';
+import VariableWindowDiagram from '@site/src/components/DSA/VariableWindowDiagram';
+
+<CategoryHeader
+  emoji="🪟"
+  title="Sliding Window"
+  description="A technique for processing contiguous subarrays or substrings in linear time by maintaining a window of elements that slides across the input. Instead of recomputing the window from scratch each step, you add the incoming element and remove the outgoing one — amortising the cost to O(n) total."
+  tags={["Subarray", "Substring", "O(n)", "Frequency Map", "Two Pointers"]}
+/>
+
+<SectionHeader n={1} title="What is Sliding Window?" />
+
+A **sliding window** is a contiguous range `[L, R]` inside the array. As `R` advances right, the window grows; when the window violates a constraint, `L` advances right to shrink it. The key insight is that each element enters and leaves the window at most once, so the total work across all iterations is O(n).
+
+**Two flavours:**
+
+| Variant | Window size | L moves | When to use |
+|---|---|---|---|
+| **Fixed** | Constant k | Every step | "Subarray of exactly k elements" |
+| **Variable** | Grows and shrinks | When constraint violated | "Shortest/longest subarray satisfying a condition" |
+
+<Callout type="amber" label="Key Constraint">
+  Sliding window only works when the **window property is monotone**: adding an element can only make the window more or less valid (not toggle back and forth). If the property is non-monotone (e.g., the sum must equal exactly k on an unsorted array with negatives), use a prefix sum + hash map instead.
+</Callout>
+
+**Fixed window — max sum of k=3 elements:**
+
+<FixedWindowDiagram />
+
+**Variable window — minimum subarray with sum ≥ 7:**
+
+<VariableWindowDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **L (left)** | The left boundary of the window — inclusive |
+| **R (right)** | The right boundary of the window — inclusive |
+| **Window property** | The condition the window must satisfy (e.g., sum ≥ k, all unique chars) |
+| **Frequency map** | `[T: Int]` dictionary tracking element counts inside the current window |
+| **Shrink phase** | Moving L right when the window violates the constraint |
+| **Expand phase** | Moving R right to grow the window and include more elements |
+| **Valid window** | A window that satisfies the constraint — candidate for best/worst answer |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Fixed Window"
+    description="Window size is exactly k. Initialise the first window, then slide one step at a time — add nums[R], remove nums[L-1]. Maximum average, DNA repeated sequences, count subarrays."
+    href="/sliding-window/fixed-window"
+    time="O(n)"
+    space="O(1) or O(k)"
+  />
+  <AlgoCard
+    title="Variable Window"
+    description="Window expands by advancing R; shrinks by advancing L when the window violates the constraint. Finds the shortest or longest subarray or substring satisfying the condition."
+    href="/sliding-window/variable-window"
+    time="O(n)"
+    space="O(1) or O(k)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Fixed window when the problem says "exactly k". Variable window when the problem says "at most", "at least", "longest", or "shortest". If the window needs a frequency map (characters, distinct elements), it's still sliding window — just with O(k) extra space.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 3,    title: "Longest Substring Without Repeating Characters",                            slug: "longest-substring-without-repeating-characters",                            category: "sliding-window", difficulty: "Medium" },
+  { id: 187,  title: "Repeated DNA Sequences",                                                    slug: "repeated-dna-sequences",                                                    category: "sliding-window", difficulty: "Medium" },
+  { id: 209,  title: "Minimum Size Subarray Sum",                                                 slug: "minimum-size-subarray-sum",                                                 category: "sliding-window", difficulty: "Medium" },
+  { id: 424,  title: "Longest Repeating Character Replacement",                                   slug: "longest-repeating-character-replacement",                                   category: "sliding-window", difficulty: "Medium" },
+  { id: 438,  title: "Find All Anagrams in a String",                                             slug: "find-all-anagrams-in-a-string",                                             category: "sliding-window", difficulty: "Medium" },
+  { id: 567,  title: "Permutation in String",                                                     slug: "permutation-in-string",                                                     category: "sliding-window", difficulty: "Medium" },
+  { id: 643,  title: "Maximum Average Subarray I",                                                slug: "maximum-average-subarray-i",                                                category: "sliding-window", difficulty: "Easy" },
+  { id: 713,  title: "Subarray Product Less Than K",                                              slug: "subarray-product-less-than-k",                                              category: "sliding-window", difficulty: "Medium" },
+  { id: 1343, title: "Number of Sub-arrays of Size K and Average Greater Than or Equal to Threshold", slug: "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold", category: "sliding-window", difficulty: "Medium" },
+  { id: 1456, title: "Maximum Number of Vowels in a Substring of Given Length",                   slug: "maximum-number-of-vowels-in-a-substring-of-given-length",                   category: "sliding-window", difficulty: "Medium" },
+]} />

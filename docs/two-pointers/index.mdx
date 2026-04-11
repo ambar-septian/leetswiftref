@@ -1,0 +1,92 @@
+---
+id: two-pointers-index
+title: "Two Pointers"
+sidebar_label: "Two Pointers"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import OppositeEndsDiagram from '@site/src/components/DSA/OppositeEndsDiagram';
+import SameDirectionDiagram from '@site/src/components/DSA/SameDirectionDiagram';
+
+<CategoryHeader
+  emoji="↔️"
+  title="Two Pointers"
+  description="A technique that uses two index variables to traverse an array or string in a single pass, eliminating the need for nested loops. The two pointers may start at opposite ends and converge, or both start from the left and move in the same direction at different speeds."
+  tags={["In-place", "O(n)", "Sorted Array", "Palindrome", "Partitioning"]}
+/>
+
+<SectionHeader n={1} title="What is Two Pointers?" />
+
+Two Pointers replaces O(n²) brute-force search with an O(n) single-pass scan by exploiting the structure of the problem — usually **sorted order** or **symmetric structure**.
+
+**The two main variants:**
+
+| Variant | Pointers start | Move toward | Typical trigger |
+|---|---|---|---|
+| **Opposite ends** | Left = 0, Right = n-1 | Each other (converging) | Palindrome, sorted-array pair sum, max area |
+| **Same direction** | Both at left | Same direction (fast races ahead) | In-place removal, partitioning, merge |
+
+<Callout type="amber" label="Key Constraint">
+  The **opposite-ends variant** requires the array to be **sorted** (or have symmetric structure like a palindrome). Moving a pointer only makes sense if you can predict which direction brings you closer to the answer. On an unsorted array, use a hash map instead.
+</Callout>
+
+**Opposite ends — palindrome check on "racecar":**
+
+<OppositeEndsDiagram />
+
+**Same direction — remove duplicates from [0,0,1,1,2,2,3]:**
+
+<SameDirectionDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Left pointer (L)** | Starts at index 0; advances when the current element is processed |
+| **Right pointer (R)** | Starts at index n-1 (opposite ends) or just ahead of L (same direction) |
+| **Slow pointer** | The write cursor in same-direction problems — marks where the next valid value should go |
+| **Fast pointer** | The read cursor — scans the entire array looking for valid values |
+| **In-place** | Modifying the array without allocating a separate output array |
+| **Invariant** | The property that holds before and after each pointer move (e.g. "everything left of slow is unique") |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Opposite Ends"
+    description="Left and right pointers start at the two ends of the array and converge inward. Used for palindrome checks, two-sum on sorted arrays, container with most water, and reversals."
+    href="/two-pointers/opposite-ends"
+    time="O(n)"
+    space="O(1)"
+  />
+  <AlgoCard
+    title="Same Direction"
+    description="Slow (write) and fast (read) pointers both start at the left and move right, with fast racing ahead. Used for in-place removal, deduplication, partitioning, and merge of sorted arrays."
+    href="/two-pointers/same-direction"
+    time="O(n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Opposite ends for **symmetric** or **sorted-pair** problems; same direction for **in-place write / partition** problems where you need to skip or overwrite elements.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 11,   title: "Container With Most Water",                           slug: "container-with-most-water",                            category: "two-pointers", difficulty: "Medium" },
+  { id: 26,   title: "Remove Duplicates from Sorted Array",                 slug: "remove-duplicates-from-sorted-array",                  category: "two-pointers", difficulty: "Easy" },
+  { id: 28,   title: "Find the Index of the First Occurrence in a String",  slug: "find-the-index-of-the-first-occurrence-in-a-string",   category: "two-pointers", difficulty: "Easy" },
+  { id: 125,  title: "Valid Palindrome",                                    slug: "valid-palindrome",                                     category: "two-pointers", difficulty: "Easy" },
+  { id: 151,  title: "Reverse Words in a String",                           slug: "reverse-words-in-a-string",                            category: "two-pointers", difficulty: "Medium" },
+  { id: 189,  title: "Rotate Array",                                        slug: "rotate-array",                                         category: "two-pointers", difficulty: "Medium" },
+  { id: 283,  title: "Move Zeroes",                                         slug: "move-zeroes",                                          category: "two-pointers", difficulty: "Easy" },
+  { id: 345,  title: "Reverse Vowels of a String",                          slug: "reverse-vowels-of-a-string",                           category: "two-pointers", difficulty: "Easy" },
+  { id: 1768, title: "Merge Strings Alternately",                           slug: "merge-strings-alternately",                            category: "two-pointers", difficulty: "Easy" },
+]} />

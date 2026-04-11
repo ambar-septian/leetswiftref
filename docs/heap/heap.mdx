@@ -1,0 +1,219 @@
+---
+id: heap
+title: "Heap"
+sidebar_label: "Heap"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import HeapDiagram from '@site/src/components/DSA/HeapDiagram';
+
+<AlgoPageHeader
+  title="Heap"
+  description="A binary heap backed by an array, with O(log n) enqueue (sift up) and O(log n) dequeue (sift down). A single generic Heap struct with a priority-function closure serves as both a min-heap and a max-heap. The Apple Swift Collections package provides an alternative Heap type, but the custom implementation below is simpler and interview-ready."
+  category="Heap"
+  categoryHref="/heap"
+  time="O(log n) per enqueue/dequeue"
+  space="O(n)"
+  tags={["Min-Heap", "Max-Heap", "Sift Up", "Sift Down", "Priority Queue"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A heap is a complete binary tree stored as a flat array using index arithmetic — no `next` or `left`/`right` pointers needed. The **heap property** ensures that dequeuing always returns the highest-priority element in O(log n).
+
+When to use a heap:
+- The problem repeatedly asks for the **current minimum or maximum** of a changing set.
+- You need the **k largest** or **k smallest** elements without sorting the entire array.
+- A greedy algorithm requires always processing the highest-priority item next (Dijkstra, scheduling).
+- The problem says "kth largest", "top k", or "median of a stream".
+
+<Callout type="cyan" label="Core Insight">
+  A heap is just an array with a shape invariant (complete tree) and a priority invariant (every parent beats its children). Inserting appends to the end and sifts up; removing the top swaps the root with the last element, removes the last, and sifts down. Both operations touch only O(log n) nodes — the height of the tree.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Array-backed tree** | `parent(i) = (i-1)/2`, `left(i) = 2i+1`, `right(i) = 2i+2` |
+| **Priority function** | `(Element, Element) -> Bool` — `{ $0 < $1 }` for min-heap, `{ $0 > $1 }` for max-heap |
+| **Sift up** | Bubble newly inserted element toward root while it beats its parent |
+| **Sift down** | Push replacement root down toward leaves, always swapping with the higher-priority child |
+| **buildHeap** | Sift down every non-leaf in reverse order — converts any array to a heap in O(n) |
+| **Peek** | Return `elements.first` — O(1), the highest-priority element |
+
+<Callout type="amber" label="Key Constraint">
+  Swift's **standard library has no heap**. The `sort()` and `sorted()` functions exist, but there is no `PriorityQueue`. You have two practical options: the custom `Heap` struct below (no dependencies, straightforward), or `import Collections` from the [Swift Collections package](https://github.com/apple/swift-collections) which ships a `Heap` type. The Swift Collections `Heap` uses a more modern API (`insert`, `popMin`, `popMax` on a min-max heap) and is well-tested — but adds a package dependency. For LeetCode, the custom struct is simpler to type quickly.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<HeapDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Custom `Heap` struct — min-heap and max-heap from one implementation:**
+
+```swift
+struct Heap<Element: Comparable> {
+    private var elements = [Element]()
+    private let priority: (Element, Element) -> Bool
+
+    init(_ priority: @escaping (Element, Element) -> Bool) {
+        self.priority = priority
+    }
+
+    // Build from existing array in O(n)
+    init(_ elements: [Element], _ priority: @escaping (Element, Element) -> Bool) {
+        self.elements = elements
+        self.priority = priority
+        buildHeap()
+    }
+
+    private mutating func buildHeap() {
+        for i in (0..<count / 2).reversed() {
+            siftDown(i)
+        }
+    }
+
+    var isEmpty: Bool { elements.isEmpty }
+    var count: Int { elements.count }
+    func peek() -> Element? { elements.first }
+
+    // Insert — O(log n)
+    mutating func enqueue(_ element: Element) {
+        elements.append(element)
+        siftUp(count - 1)
+    }
+
+    // Remove top — O(log n)
+    @discardableResult
+    mutating func dequeue() -> Element? {
+        guard !isEmpty else { return nil }
+        elements.swapAt(0, count - 1)
+        let top = elements.removeLast()
+        if !isEmpty { siftDown(0) }
+        return top
+    }
+
+    // ── Private helpers ──────────────────────────────────────
+
+    private func parentIndex(_ i: Int) -> Int { (i - 1) / 2 }
+    private func leftIndex(_ i: Int) -> Int  { 2 * i + 1 }
+    private func rightIndex(_ i: Int) -> Int { 2 * i + 2 }
+
+    private func higherPriority(_ a: Int, _ b: Int) -> Int {
+        guard b < count, priority(elements[b], elements[a]) else { return a }
+        return b
+    }
+
+    private func highestPriorityChild(_ i: Int) -> Int {
+        let best = higherPriority(i, leftIndex(i))
+        return higherPriority(best, rightIndex(i))
+    }
+
+    private mutating func siftUp(_ i: Int) {
+        let p = parentIndex(i)
+        guard i > 0, priority(elements[i], elements[p]) else { return }
+        elements.swapAt(i, p)
+        siftUp(p)
+    }
+
+    private mutating func siftDown(_ i: Int) {
+        let best = highestPriorityChild(i)
+        guard best != i else { return }
+        elements.swapAt(i, best)
+        siftDown(best)
+    }
+}
+```
+
+**Using the heap — min-heap and max-heap:**
+
+```swift
+// Min-heap — smallest element at top
+var minHeap = Heap<Int> { $0 < $1 }
+for n in [10, 5, 15, 1, 8] { minHeap.enqueue(n) }
+minHeap.peek()     // → 1
+minHeap.dequeue()  // → 1, heap now [5, 8, 15, 10]
+
+// Max-heap — largest element at top
+var maxHeap = Heap<Int> { $0 > $1 }
+for n in [10, 5, 15, 1, 8] { maxHeap.enqueue(n) }
+maxHeap.peek()     // → 15
+maxHeap.dequeue()  // → 15, heap now [10, 8, 5, 1]
+
+// Build from existing array in O(n)
+var heap = Heap([10, 5, 15, 1, 8], { $0 < $1 })
+```
+
+**Top-K pattern — kth largest element (LeetCode 215):**
+
+```swift
+func findKthLargest(_ nums: [Int], _ k: Int) -> Int {
+    // Min-heap of size k — root is the kth largest so far
+    var heap = Heap<Int> { $0 < $1 }
+    for n in nums {
+        heap.enqueue(n)
+        if heap.count > k { heap.dequeue() }  // evict the smallest
+    }
+    return heap.peek()!  // root = kth largest
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  The priority closure `{ $0 &lt; $1 }` for a min-heap means "element $0 has higher priority if it is smaller than $1" — the root is the smallest. Flip to `{ $0 &gt; $1 }` for a max-heap. The `buildHeap` init converts an unsorted array in O(n) by sifting down every non-leaf from right to left — this is more efficient than inserting n elements one by one (which would be O(n log n)). The `@discardableResult` on `dequeue()` suppresses the "result unused" warning when you just want to pop the top without using the value.
+
+  **Swift Collections alternative:** `import Collections` gives you `Heap` with `insert(_:)`, `min`, `max`, `popMin()`, `popMax()` on a single min-max heap structure. It is well-tested and O(log n) for all operations, but requires adding the `apple/swift-collections` package to your project — not available on LeetCode by default.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n) per operation">
+  The heap is a complete binary tree of height `floor(log₂ n)`. Sift up traces a path from a leaf to the root — at most `log₂ n` swaps. Sift down traces from root to a leaf — also at most `log₂ n` swaps. `buildHeap` is O(n) because lower levels (which have more nodes) sift down fewer levels — the sum telescopes to O(n) by a geometric series argument.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The heap stores all n elements in the `elements` array. No extra space is used beyond the priority closure reference. The recursive sift-up and sift-down use O(log n) call-stack depth — rewrite iteratively to make it strictly O(1) auxiliary space.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'peek (top element)',            time: 'O(1)',      space: 'O(1)',  note: 'Always elements.first' },
+    { approach: 'enqueue (sift up)',             time: 'O(log n)', space: 'O(1)',  note: 'Path from leaf to root', highlight: true },
+    { approach: 'dequeue (sift down)',           time: 'O(log n)', space: 'O(1)',  note: 'Path from root to leaf', highlight: true },
+    { approach: 'buildHeap (from array)',        time: 'O(n)',      space: 'O(1)', note: 'Sift down all non-leaves; better than n inserts' },
+    { approach: 'Top-K elements',               time: 'O(n log k)', space: 'O(k)', note: 'Maintain heap of size k across n elements' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="Sort vs Heap — which to choose?">
+  **Sort** when you need all elements ordered and you only do it once — O(n log n) but simple. **Heap** when you need the top element repeatedly from a changing set — O(log n) per update vs O(n log n) to re-sort. For "k largest from n elements", a min-heap of size k costs O(n log k) vs O(n log n) for full sort — the heap wins when k is much smaller than n.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem says "kth largest / smallest", "top k", "minimum cost at each step", or "always process the smallest / largest next" — that is a heap. If k equals n, just sort instead.
+</Callout>
+
+| Problem shape | Heap type |
+|---|---|
+| Kth largest element | Min-heap of size k (root = kth largest) |
+| Kth smallest element | Max-heap of size k (root = kth smallest) |
+| Median of a stream | Two heaps: max-heap (lower half) + min-heap (upper half) |
+| Always process cheapest task next | Min-heap on cost |
+| Maximum score with k picks | Max-heap, dequeue and re-enqueue modified value |
+| Dijkstra shortest path | Min-heap on distance |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 215,  title: "Kth Largest Element in an Array",  slug: "kth-largest-element-in-an-array",  category: "heap", difficulty: "Medium" },
+  { id: 2336, title: "Smallest Number in Infinite Set",  slug: "smallest-number-in-infinite-set",  category: "heap", difficulty: "Medium" },
+  { id: 2542, title: "Maximum Subsequence Score",        slug: "maximum-subsequence-score",        category: "heap", difficulty: "Medium" },
+  { id: 2558, title: "Take Gifts From the Richest Pile", slug: "take-gifts-from-the-richest-pile", category: "heap", difficulty: "Easy"   },
+]} />
