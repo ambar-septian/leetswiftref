@@ -104,3 +104,18 @@ export { default as RemoveNodesLinkedListDiagram } from './RemoveNodesLinkedList
 export { default as InsertGCDLinkedListDiagram } from './InsertGCDLinkedListDiagram';
 export { default as ContainerWithMostWaterDiagram } from './ContainerWithMostWaterDiagram';
 export { default as CarFleetDiagram } from './CarFleetDiagram';
+
+// Category & algorithm page components
+export { default as CategoryHeader } from './CategoryHeader';
+export { default as AlgoCard } from './AlgoCard';
+export { default as AlgoCardGrid } from './AlgoCardGrid';
+export { default as AlgoPageHeader } from './AlgoPageHeader';
+export { default as ProblemList } from './ProblemList';
+
+// Algorithm diagrams
+export { default as GraphRepresentationDiagram } from './GraphRepresentationDiagram';
+export { default as DFSBFSTraversalDiagram } from './DFSBFSTraversalDiagram';
+export { default as UnionFindOperationDiagram } from './UnionFindOperationDiagram';
+export { default as TopologicalSortDiagram } from './TopologicalSortDiagram';
+export { default as DijkstraStepDiagram } from './DijkstraStepDiagram';
+export { default as GraphTypesDiagram } from './GraphTypesDiagram';

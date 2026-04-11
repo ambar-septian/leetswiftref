@@ -380,3 +380,236 @@
 @media (max-width: 600px) {
   .complexityCards { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════════════════════════
+   CATEGORY HEADER
+══════════════════════════════════════ */
+.categoryHeader { margin-bottom: 40px; }
+
+.categoryMeta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.categoryEmoji { font-size: 36px; line-height: 1; flex-shrink: 0; }
+
+.categoryTitle {
+  font-family: 'Syne', sans-serif !important;
+  font-size: clamp(28px, 5vw, 42px) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1px !important;
+  color: #f1f5f9 !important;
+  margin: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.categoryDesc {
+  font-size: 15.5px;
+  color: var(--dsa-text-dim);
+  line-height: 1.8;
+  margin-bottom: 16px;
+  max-width: 700px;
+}
+
+.categoryTagsRow { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ══════════════════════════════════════
+   ALGO PAGE HEADER (algorithm sub-pages)
+══════════════════════════════════════ */
+.algoPageHeader { margin-bottom: 36px; }
+
+.algoPageBreadcrumb {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  color: var(--dsa-text-muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.algoPageBreadcrumb a { color: var(--dsa-text-muted); text-decoration: none; }
+.algoPageBreadcrumb a:hover { color: var(--dsa-accent); }
+
+.algoPageTitle {
+  font-family: 'Syne', sans-serif !important;
+  font-size: clamp(26px, 4.5vw, 38px) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1px !important;
+  color: #f1f5f9 !important;
+  margin: 0 0 10px !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.algoPageDesc {
+  font-size: 15.5px;
+  color: var(--dsa-text-dim);
+  line-height: 1.8;
+  margin-bottom: 14px;
+  max-width: 700px;
+}
+
+.algoPageMeta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.algoPageBadge {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.algoPageBadgeTime {
+  color: var(--dsa-accent);
+  background: var(--dsa-accent-dim);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.algoPageBadgeSpace {
+  color: var(--dsa-accent2);
+  background: rgba(34, 211, 238, 0.07);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+}
+
+/* ══════════════════════════════════════
+   ALGORITHM CARDS GRID
+══════════════════════════════════════ */
+.algoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.algoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  background: var(--dsa-surface);
+  border: 1px solid var(--dsa-border);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+  cursor: pointer;
+}
+
+.algoCard:hover {
+  background: var(--dsa-surface2);
+  border-color: rgba(74, 222, 128, 0.25);
+  transform: translateY(-2px);
+  text-decoration: none !important;
+}
+
+.algoCardTitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.algoCardDesc {
+  font-size: 13px;
+  color: var(--dsa-text-dim);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.algoCardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.algoCardComplexity { display: flex; gap: 8px; }
+
+.algoCardBadge {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.algoCardBadgeTime {
+  color: var(--dsa-accent);
+  background: var(--dsa-accent-dim);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.algoCardBadgeSpace {
+  color: var(--dsa-accent2);
+  background: rgba(34, 211, 238, 0.07);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+}
+
+.algoCardArrow {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  color: var(--dsa-text-muted);
+}
+
+.algoCard:hover .algoCardArrow { color: var(--dsa-accent); }
+
+/* ══════════════════════════════════════
+   PROBLEM LIST (compact)
+══════════════════════════════════════ */
+.problemList {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.problemListItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.problemListItem:hover {
+  background: var(--dsa-surface2);
+  border-color: var(--dsa-border);
+  text-decoration: none !important;
+}
+
+.problemListNum {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  color: var(--dsa-text-muted);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.problemListTitle {
+  flex: 1;
+  font-family: 'Syne', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--dsa-text);
+}
+
+.problemListDiff {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 11px;
+  flex-shrink: 0;
+  width: 52px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .algoGrid { grid-template-columns: 1fr; }
+}

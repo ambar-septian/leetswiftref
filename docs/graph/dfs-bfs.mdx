@@ -1,0 +1,220 @@
+---
+id: dfs-bfs
+title: "DFS & BFS"
+sidebar_label: "DFS & BFS"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable, StepList, StepItem } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import DFSBFSTraversalDiagram from '@site/src/components/DSA/DFSBFSTraversalDiagram';
+
+<AlgoPageHeader
+  title="DFS & BFS"
+  description="The two fundamental graph traversal strategies. DFS dives deep along one path before backtracking; BFS fans out level by level. Both visit every reachable node exactly once in O(V+E) time."
+  category="Graph"
+  categoryHref="/graph"
+  time="O(V+E)"
+  space="O(V)"
+  tags={["Stack", "Queue", "Recursion", "Flood Fill"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Every graph problem that involves reachability, connectivity, or exploration reduces to one of these two traversals. Choosing between them depends on what you need:
+
+- **DFS** — "go as far as possible, then backtrack." Natural for recursive problems, cycle detection, topological ordering, and problems where you need to explore all paths.
+- **BFS** — "visit all neighbors before going deeper." The right choice whenever you need the **shortest path in an unweighted graph** or need to process nodes level by level.
+
+<Callout type="cyan" label="Core Insight">
+  Both DFS and BFS are essentially the same algorithm with one difference: the data structure used for the frontier. **DFS uses a stack** (LIFO — last in, first out). **BFS uses a queue** (FIFO — first in, first out). Swapping the data structure changes the traversal order completely.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | DFS | BFS |
+|---|---|---|
+| Data structure | Stack (or call stack via recursion) | Queue |
+| Order | Depth-first — explores one branch fully before another | Level-order — visits all nodes at distance k before k+1 |
+| Shortest path | Not guaranteed | Guaranteed for unweighted graphs |
+| Memory | O(h) where h = max depth | O(w) where w = max width |
+| Common use | Cycle detection, topological sort, all paths, backtracking | Shortest path, multi-source BFS, level-by-level processing |
+
+**The visited set** is critical for both — without it you loop forever on cyclic graphs. For grids you often mutate the cell directly (e.g. set `'1'` to `'0'`) instead of a separate set.
+
+<SectionHeader n={3} title="Visualization" />
+
+Step through DFS vs BFS on the same 7-node tree-shaped graph to see how the traversal order diverges:
+
+<DFSBFSTraversalDiagram />
+
+<SectionHeader n={4} title="DFS — Recursive Template" />
+
+```swift
+// DFS — recursive (most common form for graph problems)
+func dfs(_ adj: [[Int]], _ node: Int, _ visited: inout Set<Int>) {
+    visited.insert(node)
+    // process node here if needed
+
+    for neighbor in adj[node] {
+        if !visited.contains(neighbor) {
+            dfs(adj, neighbor, &visited)
+        }
+    }
+}
+
+// Entry point
+var visited = Set<Int>()
+dfs(adj, startNode, &visited)
+```
+
+**Iterative DFS** — useful when recursion depth limit is a concern:
+
+```swift
+// DFS — iterative using explicit stack
+func dfsIterative(_ adj: [[Int]], _ start: Int) {
+    var visited = Set<Int>()
+    var stack = [start]
+
+    while !stack.isEmpty {
+        let node = stack.removeLast()
+        guard !visited.contains(node) else { continue }
+        visited.insert(node)
+        // process node here
+
+        for neighbor in adj[node] {
+            if !visited.contains(neighbor) {
+                stack.append(neighbor)
+            }
+        }
+    }
+}
+```
+
+<Callout type="amber" label="Key Constraint">
+  Swift has a default stack size limit. For graphs with depth up to 10,000 nodes, prefer the **iterative DFS** to avoid a stack overflow. Recursive DFS is safe for depths up to ~1,000 in practice.
+</Callout>
+
+<SectionHeader n={5} title="BFS — Queue Template" />
+
+```swift
+// BFS — iterative using queue (always iterative, never recursive)
+func bfs(_ adj: [[Int]], _ start: Int) {
+    var visited = Set<Int>()
+    var queue: [Int] = [start]
+    visited.insert(start)
+
+    while !queue.isEmpty {
+        let node = queue.removeFirst()
+        // process node here
+
+        for neighbor in adj[node] {
+            if !visited.contains(neighbor) {
+                visited.insert(neighbor)
+                queue.append(neighbor)
+            }
+        }
+    }
+}
+```
+
+**BFS with level tracking** — needed when the answer is the number of steps/hops:
+
+```swift
+// BFS — level-by-level (tracks distance from source)
+func bfsLevels(_ adj: [[Int]], _ start: Int) -> [Int: Int] {
+    var dist: [Int: Int] = [start: 0]
+    var queue = [start]
+
+    while !queue.isEmpty {
+        var nextQueue: [Int] = []
+        for node in queue {
+            for neighbor in adj[node] {
+                if dist[neighbor] == nil {
+                    dist[neighbor] = dist[node]! + 1
+                    nextQueue.append(neighbor)
+                }
+            }
+        }
+        queue = nextQueue
+    }
+    return dist
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `queue.removeFirst()` for BFS — it's O(n) on a plain array, which is fine for most LeetCode constraints. For very large graphs, wrap the array with an index pointer (`var qi = 0; let node = queue[qi]; qi += 1`) to make dequeue O(1) without allocating a separate `Deque`. Mark nodes as visited **before enqueuing** (not after dequeuing) to prevent duplicates in the queue.
+</Callout>
+
+<SectionHeader n={6} title="Grid DFS / BFS" />
+
+Grid problems (islands, flood fill, mazes) are graph problems in disguise. Each cell is a node; its up/down/left/right neighbors are edges.
+
+```swift
+// Grid DFS — 4-directional flood fill
+let dirs = [(-1,0),(1,0),(0,-1),(0,1)]
+
+func dfsGrid(_ grid: inout [[Character]], _ r: Int, _ c: Int) {
+    let rows = grid.count, cols = grid[0].count
+    guard r >= 0, r < rows, c >= 0, c < cols, grid[r][c] == "1" else { return }
+
+    grid[r][c] = "0" // mark visited by mutating the cell
+
+    for (dr, dc) in dirs {
+        dfsGrid(&grid, r + dr, c + dc)
+    }
+}
+```
+
+<SectionHeader n={7} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V+E)">
+  Both DFS and BFS visit each vertex exactly once (O(V)) and traverse each edge exactly once from each endpoint (O(E)). For a grid of size m×n, V = m*n and E = 4*m*n (4-directional), so the complexity simplifies to O(m*n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V)">
+  The visited set holds at most V entries. The stack (DFS) or queue (BFS) holds at most V nodes in the worst case. For DFS on a tree-shaped graph, the stack depth equals the tree height — O(h), which is O(V) in the worst case (linear chain) and O(log V) for balanced trees.
+</Callout>
+
+<ComplexityTable rows={[
+  { approach: 'DFS (recursive)', time: 'O(V+E)', space: 'O(V)', note: 'Call stack holds current path — O(h) depth', highlight: true },
+  { approach: 'DFS (iterative)', time: 'O(V+E)', space: 'O(V)', note: 'Explicit stack, safe for deep graphs' },
+  { approach: 'BFS', time: 'O(V+E)', space: 'O(V)', note: 'Queue width is at most O(V) at any level' },
+  { approach: 'Grid DFS/BFS', time: 'O(m·n)', space: 'O(m·n)', note: 'V=m*n cells, E=O(4*m*n) edges' },
+]} />
+
+<SectionHeader n={8} title="When to Use" />
+
+<Callout type="purple" label="DFS vs BFS — which to choose?">
+  **Choose DFS when:** You need to explore all possible paths, detect cycles, perform topological sort, or the problem has a recursive structure (e.g. find all paths from source to target, generate all permutations via graph).
+
+  **Choose BFS when:** You need the **shortest path** (fewest edges) from a source, need to process nodes level by level, or are doing multi-source BFS (start from multiple nodes simultaneously — e.g. rotting oranges, nearest exit).
+
+  For pure **connectivity** problems (are A and B in the same component?), both work equally well — consider Union-Find instead for repeated queries.
+</Callout>
+
+| Problem type | Algorithm |
+|---|---|
+| Flood fill, sink islands | DFS (mutate grid) |
+| Shortest path, unweighted | BFS |
+| Multi-source shortest path | Multi-source BFS |
+| Detect cycle | DFS with color (white/grey/black) |
+| All paths from src to dest | DFS with backtracking |
+| Level-order tree traversal | BFS |
+| Connected components count | DFS or BFS, once per unvisited node |
+
+<SectionHeader n={9} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 133,  title: "Clone Graph",                           slug: "clone-graph",                         category: "graph", difficulty: "Medium" },
+  { id: 200,  title: "Number of Islands",                     slug: "number-of-islands",                   category: "graph", difficulty: "Medium" },
+  { id: 417,  title: "Pacific Atlantic Water Flow",           slug: "pacific-atlantic-water-flow",         category: "graph", difficulty: "Medium" },
+  { id: 695,  title: "Max Area of Island",                    slug: "max-area-of-island",                  category: "graph", difficulty: "Medium" },
+  { id: 841,  title: "Keys and Rooms",                        slug: "keys-and-rooms",                      category: "graph", difficulty: "Medium" },
+  { id: 994,  title: "Rotting Oranges",                       slug: "rotting-oranges",                     category: "graph", difficulty: "Medium" },
+  { id: 1091, title: "Shortest Path in Binary Matrix",        slug: "shortest-path-in-binary-matrix",      category: "graph", difficulty: "Medium" },
+  { id: 1466, title: "Reorder Routes to Make All Paths Lead to the City Zero", slug: "reorder-routes-to-make-all-paths-lead-to-the-city-zero", category: "graph", difficulty: "Medium" },
+  { id: 1926, title: "Nearest Exit from Entrance in Maze",    slug: "nearest-exit-from-entrance-in-maze",  category: "graph", difficulty: "Medium" },
+  { id: 1971, title: "Find if Path Exists in Graph",          slug: "find-if-path-exists-in-graph",        category: "graph", difficulty: "Easy" },
+]} />

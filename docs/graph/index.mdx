@@ -1,0 +1,132 @@
+---
+id: graph-index
+title: "Graph"
+sidebar_label: "Graph"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import GraphRepresentationDiagram from '@site/src/components/DSA/GraphRepresentationDiagram';
+import GraphTypesDiagram from '@site/src/components/DSA/GraphTypesDiagram';
+
+<CategoryHeader
+  emoji="🕸"
+  title="Graph"
+  description="A graph is a collection of nodes (vertices) connected by edges. Unlike trees, graphs can have cycles, multiple paths between nodes, and no single root. Graph algorithms power everything from social networks and maps to dependency resolution and circuit analysis."
+  tags={["DFS", "BFS", "Union-Find", "Topological Sort", "Dijkstra", "DAG"]}
+/>
+
+<SectionHeader n={1} title="What is a Graph?" />
+
+A **graph** G = (V, E) consists of a set of **vertices** V and a set of **edges** E connecting pairs of vertices.
+
+**Key properties to identify:**
+
+| Property | Options | Impact |
+|---|---|---|
+| Direction | Directed / Undirected | Do edges go one way or both? |
+| Weight | Weighted / Unweighted | Are edges free or have cost? |
+| Cycles | Cyclic / Acyclic | Can you revisit a node? |
+| Connectivity | Connected / Disconnected | Can you reach every node? |
+
+<Callout type="amber" label="Key Constraint">
+  Always clarify whether the graph is **directed** and whether it can have **cycles** before choosing an algorithm. These two properties alone determine which of DFS, BFS, Union-Find, Topological Sort, or Dijkstra applies.
+</Callout>
+
+**Representation in code:**
+
+The adjacency list is almost always preferred over the matrix for sparse graphs (most LeetCode problems), because it uses O(V + E) space instead of O(V²) and iterates only over real edges.
+
+```swift
+// Adjacency list — the standard for most graph problems
+var adj = [[Int]](repeating: [], count: n)
+for edge in edges {
+    adj[edge[0]].append(edge[1])
+    adj[edge[1]].append(edge[0]) // undirected
+}
+```
+
+<GraphRepresentationDiagram />
+
+<GraphTypesDiagram />
+
+<SectionHeader n={2} title="Terminology" />
+
+| Term | Definition |
+|---|---|
+| **Vertex / Node** | A point in the graph |
+| **Edge** | A connection between two vertices |
+| **Degree** | Number of edges connected to a vertex |
+| **In-degree** | Edges pointing *into* a vertex (directed graphs) |
+| **Out-degree** | Edges pointing *out of* a vertex (directed graphs) |
+| **Path** | A sequence of vertices connected by edges |
+| **Cycle** | A path that starts and ends at the same vertex |
+| **Connected component** | A maximal set of vertices mutually reachable |
+| **DAG** | Directed Acyclic Graph — no cycles, enables topological sort |
+| **Tree** | A connected, acyclic, undirected graph with V-1 edges |
+| **Spanning Tree** | A tree that includes all vertices of a graph |
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+Graph problems map to one of four core algorithms. Pick the right one based on what the problem asks:
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="DFS and BFS"
+    description="Traverse or search a graph. DFS explores depth-first using a stack (or recursion); BFS explores level-by-level using a queue. Use for connectivity, path finding, flood fill, and cycle detection."
+    href="/graph/dfs-bfs"
+    time="O(V+E)"
+    space="O(V)"
+  />
+  <AlgoCard
+    title="Union-Find"
+    description="Efficiently track which nodes belong to the same connected component. Supports union and find operations with near-constant time using path compression and union by rank."
+    href="/graph/union-find"
+    time="O(a(N))"
+    space="O(N)"
+  />
+  <AlgoCard
+    title="Topological Sort"
+    description="Order nodes in a DAG such that every directed edge u to v has u before v. Use Kahn's algorithm (BFS + in-degree) for cycle detection, or DFS-based for the ordering."
+    href="/graph/topological-sort"
+    time="O(V+E)"
+    space="O(V)"
+  />
+  <AlgoCard
+    title="Dijkstra"
+    description="Find the shortest path from a single source to all other nodes in a weighted graph with non-negative edge weights. Uses a min-heap priority queue for greedy relaxation."
+    href="/graph/dijkstra"
+    time="O((V+E) log V)"
+    space="O(V)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Unweighted reachability/connectivity: DFS or BFS. Component grouping: Union-Find. Dependency ordering: Topological Sort. Shortest weighted path: Dijkstra.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 133,  title: "Clone Graph",                                          slug: "clone-graph",                                        category: "graph", difficulty: "Medium" },
+  { id: 200,  title: "Number of Islands",                                    slug: "number-of-islands",                                  category: "graph", difficulty: "Medium" },
+  { id: 207,  title: "Course Schedule",                                      slug: "course-schedule",                                    category: "graph", difficulty: "Medium" },
+  { id: 210,  title: "Course Schedule II",                                   slug: "course-schedule-ii",                                 category: "graph", difficulty: "Medium" },
+  { id: 399,  title: "Evaluate Division",                                    slug: "evaluate-division",                                  category: "graph", difficulty: "Medium" },
+  { id: 417,  title: "Pacific Atlantic Water Flow",                          slug: "pacific-atlantic-water-flow",                        category: "graph", difficulty: "Medium" },
+  { id: 547,  title: "Number of Provinces",                                  slug: "number-of-provinces",                                category: "graph", difficulty: "Medium" },
+  { id: 684,  title: "Redundant Connection",                                 slug: "redundant-connection",                               category: "graph", difficulty: "Medium" },
+  { id: 695,  title: "Max Area of Island",                                   slug: "max-area-of-island",                                 category: "graph", difficulty: "Medium" },
+  { id: 721,  title: "Accounts Merge",                                       slug: "accounts-merge",                                     category: "graph", difficulty: "Medium" },
+  { id: 841,  title: "Keys and Rooms",                                       slug: "keys-and-rooms",                                     category: "graph", difficulty: "Medium" },
+  { id: 994,  title: "Rotting Oranges",                                      slug: "rotting-oranges",                                    category: "graph", difficulty: "Medium" },
+  { id: 1091, title: "Shortest Path in Binary Matrix",                       slug: "shortest-path-in-binary-matrix",                     category: "graph", difficulty: "Medium" },
+  { id: 1466, title: "Reorder Routes to Make All Paths Lead to the City Zero", slug: "reorder-routes-to-make-all-paths-lead-to-the-city-zero", category: "graph", difficulty: "Medium" },
+  { id: 1557, title: "Minimum Number of Vertices to Reach All Nodes",        slug: "minimum-number-of-vertices-to-reach-all-nodes",       category: "graph", difficulty: "Medium" },
+  { id: 1926, title: "Nearest Exit from Entrance in Maze",                   slug: "nearest-exit-from-entrance-in-maze",                  category: "graph", difficulty: "Medium" },
+  { id: 1971, title: "Find if Path Exists in Graph",                         slug: "find-if-path-exists-in-graph",                       category: "graph", difficulty: "Easy" },
+]} />

@@ -5,8 +5,19 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🕸 Graph',
-      link: { type: 'generated-index', slug: '/graph' },
+      link: { type: 'doc', id: 'graph/graph-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'graph/dfs-bfs',
+            'graph/union-find',
+            'graph/topological-sort',
+            'graph/dijkstra',
+          ],
+        },
         'graph/133-clone-graph',
         'graph/200-number-of-islands',
         'graph/207-course-schedule',

@@ -1,0 +1,200 @@
+---
+id: topological-sort
+title: "Topological Sort"
+sidebar_label: "Topological Sort"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable, StepList, StepItem } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import TopologicalSortDiagram from '@site/src/components/DSA/TopologicalSortDiagram';
+
+<AlgoPageHeader
+  title="Topological Sort"
+  description="An ordering of the nodes in a directed acyclic graph (DAG) such that for every directed edge u→v, node u appears before node v in the ordering. Essential for dependency resolution, task scheduling, and build systems."
+  category="Graph"
+  categoryHref="/graph"
+  time="O(V+E)"
+  space="O(V)"
+  tags={["DAG", "In-Degree", "BFS", "DFS", "Kahn's Algorithm"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Topological sort answers: **"Given a set of tasks with dependencies, what order should I execute them?"** The key requirement is that the graph must be a **DAG** (Directed Acyclic Graph) — if there's a cycle, no valid ordering exists.
+
+The two standard approaches:
+- **Kahn's Algorithm (BFS-based)** — processes nodes with no remaining prerequisites, naturally detects cycles. Preferred for most LeetCode problems because the cycle detection is built in.
+- **DFS-based** — explores a node fully before adding it to the result, appended in *reverse finish order*. Elegant but requires an extra reversal step.
+
+<Callout type="cyan" label="Core Insight">
+  A node can be safely processed once all nodes that *must come before it* have already been processed. Kahn's algorithm tracks this via **in-degree** (count of incoming edges). Start with all nodes that have no prerequisites (in-degree = 0), and after processing each node, decrement the in-degree of its neighbors — whenever a neighbor's in-degree hits 0, it's ready to process.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Definition |
+|---|---|
+| **DAG** | Directed Acyclic Graph — has direction, no cycles |
+| **In-degree** | Number of edges pointing *into* a node |
+| **Out-degree** | Number of edges pointing *out of* a node |
+| **Topological order** | A valid sequence where all prerequisites come first |
+| **Cycle** | Makes topological sort impossible — no valid ordering |
+| **Multiple valid orderings** | Most DAGs have more than one valid topological order |
+
+<SectionHeader n={3} title="Visualization — Kahn's Algorithm" />
+
+Watch Kahn's BFS-based topological sort process a 6-course prerequisite graph:
+
+<TopologicalSortDiagram />
+
+<SectionHeader n={4} title="Kahn's Algorithm (BFS)" />
+
+The standard approach. Detects cycles naturally — if the output ordering doesn't include all nodes, a cycle exists.
+
+```swift
+func topologicalSort(_ n: Int, _ prerequisites: [[Int]]) -> [Int] {
+    // Build adjacency list and compute in-degrees
+    var adj = [[Int]](repeating: [], count: n)
+    var inDegree = [Int](repeating: 0, count: n)
+
+    for pre in prerequisites {
+        let (course, prereq) = (pre[0], pre[1])
+        adj[prereq].append(course)  // prereq → course
+        inDegree[course] += 1
+    }
+
+    // Start with all nodes that have no prerequisites
+    var queue = inDegree.indices.filter { inDegree[$0] == 0 }
+    var order: [Int] = []
+    var qi = 0  // index pointer — O(1) dequeue without removeFirst()
+
+    while qi < queue.count {
+        let node = queue[qi]; qi += 1
+        order.append(node)
+
+        for neighbor in adj[node] {
+            inDegree[neighbor] -= 1
+            if inDegree[neighbor] == 0 {
+                queue.append(neighbor)
+            }
+        }
+    }
+
+    // If order doesn't contain all nodes, a cycle exists
+    return order.count == n ? order : []
+}
+```
+
+**Cycle detection variant** — for problems like "Course Schedule" that only ask *can* you complete all courses:
+
+```swift
+func canFinish(_ n: Int, _ prerequisites: [[Int]]) -> Bool {
+    var adj = [[Int]](repeating: [], count: n)
+    var inDegree = [Int](repeating: 0, count: n)
+
+    for pre in prerequisites {
+        adj[pre[1]].append(pre[0])
+        inDegree[pre[0]] += 1
+    }
+
+    var queue = inDegree.indices.filter { inDegree[$0] == 0 }
+    var processed = 0, qi = 0
+
+    while qi < queue.count {
+        let node = queue[qi]; qi += 1
+        processed += 1
+        for neighbor in adj[node] {
+            inDegree[neighbor] -= 1
+            if inDegree[neighbor] == 0 { queue.append(neighbor) }
+        }
+    }
+
+    return processed == n  // true = no cycle
+}
+```
+
+<SectionHeader n={5} title="DFS-Based Topological Sort" />
+
+Explore each node fully, then prepend it to the result. The reverse post-order naturally gives topological order.
+
+```swift
+func topologicalSortDFS(_ n: Int, _ adj: [[Int]]) -> [Int]? {
+    // 0 = unvisited, 1 = in current DFS path (grey), 2 = fully processed (black)
+    var color = [Int](repeating: 0, count: n)
+    var result: [Int] = []
+    var hasCycle = false
+
+    func dfs(_ node: Int) {
+        guard !hasCycle else { return }
+        color[node] = 1  // mark as "in progress"
+
+        for neighbor in adj[node] {
+            if color[neighbor] == 1 {
+                hasCycle = true  // back edge = cycle
+                return
+            }
+            if color[neighbor] == 0 {
+                dfs(neighbor)
+            }
+        }
+
+        color[node] = 2  // fully processed
+        result.append(node)  // append in finish order (reversed = topo order)
+    }
+
+    for i in 0..<n where color[i] == 0 {
+        dfs(i)
+    }
+
+    return hasCycle ? nil : result.reversed()
+}
+```
+
+<Callout type="purple" label="Kahn's vs DFS — which to choose?">
+  **Kahn's (BFS):** Prefer when you also need to **detect a cycle** (result length != n means cycle). Easier to reason about. Works naturally with the "course schedule" problem family. Use the index-pointer trick instead of `removeFirst()` for O(1) dequeue.
+
+  **DFS-based:** Prefer when you're already doing DFS traversal for other reasons, or when the problem structure maps naturally to recursion. Requires the 3-color (white/grey/black) scheme for correct cycle detection — 2-color (visited/unvisited) only works for undirected graphs.
+</Callout>
+
+<Callout type="green" label="Swift Notes">
+  The index-pointer pattern (`var qi = 0; let node = queue[qi]; qi += 1`) replaces `queue.removeFirst()` and avoids the O(n) shift cost on every dequeue — making the overall BFS truly O(V+E). For the DFS approach, use a nested function to capture `color` and `result` by reference, avoiding `inout` on every parameter. Swift closures capture `var` bindings by reference automatically.
+</Callout>
+
+<SectionHeader n={6} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V+E)">
+  Both Kahn's and DFS process each vertex once (O(V)) and traverse each edge once (O(E)). Computing in-degrees in Kahn's is O(E). Building the adjacency list is O(E). Total: O(V+E).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V)">
+  The queue (Kahn's) or call stack (DFS) holds at most V nodes. The in-degree array, color array, and adjacency list each use O(V+E) space for the graph, which is the input size — not extra space.
+</Callout>
+
+<ComplexityTable rows={[
+  { approach: "Kahn's (BFS)", time: 'O(V+E)', space: 'O(V)', note: 'Queue holds at most V nodes; in-degree array is O(V)', highlight: true },
+  { approach: 'DFS-based', time: 'O(V+E)', space: 'O(V)', note: 'Call stack depth = O(V); color array is O(V)' },
+]} />
+
+<SectionHeader n={7} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  If you see **dependency ordering**, **prerequisites**, or **"detect a cycle in directed graph"** — that's topological sort. The phrase "you can only do X after finishing Y and Z" is the classic signal.
+</Callout>
+
+| Problem signal | Approach |
+|---|---|
+| "Can you finish all courses?" (cycle check) | Kahn's — check `processed == n` |
+| "Return the ordering of courses" | Kahn's or DFS — return the `order` array |
+| "Minimum number of semesters" | BFS level-by-level topological sort |
+| "Find all nodes with no prerequisites" | Nodes with in-degree 0 after building the graph |
+| "Detect cycle in directed graph" | DFS with 3-color; or Kahn's (incomplete output = cycle) |
+
+<SectionHeader n={8} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 207,  title: "Course Schedule",                                slug: "course-schedule",                                    category: "graph", difficulty: "Medium" },
+  { id: 210,  title: "Course Schedule II",                             slug: "course-schedule-ii",                                 category: "graph", difficulty: "Medium" },
+  { id: 1557, title: "Minimum Number of Vertices to Reach All Nodes",  slug: "minimum-number-of-vertices-to-reach-all-nodes",       category: "graph", difficulty: "Medium" },
+]} />
