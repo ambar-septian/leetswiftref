@@ -11,7 +11,12 @@ Docusaurus DSA reference site. Swift solutions. Personal reference for LeetCode 
    - linked-list diagrams: place in Examples section to visualise node structure
    - backtracking diagrams: place in Approach section to visualise the decision/recursion tree
 5. Update sidebars.ts (rebuild from all done problems grouped by category)
-6. Update leetcode_solved.json (mark as done, add files, set submittedAt)
+6. Update theory pages for the problem's category:
+   a. docs/[category]/index.mdx — append the new problem to its `<ProblemList>` array
+   b. docs/[category]/[algorithm].mdx — append the new problem to the Related Problems `<ProblemList>` on the relevant algorithm sub-page
+      - If multiple algorithm sub-pages exist for the category, add to the one whose algorithm the problem uses
+      - If no algorithm sub-page exists yet, skip this step
+7. Update leetcode_solved.json (mark as done, add files, set submittedAt)
 
 ## Model selection
 - Use best judgment for content quality — you have full context of all conventions

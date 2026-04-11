@@ -30,6 +30,10 @@ Return the **leftmost** pivot index. If no such index exists, return `-1`.
 - `1 <= nums.length <= 10^4`
 - `-1000 <= nums[i] <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+  Elements can be negative. The pivot condition is leftSum == rightSum where leftSum = prefix[i-1] and rightSum = totalSum - prefix[i]. Do not simplify to prefix[i] == total/2 — integer division and negatives make that unreliable. Always compute both sides explicitly from the prefix array.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -69,7 +73,15 @@ Explanation: Pivot index 0. Left sum = 0, right sum = 1+(-1) = 0.
   answer="Prefix Sum — precompute cumulative sums, then check pivot condition at each index"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  If you need to check a per-element condition involving the sum of all elements to its left or right, reach for prefix sum. Precompute in O(n), then answer each index query in O(1).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Build a prefix sum array in O(n). For each index i, the left sum is prefix[i-1] and the right sum is totalSum - prefix[i]. A single O(n) scan then checks the pivot condition at every index. An O(1) space variant computes rightSum on the fly using a running leftSum.
+</Callout>
 
 Build `prefix` where `prefix[i] = nums[0] + ... + nums[i]`. For index `i = 0`: left sum is `0`, right sum is `prefix[n-1] - prefix[0]` — check if they are equal. For `i > 0`: left sum is `prefix[i-1]`, right sum is `prefix[n-1] - prefix[i]` — check equality. Return the first matching `i`, or `-1`.
 
@@ -137,7 +149,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `Array(repeating: 0, count: count)` to initialise the prefix array. The condition `prefixs[0] - prefixs[count - 1] == 0` at index 0 checks whether leftSum (0) equals rightSum (total - nums[0]): rearranged, this is `nums[0] == total - nums[0]`, i.e. `2 * nums[0] == total`. The O(1) space variant uses a running `leftSum` variable instead of a prefix array.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Two separate O(n) passes: one to build the prefix array and one to find the pivot. The overall time is O(n). The O(1) space variant uses a single pass — same asymptotic complexity.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The prefix array stores one cumulative sum per element, using O(n) auxiliary space. The running-sum variant eliminates the prefix array entirely, reducing space to O(1) beyond the input.
+</Callout>
 
 <ComplexityTable
   rows={[

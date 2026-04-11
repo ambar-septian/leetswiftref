@@ -27,6 +27,10 @@ If there are two middle nodes, return the **second middle** node.
 - The number of nodes in the list is in the range `[1, 100]`.
 - `1 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  When there are two middle nodes (even-length list), the problem requires the second middle node. The count/2 formula for the two-pass approach, or stopping fast when fast.next == nil for the fast/slow pointer approach, both naturally return the second middle — verify this on a 4-node list.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Explanation: Since the list has two middle nodes (3 and 4), return the second on
   answer="Two-pass: count all nodes in pass 1, compute middle index, seek to that node in pass 2"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  To find the middle of a linked list in O(n) time with O(1) space, use fast/slow pointers: slow moves one step, fast moves two steps — when fast reaches the end, slow is at the middle. For even-length lists, stop when fast.next is nil to land on the second middle.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Two approaches exist. Two-pass: count all nodes in the first pass, then seek to index count/2 in the second pass. Fast/slow pointers: slow advances one step per iteration, fast advances two — when fast reaches the end, slow is at the middle. Both are O(n) time with O(1) space; fast/slow requires only one pass.
+</Callout>
 
 Pass 1: walk `current` while `current.next != nil`, incrementing `count` each step. After the loop, `count` equals the number of steps taken (not the total nodes). Compute `middleIndex`: if `count % 2 == 0`, `count / 2`; else `(count + 1) / 2`. Pass 2: reset `current = head`, advance `middleIndex` times, return.
 
@@ -122,7 +134,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `current?.next` (optional chaining) when the node may be nil mid-traversal. `var current = head` copies the reference — reassigning `current` does not mutate the list. For the fast/slow pointer variant: `var slow = head, fast = head` with `while fast != nil && fast?.next != nil { slow = slow?.next; fast = fast?.next?.next }` — `slow` lands on the second middle for even lists.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  The two-pass approach traverses the list twice: once to count (n-1 steps) and once to reach the middle (n/2 steps). The fast/slow pointer approach traverses at most n/2 iterations. Both are O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only pointer variables and a counter are used — no auxiliary data structures. Both approaches use O(1) extra space regardless of list length.
+</Callout>
 
 <ComplexityTable
   rows={[

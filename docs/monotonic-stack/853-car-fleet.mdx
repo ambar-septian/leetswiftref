@@ -37,6 +37,10 @@ Return the **number of car fleets** that will arrive at the destination.
 - `0 < speed[i] <= 10^6`
 - All values of `position` are unique.
 
+<Callout type="amber" label="Key Constraint">
+  Arrival time must be computed as a Float (or Double), not an integer. Two cars at different positions and speeds may have the same non-integer arrival time — integer division would incorrectly round these and misidentify fleet merges.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -68,9 +72,17 @@ Output: 1
   answer="Sort by position descending, compute arrival times, use a stack — pop when current time is within the fleet ahead"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When objects merge based on overtaking order and the merge decision depends only on the most recent surviving group, sort by position and use a monotonic stack. A trailing car joins the fleet ahead if its arrival time is no greater than the fleet's time.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
 
 <CarFleetDiagram />
+
+<Callout type="cyan" label="Core Insight">
+  Convert each car into its arrival time at the target. Sort by position descending so we process the leading car first. A following car forms a fleet with the car ahead if its arrival time is no greater — it will catch up before reaching the target. Use a monotonic stack: pop when the incoming arrival time is within the fleet ahead, then push.
+</Callout>
 
 Sort cars by position in descending order (closest to target first). For each car, compute `time = (target - position) / speed` (as a Float). Push onto a stack. If `stack.last <= stack[stack.count-2]`, the current car catches the car ahead — pop it (they form the same fleet). Final stack size is the number of distinct fleets.
 
@@ -133,7 +145,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `Array(zip(position, speed)).sorted { $0.0 &gt; $1.0 }` to pair positions with speeds and sort descending by position. Store arrival times as `Float` — `let time = (Float(target) - Float(car.0)) / Float(car.1)`. Comparing `stack[stack.count - 1] &lt;= stack[stack.count - 2]` inside a `while stack.count &gt;= 2` guard is clearer than using `stack.last` for both comparisons.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n log n)">
+  Sorting takes O(n log n). The subsequent stack pass is O(n) — each arrival time is pushed once and popped at most once. Overall: O(n log n) dominated by sorting.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The sorted cars array and the stack each use O(n) space. The stack holds one entry per distinct fleet in the worst case (no merges — all cars arrive at different times).
+</Callout>
 
 <ComplexityTable
   rows={[

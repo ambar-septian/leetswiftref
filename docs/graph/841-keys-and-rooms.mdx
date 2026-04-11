@@ -33,6 +33,10 @@ Given an array `rooms` where `rooms[i]` is the list of keys in room `i`, return 
 - `0 <= rooms[i][j] < n`
 - All the values in `rooms[i]` are **unique**.
 
+<Callout type="amber" label="Key Constraint">
+  Room 0 is the only room that starts unlocked — it is the sole DFS starting point. Multiple rooms may contain the same key; the visited set prevents re-entering rooms that have already been processed, avoiding infinite loops.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Explanation: We can never enter room 2.
   answer="DFS from room 0 with a visited set — if visited.count equals rooms.count, all rooms are reachable"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a problem asks whether all nodes in a graph are reachable from a single source, DFS or BFS from that source with a visited set is the pattern. After traversal, check if visited.count equals the total node count.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Model rooms as graph nodes and keys as directed edges. DFS from room 0 with a visited set explores every reachable room exactly once. After DFS, comparing visited.count to rooms.count tells you whether full reachability was achieved — O(N + K) total.
+</Callout>
 
 DFS from room `0`. Maintain a `visited` set. At each room `i`: insert `i` into visited, then recurse into each key (neighbor) that has not yet been visited. After DFS completes, check if `visited.count == rooms.count`.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `Set&lt;Int&gt;()` is the idiomatic Swift visited set — `insert` and `contains` are O(1) average. The nested `func dfs(_ i: Int)` captures `visited` and `rooms` from the enclosing scope. Since `visited` is a `var`, mutations inside the nested function are reflected in the outer scope — no `inout` is needed for captured variables.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N + K)">
+  N = number of rooms, K = total number of keys across all rooms. Each room is visited at most once (visited set guard). For each visited room, we iterate over its keys. Total work is proportional to rooms + keys — O(N + K).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N)">
+  The visited set holds at most N room indices. The DFS call stack depth is at most N in the worst case (a chain of rooms each with one key). O(N) auxiliary space total.
+</Callout>
 
 <ComplexityTable
   rows={[

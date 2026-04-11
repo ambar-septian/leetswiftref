@@ -29,6 +29,10 @@ Return `true` if and only if the two given trees with head nodes `root1` and `ro
 - The number of nodes in each tree will be in the range `[1, 200]`.
 - Both of the given trees will have values in the range `[0, 200]`.
 
+<Callout type="amber" label="Key Constraint">
+  A leaf is a node where both left and right children are nil. A node with exactly one child is not a leaf — it is an internal node with one subtree. The leaf sequence must be collected left-to-right (recurse left before right) to match order correctly.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: false
   answer="DFS on each tree collecting leaves left-to-right; compare the two sequences"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a problem requires comparing a specific traversal order across two trees, run the same DFS on each tree into separate arrays and compare. Inorder left-to-right DFS naturally produces the left-to-right leaf sequence.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Collect leaves from each tree independently using a DFS that recurses left before right. A node is a leaf when both children are nil — append its value. For internal nodes, concatenate left and right leaf sequences recursively. Then compare the two resulting arrays for equality.
+</Callout>
 
 Define `dfs(_ root: TreeNode?) -> [Int]`. If `root` is nil, return `[]`. If both children are nil, return `[root.val]`. Otherwise return `dfs(root.left) + dfs(root.right)`. Call `dfs(root1)` and `dfs(root2)` and compare the results.
 
@@ -113,7 +125,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `guard let root else { return [] }` is idiomatic Swift optional unwrapping for tree nodes. `dfs(root.left) + dfs(root.right)` concatenates two `[Int]` arrays — this creates a new array at each internal node, which is acceptable here given the small tree size (up to 200 nodes). For larger trees, an `inout` accumulator avoids repeated allocations.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n1 + n2)">
+  DFS visits every node in each tree exactly once. The array concatenation at each internal node takes time proportional to the number of leaves in its subtree — amortised over the whole tree this is O(n). Total: O(n1 + n2).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h1 + h2 + L)">
+  Call stack depth equals the tree height: O(h1 + h2). Intermediate leaf arrays at each recursive frame add up to O(L) total allocated space, where L is the total number of leaves. For balanced trees, h is O(log n).
+</Callout>
 
 <ComplexityTable
   rows={[

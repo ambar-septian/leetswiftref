@@ -31,6 +31,10 @@ The graph is given as follows: `graph[i]` is a list of all nodes you can visit f
 - All the values of `graph[i]` are **unique**.
 - The input graph is **guaranteed to be a DAG**.
 
+<Callout type="amber" label="Key Constraint">
+  The graph is guaranteed to be a DAG — no cycles. This means DFS terminates naturally without a visited set, and every path from 0 either reaches n-1 or ends at a dead-end node. No cycle detection or visited tracking is needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Output: [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
   answer="DFS Backtracking — append node, recurse to neighbors, record path on reaching n-1, remove node on return"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you need all paths (not just shortest) through a DAG, DFS backtracking is the go-to. No visited set is needed for DAGs — every DFS branch either reaches the target or terminates at a dead end.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  DFS backtracking on a DAG naturally enumerates all source-to-target paths. Append the current node to the path on entry, recurse into each neighbor, record the path when the target is reached, then remove the node on return. No visited set is needed because the DAG guarantee prevents cycles.
+</Callout>
 
 Start DFS from node `0` with `list = [0]`. At each node `i`: if `i == n-1` (target), append a copy of `list` to result and return. Otherwise, for each neighbor in `graph[i]`: append neighbor, recurse, remove neighbor. Because it is a DAG, no visited set is needed.
 
@@ -126,7 +138,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  In Swift, `[Int]` is a value type — `result.append(list)` copies the array automatically. No need for `list.copy()` as you would in Python. The nested `func dfs(_ i: Int)` captures `result`, `list`, `graph`, and `n` by reference from the enclosing scope, so no extra parameters are needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(2^n · n)">
+  A DAG of n nodes can have up to 2^(n-2) distinct source-to-target paths (in a fully connected DAG). Recording each path takes O(n) to copy the list. Total time is O(2^n · n) in the worst case.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The call stack and the current path list each use O(n) space (depth of the DFS equals the longest path). The result array stores all paths — if counted, it adds O(2^n · n) output space; auxiliary space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -27,6 +27,10 @@ Find the state of the asteroids after all collisions. If two asteroids meet, the
 - `-1000 <= asteroids[i] <= 1000`
 - `asteroids[i] != 0`
 
+<Callout type="amber" label="Key Constraint">
+  A collision only happens between a positive asteroid on the stack and an incoming negative asteroid. Two positives or two negatives never collide — they move in the same direction. The equal-size case destroys both, and neither is pushed to the stack.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -64,7 +68,15 @@ Explanation: 2 and -5 collide: -5 wins (abs(-5)=5 > 2). Then 10 and -5 collide: 
   answer="Stack simulation — push asteroids; when a negative arrives, pop and compare against the stack top until resolved"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When the outcome of each element depends only on the most recent surviving element, use a stack. Here, a negative asteroid only interacts with the positive directly in front of it — exactly what the stack top represents.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Model the asteroid row as a stack. A collision can only occur between the rightmost surviving positive asteroid (stack top) and an incoming negative asteroid. Pop and compare sizes in a loop — the larger survives, equal sizes both die. Any asteroid that makes it through the loop is pushed onto the stack.
+</Callout>
 
 Maintain a stack. For each asteroid `ast`: while the stack top is positive and `ast` is negative, a collision occurs. If `|ast| > top`, pop the top (top destroyed). If `|ast| < top`, set `ast = 0` (ast destroyed). If equal, pop top and set `ast = 0` (both destroyed). After the loop, if `ast != 0`, push it.
 
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `var ast = asteroids[i]` as a local mutable copy — iterating with `for ast in asteroids` gives a `let` binding. `stack.last` returns an optional; pattern match with `if let top = stack.last` or use `stack.last!` inside a non-empty guard. The stack is an `[Int]` array — `removeLast()` and `append()` are O(1) amortised.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each asteroid is pushed onto the stack at most once and popped at most once. The inner while loop does not cause O(n²) — the total number of pops across the entire loop is bounded by n, giving O(n) total work.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds surviving asteroids — in the worst case (all positives or all negatives, no collisions) all n asteroids are on the stack. O(n) auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

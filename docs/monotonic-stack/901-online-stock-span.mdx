@@ -30,6 +30,10 @@ Implement the `StockSpanner` class:
 - `1 <= price <= 10^5`
 - At most `10^4` calls will be made to `next`.
 
+<Callout type="amber" label="Key Constraint">
+  The span includes days with prices strictly less than or equal to today's price (not strictly less than). The pop condition is price &gt;= stack.last.price. Storing cumulative span in each stack entry allows O(1) amortised merging — without it, re-scanning absorbed days would cost O(n) per call.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ Explanation:
   answer="Monotonic stack of (price, span) pairs — pop and accumulate spans when current price is greater or equal"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When each new element absorbs a run of previous elements and you need the cumulative count, store (value, count) pairs on a monotonic stack. Popping and summing counts replaces a linear re-scan — giving O(1) amortised per query.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Instead of re-scanning past prices on each call, store (price, cumulativeSpan) pairs on a monotonic decreasing stack. When a new price arrives, pop all stack entries with price less than or equal to the new price, adding their cumulative spans to the running total. Push the new (price, total span) pair. This compresses absorbed days into a single stack entry — O(1) amortised per call.
+</Callout>
 
 Maintain a stack of `(price, span)` tuples. For each new `price`: start `span = 1`. While the stack is not empty and `price >= stack.last.price`: pop and add `stack.last.span` to `span`. Push `(price, span)` and return `span`. The stack acts as a compressed representation — each entry covers the span of all days it absorbed.
 
@@ -116,7 +128,19 @@ class StockSpanner {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Store the stack as `var stack = [(Int, Int)]()` — Swift infers the tuple type. `stack.last` returns `(Int, Int)?`; destructure with `if let last = stack.last` then call `stack.removeLast()` separately. The class property `var stack` persists between `next` calls — each instance maintains its own independent stack across the call sequence.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1) amortised">
+  Each price is pushed once and popped at most once across all calls. The total push + pop operations across n calls to `next` is at most 2n — giving O(1) amortised per call. Individual calls may take O(k) for k pops, but k is bounded by the number of previous pushes.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most one entry per call in the worst case (strictly decreasing prices — nothing is ever popped). After n calls the stack has at most n entries — O(n) space.
+</Callout>
 
 <ComplexityTable
   rows={[

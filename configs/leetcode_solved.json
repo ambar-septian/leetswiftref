@@ -2452,7 +2452,7 @@
       "status": "done",
       "slug": "find-pivot-index",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 735,
@@ -2472,7 +2472,7 @@
       "status": "done",
       "slug": "asteroid-collision",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 739,
@@ -2492,7 +2492,7 @@
       "status": "done",
       "slug": "daily-temperatures",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 784,
@@ -2513,7 +2513,7 @@
       "status": "done",
       "slug": "letter-case-permutation",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 797,
@@ -2535,7 +2535,7 @@
       "status": "done",
       "slug": "all-paths-from-source-to-target",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 841,
@@ -2556,7 +2556,7 @@
       "status": "done",
       "slug": "keys-and-rooms",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 853,
@@ -2577,7 +2577,7 @@
       "status": "done",
       "slug": "car-fleet",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 872,
@@ -2598,7 +2598,7 @@
       "status": "done",
       "slug": "leaf-similar-trees",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 876,
@@ -2618,7 +2618,7 @@
       "status": "done",
       "slug": "middle-of-the-linked-list",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 901,
@@ -2639,7 +2639,7 @@
       "status": "done",
       "slug": "online-stock-span",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 933,

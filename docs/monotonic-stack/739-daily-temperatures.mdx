@@ -24,6 +24,10 @@ Given an array of integers `temperatures` representing the daily temperatures, r
 - `1 <= temperatures.length <= 10^5`
 - `30 <= temperatures[i] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  The pop condition uses strictly greater than (not greater-or-equal) because we want the next day that is warmer, not the same temperature. Indices left in the stack at the end have no warmer future day and keep their default answer of 0.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Output: [1,1,0]
   answer="Monotonic decreasing stack of indices — pop and record gap when a warmer day is found"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  Whenever you need the next greater element to the right for each position, use a monotonic decreasing stack of indices. Process left to right: push each index, pop when the current element is larger, and record the gap.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Maintain a monotonic decreasing stack of indices. When a warmer temperature arrives at index i, every index still on the stack with a lower temperature has found its answer: answer = i - stackIndex. Storing indices (not temperatures) lets you compute the day gap directly in O(1) at pop time.
+</Callout>
 
 Maintain a stack of indices (temperatures stored implicitly). For each index `i`: while the stack is not empty and `temperatures[i] > temperatures[stack.last!]`, pop `topIndex` and set `results[topIndex] = i - topIndex`. Push `i` onto the stack. Indices remaining in the stack at the end have no warmer future day — they keep `results[i] = 0` (the array default).
 
@@ -125,7 +137,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Initialise `results = Array(repeating: 0, count: temperatures.count)` so unresolved indices keep 0 without an extra assignment. `stack.last` returns `Int?`; using `if let topIndex = stack.last` plus a separate `stack.removeLast()` is cleaner than optional chaining with an index lookup. Store indices (Int) not tuples — the temperature is available on demand via `temperatures[topIndex]`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each index is pushed onto the stack exactly once and popped at most once. The total number of push and pop operations across the entire loop is therefore bounded by 2n — O(n) overall.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n indices (worst case: strictly decreasing temperatures — no element is ever popped). The results array is O(n) but is required output, not auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

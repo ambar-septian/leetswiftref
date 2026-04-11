@@ -27,6 +27,10 @@ Return a list of all possible strings we could create. You may return the output
 - `1 <= s.length <= 12`
 - `s` consists of lowercase English letters, uppercase English letters, and digits.
 
+<Callout type="amber" label="Key Constraint">
+  Digits contribute no branching — there is only one form of any digit. Only letters branch into two choices (original case and toggled case). With up to 12 characters, the worst case is all letters: 2^12 = 4096 permutations.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: ["3z4","3Z4"]
   answer="Backtracking — branch at each letter into original and toggled case; digits add only one branch"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When every character independently branches into a fixed set of choices and you must enumerate all combinations, backtracking with a path array is the natural tool. Branch only when there is a genuine choice — digits have one form, so skip the second branch.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  At each character position, a digit forces exactly one branch while a letter forces exactly two branches (original case and toggled case). DFS with a path array explores all branches in depth-first order — appending a character, recursing to the next position, then popping to backtrack and try the alternate branch.
+</Callout>
 
 DFS with a `path` array. At each index `i`: append `chars[i]` to path, recurse to `i+1`, then pop. If `chars[i]` is a digit, that is the only branch. If it is a letter, also toggle its case (lower↔upper), append the toggled character, recurse to `i+1`, then pop. Collect results when `path.count == chars.count`.
 
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `var char = chars[i]` as a local copy before toggling — never modify the original `chars` array. `char.isUppercase` and `char.lowercased()` are clean Swift `Character` API. `Character(char.uppercased())` creates a new Character from the uppercase String — no intermediate String needed in the recursive branch. `path.removeLast()` backtracks in O(1).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(2^L · n)">
+  L is the number of letters in the string. Each letter doubles the number of paths, giving 2^L total leaves. At each leaf, `String(path)` copies the path in O(n). Total time: O(2^L · n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The path array and call stack each use O(n) = O(s.length) space. The result array holds up to 2^L strings each of length n — if output space is counted, it is O(2^L · n); auxiliary space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
