@@ -30,6 +30,10 @@ For each element in `nums1`, find the next greater element in `nums2` and return
 - All integers in `nums1` and `nums2` are **unique**.
 - All the integers of `nums1` also appear in `nums2`.
 
+<Callout type="amber" label="Key Constraint">
+All values in both arrays are unique. This guarantees a safe bijective mapping from value to result index — no collision handling is needed in the hash map, and every pop from the stack maps unambiguously to exactly one result slot.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -64,7 +68,15 @@ Explanation:
   answer="Monotonic Stack on nums2 — precompute next-greater map, look up nums1 values"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When looking for the next greater element to the right, use a decreasing monotonic stack: push elements as you scan left to right, and when a larger element arrives, pop everything smaller — that larger element is the next-greater answer for each popped value.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Precompute all next-greater answers in one pass over `nums2` using a decreasing monotonic stack. When the current element exceeds the stack's top, pop — the current element is the next-greater answer for each popped value. Store results in a map keyed by value, then answer each `nums1` query in O(1) with a single lookup.
+</Callout>
 
 First, build a hash map `dict` from each value in `nums1` to its index in the result array. Initialise `result` with `-1` for every position. Iterate through `nums2` with a decreasing monotonic stack. When the current element `curr` is greater than the stack's top, pop from the stack: if the popped value is in `dict`, record `curr` as its next-greater answer. At the end, every element not popped kept its default `-1`.
 
@@ -137,7 +149,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`while let last = stack.last, curr > last` uses optional binding on `stack.last` — safe for an empty stack without an explicit `isEmpty` check. `stack.removeLast()` is O(1). Only values present in `nums1` are pushed (guarded by `dict[curr] != nil`), keeping the stack bounded at `nums1.count` elements rather than `nums2.count`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m + n)">
+Building `dict` from `nums1` takes O(m). Scanning `nums2` (length n) with the monotonic stack: each element is pushed at most once and popped at most once — O(n) total stack operations. Query lookups are O(1). Total: O(m + n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m)">
+The `dict` map and the `stack` each hold at most m entries (only `nums1` values are pushed). The `result` array is output. Total auxiliary space: O(m).
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -31,6 +31,10 @@ Implement `MyHashSet`:
 - `0 <= key <= 10^6`
 - At most `10^4` calls will be made to `add`, `remove`, and `contains`.
 
+<Callout type="amber" label="Key Constraint">
+Keys range up to 10^6. With 10,000 buckets (`key % 10_000`), the maximum chain length is 100 (10^6 / 10^4) — so every operation is effectively O(1) even in the worst case of a uniformly bad hash. The 10^4 call limit also ensures total work stays well within bounds.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ myHashSet.contains(2);  // return false
   answer="Chaining Hash Set — array of linked lists with a dummy head per bucket for collision-safe add/remove/contains"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For a chaining hash set, always use a dummy head node per bucket — it eliminates the special case of removing the first real node. Every removal becomes identical: find the predecessor, set `predecessor.next = node.next`. The dummy is never removed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Hash each key to a bucket index (`key % 10_000`). Each bucket is a linked list with a dummy head. `add` scans for duplicates before appending a new node; `remove` finds the predecessor and splices out the target node; `contains` scans the chain. The dummy head ensures a predecessor always exists for every real node.
+</Callout>
 
 Allocate 10,000 buckets. `hash(key) = key % 10_000`. For `add`: locate the bucket; if empty, create dummy → node(key); otherwise scan for duplicates before appending. For `remove`: scan for the predecessor of key, splice out. For `contains`: scan the chain for the key.
 
@@ -171,7 +183,19 @@ class MyHashSet {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`ListNode` is defined at the top level (not inside `MyHashSet`) because LeetCode submission requires a clean namespace. `(0..<10_000).map { _ in nil }` creates the bucket array with 10,000 nil slots — Swift underscores in integer literals (`10_000`) are purely cosmetic. `current?.next?.val == key` uses optional chaining for safe traversal; any nil in the chain short-circuits to `false`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1) avg">
+Each operation hashes the key in O(1), then traverses a chain of average length n/B (n = stored keys, B = 10,000 buckets). With keys uniformly distributed, the expected chain length is small and effectively constant. Worst case (all keys collide) is O(n), but the constraints cap the chain at 100.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(B + n)">
+The bucket array of size B = 10,000 is allocated at init. Each stored key adds one `ListNode` to the heap, for O(n) node allocations. Total: O(B + n).
+</Callout>
 
 <ComplexityTable
   rows={[

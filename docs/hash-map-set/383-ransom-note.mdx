@@ -26,6 +26,10 @@ Each letter in `magazine` can only be used once in `ransomNote`.
 - `1 <= ransomNote.length, magazine.length <= 10^5`
 - `ransomNote` and `magazine` consist of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+Both strings consist only of lowercase English letters — at most 26 distinct characters can appear. This bounds the frequency map to at most 26 keys, making space O(1) regardless of string length.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Output: true
   answer="Hash Map Frequency Count — build magazine map, consume ransomNote letters"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking if one string's characters can construct another, build the frequency map from the supplier and consume from the requester. Return false as soon as a required character is unavailable.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Count every character in `magazine` into a frequency map. For each character in `ransomNote`, check if it is available (positive count) and decrement. If any character is missing, return false immediately. The magazine can be longer than the note — only per-character availability matters.
+</Callout>
 
 Count every character in `magazine` into a hash map (`[Character: Int]`). Then iterate through `ransomNote`: for each character, check if it exists in the map with a positive count. If yes, decrement (and remove when it hits zero). If not found, return `false`. Return `true` after consuming all ransom note characters.
 
@@ -128,7 +140,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`dict[char, default: 0] += 1` is idiomatic for initialise-and-increment without an explicit `if-let`. Setting `dict[char] = nil` removes the key when the count reaches zero, keeping `dict[char] != nil` equivalent to a positive-count check. For purely lowercase-letter inputs, a fixed 26-slot `[Int]` array keyed by `asciiValue - 97` is a faster alternative.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m + n)">
+One pass over `magazine` (length m) to build the frequency map, then one pass over `ransomNote` (length n) to consume characters. Each character triggers an O(1) hash map operation. Total: O(m + n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+The frequency map holds at most 26 keys — the size of the lowercase English alphabet. Regardless of input length, storage is bounded by a constant.
+</Callout>
 
 <ComplexityTable
   rows={[

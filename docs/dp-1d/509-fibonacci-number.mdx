@@ -29,6 +29,10 @@ Given `n`, calculate `F(n)`.
 **Constraints:**
 - `0 <= n <= 30`
 
+<Callout type="amber" label="Key Constraint">
+`F(0) = 0` must be checked before the `n <= 2` base case. If only `n <= 2` returns `1`, then `fib(0)` incorrectly returns `1`. The order of base-case guards matters.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Explanation: F(4) = F(3) + F(2) = 2 + 1 = 3
   answer="Memoized Recursion (Top-Down DP) — cache each F(n) after first computation"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a recursive function calls itself with the same arguments multiple times, memoize: cache results on the way back up so each subproblem is solved exactly once. Check the cache at the top of the function, before any recursive calls.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Cache `F(n)` in a dictionary so each subproblem is solved exactly once — the exponential O(2^n) call tree collapses to a linear chain of O(n) unique computations. Store the cache on the class instance and check it at the very top of the function, before making any recursive call.
+</Callout>
 
 Use a dictionary `memo` to cache results. For `n == 0` return `0`; for `n <= 2` return `1` (both base cases). For all other `n`, check the cache first; if missing, compute `fib(n-1) + fib(n-2)`, store in `memo[n]`, and return.
 
@@ -129,7 +141,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`memo` is stored as an instance variable on `Solution` — safe in LeetCode since a fresh instance is created per test case, but would produce stale results if the instance were reused. `if let result = memo[n]` uses optional binding to check the cache. The `n == 0` base case must precede `n <= 2` because `F(0) = 0`, not 1 — guard order is load-bearing here.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+With memoization each value F(0)…F(n) is computed at most once. The call tree that would otherwise expand to O(2^n) nodes is pruned to exactly n unique recursive calls by the cache lookup at the top of each frame.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The memo dictionary stores one entry per unique subproblem (0 through n), and the call stack reaches depth n before any value is cached on the way up. Both contributions are O(n), so total space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -138,6 +162,10 @@ class Solution {
     { approach: "Bottom-Up Iteration", time: "O(n)", space: "O(1)", note: "Optimal — only two variables needed" },
   ]}
 />
+
+<Callout type="amber" label="Naive Recursion vs Memoized vs Bottom-Up — which to choose?">
+Always choose Bottom-Up Iteration for Fibonacci: same O(n) time but O(1) space and no call-stack overhead. Use Memoized Recursion when the top-down recursive structure makes the DP recurrence easier to reason about. Avoid Naive Recursion entirely — its O(2^n) recomputation makes it impractical beyond n ≈ 30.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

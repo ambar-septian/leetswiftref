@@ -31,6 +31,10 @@ Return the **maximum area** of an island in `grid`. If there is no island, retur
 - `1 <= m, n <= 50`
 - `grid[i][j]` is either `0` or `1`.
 
+<Callout type="amber" label="Key Constraint">
+The cell must be sunk (`grid[r][c] = 0`) as the very first action inside DFS — before any recursive calls. Sinking after recursing allows neighbors to re-enter the current cell, causing infinite recursion and an inflated count.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -68,7 +72,15 @@ Output: 0
   answer="DFS Flood-Fill — sink land to 0 during traversal, count cells, update global max"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When counting the area or cells of connected regions in a grid, DFS flood-fill with in-place sinking (set to 0 on entry) is the standard O(m×n) approach — each cell is visited at most once and no separate visited array is needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Scan every cell. On finding a `1`, launch DFS: sink the cell to `0` immediately (in-place visited marker), recurse in all four directions, return `1 + sum of neighbor counts`. The outer scan accumulates `result = max(result, dfs(r, c))`. Each cell is visited at most once — once sunk, it is never revisited.
+</Callout>
 
 Scan every cell. When a `1` is found, launch DFS. Inside DFS: immediately set `grid[r][c] = 0` (sink), then recurse in all 4 directions, summing the return counts. Return `1 + counts from neighbors`. Update `results = max(results, dfs(r, c))` after each call. Return `results` at the end.
 
@@ -145,7 +157,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var grid = grid` creates a mutable copy — Swift 2D arrays are value types (array of arrays), so each row is also copied. The nested `func dfs` captures `grid`, `rows`, `cols`, and `directions` from the outer scope via closure. `let directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]` uses anonymous tuple types — clean for 4-directional traversal without a named struct.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m·n)">
+The outer scan visits every cell once. Each cell that is a `1` triggers one DFS call, but once sunk (set to 0) it is never revisited. Every cell is processed at most twice — once by the outer scan and once by DFS. Total: O(m·n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m·n)">
+The recursion stack depth is bounded by the size of the largest island — in the worst case (one giant connected island filling the entire grid) the stack reaches depth m·n. No additional visited array is used.
+</Callout>
 
 <ComplexityTable
   rows={[

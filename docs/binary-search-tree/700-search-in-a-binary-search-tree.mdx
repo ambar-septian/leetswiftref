@@ -29,6 +29,10 @@ Find the node in the BST that the node's value equals `val` and return the subtr
 - `root` is a binary search tree.
 - `1 <= val <= 10^7`
 
+<Callout type="amber" label="Key Constraint">
+The function returns the entire **subtree** rooted at the matching node — not just the node's value. Because all of the node's children are already wired up, returning the matching node implicitly includes the full subtree at no extra cost.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: Node with val 5 does not exist.
   answer="Iterative BST traversal — go left when val is smaller, right when larger, return node on match"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When searching a BST, never explore both children — use the BST invariant to go left when the target is smaller, right when larger. This halves the remaining candidates at every step. Prefer the iterative form over recursion to keep space O(1).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Use the BST invariant to navigate without exploring both children: at each node, if `val == curr.val` return `curr`; if `val < curr.val` go left; else go right. The iterative `while let curr = next` loop avoids recursion overhead and keeps space O(1).
+</Callout>
 
 Start with `next = root`. Each iteration: if `curr.val == val`, return `curr`. If `curr.val > val`, go left (`next = curr.left`). If `curr.val < val`, go right (`next = curr.right`). If `next` becomes `nil`, the node was not found — return `nil`.
 
@@ -120,7 +132,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`while let curr = next` uses Swift's optional binding in a loop condition — it unwraps `next` into `curr` and exits when `next` becomes nil. Returning `next` at the end is safe: the loop only exits when `next` is nil (not found), so `return next` returns nil. No separate "not found" sentinel is needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(h)">
+At each node we make one comparison and move to one child — the search descends exactly one level per iteration. Total iterations = the depth of the target node, which is at most h (the tree height). O(log n) for a balanced BST, O(n) for a degenerate (skewed) tree.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+The iterative approach uses a single pointer variable `next` — no call stack, no queue. Total: O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

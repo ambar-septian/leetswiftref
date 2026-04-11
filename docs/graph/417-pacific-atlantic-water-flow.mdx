@@ -33,6 +33,10 @@ Return a 2D list of grid coordinates `result` where `result[i] = [ri, ci]` denot
 - `1 <= m, n <= 200`
 - `0 <= heights[r][c] <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+The uphill BFS expansion uses `>=` not `>`: water can flow between cells of equal height. Missing the equality case incorrectly excludes flat plateaus that touch an ocean border.
+</Callout>
+
 <Callout type="green" label="Core Insight">
 Instead of asking "can water from cell X reach both oceans?" (expensive), reverse the question: start BFS from each ocean's border and ask "which cells can water flow *uphill* from here?". The intersection of both reachable sets is the answer.
 </Callout>
@@ -72,7 +76,15 @@ Explanation: The single cell borders both oceans directly.
   answer="Reverse Multi-Source BFS — border-seeded uphill expansion"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking reachability from many sources to many targets is too expensive in the forward direction, reverse it: seed BFS from the destinations and expand in reverse. The intersection of two reachable sets replaces O((M×N)²) checks with two O(M×N) passes.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Reverse the flow direction: start BFS from each ocean's border and expand to equal-or-higher neighbours. Any cell reachable this way can send water to that ocean in the forward direction. Run two separate BFS passes — one per ocean — then return the intersection of both visited sets.
+</Callout>
 
 Seed the Pacific BFS queue with every cell on the top row and left column. Seed the Atlantic BFS queue with every cell on the bottom row and right column. In each BFS, expand to a neighbour only if its height is **greater than or equal to** the current cell (water flows downhill, so we travel uphill in reverse). Collect all visited cells per ocean, then return the intersection.
 
@@ -173,7 +185,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The `encode/decode` helpers (`r * cols + c`, `index / cols`, `index % cols`) convert 2D coordinates to flat integers for use in `Set&lt;Int&gt;` — integer hashing is faster than tuple hashing. The shared `queue` variable is reused across both BFS calls; the first `bfs()` drains it completely, so the Atlantic seeding starts clean. `pacificSet.intersection(atlanticSet)` is a single O(k) set operation in Swift's `Set`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(M × N)">
+Each cell is enqueued and processed at most once per BFS pass. Two passes (Pacific + Atlantic) visit all M × N cells. The final set intersection over at most M × N encoded integers is O(M × N). Total: O(M × N).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(M × N)">
+The BFS queue, visited set, and ocean sets each hold at most M × N entries. The encode/decode helpers use O(1) arithmetic — no additional arrays needed for coordinate storage.
+</Callout>
 
 <ComplexityTable
   rows={[
@@ -181,6 +205,10 @@ class Solution {
     { approach: "Reverse multi-source BFS", time: "O(M*N)", space: "O(M*N)", note: "Two BFS passes + set intersection", highlight: true },
   ]}
 />
+
+<Callout type="amber" label="Naive DFS vs Reverse Multi-Source BFS — which to choose?">
+Always prefer reverse multi-source BFS for this problem — it reduces O((M×N)²) to O(M×N) with the same space usage. Naive per-cell DFS is only acceptable as a brute-force starting point or when the grid is tiny. The reverse BFS insight (start from borders, expand uphill) is the key observation that makes the efficient solution possible.
+</Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />
 

@@ -29,6 +29,10 @@ The length of a path between two nodes is represented by the number of **edges**
 - The number of nodes in the tree is in the range `[1, 10^4]`.
 - `-100 <= Node.val <= 100`
 
+<Callout type="amber" label="Key Constraint">
+The diameter is measured in edges, not nodes. A single-node tree has diameter 0. The longest path may not pass through the root — the global maximum must be tracked across every node, not only at the top.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Output: 1
   answer="Post-Order DFS — at each node compute left+right height, update global max"
 />
 
+<Callout type="green" label="Rule of Thumb">
+In post-order DFS problems where the answer at each node depends on both subtrees, return the height upward for the parent to use, and capture the candidate answer (diameter) as a side-effect in a closure-captured outer variable.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+The recursive helper's job is to return height (for the parent's diameter calculation), not diameter. As a side-effect, it updates `result = max(result, left + right)` — the candidate diameter through the current node. This dual-purpose post-order traversal computes the global diameter in a single O(n) pass.
+</Callout>
 
 Use a recursive helper that returns the **height** of the subtree rooted at each node (number of nodes on the longest root-to-leaf path). At each node, the candidate diameter is `left + right` (number of edges through this node). Update a closure-captured `result` with this value. Return `1 + max(left, right)` so the parent receives the correct height.
 
@@ -126,7 +138,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The nested `func recursive` captures `result` from the outer scope — Swift's standard pattern for side-effect accumulation without a class-level variable. `guard let root else { return 0 }` neatly handles nil leaves. `1 + max(left, right)` returns height — the `1` counts the current node itself, so a single-node tree returns height 1 and diameter 0.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is visited exactly once in post-order. At each node we do O(1) work: two recursive returns, a max comparison, and a result update. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The call stack depth equals the height h of the tree — O(log n) for a balanced tree and O(n) for a completely skewed (linked-list-shaped) tree. No additional data structures are used.
+</Callout>
 
 <ComplexityTable
   rows={[

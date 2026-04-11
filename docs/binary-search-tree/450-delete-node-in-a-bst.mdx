@@ -32,6 +32,10 @@ Basically, the deletion can be divided into two stages:
 - `root` is a valid binary search tree.
 - `-10^5 <= key <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+The key may not exist in the BST. The base case `guard let root else { return root }` handles this by returning nil when the search falls off the tree — no node is modified and the tree is returned unchanged.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -69,7 +73,15 @@ Output: []
   answer="Recursive BST — navigate to target, handle three deletion cases with return-value pointer fixup"
 />
 
+<Callout type="green" label="Rule of Thumb">
+BST deletion always has three cases based on child count: zero children (return nil), one child (return that child), two children (replace value with inorder successor, then recursively delete the successor). Returning the (possibly updated) root at every level rewires the parent's pointer automatically.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Navigate using BST ordering to find the target, then handle three cases: leaf (return nil), one child (return that child), two children (replace value with the inorder successor — the leftmost node of the right subtree — then recursively delete the successor). Returning `root` at every call level rewires the parent's pointer to the (possibly updated) subtree root.
+</Callout>
 
 Recurse using the BST property:
 - If `key > root.val`: problem is in the right subtree — `root.right = deleteNode(root.right, key)`.
@@ -162,7 +174,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let root else { return root }` binds the non-optional and returns the original `TreeNode?` (nil) in one step. `while let left = curr?.left { curr = left }` traverses to the leftmost node using optional binding — idiomatic for BST min-finding. The `curr?.val ?? -1` fallback is safe because the two-children branch guarantees `root.right` is non-nil.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(h)">
+Each recursive call descends one level of the tree. Navigation to the target takes O(h) steps. Finding the inorder successor (leftmost of right subtree) also takes O(h). The recursive deletion of the successor adds one more O(h) traversal. Total: O(h), where h = O(log n) for a balanced BST and O(n) worst case for a skewed tree.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The recursion call stack reaches depth h — one frame per level descended. No auxiliary data structures are allocated. Stack depth is O(log n) for balanced trees and O(n) for skewed trees.
+</Callout>
 
 <ComplexityTable
   rows={[

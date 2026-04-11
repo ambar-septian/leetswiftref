@@ -37,6 +37,10 @@ The test cases are generated such that the answer and all intermediate calculati
 - For operation `"+"`, there will always be at least two previous scores on the record.
 - For operations `"C"` and `"D"`, there will always be at least one previous score on the record.
 
+<Callout type="amber" label="Key Constraint">
+Integer operations can be negative (e.g., `"-3000"`). The `default` case in the switch must use `Int(operation)!` to parse them — not a digit check. The problem guarantees all intermediate values fit in 32-bit, so Swift's 64-bit `Int` is more than sufficient.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -71,7 +75,15 @@ Output: 27
   answer="Stack Simulation — apply each operation, sum the final stack"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When every operation modifies only the most recent one or two values, a stack simulation is the natural fit — push, pop, and peek all act on the top in O(1). Never maintain a running total when a `C`-style undo operation exists; accumulate in the stack and sum only at the end.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain an integer stack: integer strings push their parsed value; `"D"` pushes `last * 2`; `"+"` pushes `stack[last] + stack[last-1]`; `"C"` pops. After all operations, sum the remaining stack with `reduce(0, +)`. Never accumulate a running total — `"C"` must be able to remove a previously added score retroactively.
+</Callout>
 
 Maintain an integer stack. For each operation:
 - Integer string → parse with `Int()` and push.
@@ -151,7 +163,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`switch operation` on a `String` is clean and exhaustive — the `default` case handles all integer strings. `stack[stack.count - 1]` and `stack[stack.count - 2]` are safe because the constraints guarantee `"+"` always has at least two prior scores. `stack.reduce(0, +)` is Swift's idiomatic fold — the `+` operator is passed as a function reference.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+One pass through the operations array. Each operation does O(1) work: a push, pop, or index access. `stack.reduce(0, +)` at the end is O(n) in the worst case (all operations are integer pushes). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The stack holds at most n elements — one per integer operation in the worst case (no C operations). Total: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

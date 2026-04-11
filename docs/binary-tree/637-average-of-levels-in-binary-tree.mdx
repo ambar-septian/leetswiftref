@@ -25,6 +25,10 @@ Given the `root` of a binary tree, return the average value of the nodes on each
 - The number of nodes in the tree is in the range `[1, 10^4]`.
 - `-2^31 <= Node.val <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+Node values range up to 2³¹ - 1, and a level can have up to 10⁴ nodes. The worst-case level sum (~2⁴⁵) overflows Int32 but fits in Swift's 64-bit `Int`. Always accumulate as `Int` and convert to `Double` only for the final division.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: [3.00000, 14.50000, 11.00000]
   answer="BFS Level-Order Traversal — sum all values per level, divide by node count"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When computing per-level aggregates in a BFS, snapshot `let count = queue.count` before the inner loop — this exact count is how many nodes belong to the current level. Children enqueued during the loop inflate the count if not snapshotted first.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Standard level-order BFS: snapshot `count = queue.count`, accumulate `sum` as `Int` across all `count` dequeued nodes, then append `Double(sum) / Double(count)` to results. Converting to `Double` only for the final division avoids floating-point rounding errors that would compound across large levels if the sum were accumulated as `Double`.
+</Callout>
 
 Standard level-order BFS with an inner loop. Before the inner loop, snapshot `count = queue.count`. Accumulate `sum` over all dequeued nodes. After the inner loop, compute `Double(sum) / Double(count)` and append to results. Enqueue children as usual.
 
@@ -127,7 +139,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var sum = 0` is re-declared as a fresh `Int` at the start of each outer loop iteration — no reset needed because it is scoped to the loop body. `Double(sum) / Double(count)` requires explicit casting; Swift does not allow implicit numeric conversion between `Int` and `Double`. The `if count != 0` guard before division is technically unreachable (the outer loop only runs when the queue is non-empty), but makes the division intent explicit.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is enqueued and dequeued exactly once. Each inner loop iteration does O(1) work: dequeue, add to sum, optionally enqueue two children. Total across all levels: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The queue holds at most one full level at a time. For a complete binary tree the widest level holds up to n/2 nodes simultaneously — O(n) queue space. The results array also grows to O(log n) entries (one per level), but that is dominated by the queue.
+</Callout>
 
 <ComplexityTable
   rows={[

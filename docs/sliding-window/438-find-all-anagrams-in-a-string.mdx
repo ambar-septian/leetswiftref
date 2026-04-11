@@ -26,6 +26,10 @@ An anagram is a string that contains the same characters, only the order of char
 - `1 <= s.length, p.length <= 3 * 10^4`
 - `s` and `p` consist of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+The initial window (`s[0..p.count-1]`) must be checked before the sliding loop — the loop starts at index `p.count` and would never evaluate index `0` as an anagram start otherwise.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Explanation: "ab", "ba", "ab" are all anagrams.
   answer="Fixed-Size Sliding Window — 26-slot frequency arrays, slide by one each step"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When searching for all fixed-length pattern matches in a string, use two frequency arrays (one for the pattern, one for the window) and compare after each slide. Array comparison over a fixed alphabet (26 letters) is O(1) — no rehashing needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain two 26-slot frequency arrays: `countP` for the pattern and `countS` for the current window. After initialising both on the first window, slide one character at a time: increment the incoming character and decrement the outgoing character. If `countS == countP` after any slide, the window start is an anagram position.
+</Callout>
 
 Build two 26-element frequency arrays: `countP` for all characters in `p`, and `countS` for the first `p.count` characters of `s`. If they match, record index `0`. Then slide the window one character at a time: add `s[i]` to `countS` and remove `s[i - p.count]`. After each slide, compare `countS == countP`; if equal, record the start index `i - p.count + 1`.
 
@@ -145,7 +157,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var countS = countP` copies the array by value — Swift arrays are value types, so this creates an independent copy, not an alias. `c.asciiValue!` is force-unwrapped safely because the problem guarantees lowercase English letters only. `countP == countS` compares element-by-element and is O(26) = O(1) for fixed-alphabet arrays.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Initialising both frequency arrays takes O(p.length). The sliding loop runs n - p.length times; each iteration does O(1) updates and an O(26) = O(1) array comparison. Total: O(p.length + n) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Two fixed-size 26-element integer arrays are used regardless of input length. No hash map, no output-proportional auxiliary storage — the result array is output, not counted as extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

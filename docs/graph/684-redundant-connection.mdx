@@ -35,6 +35,10 @@ Return an edge that can be removed so that the resulting graph is a tree of `n` 
 - There are no repeated edges.
 - The given graph is connected.
 
+<Callout type="amber" label="Key Constraint">
+Node labels are 1-indexed (`1` to `n`) but the Union-Find arrays are 0-indexed. Every call to `unite` and `find` must subtract 1 from the edge values — forgetting this causes an off-by-one that corrupts the parent array. There is always exactly one redundant edge since the graph is a tree plus one extra edge.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: [1,4]
   answer="Union-Find — process each edge; the first unite that fails (same root) is the redundant connection"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When detecting whether adding an edge creates a cycle in an undirected graph, Union-Find is the canonical tool: if both endpoints share the same root before the union, the edge is redundant. Process edges in order and overwrite the result on every failure — the last redundant edge wins.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Process edges in order. For each edge `[a, b]`, check `find(a-1) == find(b-1)` before uniting — if both endpoints share the same root they are already connected, so this edge forms a cycle (redundant). Otherwise, unite them. Overwrite the result variable on every such failure; the final value is the last redundant edge.
+</Callout>
 
 Initialize Union-Find with `n` nodes (0-indexed). Process each edge `[a, b]`: call `unite(a-1, b-1)`. If `find(a-1) == find(b-1)` before the merge (returned false), both nodes already share a root — this edge forms a cycle, so it is the redundant connection. Since we process edges in order, we record the last such edge and return it.
 
@@ -155,7 +167,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`UnionFind` is an inner class of `Solution` — a clean way to scope the helper without polluting the module namespace. `(0..<n).map { $0 }` creates `[0, 1, 2, ..., n-1]` idiomatically. `func find` mutates `parent[i]` via path compression — this is safe because `UnionFind` is a class (reference type); if it were a struct the mutation would require `mutating func`.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n · α(n))">
+Processing n edges, each calling `find` and potentially `unite`. With path compression and union by rank, each `find` runs in amortised O(α(n)) — the inverse Ackermann function, which is effectively constant (≤ 4) for any practical n. Total: O(n · α(n)) ≈ O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+Two arrays of size n — `parent` and `rank` — are allocated at initialization. No other data structures grow with input size. Total: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

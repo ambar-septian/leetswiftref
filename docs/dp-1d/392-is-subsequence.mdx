@@ -29,6 +29,10 @@ A subsequence of a string is a new string that is formed from the original strin
 
 **Follow-up:** If there are lots of incoming `s` values (e.g., `s1, s2, ... sk` where k is large), how would you change your code? (Binary search with pre-built index lists.)
 
+<Callout type="amber" label="Key Constraint">
+`s` can be empty (length 0), which is a valid subsequence of any `t`. The two-pointer return condition `i == s.count` handles this correctly without special-casing — when `s` is empty, `i` starts at 0 which already equals `s.count`.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: 'x' does not appear in t after 'a'.
   answer="Two Pointers — advance s pointer only on match, always advance t pointer"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking subsequence membership, advance the subsequence pointer only on a match and always advance the text pointer. The subsequence is confirmed when its pointer exhausts all characters.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Use pointer `i` for `s` and pointer `j` for `t`. Advance `i` only when characters match; always advance `j`. When `j` reaches the end of `t`, check if `i` reached the end of `s`. This scans `t` exactly once — O(|t|) — regardless of how many characters matched.
+</Callout>
 
 Convert both strings to character arrays. Use pointer `i` for `s` and pointer `j` for `t`. While `j` is within `t` and `i` has not exhausted `s`: if the characters match, advance `i`. Always advance `j`. At the end, if `i == s.count` every character of `s` was matched in order — return `true`.
 
@@ -125,7 +137,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`s.map { $0 }` converts `String` to `[Character]` for O(1) integer indexing — Swift strings are not directly integer-subscriptable. The `while j < tcount, i < scount` condition exits early once all of `s` is matched, avoiding unnecessary scans of the rest of `t`. The empty-string case (`s = ""`) is handled correctly: `i == 0 == scount` is true immediately.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+`j` advances on every iteration and never goes backward, so the while loop runs at most n = `t.length` times. `i` advances at most `s.length` times. Total: O(s.length + t.length) = O(n) where n dominates.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+Converting both strings to `[Character]` arrays takes O(s.length + t.length) extra space. If the strings were iterable without conversion (e.g., using `String.unicodeScalars`), space could be reduced to O(1) — only two index variables needed.
+</Callout>
 
 <ComplexityTable
   rows={[

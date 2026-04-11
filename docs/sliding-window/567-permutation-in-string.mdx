@@ -26,6 +26,10 @@ In other words, return `true` if one of `s1`'s permutations is a substring of `s
 - `1 <= s1.length, s2.length <= 10^4`
 - `s1` and `s2` consist of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+Zero-count entries must be removed from the window frequency map after decrementing. If a key remains with count 0, the dictionary equality check fails even when the window is a true permutation of `s1`.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: false
   answer="Fixed-Size Sliding Window — compare frequency dictionaries as window slides"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking whether a string contains any permutation of a pattern as a substring, a fixed-size sliding window over frequency maps is the canonical O(n) solution — structurally identical to finding all anagram start indices (438), but stopping at the first match.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Build frequency maps for `s1` and the initial `s2` window, then slide one character at a time: decrement the outgoing character (remove the key if count reaches zero to keep maps comparable), increment the incoming character. Dictionary equality after each slide detects a permutation match in O(1) time since both maps have at most 26 keys.
+</Callout>
 
 Build `chars1Dict` for all of `s1` and `chars2Dict` for the first `s1.count` characters of `s2`. Check for a match. Then slide one character at a time: decrement the outgoing left character (remove if zero), increment the incoming right character. After each slide, compare the two maps.
 
@@ -131,7 +143,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(s1)` and `Array(s2)` convert `String` to `[Character]` upfront — Swift `String` subscripting is O(n), so converting to an array first gives O(1) indexed access throughout the loop. `chars2Dict[chars2[prev], default: 0] -= 1` uses the subscript-with-default overload. `chars2Dict[chars2[prev]] = nil` is the idiomatic Swift way to remove a dictionary key entirely.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Building the initial frequency maps takes O(s1.length). The sliding loop runs n − s1.length iterations (n = s2.length), each doing O(1) map updates and an O(26) = O(1) map equality check. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Both frequency maps hold at most 26 entries (lowercase English letters only) regardless of input length. No dynamic data structures grow with input size.
+</Callout>
 
 <ComplexityTable
   rows={[

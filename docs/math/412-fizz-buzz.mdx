@@ -27,6 +27,10 @@ Given an integer `n`, return a string array `answer` (1-indexed) where:
 **Constraints:**
 - `1 <= n <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+The FizzBuzz branch (divisible by both 3 and 5) must be checked before the individual Fizz and Buzz branches. In an `if-else if` chain the first matching condition wins — checking divisibility by 3 first would capture multiples of 15 before the combined check is reached.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Output: ["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13"
   answer="Linear Scan / Simulation — map each integer 1..n to its label"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When multiple conditions overlap (divisibility by 15 ⊂ divisibility by 3 or 5), check the most restrictive condition first in an `if-else if` chain so it is not shadowed by a broader check.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Each integer `i` maps to exactly one label determined solely by divisibility. The combined FizzBuzz check (`i % 3 == 0 && i % 5 == 0`) must come before the individual Fizz and Buzz checks — once the first matching branch is taken, the rest are skipped.
+</Callout>
 
 Map the range `1...n`. For each integer `i`, apply a priority-ordered conditional:
 1. Both divisible by 3 and 5 → `"FizzBuzz"`
@@ -128,7 +140,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`(1...n).map { i in ... }` over a closed range produces a 1-indexed array directly — idiomatic and avoids a manual `var result` accumulator. String interpolation `"\(i)"` is the cleanest way to convert an integer to a string inside a closure. `i % 15 == 0` is equivalent to `i % 3 == 0 && i % 5 == 0` and both are valid.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+One pass over integers 1 through n. Each integer requires O(1) divisibility checks and string construction. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The output array holds n strings. The strings themselves ("Fizz", "Buzz", "FizzBuzz") are constant-size; only the numeric strings grow with n (up to O(log n) digits), but the dominant factor is the n-element output array.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -27,6 +27,10 @@ Find a contiguous subarray whose length is equal to `k` that has the maximum ave
 - `1 <= k <= n <= 10^5`
 - `-10^4 <= nums[i] <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Elements can be negative, so the maximum average can be negative. Initialising `result` to `0` before the sliding loop would miss this case. Always seed `result` from the first k-element window.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ Output: 5.00000
   answer="Fixed-Size Sliding Window — maintain running sum, update max average each slide"
 />
 
+<Callout type="green" label="Rule of Thumb">
+For the maximum sum (or average) of a fixed-length subarray, initialise the window sum on the first k elements, then slide with one subtract and one add per step. Never recompute the full window sum — that turns O(n) into O(n×k).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Build the window sum once over the first `k` elements and seed `result = Double(sum) / Double(k)`. For each subsequent index `i`, remove the leftmost element (`sum -= nums[i - k]`) and add the incoming right element (`sum += nums[i]`) — two O(1) operations per step. Update `result = max(result, Double(sum) / Double(k))` after each slide.
+</Callout>
 
 Build the initial sum over the first `k` elements. Initialise `result` as `sum / k`. Slide the window: for each new position `i` from `k` to `nums.count - 1`, add `nums[i]` and subtract `nums[i - k]`. Update `result = max(result, Double(sum) / Double(k))`. Return `result`.
 
@@ -115,7 +127,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Double(sum) / Double(k)` requires two explicit casts — Swift does not allow implicit integer-to-double conversion. `for i in k..<nums.count` uses a half-open range starting right after the initial window. Seeding `result` from the first window before the loop (rather than initialising to `0`) is the critical correctness guard for all-negative inputs.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+The initial window sum is built in O(k) time. The sliding loop then runs n − k iterations, each doing O(1) work (one subtract, one add, one max comparison). Total: O(k) + O(n − k) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two scalar variables are maintained beyond the input array: `sum` (the current window sum) and `result` (the running maximum average). No auxiliary data structures are used.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -25,6 +25,10 @@ Given the `root` of a binary tree, return an array of the largest value in each 
 - The number of nodes in the tree will be in the range `[0, 10^4]`.
 - `-2^31 <= Node.val <= 2^31 - 1`
 
+<Callout type="amber" label="Key Constraint">
+Node values can be as low as -2³¹ (Int32.min). Initialising `maxValue` to `0` produces wrong results for any all-negative level. Use `Int.min` as the sentinel.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: [1,3]
   answer="BFS Level-Order Traversal — process level by level, track max per level"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When computing any per-level aggregate (max, min, sum, average) over a binary tree, BFS is the natural fit — snapshot `count = queue.count` before the inner loop to process exactly one level at a time.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Snapshot `count = queue.count` before the inner loop to process exactly one level's nodes per outer iteration. Initialise `maxValue = Int.min` (not 0) to handle all-negative levels. After the inner loop, append `maxValue` to results, then the outer loop advances naturally to the next level.
+</Callout>
 
 Use a queue initialised with `root`. Each outer loop iteration processes one complete level: record `count = queue.count`, then dequeue exactly `count` nodes, tracking `maxValue`. After the inner loop, append `maxValue` to results. Enqueue left and right children as they are encountered.
 
@@ -126,7 +138,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Int.min` is Swift's minimum value for the platform-native integer (Int64 on 64-bit), making it a safe sentinel for any node value. `guard let root else { return [] }` short-circuits the empty-tree case before touching the queue. `queue.removeFirst()` is O(n) on Swift's Array due to element shifting — acceptable here given the n ≤ 10^4 constraint, but a Deque would be O(1) per dequeue.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+Every node is enqueued and dequeued exactly once. Each inner loop iteration does O(1) work (max comparison + optional child appends). Total: O(n) across all levels.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+The queue holds at most one full level at a time. In the widest level of a complete binary tree, up to n/2 nodes are held simultaneously, giving O(n) queue space.
+</Callout>
 
 <ComplexityTable
   rows={[

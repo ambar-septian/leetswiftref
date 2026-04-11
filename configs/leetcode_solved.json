@@ -1810,7 +1810,7 @@
       "status": "done",
       "slug": "ransom-note",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 392,
@@ -1829,7 +1829,7 @@
       "status": "done",
       "slug": "is-subsequence",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 394,
@@ -1848,7 +1848,7 @@
       "status": "done",
       "slug": "decode-string",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 399,
@@ -1872,7 +1872,7 @@
       "status": "done",
       "slug": "evaluate-division",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 412,
@@ -1891,7 +1891,7 @@
       "status": "done",
       "slug": "fizz-buzz",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 417,
@@ -1913,7 +1913,7 @@
       "status": "done",
       "slug": "pacific-atlantic-water-flow",
       "submittedAt": "2026-04-03T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 424,
@@ -1932,7 +1932,7 @@
       "status": "done",
       "slug": "longest-repeating-character-replacement",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 438,
@@ -1951,7 +1951,7 @@
       "status": "done",
       "slug": "find-all-anagrams-in-a-string",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 450,
@@ -1971,7 +1971,7 @@
       "status": "done",
       "slug": "delete-node-in-a-bst",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 496,
@@ -1991,7 +1991,7 @@
       "status": "done",
       "slug": "next-greater-element-i",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 509,
@@ -2011,7 +2011,7 @@
       "status": "done",
       "slug": "fibonacci-number",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 515,
@@ -2032,7 +2032,7 @@
       "status": "done",
       "slug": "find-largest-value-in-each-tree-row",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 543,
@@ -2052,7 +2052,7 @@
       "status": "done",
       "slug": "diameter-of-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 547,
@@ -2092,7 +2092,7 @@
       "status": "done",
       "slug": "permutation-in-string",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 572,
@@ -2114,7 +2114,7 @@
       "status": "done",
       "slug": "subtree-of-another-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 605,
@@ -2132,7 +2132,7 @@
       "status": "done",
       "slug": "can-place-flowers",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 617,
@@ -2153,7 +2153,7 @@
       "status": "done",
       "slug": "merge-two-binary-trees",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 622,
@@ -2174,7 +2174,7 @@
       "status": "done",
       "slug": "design-circular-queue",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 637,
@@ -2195,7 +2195,7 @@
       "status": "done",
       "slug": "average-of-levels-in-binary-tree",
       "submittedAt": "2026-04-04T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 643,
@@ -2214,7 +2214,7 @@
       "status": "done",
       "slug": "maximum-average-subarray-i",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 648,
@@ -2236,7 +2236,7 @@
       "status": "done",
       "slug": "replace-words",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 682,
@@ -2256,7 +2256,7 @@
       "status": "done",
       "slug": "baseball-game",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 684,
@@ -2278,7 +2278,7 @@
       "status": "done",
       "slug": "redundant-connection",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 695,
@@ -2301,7 +2301,7 @@
       "status": "done",
       "slug": "max-area-of-island",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 700,
@@ -2322,7 +2322,7 @@
       "status": "done",
       "slug": "search-in-a-binary-search-tree",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 704,
@@ -2341,7 +2341,7 @@
       "status": "done",
       "slug": "binary-search",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 705,
@@ -2364,7 +2364,7 @@
       "status": "done",
       "slug": "design-hashset",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 706,
@@ -2387,7 +2387,7 @@
       "status": "done",
       "slug": "design-hashmap",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 713,
@@ -2408,7 +2408,7 @@
       "status": "done",
       "slug": "subarray-product-less-than-k",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 721,
@@ -2433,7 +2433,7 @@
       "status": "done",
       "slug": "accounts-merge",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 724,

@@ -28,6 +28,10 @@ Given an integer array `flowerbed` containing `0`s and `1`s, where `0` means emp
 - There are no two adjacent flowers in `flowerbed`.
 - `0 <= n <= flowerbed.length`
 
+<Callout type="amber" label="Key Constraint">
+The input guarantees no two adjacent flowers already exist. This means we never need to validate the existing state — we only need to check the immediate left and right neighbours before planting.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Explanation: Only one spot is available — index 2.
   answer="Greedy Linear Scan — plant at every eligible slot, stop early when n reaches 0"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When placing items with spacing constraints along a linear sequence, scanning left to right and planting at the first eligible slot is always optimal — placing early never blocks a valid later placement.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A slot is eligible when it is empty and both immediate neighbours are also empty (or absent at the boundary). After planting, set `flowerbed[i] = 1` immediately — this automatically blocks the next position from qualifying without any explicit skip. Break as soon as `n` reaches zero to avoid unnecessary scanning.
+</Callout>
 
 Iterate through the flowerbed. A slot `i` is eligible if:
 1. `flowerbed[i] == 0`
@@ -135,7 +147,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`var flowerbed = flowerbed` creates a mutable local copy — Swift arrays are value types, so the caller's array is unmodified. `guard n != 0 else { return true }` short-circuits before the loop for the trivial case. `lastIndex >= i + 1` guards the right-boundary access cleanly without recomputing `flowerbed.count - 1` inside the loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m)">
+A single left-to-right pass over all m positions in the flowerbed. Early termination when n reaches zero means the worst case (n = 0 or no valid slot) scans all m elements once — O(m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+The local copy of `flowerbed` is created for mutability (value-type semantics), but no additional data structures grow with input size. All state is held in two scalar variables: `n` and loop index `i`.
+</Callout>
 
 <ComplexityTable
   rows={[

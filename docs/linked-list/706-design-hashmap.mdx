@@ -31,6 +31,10 @@ Implement `MyHashMap`:
 - `0 <= key, value <= 10^6`
 - At most `10^4` calls will be made to `put`, `get`, and `remove`.
 
+<Callout type="amber" label="Key Constraint">
+Values range `0 <= value <= 10^6`, so `0` is a valid stored value. The `get` sentinel of `-1` is safe because `-1` falls outside the valid value range. Key `0` is also valid — do not treat it as a missing-key indicator.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ myHashMap.get(2);     // return -1
   answer="Chaining Hash Map — array of key-value linked lists with a dummy head; put updates in place, get and remove scan the chain"
 />
 
+<Callout type="green" label="Rule of Thumb">
+In a chaining hash map, `put` must scan the chain before appending — if the key already exists, update its value in-place and return immediately. Appending unconditionally creates duplicate keys that cause stale `get` results.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Identical structure to HashSet (705) but each node stores both `key` and `value`. The critical difference in `put`: scan the chain — if the key already exists, update its value in-place and return immediately; only append a new node if the key is not present. This enforces the unique-key invariant without remove-and-reinsert.
+</Callout>
 
 Allocate 10,000 buckets. For `put(key, value)`: hash to bucket, scan chain for an existing node with the same key — if found, update value; otherwise append a new node. For `get(key)`: scan and return the value or -1. For `remove(key)`: find the predecessor and splice out the node.
 
@@ -177,7 +189,19 @@ class MyHashMap {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+Both `key` and `val` on `ListNode` are `Int?` — `nil` serves as the sentinel for the dummy head. `current?.val ?? -1` in `get` returns -1 if `current.val` is nil (dummy head matched — impossible in practice, but defensive). `private func hash` uses `private` access control to prevent accidental external use.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1) avg">
+Same analysis as HashSet (705): O(1) hash computation, O(n/B) chain traversal on average. With 10,000 buckets and keys up to 10^6, maximum chain length is 100 — effectively O(1) per operation.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(B + n)">
+B = 10,000 bucket slots plus one `ListNode` per stored key-value pair. Total: O(B + n) = O(10,000 + n).
+</Callout>
 
 <ComplexityTable
   rows={[

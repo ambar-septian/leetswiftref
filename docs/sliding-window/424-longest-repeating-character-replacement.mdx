@@ -27,6 +27,10 @@ Return the length of the longest substring containing the same letter you can ge
 - `s` consists of only uppercase English letters.
 - `0 <= k <= s.length`
 
+<Callout type="amber" label="Key Constraint">
+`dominant` — the highest single-character frequency in the window — is never decremented, even when the window shrinks. This is the core correctness invariant: keeping it as a high-water mark ensures the window never shrinks below the best valid size already found.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Explanation: Replace one 'A' in "AABA" or "ABBA" to get a window of 4.
   answer="Sliding Window — expand freely, shrink when non-dominant chars exceed k"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When the validity check is `window_size - max_frequency <= k`, track max frequency as a non-decreasing high-water mark — it never needs to decrease. Shrinking can only maintain the best window size, never improve it.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+A window of length L is valid when `L - dominant <= k`, where `dominant` is the count of the most frequent character in the window. If it exceeds `k`, shrink from the left. The key trick: `dominant` is a non-decreasing high-water mark — it is never decremented, ensuring the window never shrinks below the best valid size already seen.
+</Callout>
 
 Maintain a frequency map `dict` and track `dominant` (the highest single-character count ever seen in the current window). At each step, update the frequency of `chars[right]` and update `dominant`. If `(right - left + 1) - dominant > k`, the window has too many characters to replace — shrink from the left. Update `result` with the current window size.
 
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Array(s)` converts a `String` to `[Character]` for O(1) index access. `dict[chars[right], default: 0]` handles missing keys inline without an explicit `if-let`. The `while` shrink loop is safe because `left` can never overtake `right` — the window always contains at least one character.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+`right` advances once per outer loop iteration — n iterations total. `left` also advances at most n times across all inner shrink steps. Each character triggers O(1) map operations. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+The frequency map `dict` holds at most 26 uppercase English letters regardless of input length. `dominant`, `left`, `right`, and `result` are scalar variables. Total auxiliary space: O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

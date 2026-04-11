@@ -38,6 +38,10 @@ You must solve the problem without using the built-in queue data structure in yo
 - `0 <= value <= 1000`
 - At most `3000` calls will be made to `enQueue`, `deQueue`, `Front`, `Rear`, `isEmpty`, and `isFull`.
 
+<Callout type="amber" label="Key Constraint">
+When the queue is both completely empty and completely full, `head == tail`. Without a separate `count` variable these two states are indistinguishable — `count` is the critical disambiguator for `isEmpty` and `isFull`.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ cq.Rear();      // 4
   answer="Circular Array — head and tail pointers with modulo arithmetic; count to distinguish empty from full"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When implementing a circular buffer, always track a separate `count` alongside `head` and `tail`. Without it, `head == tail` is ambiguous between empty and full. Use `(index + 1) % capacity` for all pointer advances to get automatic wrap-around.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Three state variables drive everything: `head` (front element index), `tail` (next write index), and `count` (disambiguates the empty-vs-full ambiguity when `head == tail`). `enQueue` writes at `tail` then advances `tail = (tail + 1) % maxCount`. `deQueue` clears `head` then advances `head = (head + 1) % maxCount`. `Rear` reads from `(tail - 1 + maxCount) % maxCount` to avoid negative modulo.
+</Callout>
 
 Allocate `items: [Int?]` of size `maxCount`. Maintain `head` (index of front element), `tail` (index of next write slot), and `count`. For `enQueue`: place at `items[tail]`, advance `tail = (tail + 1) % maxCount`, increment count. For `deQueue`: clear `items[head]`, advance `head = (head + 1) % maxCount`, decrement count. `Rear()` reads from `(tail - 1 + maxCount) % maxCount`.
 
@@ -157,7 +169,19 @@ class MyCircularQueue {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`let maxCount: Int` is a stored constant — declared with `let` since it never changes after `init`. `var items: [Int?] = []` is initialised to an empty array and populated in `init` via `Array(repeating: nil, count: maxCount)`. Single-expression functions like `func isEmpty() -> Bool { count == 0 }` omit `return` in Swift — a minor readability win for simple predicates.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1)">
+Every operation — enQueue, deQueue, Front, Rear, isEmpty, isFull — performs a fixed number of array index computations and comparisons. No iteration or recursion is involved; all operations are constant time.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(k)">
+A single array of size k is allocated at initialization and never resized. All other state (head, tail, count, maxCount) is O(1). Total: O(k).
+</Callout>
 
 <ComplexityTable
   rows={[

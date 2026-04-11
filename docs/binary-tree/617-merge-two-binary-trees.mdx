@@ -31,6 +31,10 @@ Return the merged tree.
 - The number of nodes in both trees is in the range `[0, 2000]`.
 - `-10^4 <= Node.val <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+Either tree can be empty (root is nil). When one tree is nil at a given position, the entire subtree from the other tree is used as-is — no new nodes need to be allocated for non-overlapping positions.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -59,7 +63,15 @@ Output: [2,2]
   answer="Simultaneous DFS — recurse both trees in parallel, sum overlapping nodes"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When merging two trees simultaneously, traverse both in lockstep. The base cases are: one nil → return the other tree. Both non-nil → combine values and recurse into children. No new nodes need to be allocated for non-overlapping positions.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Three cases at each recursive call: if `root1 == nil` return `root2`; if `root2 == nil` return `root1`; if both are non-nil, add `root2.val` into `root1.val`, recurse into left and right children, return `root1`. No new nodes are allocated — the non-nil tree's existing nodes are reused for all non-overlapping positions.
+</Callout>
 
 Recurse with both root1 and root2. If either is nil, return the other (no merge needed). When both exist, add root2's value into root1, then recurse left and right, rewiring root1's children to the merged subtrees. Return root1 as the merged node.
 
@@ -122,7 +134,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let root1, let root2 else { return nil }` — the preceding nil checks make this `else` branch unreachable at runtime; it exists to unwrap optionals for the compiler. Assigning to `root1.val`, `root1.left`, and `root1.right` mutates the heap-allocated `TreeNode` object directly because `TreeNode` is a class (reference semantics). The nested `dfs` function keeps the public `mergeTrees` signature clean.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(min(m, n))">
+Recursion stops as soon as either tree reaches nil — only the overlapping portion of both trees is traversed. If one tree has m nodes and the other has n nodes, at most min(m, n) nodes are visited.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(min(h1, h2))">
+The call stack depth equals the depth reached before either tree runs out of nodes. This is bounded by the height of the shallower tree — O(min(h1, h2)), which is O(log n) for balanced trees and O(n) for skewed trees.
+</Callout>
 
 <ComplexityTable
   rows={[

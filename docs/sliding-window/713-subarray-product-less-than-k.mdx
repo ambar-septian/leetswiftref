@@ -25,6 +25,10 @@ Given an array of integers `nums` and an integer `k`, return the number of conti
 - `1 <= nums[i] <= 1000`
 - `0 <= k <= 10^6`
 
+<Callout type="amber" label="Key Constraint">
+All `nums[i] >= 1` — there are no zeros. This is what makes the variable window valid: dividing by the outgoing element never increases the product, keeping the window monotone. If zeros were possible the product could drop to zero and the shrink logic would break.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ Output: 0
   answer="Variable Sliding Window — expand right, shrink left when product exceeds k, count subarrays ending at right"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When counting subarrays satisfying a product constraint over positive integers, use a variable sliding window and count `right - left + 1` new valid subarrays at each step — every sub-window ending at `right` with a start in `[left, right]` is valid since shrinking any prefix only reduces the product.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Guard `k <= 1` (returns 0 — no positive-integer product can be strictly less than 1). Then maintain a running product `total`. Expand right: `total *= nums[right]`. Shrink left while `total >= k`: `total /= nums[left]; left += 1`. When `total < k`, add `right - left + 1` to result — the count of all valid sub-windows ending at `right`.
+</Callout>
 
 Guard `k <= 1` and return `0`. Otherwise use a variable-size window: maintain `total` (the product of elements in `[left, right]`). For each `right`, multiply `total` by `nums[right]`. While `total >= k`, divide out `nums[left]` and advance `left`. If `total < k`, there are `right - left + 1` valid subarrays ending at `right` — add that to `result`.
 
@@ -129,7 +141,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`if k <= 1 { return 0 }` is a plain `if` rather than `guard` — both work, but `if` is cleaner when there is no surrounding scope to exit. `while total >= k, left < nums.count` uses a multi-condition `while` with comma syntax — equivalent to `&&` but reads more naturally. `var total = 1` initialises the product at the identity element.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+`right` traverses the array once from left to right. `left` also moves strictly left-to-right — it never retreats. Together, both pointers each make at most n moves. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only three scalar variables are maintained: `left`, `total`, and `result`. No auxiliary data structures grow with input size. Total: O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

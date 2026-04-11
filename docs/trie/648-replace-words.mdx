@@ -36,6 +36,10 @@ Return the sentence after all replacements.
 - Every two consecutive words in `sentence` will be separated by exactly one space.
 - `sentence` does not have leading or trailing spaces.
 
+<Callout type="amber" label="Key Constraint">
+`sentence.length` can reach 10^6. A brute-force O(L²) approach that checks every prefix of each word against a hash set would be too slow. The trie stops at the first `isEndOfWord` marker, finding the shortest root in one O(L) pass per word without checking all prefixes explicitly.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -64,7 +68,15 @@ Output: "a a b c"
   answer="Trie — build from dictionary, then traverse each sentence word stopping at the first end-of-word marker"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When you need fast shortest-prefix lookups across a dictionary, a trie beats a hash set: traversal stops naturally at the first end-of-word marker (shortest root), while a hash set requires explicitly checking every prefix of each word — O(L²) per word instead of O(L).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Build a trie from all dictionary roots, then for each sentence word walk the trie character by character — stop the moment `isEndOfWord` is true (shortest prefix found) or the path breaks (no root exists for this word). Storing the root string on the end-of-word node makes retrieval O(1) without reconstructing the path.
+</Callout>
 
 Build a trie from all dictionary roots. For each word in the sentence, traverse the trie character by character. If `isEndOfWord` is true at any node, the current accumulated prefix is the shortest root — use it. If the trie path breaks (character not in children) before an end-of-word is reached, keep the original word. Join the results with spaces.
 
@@ -151,7 +163,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`Node` is defined as an inner class of `Solution` — nested types are a clean Swift pattern for trie/linked-list helpers that are not needed outside the enclosing type. `current?.children[char] == nil` uses optional chaining; the `?` propagates nil if `current` is nil, so the guard also covers a nil current pointer. `sentence.components(separatedBy: " ")` splits on single spaces, which the constraints guarantee.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(D + S)">
+Building the trie costs O(D) where D is the total characters across all dictionary words. Sentence replacement costs O(S) where S is the total characters in the sentence — each character in each word is visited at most once during trie traversal (we stop at the first root match). Total: O(D + S).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(D)">
+The trie stores all dictionary characters as nodes, each with a children map of up to 26 entries. Total trie nodes and map entries are proportional to D. Sentence replacement uses O(1) extra space beyond the output array.
+</Callout>
 
 <ComplexityTable
   rows={[

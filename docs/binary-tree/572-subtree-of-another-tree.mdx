@@ -29,6 +29,10 @@ A subtree of a binary tree `tree` is a tree that consists of a node in `tree` an
 - `-10^4 <= root.val <= 10^4`
 - `-10^4 <= subRoot.val <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+An empty subtree (`subRoot == nil`) is trivially a subtree of any tree and must return `true`. The `subRoot` nil check must come before the `root` nil check — swapping the order would return `false` for valid empty-subtree queries.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: The subtree under node 4 has an extra node 0 that subRoot does not.
   answer="DFS on root — at each node call isSameTree(node, subRoot); recurse into children if no match"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When checking subtree membership, separate two concerns into two functions: the outer DFS scans every node in the main tree, while the inner `isSameTree` checks full structural equality at each candidate root. The functions compose cleanly.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Two-function decomposition: `isSubtree` drives an outer DFS over every node in `root`; at each candidate node it delegates to `isSameTree` for a full structural equality check against `subRoot`. If `isSameTree` returns true anywhere, the search short-circuits immediately. Guard order matters: check `subRoot == nil` first (returns true), then `root == nil` (returns false).
+</Callout>
 
 Two mutually recursive functions:
 - `isSubtree(root, subRoot)`: returns `true` if `isSameTree(root, subRoot)` or `isSubtree(root.left, subRoot)` or `isSubtree(root.right, subRoot)`.
@@ -132,7 +144,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard let subRoot else { return true }` performs a nil check — the bound `subRoot` name is unused in the true branch; it exists only to satisfy the compiler. In `isSameTree`, `root?.val == subRoot?.val` compares `Optional<Int>` — when both are `nil` this would evaluate to `true`, which is why the explicit `if root == nil, subRoot == nil { return true }` check must come first. The two methods are class-level rather than nested, allowing `isSameTree` to be called independently.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m * n)">
+`isSubtree` visits each of the m nodes in `root` once. At each node, `isSameTree` may traverse up to n nodes in `subRoot`. In the worst case (e.g., a subtree match only at the very last node), every node in `root` triggers a full `isSameTree` scan, giving O(m × n) total comparisons.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+The `isSubtree` recursion stack reaches depth h (height of `root`). Each `isSameTree` call adds a nested stack frame, but it completes and unwinds before `isSubtree` recurses deeper. Peak stack depth is O(h) for the outer DFS plus O(min height of subRoot) for the inner check — dominated by O(h).
+</Callout>
 
 <ComplexityTable
   rows={[

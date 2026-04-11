@@ -32,6 +32,10 @@ The test cases are generated so that the length of the output will never exceed 
 - It is guaranteed that `s` is valid and the depth of the nesting is at most `10`.
 - It is guaranteed that the total output length does not exceed `10^5`.
 
+<Callout type="amber" label="Key Constraint">
+Repeat counts `k` can be multi-digit (e.g., `12[a]`) and bracket groups can nest up to 10 levels deep. Both must be handled: multi-digit counts by prepending popped digit strings, nesting by the stack's natural LIFO order.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Output: "abcabccdcdcdef"
   answer="Stack — push until ']', then pop to extract substring and repeat count"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When a nested structure must be resolved innermost-first (brackets, parentheses, HTML tags), reach for a stack: push on open, collect and expand on close. The LIFO order handles arbitrary nesting depth automatically.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Push every character except `]` onto a string stack. When `]` is hit, pop backward to collect the inner substring (until `[` is found), pop the `[`, then pop consecutive digit strings to reconstruct the repeat count `k`. Push the expanded `String(repeating:count:)` result back. The stack handles arbitrary nesting through its natural LIFO order.
+</Callout>
 
 Use a string stack. For every character except `]`, push it directly. When `]` is encountered:
 1. Pop characters until `[` is found — that is the substring to repeat.
@@ -162,7 +174,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+The inner `index(_:)` helper uses `s.index(s.startIndex, offsetBy:)` because Swift strings are not integer-subscriptable. Converting to `Array(s)` upfront would be cleaner and avoids O(n) offset arithmetic on each access. `String(repeating:count:)` is the idiomatic way to repeat a string k times. `stack.joined(separator: "")` assembles the final result from all stack segments.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n × k_max)">
+Each character in the input may be expanded up to k_max times at each nesting level. With depth d and max repeat count k, a deeply nested string like `k[k[k[a]]]` produces a string of length k^d. The work done is proportional to the output length — O(n × k_max) in the worst case where n is input length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n × k_max)">
+The stack holds the intermediate expanded strings, which can grow to the full output length O(n × k_max) in the worst case. The recursion depth is bounded by the nesting depth (at most 10 per constraints), but the string contents themselves can be large.
+</Callout>
 
 <ComplexityTable
   rows={[

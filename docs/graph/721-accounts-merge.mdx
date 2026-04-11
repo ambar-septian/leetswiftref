@@ -32,6 +32,10 @@ After merging the accounts, return the accounts in the following format: the fir
 - `accounts[i][0]` consists of English letters.
 - `accounts[i][j]` (for `j > 0`) is a valid email.
 
+<Callout type="amber" label="Key Constraint">
+Accounts with the same name may belong to different people; accounts with different names can belong to the same person. The merge key is the **email**, not the name. Two accounts are merged if and only if they share at least one email address.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -70,7 +74,15 @@ Output: [["Ethan","Ethan5@m.co"],["Gabe","Gabe0@m.co","Gabe3@m.co"],["Kevin","Ke
   answer="Union-Find — unite accounts sharing an email, then group all emails by root representative"
 />
 
+<Callout type="green" label="Rule of Thumb">
+When grouping items by shared membership, Union-Find on item indices with a map from shared key to first-seen index is the clean pattern: union when a collision is found, then re-scan to group all items by root representative. Three phases: (1) unite, (2) group, (3) build output.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Three phases: (1) scan each account's emails — if an email has been seen before, unite the current account index with the stored one; else record `email → account index`. (2) For each email in the map, find its root account index and add the email to that group. (3) For each root group, prepend the account name (`accounts[root][0]`), sort the emails, and append to results.
+</Callout>
 
 Phase 1 — Build union-find on account indices: for each account, scan its emails. If an email has been seen before (it is in `emailToAccIndex`), `unite(currentAccountIndex, storedIndex)`. Otherwise record `emailToAccIndex[email] = currentAccountIndex`.
 
@@ -174,7 +186,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`UnionFind` is an inner class — same pattern as 684. `emailGroup[root, default: []].append(email)` uses the subscript-with-default overload to insert into or append to an existing array in one line. `[accounts[root][0]] + emails.sorted()` concatenates a single-element array with the sorted emails — a clean Swift way to prepend the name.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(N·K·α(N))">
+Phase 1 processes all N×K emails, each calling `find` in O(α(N)). Phase 2 iterates all N×K emails again — O(N·K). Phase 3 sorts each group's emails: total sort cost is O(N·K·log(K)). The α(N) factor is effectively constant, so the dominant cost is O(N·K·log K).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(N·K)">
+The `emailToAccIndex` map holds one entry per unique email — up to N×K entries. `emailGroup` holds the same emails grouped by root — O(N·K). Union-Find arrays are O(N). Total: O(N·K).
+</Callout>
 
 <ComplexityTable
   rows={[

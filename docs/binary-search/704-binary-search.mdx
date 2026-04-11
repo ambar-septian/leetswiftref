@@ -28,6 +28,10 @@ You must write an algorithm with `O(log n)` runtime complexity.
 - All the integers in `nums` are **unique**.
 - `nums` is sorted in ascending order.
 
+<Callout type="amber" label="Key Constraint">
+All values are unique — no duplicates to handle. A simple equality check at `mid` always terminates correctly on a hit. The O(log n) requirement rules out any linear scan; only binary search (or similar divide-and-conquer) satisfies it.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Explanation: 2 does not exist in nums so return -1.
   answer="Binary Search — halve the search space each step based on midpoint comparison"
 />
 
+<Callout type="green" label="Rule of Thumb">
+Binary search always works on a sorted, bounded range: compute `mid`, compare to target, then advance `low = mid + 1` or `high = mid - 1` (never just `mid`) to exclude the already-checked midpoint. The loop terminates when `low > high` — at that point the target is absent.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+Maintain an inclusive search range `[low, high]`. Each iteration: compute `mid = (low + high) / 2`, compare `nums[mid]` to `target`. On a match return `mid`; if too small set `low = mid + 1`; if too large set `high = mid - 1`. The `+ 1` / `- 1` excludes the already-checked midpoint and prevents infinite loops when `low == high`.
+</Callout>
 
 Maintain `low = 0` and `high = nums.count` (exclusive upper bound). Each iteration compute `mid = (low + high) / 2`. Guard against out-of-bounds, then compare `nums[mid]` to `target`. If equal, return `mid`. If `nums[mid] < target`, set `low = mid + 1`. If `nums[mid] > target`, set `high = mid - 1`. Return `-1` if the loop exits.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+`guard nums.count > middle else { break }` guards against an out-of-bounds access when `high = nums.count` (exclusive) and `low == high = nums.count`. An alternative that avoids this guard is to initialise `high = nums.count - 1` (inclusive), which is the more conventional form. In Swift, `Int` is 64-bit so `(low + high)` does not overflow for any practical input.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+Each iteration halves the remaining search space: `[low, high]` shrinks by at least half because `mid` always falls inside the interval. After at most ⌈log₂ n⌉ iterations the interval is empty. Total: O(log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+Only two pointer variables (`low`, `high`) and a computed `middle` are used — no extra data structures of any kind. Total: O(1).
+</Callout>
 
 <ComplexityTable
   rows={[
