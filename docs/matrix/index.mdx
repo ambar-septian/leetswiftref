@@ -1,0 +1,62 @@
+---
+id: matrix-index
+title: "Matrix"
+sidebar_label: "Matrix"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import MatrixDiagram from '@site/src/components/DSA/MatrixDiagram';
+
+<CategoryHeader
+  emoji="🗃"
+  title="Matrix"
+  description="A matrix is a 2D array accessed by (row, column) index. Matrix problems involve row/column aggregation, 4-directional (or 8-directional) traversal for BFS/DFS, and in-place transformation. The key is clean index arithmetic and boundary checks before accessing neighbouring cells."
+  tags={["2D Array", "Row/Column Scan", "BFS", "DFS", "4-Directional", "In-Place"]}
+/>
+
+<SectionHeader n={1} title="What are Matrix Patterns?" />
+
+Matrix problems generalise array problems to two dimensions. Every 1D array pattern (linear scan, prefix sum, sliding window) has a 2D counterpart, and matrix problems additionally involve traversal across rows and columns.
+
+| Pattern | Description |
+|---|---|
+| **Row/column aggregate** | Compute row sums, column maxes, or row-by-column products |
+| **4-directional BFS/DFS** | Explore cells reachable via up/down/left/right moves |
+| **Diagonal traversal** | `r + c == constant` for anti-diagonals |
+| **In-place rotation/transpose** | Modify the matrix without extra space |
+| **Boundary guard** | `r >= 0 && r < rows && c >= 0 && c < cols` before accessing neighbours |
+
+<Callout type="amber" label="Key Constraint">
+  Always check bounds before accessing a neighbour cell. In Swift, accessing an array out of bounds causes a runtime crash — unlike some other languages that return nil or zero. The idiomatic pattern is `guard r >= 0, r &lt; rows, c >= 0, c &lt; cols else { continue }` inside a BFS loop, or an early `return` in a DFS function. The four directions are encoded as `[(-1,0),(0,1),(1,0),(0,-1)]` — up, right, down, left.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<MatrixDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Matrix Patterns"
+    description="Row-sum aggregation (Richest Customer Wealth), 4-directional BFS/DFS template, and in-place matrix manipulation. Covers the boundary-guard pattern and the direction-array encoding for cleaner multi-directional traversal."
+    href="/matrix/matrix-patterns"
+    time="O(m × n)"
+    space="O(1) or O(m × n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem asks to compute something for each row or column — scan row by row or column by column. If it asks to find connected regions or shortest paths — BFS/DFS with a 4-directional direction array. Always write the bounds check first before worrying about the logic.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 1672, title: "Richest Customer Wealth", slug: "richest-customer-wealth", category: "matrix", difficulty: "Easy" },
+]} />

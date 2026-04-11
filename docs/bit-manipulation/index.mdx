@@ -1,0 +1,63 @@
+---
+id: bit-manipulation-index
+title: "Bit Manipulation"
+sidebar_label: "Bit Manipulation"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BitManipulationDiagram from '@site/src/components/DSA/BitManipulationDiagram';
+
+<CategoryHeader
+  emoji="🔢"
+  title="Bit Manipulation"
+  description="Bit manipulation uses bitwise operators (AND, OR, XOR, shift) to inspect and transform integer values at the binary level. These operations are O(1) and often replace more complex arithmetic. Common patterns: parity check, bit counting, isolating the lowest set bit, and halving via right shift."
+  tags={["AND", "OR", "XOR", "Shift", "Parity", "O(1)"]}
+/>
+
+<SectionHeader n={1} title="What is Bit Manipulation?" />
+
+Every integer is stored as a sequence of bits. Bitwise operators act on individual bits simultaneously across the entire integer — an entire 32-bit OR takes a single CPU instruction.
+
+| Operation | Symbol | Common use |
+|---|---|---|
+| AND | `n & m` | Mask bits, check parity (`n & 1`), clear lowest bit (`n & (n-1)`) |
+| OR | `n \| m` | Set a specific bit (`n \| (1 << k)`) |
+| XOR | `n ^ m` | Toggle bits, find unique element (`a ^ a == 0`) |
+| Left shift | `n << k` | Multiply by 2^k |
+| Right shift | `n >> k` | Divide by 2^k (integer), extract upper bits |
+| NOT | `~n` | Flip all bits |
+
+<Callout type="amber" label="Key Constraint">
+  In Swift, the right-shift `>>` operator on signed integers performs an **arithmetic right shift** — it copies the sign bit, preserving the sign of negative numbers. For bit manipulation on non-negative integers (the typical LeetCode case), this is not an issue. Be careful with `~n` on signed integers: `~0 == -1` in two's complement, not the unsigned maximum. Use `UInt32` or `UInt64` when you need unsigned bit patterns.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<BitManipulationDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Bit Manipulation Patterns"
+    description="Core bit patterns: parity check with n & 1, halving with n >> 1, clearing the lowest set bit with n & (n-1), and step counting to reduce to zero. Covers LeetCode 1342 in detail with all common bit tricks."
+    href="/bit-manipulation/bit-patterns"
+    time="O(log n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Reach for bit manipulation when the problem involves even/odd checks, dividing by 2, counting set bits, or finding a unique element among duplicates. A right shift is a divide-by-2; AND with 1 is a parity check. These O(1) tricks often replace slower arithmetic.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 1342, title: "Number of Steps to Reduce a Number to Zero", slug: "number-of-steps-to-reduce-a-number-to-zero", category: "bit-manipulation", difficulty: "Easy" },
+]} />

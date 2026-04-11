@@ -1,0 +1,63 @@
+---
+id: greedy-index
+title: "Greedy"
+sidebar_label: "Greedy"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import GreedyDiagram from '@site/src/components/DSA/GreedyDiagram';
+
+<CategoryHeader
+  emoji="🌿"
+  title="Greedy"
+  description="Greedy algorithms make the locally optimal choice at each step without revisiting past decisions. They work when the problem has the greedy-choice property: a local optimum always leads to a global optimum. Greedy is faster than DP (usually O(n)) but requires a proof that the greedy choice is safe."
+  tags={["Locally Optimal", "No Backtracking", "O(n)", "Greedy Choice Property"]}
+/>
+
+<SectionHeader n={1} title="What is a Greedy Algorithm?" />
+
+A greedy algorithm builds a solution by always making the best available choice at the current step — without reconsidering earlier choices. This contrasts with dynamic programming (which considers all choices) and backtracking (which undoes bad choices).
+
+| Aspect | Greedy | Dynamic Programming |
+|---|---|---|
+| Choice | Locally optimal at each step | Considers all options |
+| Revisit | Never — once chosen, always kept | Yes — memoises all subproblems |
+| Correctness proof | Greedy-choice property + optimal substructure | Optimal substructure sufficient |
+| Speed | Usually O(n) | Usually O(n²) or O(n·k) |
+
+<Callout type="amber" label="Key Constraint">
+  Greedy algorithms are only correct when the **greedy-choice property** holds: making the locally optimal choice at each step never prevents reaching the global optimum. This must be proved (or strongly intuited). A greedy approach that is wrong will often pass easy test cases but fail on carefully constructed edge cases — always verify with the problem's examples and extremes.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<GreedyDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Greedy Patterns"
+    description="Common greedy patterns: scan with a condition and skip (Can Place Flowers), two-tracker minimum tracking (Increasing Triplet), and distribution greedy (Candy). Each problem requires a local decision rule that is provably safe to never undo."
+    href="/greedy/greedy-patterns"
+    time="O(n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem asks to maximise or satisfy a condition with a single forward pass — try greedy first. The tell is that making the "best" local choice (place a flower, track the minimum, give minimum candies) never conflicts with future choices. If the greedy is wrong you will see it in the constraints or examples.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 135, title: "Candy",                           slug: "candy",                           category: "greedy", difficulty: "Hard"   },
+  { id: 334, title: "Increasing Triplet Subsequence",  slug: "increasing-triplet-subsequence",  category: "greedy", difficulty: "Medium" },
+  { id: 605, title: "Can Place Flowers",               slug: "can-place-flowers",               category: "greedy", difficulty: "Easy"   },
+]} />

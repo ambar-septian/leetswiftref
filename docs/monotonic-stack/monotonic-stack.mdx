@@ -1,0 +1,182 @@
+---
+id: monotonic-stack
+title: "Monotonic Stack"
+sidebar_label: "Monotonic Stack"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import MonotonicStackDiagram from '@site/src/components/DSA/MonotonicStackDiagram';
+
+<AlgoPageHeader
+  title="Monotonic Stack"
+  description="A stack that maintains a monotonically increasing or decreasing order of elements. When a new element violates the invariant, elements are popped — and each pop reveals the next-greater or next-smaller relationship in O(1). The overall algorithm is O(n) because every element is pushed and popped at most once."
+  category="Monotonic Stack"
+  categoryHref="/monotonic-stack"
+  time="O(n)"
+  space="O(n)"
+  tags={["Next Greater", "Next Smaller", "Histogram", "Span", "Amortised O(1)"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A monotonic stack solves problems that ask: *for each element, what is the next element to its right (or left) that is greater (or smaller)?* The brute-force approach answers this in O(n²); the monotonic stack answers it in O(n) by maintaining a sorted invariant on the stack.
+
+When to use a monotonic stack:
+- The problem asks for the **next greater element** or **next smaller element** to the right or left.
+- The problem involves **spans** — how far back (or forward) is the nearest element that beats the current one?
+- The problem asks for the **largest rectangle in a histogram** or **trapping rain water** (uses a monotonic stack with area computation on each pop).
+- You need to process prices or temperatures and answer queries about future events.
+
+<Callout type="cyan" label="Core Insight">
+  The invariant is maintained by popping before pushing. When we pop an element X because a new element Y arrived and Y violates the order, we know that Y is the answer to X's "next greater" (or "next smaller") query. The pop is not wasted work — it is the answer being revealed. Because each element is pushed and popped at most once, the total cost across all pops is O(n).
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Monotonic decreasing stack** | Top is always the smallest; pop when new element is larger → pop reveals next-greater |
+| **Monotonic increasing stack** | Top is always the largest; pop when new element is smaller → pop reveals next-smaller |
+| **Stack stores indices** | Always store the index (not the value) so you can compute distances and look up values |
+| **Drain at the end** | After processing all elements, remaining stack entries have no next-greater / next-smaller (use -1 or 0) |
+| **Left-to-right vs right-to-left** | Process left-to-right for "next to the right"; process right-to-left for "next to the left" |
+
+<Callout type="amber" label="Key Constraint">
+  Store **indices** in the stack, not values. You need indices to compute distances (Daily Temperatures: `i - stack.last`), to look up previous prices (Online Stock Span), and to measure widths (Largest Rectangle). Storing only values loses the positional information.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<MonotonicStackDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Monotonic Decreasing Stack — Next Greater Element:**
+
+```swift
+func nextGreaterElement(_ nums: [Int]) -> [Int] {
+    var result = Array(repeating: -1, count: nums.count)
+    var stack = [Int]()  // stores indices, decreasing by value
+
+    for i in 0..<nums.count {
+        // While top of stack is less than current element:
+        // current element is the "next greater" for the top
+        while let top = stack.last, nums[top] < nums[i] {
+            result[stack.removeLast()] = nums[i]
+        }
+        stack.append(i)
+    }
+    // Remaining elements in stack have no next greater → result stays -1
+    return result
+}
+```
+
+**Daily Temperatures (distance to next warmer day):**
+
+```swift
+func dailyTemperatures(_ temperatures: [Int]) -> [Int] {
+    var result = Array(repeating: 0, count: temperatures.count)
+    var stack = [Int]()  // indices of days we haven't answered yet
+
+    for i in 0..<temperatures.count {
+        while let top = stack.last, temperatures[top] < temperatures[i] {
+            result[stack.removeLast()] = i - top  // distance
+        }
+        stack.append(i)
+    }
+    return result
+}
+```
+
+**Largest Rectangle in Histogram — area computation on each pop:**
+
+```swift
+func largestRectangleArea(_ heights: [Int]) -> Int {
+    var stack = [Int]()   // monotonic increasing by height
+    var maxArea = 0
+    let h = heights + [0] // sentinel 0 forces drain at the end
+
+    for i in 0..<h.count {
+        while let top = stack.last, h[top] >= h[i] {
+            let height = h[stack.removeLast()]
+            let width  = stack.isEmpty ? i : i - stack.last! - 1
+            maxArea = max(maxArea, height * width)
+        }
+        stack.append(i)
+    }
+    return maxArea
+}
+```
+
+**Online Stock Span — monotonic decreasing stack for spans:**
+
+```swift
+class StockSpanner {
+    private var stack = [(price: Int, span: Int)]()
+
+    func next(_ price: Int) -> Int {
+        var span = 1
+        while let top = stack.last, top.price <= price {
+            span += stack.removeLast().span  // absorb the span of popped elements
+        }
+        stack.append((price, span))
+        return span
+    }
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `stack.last` (returns `Optional`) with `while let` to safely peek without removing. `stack.removeLast()` is O(1) and returns the popped value — combine both in one expression: `result[stack.removeLast()] = nums[i]`. For the histogram problem, appending a sentinel `0` to `heights` ensures the stack drains completely without needing a separate loop. Swift arrays have O(1) amortised `append` and `removeLast`, making them efficient stack implementations.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Although the code contains a `while` loop inside a `for` loop, the total number of push and pop operations is bounded by 2n — each of the n elements is pushed exactly once and popped at most once. The apparent O(n²) structure is actually O(n) amortised. This is the key insight: the nested loop does not mean quadratic time when the inner loop's total work is bounded.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n indices at any point (when the input is already in monotonic order and nothing is popped). The result array is O(n). Total space is O(n).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Brute force (nested loops)',              time: 'O(n²)', space: 'O(1)',  note: 'For each element, scan right until a greater one is found' },
+    { approach: 'Monotonic stack (single pass)',           time: 'O(n)',  space: 'O(n)',  note: 'Each element pushed/popped at most once', highlight: true },
+    { approach: 'Largest Rectangle (stack + sentinel)',    time: 'O(n)',  space: 'O(n)',  note: 'Sentinel 0 forces complete drain at end', highlight: true },
+    { approach: 'Online Stock Span (span accumulation)',   time: 'O(1) amortised', space: 'O(n)', note: 'Popped spans are absorbed into current span' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="Monotonic Stack vs Sorted Map — which to choose?">
+  A **monotonic stack** answers "next greater/smaller in one direction" in O(n) total and O(1) per query when processing left-to-right. A **sorted map (TreeMap/SortedSet)** answers range queries and supports arbitrary insertions but costs O(log n) per operation. Use the stack when you process elements in order and each query is directional; use the map when elements arrive out-of-order or queries span arbitrary ranges.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem involves "next greater", "next smaller", "how many days until", "how far back", or "largest contiguous rectangle" — reach for a monotonic stack. The key tell is that each element needs to know about its nearest neighbour that satisfies some ordering constraint.
+</Callout>
+
+| Problem shape | Stack type |
+|---|---|
+| Next greater element to the right | Monotonic decreasing, left-to-right |
+| Next smaller element to the right | Monotonic increasing, left-to-right |
+| Previous greater element to the left | Monotonic decreasing, right-to-left (or same loop, left top) |
+| Largest rectangle in histogram | Monotonic increasing + sentinel |
+| Trapping rain water | Monotonic decreasing or two-pointer |
+| Online span (how many consecutive prior days ≤ today) | Monotonic decreasing with span accumulation |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 84,   title: "Largest Rectangle in Histogram",                 slug: "largest-rectangle-in-histogram",                 category: "monotonic-stack", difficulty: "Hard"   },
+  { id: 496,  title: "Next Greater Element I",                         slug: "next-greater-element-i",                         category: "monotonic-stack", difficulty: "Easy"   },
+  { id: 739,  title: "Daily Temperatures",                             slug: "daily-temperatures",                             category: "monotonic-stack", difficulty: "Medium" },
+  { id: 853,  title: "Car Fleet",                                      slug: "car-fleet",                                      category: "monotonic-stack", difficulty: "Medium" },
+  { id: 901,  title: "Online Stock Span",                              slug: "online-stock-span",                              category: "monotonic-stack", difficulty: "Medium" },
+  { id: 1475, title: "Final Prices With a Special Discount in a Shop", slug: "final-prices-with-a-special-discount-in-a-shop", category: "monotonic-stack", difficulty: "Easy"   },
+]} />

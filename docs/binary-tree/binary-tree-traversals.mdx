@@ -1,0 +1,231 @@
+---
+id: binary-tree-traversals
+title: "Binary Tree Traversals"
+sidebar_label: "Binary Tree Traversals"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BinaryTreeTraversalDiagram from '@site/src/components/DSA/BinaryTreeTraversalDiagram';
+
+<AlgoPageHeader
+  title="Binary Tree Traversals"
+  description="Four traversal strategies: inorder (L→Root→R), preorder (Root→L→R), postorder (L→R→Root), and BFS level order. Each has a natural set of problems it solves. Most binary tree problems are traversal problems in disguise — once you identify the right traversal, the local computation at each node follows directly."
+  category="Binary Tree"
+  categoryHref="/binary-tree"
+  time="O(n)"
+  space="O(h) DFS, O(n) BFS"
+  tags={["Inorder", "Preorder", "Postorder", "BFS", "Level Order", "DFS", "Recursion"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Every binary tree algorithm visits all n nodes exactly once — the difference is the **order** in which nodes are visited and what computation happens at each node. Choosing the correct traversal determines whether you have access to the right information at the right time.
+
+When to use each traversal:
+- **Inorder** — when you need nodes in sorted order (BST), or symmetric/path problems.
+- **Preorder** — when parents must be processed before children (serialisation, path tracking with running sum).
+- **Postorder** — when children must be processed before their parent (diameter, balanced check, LCA).
+- **BFS (level order)** — when you need nodes grouped by depth (right side view, level max/average).
+
+<Callout type="cyan" label="Core Insight">
+  Most binary tree problems follow the postorder pattern: recurse on left, recurse on right, then combine the two results at the current node. This is because the answer for a subtree often depends on the answers from both child subtrees. For problems that need to propagate a value downward (path sum check, count good nodes), preorder (process root first, pass value down) is more natural.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Inorder** | Left → Root → Right; BST inorder = sorted ascending |
+| **Preorder** | Root → Left → Right; root seen before any of its descendants |
+| **Postorder** | Left → Right → Root; root seen after all of its descendants |
+| **BFS / Level Order** | Level by level, left to right; uses a queue |
+| **Height / depth** | `height(node) = 1 + max(height(left), height(right))`; `height(nil) = 0` |
+| **Diameter** | `leftHeight + rightHeight` at each node; global max across all nodes |
+| **LCA** | If `p` and `q` are in different subtrees — current node is LCA |
+
+<Callout type="amber" label="Key Constraint">
+  The **diameter** pattern requires a `var maxDiameter = 0` variable captured in the outer scope, updated inside the recursive helper. The helper returns **height** (for use by the parent), but updates `maxDiameter` as a side effect. This is a common pattern where the return value serves the parent and the side effect serves the global answer.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<BinaryTreeTraversalDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Inorder traversal — recursive:**
+
+```swift
+func inorderTraversal(_ root: TreeNode?) -> [Int] {
+    var result = [Int]()
+    func inorder(_ node: TreeNode?) {
+        guard let n = node else { return }
+        inorder(n.left)
+        result.append(n.val)
+        inorder(n.right)
+    }
+    inorder(root)
+    return result
+}
+```
+
+**Maximum depth — postorder pattern:**
+
+```swift
+func maxDepth(_ root: TreeNode?) -> Int {
+    guard let n = root else { return 0 }
+    return 1 + max(maxDepth(n.left), maxDepth(n.right))
+}
+```
+
+**Diameter — postorder with outer variable:**
+
+```swift
+func diameterOfBinaryTree(_ root: TreeNode?) -> Int {
+    var maxDiam = 0
+
+    @discardableResult
+    func height(_ node: TreeNode?) -> Int {
+        guard let n = node else { return 0 }
+        let l = height(n.left)
+        let r = height(n.right)
+        maxDiam = max(maxDiam, l + r)  // diameter through this node
+        return 1 + max(l, r)           // height for parent
+    }
+
+    height(root)
+    return maxDiam
+}
+```
+
+**Level order BFS — group by level:**
+
+```swift
+func levelOrder(_ root: TreeNode?) -> [[Int]] {
+    guard let root = root else { return [] }
+    var result = [[Int]]()
+    var queue = [root], front = 0
+
+    while front < queue.count {
+        let levelSize = queue.count - front
+        var level = [Int]()
+        for _ in 0..<levelSize {
+            let node = queue[front]; front += 1
+            level.append(node.val)
+            if let l = node.left  { queue.append(l) }
+            if let r = node.right { queue.append(r) }
+        }
+        result.append(level)
+    }
+    return result
+}
+```
+
+**Right side view — BFS, take last of each level:**
+
+```swift
+func rightSideView(_ root: TreeNode?) -> [Int] {
+    guard let root = root else { return [] }
+    var result = [Int]()
+    var queue = [root], front = 0
+
+    while front < queue.count {
+        let levelSize = queue.count - front
+        for i in 0..<levelSize {
+            let node = queue[front]; front += 1
+            if i == levelSize - 1 { result.append(node.val) }  // last of level
+            if let l = node.left  { queue.append(l) }
+            if let r = node.right { queue.append(r) }
+        }
+    }
+    return result
+}
+```
+
+**Lowest Common Ancestor — postorder:**
+
+```swift
+func lowestCommonAncestor(_ root: TreeNode?, _ p: TreeNode?, _ q: TreeNode?) -> TreeNode? {
+    guard let n = root else { return nil }
+    if n === p || n === q { return n }  // found one target
+
+    let left  = lowestCommonAncestor(n.left,  p, q)
+    let right = lowestCommonAncestor(n.right, p, q)
+
+    if left != nil && right != nil { return n }  // p and q in different subtrees
+    return left ?? right
+}
+```
+
+**Count Good Nodes — preorder (pass max-so-far down):**
+
+```swift
+func goodNodes(_ root: TreeNode?) -> Int {
+    func dfs(_ node: TreeNode?, _ maxSoFar: Int) -> Int {
+        guard let n = node else { return 0 }
+        let isGood = n.val >= maxSoFar ? 1 : 0
+        let newMax = max(maxSoFar, n.val)
+        return isGood + dfs(n.left, newMax) + dfs(n.right, newMax)
+    }
+    return dfs(root, Int.min)
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `===` (identity) rather than `==` (equality) when comparing tree nodes by reference — `n === p` checks that two `TreeNode?` variables point to the same object. For BFS, use the index-pointer trick (`var front = 0`) rather than `removeFirst()` to keep dequeue O(1). Mark recursive helpers as `@discardableResult` when the return value is only used by the parent but the caller (the outermost call) ignores it — the diameter helper is a classic example.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Every traversal visits each of the n nodes exactly once, performing O(1) work per node. Total time is O(n) regardless of the traversal order or tree shape. The recursive call stack depth equals the tree height h — O(log n) for balanced trees, O(n) for a degenerate (linear) tree.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h) DFS, O(n) BFS">
+  DFS recursion uses O(h) call stack space — O(log n) for balanced trees. BFS stores up to one full level in the queue; the widest level of a perfect binary tree has n/2 nodes, so BFS space is O(n) in the worst case. The result arrays (level order output, path lists) are O(n) as output space.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'DFS (recursive) — all orders',   time: 'O(n)', space: 'O(h)', note: 'h = tree height; O(log n) balanced, O(n) skewed', highlight: true },
+    { approach: 'BFS (level order)',               time: 'O(n)', space: 'O(n)', note: 'Queue holds widest level — up to n/2 nodes',       highlight: true },
+    { approach: 'Diameter (postorder + side effect)', time: 'O(n)', space: 'O(h)', note: 'Height returned to parent; maxDiam updated at each node' },
+    { approach: 'LCA (postorder)',                 time: 'O(n)', space: 'O(h)', note: 'Each node visited once; stops early if both found' },
+    { approach: 'Good Nodes (preorder, pass max)', time: 'O(n)', space: 'O(h)', note: 'maxSoFar propagated downward in the call' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="DFS vs BFS — which to choose?">
+  Use **DFS** when the problem involves depth, paths from root to leaf, subtree properties, or combining results from both children. Use **BFS** when the problem groups nodes by level, asks for the closest node satisfying a condition, or needs nodes processed in arrival order. Both are O(n), but BFS uses O(n) queue space while DFS uses O(h) stack space — DFS is more space-efficient on balanced trees.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If you need both left and right subtree results before processing the current node — postorder. If you need to pass something from the parent to the children (path context, running max) — preorder. If you need nodes in sorted order or symmetric comparison — inorder. If you need depth grouping — BFS.
+</Callout>
+
+| Problem shape | Traversal |
+|---|---|
+| Max/min depth, balanced check | Postorder (combine child heights at root) |
+| Diameter, LCA | Postorder (need both child results) |
+| Path sum from root to leaf | Preorder (subtract as you descend) |
+| Count good nodes (running max) | Preorder (pass max down) |
+| Level order, right side view, level max | BFS |
+| BST sorted output | Inorder |
+| Serialise / clone tree | Preorder |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 94,   title: "Binary Tree Inorder Traversal",                              slug: "binary-tree-inorder-traversal",                              category: "binary-tree", difficulty: "Easy"   },
+  { id: 104,  title: "Maximum Depth of Binary Tree",                               slug: "maximum-depth-of-binary-tree",                               category: "binary-tree", difficulty: "Easy"   },
+  { id: 102,  title: "Binary Tree Level Order Traversal",                          slug: "binary-tree-level-order-traversal",                          category: "binary-tree", difficulty: "Medium" },
+  { id: 199,  title: "Binary Tree Right Side View",                                slug: "binary-tree-right-side-view",                                category: "binary-tree", difficulty: "Medium" },
+  { id: 236,  title: "Lowest Common Ancestor of a Binary Tree",                    slug: "lowest-common-ancestor-of-a-binary-tree",                    category: "binary-tree", difficulty: "Medium" },
+  { id: 543,  title: "Diameter of Binary Tree",                                    slug: "diameter-of-binary-tree",                                    category: "binary-tree", difficulty: "Easy"   },
+  { id: 1448, title: "Count Good Nodes in Binary Tree",                            slug: "count-good-nodes-in-binary-tree",                            category: "binary-tree", difficulty: "Medium" },
+]} />

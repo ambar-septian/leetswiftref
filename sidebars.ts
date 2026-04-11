@@ -289,8 +289,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📊 Monotonic Stack',
-      link: { type: 'generated-index', slug: '/monotonic-stack' },
+      link: { type: 'doc', id: 'monotonic-stack/monotonic-stack-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'monotonic-stack/monotonic-stack',
+          ],
+        },
         'monotonic-stack/84-largest-rectangle-in-histogram',
         'monotonic-stack/496-next-greater-element-i',
         'monotonic-stack/739-daily-temperatures',
@@ -302,8 +310,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔙 Backtracking',
-      link: { type: 'generated-index', slug: '/backtracking' },
+      link: { type: 'doc', id: 'backtracking/backtracking-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'backtracking/backtracking',
+          ],
+        },
         'backtracking/17-letter-combinations-of-a-phone-number',
         'backtracking/22-generate-parentheses',
         'backtracking/39-combination-sum',
@@ -324,8 +340,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📚 Stack',
-      link: { type: 'generated-index', slug: '/stack' },
+      link: { type: 'doc', id: 'stack/stack-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'stack/stack',
+          ],
+        },
         'stack/20-valid-parentheses',
         'stack/71-simplify-path',
         'stack/394-decode-string',
@@ -338,8 +362,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '📈 Dynamic Programming (1D)',
-      link: { type: 'generated-index', slug: '/dp-1d' },
+      link: { type: 'doc', id: 'dp-1d/dp-1d-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'dp-1d/dp-1d',
+          ],
+        },
         'dp-1d/42-trapping-rain-water',
         'dp-1d/70-climbing-stairs',
         'dp-1d/118-pascals-triangle',
@@ -353,8 +385,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🧩 Array',
-      link: { type: 'generated-index', slug: '/array' },
+      link: { type: 'doc', id: 'array/array-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'array/array-patterns',
+          ],
+        },
         'array/66-plus-one',
         'array/1295-find-numbers-with-even-number-of-digits',
         'array/1431-kids-with-the-greatest-number-of-candies',
@@ -371,8 +411,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌲 Binary Tree',
-      link: { type: 'generated-index', slug: '/binary-tree' },
+      link: { type: 'doc', id: 'binary-tree/binary-tree-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'binary-tree/binary-tree-traversals',
+          ],
+        },
         'binary-tree/94-binary-tree-inorder-traversal',
         'binary-tree/100-same-tree',
         'binary-tree/101-symmetric-tree',
@@ -400,8 +448,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔎 Binary Search Tree',
-      link: { type: 'generated-index', slug: '/binary-search-tree' },
+      link: { type: 'doc', id: 'binary-search-tree/binary-search-tree-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'binary-search-tree/bst-operations',
+          ],
+        },
         'binary-search-tree/98-validate-binary-search-tree',
         'binary-search-tree/108-convert-sorted-array-to-binary-search-tree',
         'binary-search-tree/230-kth-smallest-element-in-a-bst',
@@ -412,8 +468,16 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🌿 Greedy',
-      link: { type: 'generated-index', slug: '/greedy' },
+      link: { type: 'doc', id: 'greedy/greedy-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'greedy/greedy-patterns',
+          ],
+        },
         'greedy/135-candy',
         'greedy/334-increasing-triplet-subsequence',
         'greedy/605-can-place-flowers',
@@ -422,16 +486,32 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: '🔢 Bit Manipulation',
-      link: { type: 'generated-index', slug: '/bit-manipulation' },
+      link: { type: 'doc', id: 'bit-manipulation/bit-manipulation-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'bit-manipulation/bit-patterns',
+          ],
+        },
         'bit-manipulation/1342-number-of-steps-to-reduce-a-number-to-zero',
       ],
     },
     {
       type: 'category',
       label: '🗃 Matrix',
-      link: { type: 'generated-index', slug: '/matrix' },
+      link: { type: 'doc', id: 'matrix/matrix-index' },
       items: [
+        {
+          type: 'category',
+          label: 'Algorithms',
+          collapsed: false,
+          items: [
+            'matrix/matrix-patterns',
+          ],
+        },
         'matrix/1672-richest-customer-wealth',
       ],
     },

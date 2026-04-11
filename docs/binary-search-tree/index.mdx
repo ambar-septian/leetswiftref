@@ -1,0 +1,66 @@
+---
+id: binary-search-tree-index
+title: "Binary Search Tree"
+sidebar_label: "Binary Search Tree"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BSTDiagram from '@site/src/components/DSA/BSTDiagram';
+
+<CategoryHeader
+  emoji="🔎"
+  title="Binary Search Tree"
+  description="A binary search tree (BST) is a binary tree with the ordering invariant: every node in the left subtree is strictly less than the root, and every node in the right subtree is strictly greater. This invariant enables O(h) search, insert, and delete, and guarantees that inorder traversal produces a sorted sequence."
+  tags={["BST Invariant", "Inorder = Sorted", "O(h) Search", "Validate", "Kth Smallest"]}
+/>
+
+<SectionHeader n={1} title="What is a BST?" />
+
+The BST invariant applies recursively to every subtree — not just the direct children:
+
+| Property | Rule |
+|---|---|
+| **Left subtree** | All values strictly less than the root |
+| **Right subtree** | All values strictly greater than the root |
+| **Inorder traversal** | Produces values in strictly ascending sorted order |
+| **Search** | Go left if target &lt; current, go right if target &gt; current — O(h) |
+| **Height** | O(log n) for balanced BST, O(n) for degenerate (sorted input) |
+
+<Callout type="amber" label="Key Constraint">
+  The BST invariant is a **global** constraint, not just a local parent-child constraint. A common mistake is checking only that `node.left.val &lt; node.val` and `node.right.val &gt; node.val`. This misses cases like a left child having a right subtree with values that are greater than the root. Correct validation passes a `min` and `max` bound down the recursion.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<BSTDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="BST Operations"
+    description="Core BST algorithms: validate using min/max bounds, search with left/right navigation, kth smallest via inorder traversal, convert sorted array to balanced BST via mid-point recursion, and delete a node with the successor/predecessor replacement."
+    href="/binary-search-tree/bst-operations"
+    time="O(h) search/insert/delete"
+    space="O(h)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem mentions "BST" or "sorted binary tree" and asks about a specific value (search, insert, delete, kth element) — the BST ordering property guides you left or right at each node, giving O(h) time. If the problem asks to validate or reconstruct, use the min/max bound pattern (validate) or the mid-point recursion (sorted array to BST).
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 98,  title: "Validate Binary Search Tree",              slug: "validate-binary-search-tree",              category: "binary-search-tree", difficulty: "Medium" },
+  { id: 108, title: "Convert Sorted Array to Binary Search Tree", slug: "convert-sorted-array-to-binary-search-tree", category: "binary-search-tree", difficulty: "Easy"   },
+  { id: 230, title: "Kth Smallest Element in a BST",            slug: "kth-smallest-element-in-a-bst",            category: "binary-search-tree", difficulty: "Medium" },
+  { id: 450, title: "Delete Node in a BST",                     slug: "delete-node-in-a-bst",                     category: "binary-search-tree", difficulty: "Medium" },
+  { id: 700, title: "Search in a Binary Search Tree",           slug: "search-in-a-binary-search-tree",           category: "binary-search-tree", difficulty: "Easy"   },
+]} />

@@ -1,0 +1,169 @@
+---
+id: matrix-patterns
+title: "Matrix Patterns"
+sidebar_label: "Matrix Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import MatrixDiagram from '@site/src/components/DSA/MatrixDiagram';
+
+<AlgoPageHeader
+  title="Matrix Patterns"
+  description="Core 2D array patterns: row/column aggregate (max row sum), 4-directional BFS/DFS traversal with boundary guards, and in-place matrix manipulation. The building block for graph problems on grids — number of islands, shortest path in binary matrix, and pacific atlantic water flow."
+  category="Matrix"
+  categoryHref="/matrix"
+  time="O(m × n)"
+  space="O(1) aggregate, O(m × n) BFS/DFS"
+  tags={["Row Sum", "4-Directional", "Boundary Guard", "BFS", "DFS", "In-Place"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Matrix problems extend array thinking to two dimensions. The coordinate system is `(row, col)` with `(0,0)` at the top-left. The two most common operations are:
+
+1. **Aggregate per row or column** — compute a summary statistic (sum, max, product) for each row or column using a nested loop.
+2. **4-directional traversal** — from a starting cell, explore all cells reachable via up/down/left/right moves, using BFS (for shortest path) or DFS (for connected region size).
+
+<Callout type="cyan" label="Core Insight">
+  The direction array `[(-1,0),(0,1),(1,0),(0,-1)]` encodes the four cardinal directions as row and column deltas. Iterating over this array inside a BFS/DFS loop replaces four separate `if` branches with a single loop — cleaner, less error-prone, and easy to extend to 8 directions by adding four more diagonal deltas. The bounds check is always the first thing in the loop body.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Coordinate** | `(row, col)` — row is vertical (0 = top), col is horizontal (0 = left) |
+| **Boundary check** | `r >= 0 && r < rows && c >= 0 && c < cols` before accessing `grid[r][c]` |
+| **Direction array** | `[(-1,0),(0,1),(1,0),(0,-1)]` — up, right, down, left |
+| **Visited marking** | Set `grid[r][c] = special_value` or maintain a `visited` Set to avoid re-visiting |
+| **Level BFS** | Each BFS level = one step away from source — gives shortest path distance |
+| **Row sum** | `row.reduce(0, +)` in Swift — aggregate across columns for a single row |
+
+<Callout type="amber" label="Key Constraint">
+  When using BFS to find the **shortest path** in a grid, start all source cells in the queue simultaneously (multi-source BFS) when the problem has multiple starting points (e.g. all rotten oranges at time 0). Never add already-visited or out-of-bounds cells to the queue. In Swift, using a tuple `(r, c)` as the BFS queue element is clean — `var queue = [(Int, Int)]()`.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<MatrixDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Richest Customer Wealth — row sum aggregation:**
+
+```swift
+func maximumWealth(_ accounts: [[Int]]) -> Int {
+    return accounts.map { $0.reduce(0, +) }.max()!
+}
+```
+
+**4-directional BFS template — shortest path on grid:**
+
+```swift
+func bfsGrid(_ grid: [[Int]], _ startRow: Int, _ startCol: Int) -> Int {
+    let rows = grid.count, cols = grid[0].count
+    var grid = grid             // mutable copy for visited marking
+    let dirs = [(-1,0),(0,1),(1,0),(0,-1)]
+
+    var queue = [(startRow, startCol)]
+    var front = 0
+    var steps = 0
+
+    grid[startRow][startCol] = -1  // mark visited
+
+    while front < queue.count {
+        let levelSize = queue.count - front
+        for _ in 0..<levelSize {
+            let (r, c) = queue[front]; front += 1
+            for (dr, dc) in dirs {
+                let nr = r + dr, nc = c + dc
+                guard nr >= 0, nr < rows, nc >= 0, nc < cols else { continue }
+                guard grid[nr][nc] == 0 /* unvisited, passable */ else { continue }
+                grid[nr][nc] = -1   // mark visited
+                queue.append((nr, nc))
+            }
+        }
+        steps += 1
+    }
+    return steps  // or -1 if target never reached
+}
+```
+
+**DFS connected region — count or mark cells:**
+
+```swift
+func dfsGrid(_ grid: inout [[Int]], _ r: Int, _ c: Int) {
+    let rows = grid.count, cols = grid[0].count
+    guard r >= 0, r < rows, c >= 0, c < cols else { return }
+    guard grid[r][c] == 1 /* land / unvisited */ else { return }
+
+    grid[r][c] = 0   // mark visited (sink the island)
+
+    let dirs = [(-1,0),(0,1),(1,0),(0,-1)]
+    for (dr, dc) in dirs {
+        dfsGrid(&grid, r + dr, c + dc)
+    }
+}
+```
+
+**In-place transpose (for rotation problems):**
+
+```swift
+func transposeInPlace(_ matrix: inout [[Int]]) {
+    let n = matrix.count
+    for r in 0..<n {
+        for c in (r+1)..<n {
+            matrix[r].swapAt(c, /* swap matrix[r][c] and matrix[c][r] */ 0)
+            let tmp = matrix[r][c]
+            matrix[r][c] = matrix[c][r]
+            matrix[c][r] = tmp
+        }
+    }
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `accounts.map { $0.reduce(0, +) }.max()!` — idiomatic Swift for row sums and global max. For BFS on a grid, store tuples `(Int, Int)` in the queue array — Swift can infer the type. Pass the grid as `inout [[Int]]` for DFS that modifies it in place. Use `grid[r][c] = -1` (sentinel) to mark visited instead of a separate boolean matrix — saves O(m*n) extra space. The direction array `let dirs = [(-1,0),(0,1),(1,0),(0,-1)]` can be defined as `[(Int,Int)]` for type safety.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m × n)">
+  Row/column aggregation visits every cell once — O(m × n). BFS and DFS also visit every cell at most once (due to visited marking) — O(m × n) total. The direction loop adds a constant factor of 4 (or 8 for 8-directional) per cell, which does not change the asymptotic complexity.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) to O(m × n)">
+  Row aggregation uses O(1) auxiliary space (just a running max). BFS uses O(m × n) for the queue in the worst case (all cells enqueued). DFS uses O(m × n) call stack space in the worst case (a grid where the DFS path visits every cell). Marking visited in-place eliminates the need for a separate visited array.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Row/column aggregate (reduce)',  time: 'O(m×n)', space: 'O(1)',   note: 'Single nested loop, no extra storage',  highlight: true },
+    { approach: 'BFS (shortest path)',            time: 'O(m×n)', space: 'O(m×n)', note: 'Queue may hold all cells in worst case', highlight: true },
+    { approach: 'DFS (connected region)',         time: 'O(m×n)', space: 'O(m×n)', note: 'Call stack depth = region size' },
+    { approach: 'In-place transpose',             time: 'O(n²)',  space: 'O(1)',   note: 'n×n matrix; swap upper triangle only' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  For a matrix problem: if the question is about rows or columns individually — use a nested loop with reduce. If it is about connected regions or paths between cells — use BFS (for shortest path) or DFS (for region size). Always write the boundary guard as the first check inside any direction loop.
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| Max/sum per row or column | Nested loop + reduce/max |
+| Shortest path between two cells | BFS from source; level = distance |
+| Count or mark connected regions | DFS from each unvisited starting cell |
+| Multi-source shortest distance | Multi-source BFS (all sources in queue at start) |
+| Rotate matrix 90 degrees | Transpose + reverse each row |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 1672, title: "Richest Customer Wealth", slug: "richest-customer-wealth", category: "matrix", difficulty: "Easy" },
+]} />

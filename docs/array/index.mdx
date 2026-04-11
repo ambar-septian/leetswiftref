@@ -1,0 +1,72 @@
+---
+id: array-index
+title: "Array"
+sidebar_label: "Array"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import ArrayPatternsDiagram from '@site/src/components/DSA/ArrayPatternsDiagram';
+
+<CategoryHeader
+  emoji="🧩"
+  title="Array"
+  description="Arrays are the most fundamental data structure. Many problems reduce to a careful linear scan with a running counter, an in-place index mapping, or a simple simulation. Array problems emphasise clean index arithmetic, boundary conditions, and knowing when to create a new array versus modifying in place."
+  tags={["Linear Scan", "Index Mapping", "Simulation", "In-Place", "Counter"]}
+/>
+
+<SectionHeader n={1} title="What are Array Patterns?" />
+
+Most array problems fall into a small number of recurring shapes:
+
+| Pattern | Description | Examples |
+|---|---|---|
+| **Linear scan** | Single pass with a running counter or flag | Three Consecutive Odds, Special Array I |
+| **Index mapping** | Output at index i is computed from another index | Build Array from Permutation |
+| **Simulation** | Follow instructions step by step, maintain state | Plus One, Baseball Game |
+| **Subarray check** | Sliding window or two-pointer over subarrays | Subarray Count with Condition |
+| **Rotation / sorted check** | Detect structure in a transformed array | Check if Sorted and Rotated |
+
+<Callout type="amber" label="Key Constraint">
+  Watch for **off-by-one errors** in index arithmetic and **integer overflow** when summing or multiplying array values. In Swift, `Int` is 64-bit on all Apple platforms, so overflow is rare — but be careful with `num * 10 + digit` style digit extraction for very large numbers. Also note that Swift's `Array` is a **value type**: assigning `var copy = array` makes a full copy — useful for in-place problems but a hidden cost if done inside a loop.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<ArrayPatternsDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Array Patterns"
+    description="Common array patterns: linear scan with counter, index mapping, digit simulation (plus one), subarray sliding window, and rotation detection. All O(n) with O(1) extra space."
+    href="/array/array-patterns"
+    time="O(n)"
+    space="O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem involves a single pass over an array and the answer is a count, a flag, or an element — reach for a linear scan. If the answer at index i is computed from another index — reach for index mapping. Only reach for a second data structure when the single-pass approach cannot maintain the necessary state.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 66,   title: "Plus One",                                                  slug: "plus-one",                                                  category: "array", difficulty: "Easy" },
+  { id: 1295, title: "Find Numbers with Even Number of Digits",                   slug: "find-numbers-with-even-number-of-digits",                   category: "array", difficulty: "Easy" },
+  { id: 1431, title: "Kids With the Greatest Number of Candies",                  slug: "kids-with-the-greatest-number-of-candies",                  category: "array", difficulty: "Easy" },
+  { id: 1550, title: "Three Consecutive Odds",                                    slug: "three-consecutive-odds",                                    category: "array", difficulty: "Easy" },
+  { id: 1752, title: "Check if Array Is Sorted and Rotated",                      slug: "check-if-array-is-sorted-and-rotated",                      category: "array", difficulty: "Easy" },
+  { id: 1920, title: "Build Array from Permutation",                              slug: "build-array-from-permutation",                              category: "array", difficulty: "Easy" },
+  { id: 2176, title: "Count Equal and Divisible Pairs in an Array",               slug: "count-equal-and-divisible-pairs-in-an-array",               category: "array", difficulty: "Easy" },
+  { id: 2942, title: "Find Words Containing Character",                           slug: "find-words-containing-character",                           category: "array", difficulty: "Easy" },
+  { id: 3105, title: "Longest Strictly Increasing or Strictly Decreasing Subarray", slug: "longest-strictly-increasing-or-strictly-decreasing-subarray", category: "array", difficulty: "Easy" },
+  { id: 3151, title: "Special Array I",                                           slug: "special-array-i",                                           category: "array", difficulty: "Easy" },
+  { id: 3392, title: "Count Subarrays of Length Three With a Condition",          slug: "count-subarrays-of-length-three-with-a-condition",          category: "array", difficulty: "Easy" },
+]} />

@@ -1,0 +1,69 @@
+---
+id: dp-1d-index
+title: "Dynamic Programming (1D)"
+sidebar_label: "Dynamic Programming (1D)"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import DPOneDDiagram from '@site/src/components/DSA/DPOneDDiagram';
+
+<CategoryHeader
+  emoji="📈"
+  title="Dynamic Programming (1D)"
+  description="1D dynamic programming stores solutions to overlapping subproblems in a single array (or two variables). Each cell dp[i] is computed from a fixed number of earlier cells via a recurrence relation. Used for Fibonacci-style sequences, stock trading, subsequences, and staircase problems."
+  tags={["Recurrence", "Memoisation", "Bottom-Up", "Fibonacci", "Subsequence"]}
+/>
+
+<SectionHeader n={1} title="What is 1D Dynamic Programming?" />
+
+Dynamic programming solves problems by breaking them into overlapping subproblems and storing each result so it is computed only once. In the 1D case, the subproblem state is a single index — the answer for index i depends only on answers for indices less than i.
+
+| Aspect | Description |
+|---|---|
+| **State** | `dp[i]` = answer for subproblem at index i |
+| **Recurrence** | Express `dp[i]` in terms of earlier `dp` values |
+| **Base case** | The smallest subproblems that can be answered directly |
+| **Answer** | Usually `dp[n]` or `max(dp)` or `dp[n-1]` |
+| **Space opt.** | When `dp[i]` depends only on `dp[i-1]` (and `dp[i-2]`), keep only the last 1–2 values |
+
+<Callout type="amber" label="Key Constraint">
+  Identify the **recurrence relation** before writing any code. If you cannot express `dp[i]` as a function of earlier `dp` values, the subproblem decomposition is wrong. Common recurrences: `dp[i] = dp[i-1] + dp[i-2]` (Fibonacci/stairs), `dp[i] = max(dp[i-1], ...)` (best-so-far), `dp[i] = dp[i-1] + val[i]` (running sum / Pascal).
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<DPOneDDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="1D Dynamic Programming"
+    description="Bottom-up 1D DP covering Fibonacci-style recurrences, best-time-to-buy-and-sell stock, is-subsequence two-pointer, Pascal's triangle row-by-row construction, and space-optimised two-variable patterns."
+    href="/dp-1d/dp-1d"
+    time="O(n)"
+    space="O(n) or O(1)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the answer for position i depends only on answers for positions before i, and the same subproblems recur across different values of i — that is 1D DP. The tell is overlapping subproblems: naive recursion would recompute the same value many times.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 42,   title: "Trapping Rain Water",                                slug: "trapping-rain-water",                                category: "dp-1d", difficulty: "Hard"   },
+  { id: 70,   title: "Climbing Stairs",                                    slug: "climbing-stairs",                                    category: "dp-1d", difficulty: "Easy"   },
+  { id: 118,  title: "Pascal's Triangle",                                  slug: "pascals-triangle",                                  category: "dp-1d", difficulty: "Easy"   },
+  { id: 121,  title: "Best Time to Buy and Sell Stock",                    slug: "best-time-to-buy-and-sell-stock",                    category: "dp-1d", difficulty: "Easy"   },
+  { id: 392,  title: "Is Subsequence",                                     slug: "is-subsequence",                                     category: "dp-1d", difficulty: "Easy"   },
+  { id: 509,  title: "Fibonacci Number",                                   slug: "fibonacci-number",                                   category: "dp-1d", difficulty: "Easy"   },
+  { id: 1137, title: "N-th Tribonacci Number",                             slug: "n-th-tribonacci-number",                             category: "dp-1d", difficulty: "Easy"   },
+  { id: 2900, title: "Longest Unequal Adjacent Groups Subsequence I",      slug: "longest-unequal-adjacent-groups-subsequence-i",      category: "dp-1d", difficulty: "Easy"   },
+]} />

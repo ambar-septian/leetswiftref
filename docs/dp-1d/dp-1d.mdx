@@ -1,0 +1,204 @@
+---
+id: dp-1d
+title: "1D Dynamic Programming"
+sidebar_label: "1D Dynamic Programming"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import DPOneDDiagram from '@site/src/components/DSA/DPOneDDiagram';
+
+<AlgoPageHeader
+  title="1D Dynamic Programming"
+  description="Bottom-up 1D DP fills a single array where dp[i] is computed from a constant number of earlier cells. The key steps: define the state, write the recurrence, handle base cases, iterate left to right, read the answer. Space can often be reduced to O(1) when dp[i] depends only on dp[i-1] and dp[i-2]."
+  category="Dynamic Programming (1D)"
+  categoryHref="/dp-1d"
+  time="O(n)"
+  space="O(n) reducible to O(1)"
+  tags={["Bottom-Up", "Recurrence", "Fibonacci", "Stock", "Subsequence", "Space Optimised"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+1D DP applies whenever a problem can be decomposed into overlapping subproblems indexed by a single integer, and the answer for each subproblem depends on a fixed number of earlier subproblems.
+
+The four steps for any 1D DP:
+1. **Define** `dp[i]` — what does it represent?
+2. **Recurrence** — express `dp[i]` in terms of `dp[i-1]`, `dp[i-2]`, etc.
+3. **Base cases** — set `dp[0]`, `dp[1]` (or `dp[n]` for backward DP).
+4. **Answer** — read `dp[n]`, `dp[n-1]`, or `max(dp)` depending on the problem.
+
+<Callout type="cyan" label="Core Insight">
+  The hardest part is defining the state correctly. Once `dp[i]` has a clear meaning (e.g. "minimum cost to reach stair i", "maximum profit up to day i", "length of longest subsequence ending at i"), the recurrence usually follows directly. If the recurrence is unclear, try redefining the state. A common mistake is defining the state too broadly — keep it as specific as the problem requires.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **State** | `dp[i]` = the answer to the subproblem for index i |
+| **Recurrence** | Rule for computing `dp[i]` from smaller indices |
+| **Base case** | `dp[0]` and `dp[1]` (seed values the recurrence cannot compute) |
+| **Bottom-up** | Fill dp array from index 0 upward — avoids recursion stack overhead |
+| **Space optimisation** | When only `dp[i-1]` and `dp[i-2]` are needed, replace the array with two variables |
+| **Running minimum** | Track `minPrice` or `minSoFar` alongside the dp array for stock problems |
+
+<Callout type="amber" label="Key Constraint">
+  Verify the **recurrence direction**. Most 1D DP runs left-to-right (`dp[i]` uses `dp[i-1]`). Some problems run right-to-left or use `dp[i+1]`. Trapping Rain Water, for example, needs left-max and right-max arrays that are filled in opposite directions. Getting the direction wrong produces an incorrect dp table.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<DPOneDDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Fibonacci / Climbing Stairs — two-variable space optimisation:**
+
+```swift
+func climbStairs(_ n: Int) -> Int {
+    if n <= 1 { return 1 }
+    var prev2 = 1, prev1 = 1
+    for _ in 2...n {
+        let curr = prev1 + prev2
+        prev2 = prev1
+        prev1 = curr
+    }
+    return prev1
+}
+```
+
+**Tribonacci — three-variable rolling window:**
+
+```swift
+func tribonacci(_ n: Int) -> Int {
+    if n == 0 { return 0 }
+    if n <= 2 { return 1 }
+    var a = 0, b = 1, c = 1
+    for _ in 3...n {
+        (a, b, c) = (b, c, a + b + c)
+    }
+    return c
+}
+```
+
+**Best Time to Buy and Sell Stock — running minimum:**
+
+```swift
+func maxProfit(_ prices: [Int]) -> Int {
+    var minPrice = Int.max
+    var maxProfit = 0
+    for price in prices {
+        minPrice = min(minPrice, price)
+        maxProfit = max(maxProfit, price - minPrice)
+    }
+    return maxProfit
+}
+```
+
+**Trapping Rain Water — left-max and right-max arrays:**
+
+```swift
+func trap(_ height: [Int]) -> Int {
+    let n = height.count
+    var leftMax  = Array(repeating: 0, count: n)
+    var rightMax = Array(repeating: 0, count: n)
+
+    leftMax[0] = height[0]
+    for i in 1..<n { leftMax[i] = max(leftMax[i-1], height[i]) }
+
+    rightMax[n-1] = height[n-1]
+    for i in stride(from: n-2, through: 0, by: -1) {
+        rightMax[i] = max(rightMax[i+1], height[i])
+    }
+
+    return (0..<n).reduce(0) { acc, i in
+        acc + min(leftMax[i], rightMax[i]) - height[i]
+    }
+}
+```
+
+**Pascal's Triangle — build row by row:**
+
+```swift
+func generate(_ numRows: Int) -> [[Int]] {
+    var triangle = [[Int]]()
+    for i in 0..<numRows {
+        var row = Array(repeating: 1, count: i + 1)
+        if i >= 2 {
+            let prev = triangle[i - 1]
+            for j in 1..<i { row[j] = prev[j-1] + prev[j] }
+        }
+        triangle.append(row)
+    }
+    return triangle
+}
+```
+
+**Is Subsequence — two-pointer / DP approach:**
+
+```swift
+func isSubsequence(_ s: String, _ t: String) -> Bool {
+    var si = s.startIndex
+    for ch in t {
+        if si < s.endIndex && s[si] == ch { si = s.index(after: si) }
+    }
+    return si == s.endIndex
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use tuple destructuring for the rolling-window update: `(a, b, c) = (b, c, a + b + c)` updates all three variables simultaneously without a temporary — cleaner and less error-prone than three separate assignments. For `stride`, use `stride(from: n-2, through: 0, by: -1)` (note: `through` is inclusive, `to` is exclusive — easy mistake). `Array(repeating: 0, count: n)` creates the dp array in one line. Avoid `String.Index` arithmetic for subsequence problems — iterating `for ch in t` is safer and avoids index math.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Every 1D DP problem in this category runs a single pass (or two passes for left-max / right-max) over the input. Each cell is computed in O(1) from a constant number of earlier cells. Total time is O(n). Pascal's Triangle is O(numRows²) because it generates a triangular grid — not a single array — but each row takes O(row length) to compute.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n) or O(1)">
+  The dp array is O(n). When only the previous one or two values are needed (Fibonacci, Climbing Stairs, Tribonacci, Stock), replace the array with a fixed number of variables for O(1) space. Trapping Rain Water needs O(n) for both leftMax and rightMax arrays (or can be done with O(1) via two pointers).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Fibonacci / Climbing Stairs (2-var)',  time: 'O(n)', space: 'O(1)', note: 'Rolling two variables — optimal',              highlight: true },
+    { approach: 'Tribonacci (3-var)',                   time: 'O(n)', space: 'O(1)', note: 'Tuple swap keeps three variables in sync',     highlight: true },
+    { approach: 'Best Time to Buy Sell Stock',          time: 'O(n)', space: 'O(1)', note: 'Running minPrice + maxProfit' },
+    { approach: 'Trapping Rain Water (DP arrays)',      time: 'O(n)', space: 'O(n)', note: 'leftMax + rightMax arrays; two-pointer is O(1) space' },
+    { approach: "Pascal's Triangle",                    time: 'O(n²)', space: 'O(n²)', note: 'n rows, each up to n cells; output size drives complexity' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="DP vs Greedy — which to choose?">
+  Use **DP** when the optimal choice at each step depends on future or past subproblem results that cannot be greedily determined. Use **Greedy** when a locally optimal choice always leads to the global optimum without needing to reconsider earlier decisions. For the stock problem, the greedy insight (track running minimum) happens to give the DP answer in O(1) space — but it is only safe because the DP recurrence has a special monotone structure.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If a recursive solution with memoisation would work but feels slow, convert it to bottom-up DP. The conversion is mechanical: the recursive parameter becomes the dp array index, the base case becomes the initialisation, and the recursion becomes a loop.
+</Callout>
+
+| Recurrence shape | Example problem |
+|---|---|
+| `dp[i] = dp[i-1] + dp[i-2]` | Climbing Stairs, Fibonacci |
+| `dp[i] = dp[i-1] + dp[i-2] + dp[i-3]` | Tribonacci |
+| `dp[i] = max(dp[i-1], price[i] - minSoFar)` | Best Time to Buy and Sell Stock |
+| `dp[i] = min(leftMax[i], rightMax[i]) - height[i]` | Trapping Rain Water |
+| `dp[i][j] = dp[i-1][j-1] + dp[i-1][j]` | Pascal's Triangle |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 42,   title: "Trapping Rain Water",                           slug: "trapping-rain-water",                           category: "dp-1d", difficulty: "Hard"   },
+  { id: 70,   title: "Climbing Stairs",                               slug: "climbing-stairs",                               category: "dp-1d", difficulty: "Easy"   },
+  { id: 118,  title: "Pascal's Triangle",                             slug: "pascals-triangle",                             category: "dp-1d", difficulty: "Easy"   },
+  { id: 121,  title: "Best Time to Buy and Sell Stock",               slug: "best-time-to-buy-and-sell-stock",               category: "dp-1d", difficulty: "Easy"   },
+  { id: 392,  title: "Is Subsequence",                                slug: "is-subsequence",                                category: "dp-1d", difficulty: "Easy"   },
+  { id: 509,  title: "Fibonacci Number",                              slug: "fibonacci-number",                              category: "dp-1d", difficulty: "Easy"   },
+  { id: 1137, title: "N-th Tribonacci Number",                        slug: "n-th-tribonacci-number",                        category: "dp-1d", difficulty: "Easy"   },
+]} />

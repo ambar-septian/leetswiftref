@@ -1,0 +1,68 @@
+---
+id: stack-index
+title: "Stack"
+sidebar_label: "Stack"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import StackOperationsDiagram from '@site/src/components/DSA/StackOperationsDiagram';
+
+<CategoryHeader
+  emoji="📚"
+  title="Stack"
+  description="A Last-In-First-Out (LIFO) data structure backed by a Swift array. Stacks are the canonical tool for bracket matching, expression evaluation, path simplification, and any problem where you need to remember context and unwind it in reverse order."
+  tags={["LIFO", "Bracket Matching", "Expression Evaluation", "Undo", "DFS"]}
+/>
+
+<SectionHeader n={1} title="What is a Stack?" />
+
+A stack supports two primary operations: **push** (add to the top) and **pop** (remove from the top). Swift's `Array` provides both as O(1) amortised `append` and `removeLast`.
+
+| Property | Value |
+|---|---|
+| Order | Last In, First Out (LIFO) |
+| Push | `array.append(x)` — O(1) amortised |
+| Pop | `array.removeLast()` — O(1) |
+| Peek | `array.last` — O(1) |
+| Empty check | `array.isEmpty` — O(1) |
+
+<Callout type="amber" label="Key Constraint">
+  Always **peek before popping**. Use `guard let top = stack.last else { /* handle empty */ }` to avoid a crash on an empty stack. In Swift, `array.last` returns an `Optional`; `array.removeLast()` crashes if the array is empty — never call it without an emptiness check.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<StackOperationsDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Stack"
+    description="Stack patterns for bracket matching, nested string decoding, path simplification, asteroid collision, and adjacent duplicate removal. Covers the standard push/pop template and its variants for expression-like problems."
+    href="/stack/stack"
+    time="O(n)"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  Reach for a stack whenever you need to process something and then "undo" or revisit it in reverse order. Brackets need their matching close-bracket to appear later in LIFO order. Nested strings need their outer context restored after the inner part is processed. That reversal pattern is the signature of a stack problem.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 20,   title: "Valid Parentheses",                       slug: "valid-parentheses",                       category: "stack", difficulty: "Easy"   },
+  { id: 71,   title: "Simplify Path",                          slug: "simplify-path",                          category: "stack", difficulty: "Medium" },
+  { id: 394,  title: "Decode String",                          slug: "decode-string",                          category: "stack", difficulty: "Medium" },
+  { id: 682,  title: "Baseball Game",                          slug: "baseball-game",                          category: "stack", difficulty: "Easy"   },
+  { id: 735,  title: "Asteroid Collision",                     slug: "asteroid-collision",                     category: "stack", difficulty: "Medium" },
+  { id: 1047, title: "Remove All Adjacent Duplicates In String", slug: "remove-all-adjacent-duplicates-in-string", category: "stack", difficulty: "Easy"   },
+  { id: 2390, title: "Removing Stars From a String",           slug: "removing-stars-from-a-string",           category: "stack", difficulty: "Medium" },
+]} />

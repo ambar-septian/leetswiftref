@@ -1,0 +1,192 @@
+---
+id: array-patterns
+title: "Array Patterns"
+sidebar_label: "Array Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import ArrayPatternsDiagram from '@site/src/components/DSA/ArrayPatternsDiagram';
+
+<AlgoPageHeader
+  title="Array Patterns"
+  description="Core array patterns: linear scan with a running counter or flag, index mapping (result[i] = nums[nums[i]]), digit-by-digit simulation (plus one with carry), and subarray sliding window. Most problems require only a single pass with O(1) extra state."
+  category="Array"
+  categoryHref="/array"
+  time="O(n)"
+  space="O(1)"
+  tags={["Linear Scan", "Index Mapping", "Simulation", "Counter", "Carry"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Array problems at this level test clear thinking about indices, boundaries, and minimal state. The solution is usually a single loop with one or two helper variables — no extra data structures needed.
+
+Common patterns:
+- **Linear scan + counter**: count consecutive elements or pairs that satisfy a condition.
+- **Index mapping**: each output is computed directly from the input using index arithmetic.
+- **Digit simulation**: process digits right-to-left with a carry flag (plus one, number check).
+- **Rotation detection**: count the number of "drops" (where `arr[i] > arr[i+1]`) — a sorted-and-rotated array has exactly one drop.
+- **Sliding window of fixed size**: sum three adjacent elements and check a condition.
+
+<Callout type="cyan" label="Core Insight">
+  Before reaching for a hash map or sorting, ask: can I answer this in a single left-to-right pass with one or two integer variables? For most easy array problems the answer is yes. The constraint that makes this work is that the decision at index i depends only on the immediately preceding element (or a running aggregate like max or count), not on arbitrary earlier elements.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Linear scan** | `for i in 0..<n` — single pass, O(n) time, O(1) space |
+| **Running max** | `maxVal = max(maxVal, nums[i])` — track best-so-far |
+| **Consecutive counter** | Increment when condition holds, reset to 0 when it breaks |
+| **Carry propagation** | Digit problems: set `digits[i] = 0`, carry 1 leftward; prepend 1 if carry remains |
+| **Index mapping** | `result[i] = nums[nums[i]]` — indirect lookup via the array as a function |
+| **Drop count** | Sorted-and-rotated: count indices where `arr[i] > arr[(i+1)%n]`; at most one drop |
+
+<Callout type="amber" label="Key Constraint">
+  For **modular index access** in rotation problems, use `arr[(i + 1) % n]` to wrap around the end. This is more concise and less error-prone than a separate check for `i == n-1`. Always verify the wrap-around edge case: for a fully sorted (not rotated) array `[1,2,3,4,5]`, the "drop" at the join `5 > 1` is the only one, and the rotation count is 0 — which is still valid (rotated by 0).
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<ArrayPatternsDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Three Consecutive Odds — consecutive counter:**
+
+```swift
+func threeConsecutiveOdds(_ arr: [Int]) -> Bool {
+    var count = 0
+    for n in arr {
+        if n % 2 == 1 { count += 1 } else { count = 0 }
+        if count == 3 { return true }
+    }
+    return false
+}
+```
+
+**Build Array from Permutation — index mapping:**
+
+```swift
+func buildArray(_ nums: [Int]) -> [Int] {
+    return nums.map { nums[$0] }  // result[i] = nums[nums[i]]
+}
+```
+
+**Plus One — digit simulation with carry:**
+
+```swift
+func plusOne(_ digits: [Int]) -> [Int] {
+    var digits = digits
+    for i in stride(from: digits.count - 1, through: 0, by: -1) {
+        if digits[i] < 9 { digits[i] += 1; return digits }
+        digits[i] = 0   // carry propagates left
+    }
+    return [1] + digits  // all 9s: prepend new leading 1
+}
+```
+
+**Check if Array Is Sorted and Rotated — count drops:**
+
+```swift
+func check(_ nums: [Int]) -> Bool {
+    let n = nums.count
+    var drops = 0
+    for i in 0..<n {
+        if nums[i] > nums[(i + 1) % n] { drops += 1 }
+    }
+    return drops <= 1
+}
+```
+
+**Count Subarrays of Length Three With a Condition — fixed window:**
+
+```swift
+func countSubarrays(_ nums: [Int]) -> Int {
+    var count = 0
+    for i in 1..<nums.count - 1 {
+        if (nums[i - 1] + nums[i + 1]) * 2 == nums[i] { count += 1 }
+    }
+    return count
+}
+```
+
+**Longest Strictly Increasing or Decreasing Subarray — two counters:**
+
+```swift
+func longestMonotonicSubarray(_ nums: [Int]) -> Int {
+    var inc = 1, dec = 1, best = 1
+    for i in 1..<nums.count {
+        if nums[i] > nums[i-1] { inc += 1 } else { inc = 1 }
+        if nums[i] < nums[i-1] { dec += 1 } else { dec = 1 }
+        best = max(best, inc, dec)
+    }
+    return best
+}
+```
+
+**Kids With Greatest Candies — map with max:**
+
+```swift
+func kidsWithCandies(_ candies: [Int], _ extraCandies: Int) -> [Bool] {
+    let maxCandies = candies.max()!
+    return candies.map { $0 + extraCandies >= maxCandies }
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `stride(from:through:by:)` for reverse iteration (note `through` is inclusive). For digit problems, assign into a `var` copy: `var digits = digits`. Swift's `map` and `filter` are clean for index-mapping and filter problems — `nums.map { nums[$0] }` is more idiomatic than a manual for-loop. `nums.max()!` is safe when the array is guaranteed non-empty by the problem constraints. Use `%` for modular wrap-around in rotation problems — Swift's `%` returns a non-negative result for non-negative operands.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  All patterns above perform a single pass over the input array, with O(1) work per element. Total time is O(n). The `map` and `filter` operations in Swift are also O(n) — they iterate once over the collection. Avoid nested loops for these problems; if you find yourself writing one, look for a way to precompute (e.g. `candies.max()!` before the map).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) or O(n)">
+  Most patterns use O(1) auxiliary space — just a counter or running max. The `map` and `buildArray` patterns allocate a new O(n) result array, but that is output space (usually not counted as auxiliary). When the problem says "in-place", O(1) is required; otherwise O(n) for the result array is acceptable.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Linear scan (counter/flag)',         time: 'O(n)', space: 'O(1)', note: 'Single pass, constant state',             highlight: true },
+    { approach: 'Index mapping (map / for)',          time: 'O(n)', space: 'O(n)', note: 'New result array allocation' },
+    { approach: 'Digit simulation (plus one)',        time: 'O(n)', space: 'O(1)', note: 'In-place; O(n) only if carry forces new digit' },
+    { approach: 'Rotation drop-count',               time: 'O(n)', space: 'O(1)', note: 'Modular index, single pass',              highlight: true },
+    { approach: 'Fixed window (size 3)',              time: 'O(n)', space: 'O(1)', note: 'i in 1..n-2, constant neighbours' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  Start with the simplest possible approach: one pass, one counter. Add complexity only when the simple approach demonstrably fails. For array problems, "simple" usually means O(n) time and O(1) space with no extra data structures. If you need to look things up or compare non-adjacent elements, consider a hash map or sorting — but for this problem set, a counter or running max is almost always sufficient.
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| Count consecutive matching elements | Counter, reset on mismatch |
+| Check all elements satisfy a condition vs global max | Precompute max, then map |
+| Add 1 to a number represented as digit array | Right-to-left carry simulation |
+| Is the array sorted after at most one rotation? | Count drops, must be ≤ 1 |
+| result[i] = f(nums[nums[i]]) | Index mapping via map |
+| Sum or product of fixed-size window | Slide by one element at a time |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 66,   title: "Plus One",                                                  slug: "plus-one",                                                  category: "array", difficulty: "Easy" },
+  { id: 1295, title: "Find Numbers with Even Number of Digits",                   slug: "find-numbers-with-even-number-of-digits",                   category: "array", difficulty: "Easy" },
+  { id: 1431, title: "Kids With the Greatest Number of Candies",                  slug: "kids-with-the-greatest-number-of-candies",                  category: "array", difficulty: "Easy" },
+  { id: 1550, title: "Three Consecutive Odds",                                    slug: "three-consecutive-odds",                                    category: "array", difficulty: "Easy" },
+  { id: 1752, title: "Check if Array Is Sorted and Rotated",                      slug: "check-if-array-is-sorted-and-rotated",                      category: "array", difficulty: "Easy" },
+  { id: 1920, title: "Build Array from Permutation",                              slug: "build-array-from-permutation",                              category: "array", difficulty: "Easy" },
+  { id: 3105, title: "Longest Strictly Increasing or Strictly Decreasing Subarray", slug: "longest-strictly-increasing-or-strictly-decreasing-subarray", category: "array", difficulty: "Easy" },
+  { id: 3151, title: "Special Array I",                                           slug: "special-array-i",                                           category: "array", difficulty: "Easy" },
+  { id: 3392, title: "Count Subarrays of Length Three With a Condition",          slug: "count-subarrays-of-length-three-with-a-condition",          category: "array", difficulty: "Easy" },
+]} />

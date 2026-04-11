@@ -1,0 +1,84 @@
+---
+id: binary-tree-index
+title: "Binary Tree"
+sidebar_label: "Binary Tree"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BinaryTreeTraversalDiagram from '@site/src/components/DSA/BinaryTreeTraversalDiagram';
+
+<CategoryHeader
+  emoji="🌲"
+  title="Binary Tree"
+  description="A binary tree is a recursive structure where each node has at most two children. Almost every binary tree problem reduces to a traversal — DFS (inorder, preorder, postorder) or BFS (level order) — combined with a local computation at each node. The recursive structure of the tree mirrors the recursive structure of the algorithm."
+  tags={["DFS", "BFS", "Inorder", "Preorder", "Postorder", "Level Order", "Recursion"]}
+/>
+
+<SectionHeader n={1} title="What is a Binary Tree?" />
+
+A binary tree is defined recursively: a node with a value, an optional left subtree, and an optional right subtree. The base case is `nil` (empty tree). This structure makes recursive algorithms natural — the algorithm for the whole tree is the same as the algorithm for each subtree.
+
+| Property | Description |
+|---|---|
+| **Height** | Longest path from root to a leaf — O(log n) for balanced, O(n) worst case |
+| **Depth of node** | Distance from root to that node |
+| **Leaf** | Node with no children |
+| **Complete tree** | All levels full except last; last level filled left to right |
+| **Perfect tree** | All internal nodes have two children; all leaves at same depth |
+| **Balanced** | Height difference between left and right subtrees is at most 1 (AVL definition) |
+
+<Callout type="amber" label="Key Constraint">
+  Always handle the `nil` / empty tree base case first in recursive functions. In Swift, the pattern is `guard let node = root else { return /* base value */ }`. Forgetting the base case causes a crash on nil input or an infinite recursion on a leaf node. For problems that return a numeric value, the empty-tree base case is usually `0`, `-1`, `Int.min`, or `true` depending on the problem semantics.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<BinaryTreeTraversalDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Binary Tree Traversals"
+    description="DFS (inorder, preorder, postorder) and BFS (level order) traversals. Covers recursive and iterative implementations, the diameter pattern (left depth + right depth), the LCA algorithm, and the right-side view BFS pattern."
+    href="/binary-tree/binary-tree-traversals"
+    time="O(n)"
+    space="O(h) DFS, O(n) BFS"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem requires processing nodes in a specific order (sorted, level by level, parent before children, children before parent) — choose the traversal that naturally gives that order. For problems that need to combine information from both subtrees (diameter, LCA, path sum) — use postorder so left and right results are available when the root is processed.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 94,   title: "Binary Tree Inorder Traversal",                              slug: "binary-tree-inorder-traversal",                              category: "binary-tree", difficulty: "Easy"   },
+  { id: 100,  title: "Same Tree",                                                  slug: "same-tree",                                                  category: "binary-tree", difficulty: "Easy"   },
+  { id: 101,  title: "Symmetric Tree",                                             slug: "symmetric-tree",                                             category: "binary-tree", difficulty: "Easy"   },
+  { id: 102,  title: "Binary Tree Level Order Traversal",                          slug: "binary-tree-level-order-traversal",                          category: "binary-tree", difficulty: "Medium" },
+  { id: 104,  title: "Maximum Depth of Binary Tree",                               slug: "maximum-depth-of-binary-tree",                               category: "binary-tree", difficulty: "Easy"   },
+  { id: 105,  title: "Construct Binary Tree from Preorder and Inorder Traversal",  slug: "construct-binary-tree-from-preorder-and-inorder-traversal",  category: "binary-tree", difficulty: "Medium" },
+  { id: 110,  title: "Balanced Binary Tree",                                       slug: "balanced-binary-tree",                                       category: "binary-tree", difficulty: "Easy"   },
+  { id: 112,  title: "Path Sum",                                                   slug: "path-sum",                                                   category: "binary-tree", difficulty: "Easy"   },
+  { id: 129,  title: "Sum Root to Leaf Numbers",                                   slug: "sum-root-to-leaf-numbers",                                   category: "binary-tree", difficulty: "Medium" },
+  { id: 144,  title: "Binary Tree Preorder Traversal",                             slug: "binary-tree-preorder-traversal",                             category: "binary-tree", difficulty: "Easy"   },
+  { id: 145,  title: "Binary Tree Postorder Traversal",                            slug: "binary-tree-postorder-traversal",                            category: "binary-tree", difficulty: "Easy"   },
+  { id: 199,  title: "Binary Tree Right Side View",                                slug: "binary-tree-right-side-view",                                category: "binary-tree", difficulty: "Medium" },
+  { id: 226,  title: "Invert Binary Tree",                                         slug: "invert-binary-tree",                                         category: "binary-tree", difficulty: "Easy"   },
+  { id: 236,  title: "Lowest Common Ancestor of a Binary Tree",                    slug: "lowest-common-ancestor-of-a-binary-tree",                    category: "binary-tree", difficulty: "Medium" },
+  { id: 515,  title: "Find Largest Value in Each Tree Row",                        slug: "find-largest-value-in-each-tree-row",                        category: "binary-tree", difficulty: "Medium" },
+  { id: 543,  title: "Diameter of Binary Tree",                                    slug: "diameter-of-binary-tree",                                    category: "binary-tree", difficulty: "Easy"   },
+  { id: 572,  title: "Subtree of Another Tree",                                    slug: "subtree-of-another-tree",                                    category: "binary-tree", difficulty: "Easy"   },
+  { id: 617,  title: "Merge Two Binary Trees",                                     slug: "merge-two-binary-trees",                                     category: "binary-tree", difficulty: "Easy"   },
+  { id: 637,  title: "Average of Levels in Binary Tree",                           slug: "average-of-levels-in-binary-tree",                           category: "binary-tree", difficulty: "Easy"   },
+  { id: 872,  title: "Leaf-Similar Trees",                                         slug: "leaf-similar-trees",                                         category: "binary-tree", difficulty: "Easy"   },
+  { id: 1161, title: "Maximum Level Sum of a Binary Tree",                         slug: "maximum-level-sum-of-a-binary-tree",                         category: "binary-tree", difficulty: "Medium" },
+  { id: 1448, title: "Count Good Nodes in Binary Tree",                            slug: "count-good-nodes-in-binary-tree",                            category: "binary-tree", difficulty: "Medium" },
+]} />

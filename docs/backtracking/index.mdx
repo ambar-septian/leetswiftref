@@ -1,0 +1,76 @@
+---
+id: backtracking-index
+title: "Backtracking"
+sidebar_label: "Backtracking"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout } from '@site/src/components/DSA';
+import CategoryHeader from '@site/src/components/DSA/CategoryHeader';
+import AlgoCard from '@site/src/components/DSA/AlgoCard';
+import AlgoCardGrid from '@site/src/components/DSA/AlgoCardGrid';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BacktrackingTreeDiagram from '@site/src/components/DSA/BacktrackingTreeDiagram';
+
+<CategoryHeader
+  emoji="🔙"
+  title="Backtracking"
+  description="Backtracking is a DFS over a decision tree. At each node we make a choice, recurse, then undo the choice (backtrack) before exploring the next option. It is the standard approach for combinations, permutations, subsets, constraint-satisfaction problems, and grid word search."
+  tags={["DFS", "Decision Tree", "Combinations", "Permutations", "Subsets", "Pruning"]}
+/>
+
+<SectionHeader n={1} title="What is Backtracking?" />
+
+Backtracking is a systematic way to enumerate all solutions to a problem by building candidates incrementally and abandoning a candidate (backtracking) as soon as it is determined that the candidate cannot lead to a valid solution.
+
+The three-step template is the same for every backtracking problem:
+
+| Step | Action |
+|---|---|
+| **Choose** | Pick one candidate from the available options |
+| **Explore** | Recurse with the updated state |
+| **Unchoose** | Undo the choice to restore state before moving to the next candidate |
+
+<Callout type="amber" label="Key Constraint">
+  The constraint that distinguishes backtracking problems from pure DFS is that the **state must be mutable and restored** after each recursive call. If state is immutable (e.g. passing a new array copy each time), that is plain DFS — correct but O(n) extra space per level. Backtracking modifies state in-place and undoes changes, keeping space proportional to the recursion depth, not the branching factor.
+</Callout>
+
+<SectionHeader n={2} title="Visualization" />
+
+<BacktrackingTreeDiagram />
+
+<SectionHeader n={3} title="Algorithm Variants" />
+
+<AlgoCardGrid>
+  <AlgoCard
+    title="Backtracking"
+    description="Universal backtracking template for combinations, permutations, subsets, and grid search. Covers duplicate handling (sort + skip), start-index vs used-array distinction, and pruning strategies that reduce the search space."
+    href="/backtracking/backtracking"
+    time="O(2^n) or O(n!)"
+    space="O(n)"
+  />
+</AlgoCardGrid>
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem asks to enumerate all valid combinations, permutations, or subsets — or to find whether a path exists on a grid — that is backtracking. The branching factor and depth of the decision tree determine the time complexity.
+</Callout>
+
+<SectionHeader n={4} title="Problems" />
+
+<ProblemList problems={[
+  { id: 17,  title: "Letter Combinations of a Phone Number", slug: "letter-combinations-of-a-phone-number", category: "backtracking", difficulty: "Medium" },
+  { id: 22,  title: "Generate Parentheses",                  slug: "generate-parentheses",                  category: "backtracking", difficulty: "Medium" },
+  { id: 39,  title: "Combination Sum",                       slug: "combination-sum",                       category: "backtracking", difficulty: "Medium" },
+  { id: 40,  title: "Combination Sum II",                    slug: "combination-sum-ii",                    category: "backtracking", difficulty: "Medium" },
+  { id: 46,  title: "Permutations",                          slug: "permutations",                          category: "backtracking", difficulty: "Medium" },
+  { id: 47,  title: "Permutations II",                       slug: "permutations-ii",                       category: "backtracking", difficulty: "Medium" },
+  { id: 51,  title: "N-Queens",                              slug: "n-queens",                              category: "backtracking", difficulty: "Hard"   },
+  { id: 78,  title: "Subsets",                               slug: "subsets",                               category: "backtracking", difficulty: "Medium" },
+  { id: 79,  title: "Word Search",                           slug: "word-search",                           category: "backtracking", difficulty: "Medium" },
+  { id: 113, title: "Path Sum II",                           slug: "path-sum-ii",                           category: "backtracking", difficulty: "Medium" },
+  { id: 131, title: "Palindrome Partitioning",               slug: "palindrome-partitioning",               category: "backtracking", difficulty: "Medium" },
+  { id: 216, title: "Combination Sum III",                   slug: "combination-sum-iii",                   category: "backtracking", difficulty: "Medium" },
+  { id: 257, title: "Binary Tree Paths",                     slug: "binary-tree-paths",                     category: "backtracking", difficulty: "Easy"   },
+  { id: 784, title: "Letter Case Permutation",               slug: "letter-case-permutation",               category: "backtracking", difficulty: "Medium" },
+  { id: 797, title: "All Paths From Source to Target",       slug: "all-paths-from-source-to-target",       category: "backtracking", difficulty: "Medium" },
+]} />

@@ -1,0 +1,171 @@
+---
+id: greedy-patterns
+title: "Greedy Patterns"
+sidebar_label: "Greedy Patterns"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import GreedyDiagram from '@site/src/components/DSA/GreedyDiagram';
+
+<AlgoPageHeader
+  title="Greedy Patterns"
+  description="Greedy algorithms make the locally optimal choice at each step and never look back. The three core patterns in this category: scan-and-skip (place a resource only when safe, then jump past it), two-tracker (maintain the two smallest values seen so far to detect a rising sequence), and distribution (give the minimum satisfying amount, then propagate adjustments)."
+  category="Greedy"
+  categoryHref="/greedy"
+  time="O(n)"
+  space="O(1)"
+  tags={["Scan and Skip", "Two-Tracker", "Distribution", "Locally Optimal"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Greedy works when the problem has the **greedy-choice property**: at every step, the locally optimal decision is also globally optimal. No future choice can be hurt by making the best available choice now.
+
+Three patterns covered here:
+- **Scan-and-skip** — scan left to right; when you can act (place a flower), act and jump over the newly occupied position.
+- **Two-tracker** — maintain two running minimums (`min1`, `min2`); when you see a value larger than both, a rising triplet is confirmed.
+- **Two-pass distribution** — first pass ensures left-to-right constraint; second pass ensures right-to-left constraint; take the max at each position.
+
+<Callout type="cyan" label="Core Insight">
+  The greedy insight for Can Place Flowers is: if a plot is empty and both neighbours are empty (or it is an edge), place there — you can never do better by waiting. The greedy insight for Increasing Triplet is: keep the two smallest values seen so far (`min1` and `min2`). If any later value exceeds `min2`, a triplet exists — because `min1 &lt; min2 &lt; current` holds even if `min1` and `min2` were not actually adjacent in the original array.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Greedy-choice property** | Making the local optimum never prevents reaching the global optimum |
+| **Optimal substructure** | The optimal solution contains optimal solutions to its sub-problems |
+| **Scan and skip** | After acting, skip positions that are now unavailable (the "jump") |
+| **Two-tracker** | `min1` = smallest seen, `min2` = smallest after a value exceeding `min1` |
+| **Two-pass** | Left pass handles one constraint; right pass handles the opposite; combine with max |
+
+<Callout type="amber" label="Key Constraint">
+  For the **Increasing Triplet** two-tracker, `min1` and `min2` are abstract sentinels — they represent the fact that a value this small exists somewhere before the current index. When `min1` is updated to a new minimum, `min2` might have been set with a different earlier value. The claim `min1 &lt; min2` still holds globally even if `min1` was found after `min2` in the array — what matters is that `min2` was set when `min1` was larger. This is subtle but correct.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<GreedyDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Can Place Flowers — scan and skip:**
+
+```swift
+func canPlaceFlowers(_ flowerbed: [Int], _ n: Int) -> Bool {
+    var bed = flowerbed
+    var placed = 0
+
+    var i = 0
+    while i < bed.count {
+        let left  = i == 0 ? 0 : bed[i - 1]
+        let right = i == bed.count - 1 ? 0 : bed[i + 1]
+
+        if bed[i] == 0 && left == 0 && right == 0 {
+            bed[i] = 1    // place flower
+            placed += 1
+            i += 2        // skip next position — it's now adjacent to a flower
+        } else {
+            i += 1
+        }
+        if placed >= n { return true }  // early exit
+    }
+    return placed >= n
+}
+```
+
+**Increasing Triplet Subsequence — two-tracker:**
+
+```swift
+func increasingTriplet(_ nums: [Int]) -> Bool {
+    var min1 = Int.max   // smallest value seen so far
+    var min2 = Int.max   // smallest value seen after something > min1
+
+    for n in nums {
+        if n <= min1 {
+            min1 = n           // new global minimum
+        } else if n <= min2 {
+            min2 = n           // new second minimum (min1 < min2 is implied)
+        } else {
+            return true        // n > min2 > min1 → triplet found
+        }
+    }
+    return false
+}
+```
+
+**Candy — two-pass greedy distribution:**
+
+```swift
+func candy(_ ratings: [Int]) -> Int {
+    let n = ratings.count
+    var candies = Array(repeating: 1, count: n)
+
+    // Left → right: give more if rating strictly increasing
+    for i in 1..<n {
+        if ratings[i] > ratings[i - 1] {
+            candies[i] = candies[i - 1] + 1
+        }
+    }
+
+    // Right → left: give more if rating strictly increasing (from right)
+    for i in stride(from: n - 2, through: 0, by: -1) {
+        if ratings[i] > ratings[i + 1] {
+            candies[i] = max(candies[i], candies[i + 1] + 1)
+        }
+    }
+
+    return candies.reduce(0, +)
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  In `canPlaceFlowers`, pass a mutable copy of the flowerbed (`var bed = flowerbed`) to mark positions in-place without modifying the caller's array. The `i += 2` skip after placing is the greedy insight — skipping `i+1` avoids placing adjacent flowers. For Candy, `stride(from: n-2, through: 0, by: -1)` is the idiomatic Swift way to iterate rightward to leftward; note `through` is inclusive. `Array(repeating: 1, count: n)` initialises all candy counts to the minimum of 1.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  All three algorithms make one or two passes over the input array with O(1) work per element. Can Place Flowers is a single while-loop (with potential i += 2 jumps — still O(n) total iterations). Increasing Triplet is a single for-loop. Candy makes two linear passes and a final sum — O(n) total.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1) or O(n)">
+  Can Place Flowers uses O(n) for the mutable copy (or O(1) if the input is already mutable). Increasing Triplet uses O(1) — just two integer variables. Candy uses O(n) for the candies array — necessary because right-to-left pass needs left-to-right results.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Can Place Flowers (scan + skip)',    time: 'O(n)', space: 'O(n)', note: 'O(1) if bed is mutable in-place',             highlight: true },
+    { approach: 'Increasing Triplet (two-tracker)',   time: 'O(n)', space: 'O(1)', note: 'Two variables min1, min2 — optimal',          highlight: true },
+    { approach: 'Candy (two-pass)',                   time: 'O(n)', space: 'O(n)', note: 'Left pass + right pass; candies array needed' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="Greedy vs DP — which to choose?">
+  Use **greedy** when you can prove that the locally optimal choice is globally safe — usually when the problem has a single dimension and choices are independent (placing a flower doesn't affect flowers two spots away). Use **DP** when choosing locally may hurt you later — when the benefit of a choice depends on future state (e.g. buying and selling stock multiple times). When in doubt, start with greedy (simpler code) and stress-test it.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  Greedy works when you can describe the rule as "always take the most/least/earliest/latest" and prove that never waiting beats waiting. If the greedy solution fails on a counterexample you construct, switch to DP.
+</Callout>
+
+| Problem shape | Greedy pattern |
+|---|---|
+| Place resources without adjacency conflicts | Scan and skip with jump |
+| Detect an increasing / decreasing subsequence | Two-tracker (maintain running minimums / maximums) |
+| Distribute minimum satisfying amounts with neighbour constraints | Two-pass: left-to-right + right-to-left, take max |
+| Schedule tasks, pick intervals | Sort by deadline or end time, then greedy pick |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 135, title: "Candy",                          slug: "candy",                          category: "greedy", difficulty: "Hard"   },
+  { id: 334, title: "Increasing Triplet Subsequence", slug: "increasing-triplet-subsequence", category: "greedy", difficulty: "Medium" },
+  { id: 605, title: "Can Place Flowers",              slug: "can-place-flowers",              category: "greedy", difficulty: "Easy"   },
+]} />

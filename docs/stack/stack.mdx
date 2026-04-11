@@ -1,0 +1,202 @@
+---
+id: stack
+title: "Stack"
+sidebar_label: "Stack"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import StackOperationsDiagram from '@site/src/components/DSA/StackOperationsDiagram';
+
+<AlgoPageHeader
+  title="Stack"
+  description="A LIFO data structure backed by a Swift array. O(1) amortised push (append) and pop (removeLast). The canonical tool for bracket matching, nested string decoding, path simplification, and adjacent duplicate removal — anywhere you need to process items and revisit them in reverse order."
+  category="Stack"
+  categoryHref="/stack"
+  time="O(n)"
+  space="O(n)"
+  tags={["LIFO", "Bracket Matching", "Decode", "Simplify Path", "Adjacent Duplicates"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+A stack processes items sequentially, keeping a memory of earlier items on top. When a later item relates to an earlier one (its matching bracket, its enclosing context, its cancellation), the stack surfaces the earlier item immediately.
+
+When to use a stack:
+- **Bracket/parenthesis matching** — push open brackets, pop and match on close brackets.
+- **Nested decoding** — save outer context on the stack, process inner content, then restore.
+- **Path simplification** — push path components, pop on `..`.
+- **Adjacent duplicate removal** — if the new character matches the stack top, pop instead of push.
+- **Collision simulation** — model objects moving in opposite directions colliding with items on the stack.
+
+<Callout type="cyan" label="Core Insight">
+  The stack's LIFO property naturally models nesting and reversal. Every bracket problem, nested decode problem, and path problem has the same shape: push context when entering a nesting level, pop and process when exiting. The key insight is that **the most recently opened context is always the next one to close** — exactly what LIFO gives you.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Push** | `stack.append(x)` — add to top, O(1) amortised |
+| **Pop** | `stack.removeLast()` — remove and return top, O(1) |
+| **Peek** | `stack.last` — view top without removing, O(1), returns Optional |
+| **String stack** | Use `[Character]` and join at the end — avoids O(n²) string concatenation |
+| **Pair push** | Push `(count, savedString)` to preserve outer context when entering brackets |
+| **Sentinel** | Sometimes push a dummy value to avoid empty-check in the main loop |
+
+<Callout type="amber" label="Key Constraint">
+  In Swift, **string concatenation inside a loop is O(n²)** because String is a value type that copies on modification. For stack problems that build a result string character by character, use a `[Character]` array as the stack and call `String(stack)` once at the end — this is O(n) total instead of O(n²).
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<StackOperationsDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Bracket matching — Valid Parentheses:**
+
+```swift
+func isValid(_ s: String) -> Bool {
+    var stack = [Character]()
+    let match: [Character: Character] = [")": "(", "]": "[", "}": "{"]
+
+    for ch in s {
+        if "([{".contains(ch) {
+            stack.append(ch)
+        } else {
+            guard stack.last == match[ch] else { return false }
+            stack.removeLast()
+        }
+    }
+    return stack.isEmpty  // unmatched open brackets would remain
+}
+```
+
+**Nested string decode — Decode String (LeetCode 394):**
+
+```swift
+func decodeString(_ s: String) -> String {
+    var stack = [(count: Int, str: [Character])]()  // saved outer (count, prefix)
+    var current = [Character]()
+    var num = 0
+
+    for ch in s {
+        if ch.isNumber {
+            num = num * 10 + ch.wholeNumberValue!
+        } else if ch == "[" {
+            stack.append((num, current))   // save outer context
+            current = []; num = 0
+        } else if ch == "]" {
+            let (k, prefix) = stack.removeLast()
+            current = prefix + Array(repeating: current, count: k).flatMap { $0 }
+        } else {
+            current.append(ch)
+        }
+    }
+    return String(current)
+}
+```
+
+**Path simplification — Simplify Path:**
+
+```swift
+func simplifyPath(_ path: String) -> String {
+    var stack = [String]()
+    for part in path.split(separator: "/") {
+        switch part {
+        case ".", "":  break              // ignore
+        case "..":     if !stack.isEmpty { stack.removeLast() }
+        default:       stack.append(String(part))
+        }
+    }
+    return "/" + stack.joined(separator: "/")
+}
+```
+
+**Adjacent duplicate removal — string stack pattern:**
+
+```swift
+func removeDuplicates(_ s: String) -> String {
+    var stack = [Character]()
+    for ch in s {
+        if stack.last == ch {
+            stack.removeLast()  // cancel the pair
+        } else {
+            stack.append(ch)
+        }
+    }
+    return String(stack)
+}
+```
+
+**Asteroid collision — mixed push/pop/skip:**
+
+```swift
+func asteroidCollision(_ asteroids: [Int]) -> [Int] {
+    var stack = [Int]()
+    for a in asteroids {
+        var survived = true
+        while survived && a < 0, let top = stack.last, top > 0 {
+            if top < -a        { stack.removeLast() }   // top destroyed
+            else if top == -a  { stack.removeLast(); survived = false }  // mutual
+            else               { survived = false }     // current destroyed
+        }
+        if survived { stack.append(a) }
+    }
+    return stack
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Build strings as `[Character]` arrays and convert with `String(array)` at the end — never concatenate inside a hot loop. For bracket matching, a dictionary `[Character: Character]` keyed on close brackets maps each close to its expected open bracket, which avoids three separate `if` branches. When pushing a saved context for nested problems, use a named tuple `(count: Int, str: [Character])` for clarity. Swift's `split(separator:)` on a `String` returns `[Substring]` — convert with `String(part)` when needed.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Every character is pushed at most once and popped at most once, so the total number of stack operations is O(n) regardless of nesting depth. The `while` loop inside the asteroid or bracket code does not change this — the total pops across all iterations of the outer loop is bounded by n. String construction with `[Character]` and a final `String(stack)` is also O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n elements (when no pops occur — e.g. a string of only open brackets). For decode string, the stack depth equals nesting depth, and each frame stores a substring prefix — worst-case O(n) total. The output string is O(n).
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Bracket matching',           time: 'O(n)', space: 'O(n)', note: 'Each char pushed/popped at most once',          highlight: true },
+    { approach: 'Decode String',              time: 'O(n)', space: 'O(n)', note: 'Each char processed once; stack depth = nesting' },
+    { approach: 'Simplify Path',              time: 'O(n)', space: 'O(n)', note: 'split + stack push/pop' },
+    { approach: 'Adjacent Duplicate Removal', time: 'O(n)', space: 'O(n)', note: 'Each char compared to top once',                highlight: true },
+    { approach: 'Asteroid Collision',         time: 'O(n)', space: 'O(n)', note: 'Each asteroid enters/leaves stack at most once' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="green" label="Rule of Thumb">
+  If the problem requires undoing, reversing, or matching something that was seen earlier — reach for a stack. The tell is that a later character or element needs to be paired with, cancel, or restore an earlier one. That backwards relationship is the stack's specialty.
+</Callout>
+
+| Problem shape | Stack operation |
+|---|---|
+| Open/close bracket matching | push open, pop and compare on close |
+| Nested string decoding | push (k, prefix), reconstruct on close bracket |
+| Filesystem path simplification | push components, pop on ".." |
+| Adjacent character cancellation | pop if top matches, else push |
+| Collision simulation | pop weaker opponent, absorb equal, discard self if weaker |
+| Baseball scoring with operations | push scores, pop on "D"/"C", peek on "+" |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 20,   title: "Valid Parentheses",                         slug: "valid-parentheses",                         category: "stack", difficulty: "Easy"   },
+  { id: 71,   title: "Simplify Path",                            slug: "simplify-path",                            category: "stack", difficulty: "Medium" },
+  { id: 394,  title: "Decode String",                            slug: "decode-string",                            category: "stack", difficulty: "Medium" },
+  { id: 682,  title: "Baseball Game",                            slug: "baseball-game",                            category: "stack", difficulty: "Easy"   },
+  { id: 735,  title: "Asteroid Collision",                       slug: "asteroid-collision",                       category: "stack", difficulty: "Medium" },
+  { id: 1047, title: "Remove All Adjacent Duplicates In String", slug: "remove-all-adjacent-duplicates-in-string", category: "stack", difficulty: "Easy"   },
+  { id: 2390, title: "Removing Stars From a String",             slug: "removing-stars-from-a-string",             category: "stack", difficulty: "Medium" },
+]} />

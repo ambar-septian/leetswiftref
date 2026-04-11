@@ -1,0 +1,239 @@
+---
+id: backtracking
+title: "Backtracking"
+sidebar_label: "Backtracking"
+hide_table_of_contents: true
+---
+
+import { SectionHeader, Callout, ComplexityTable } from '@site/src/components/DSA';
+import AlgoPageHeader from '@site/src/components/DSA/AlgoPageHeader';
+import ProblemList from '@site/src/components/DSA/ProblemList';
+import BacktrackingTreeDiagram from '@site/src/components/DSA/BacktrackingTreeDiagram';
+
+<AlgoPageHeader
+  title="Backtracking"
+  description="DFS over a decision tree where each node represents a partial solution. At each level we pick one option, recurse, then undo the pick and try the next. Pruning cuts branches early when the partial solution can no longer reach a valid leaf. Used for combinations, permutations, subsets, N-Queens, word search, and palindrome partitioning."
+  category="Backtracking"
+  categoryHref="/backtracking"
+  time="O(2^n) subsets, O(n!) permutations"
+  space="O(n) recursion depth"
+  tags={["DFS", "Decision Tree", "Pruning", "Combinations", "Permutations", "Subsets"]}
+/>
+
+<SectionHeader n={1} title="Overview" />
+
+Backtracking is a refined brute-force: instead of generating all candidates and filtering, it builds candidates incrementally and abandons any partial candidate that cannot become a valid solution. The decision tree is explored depth-first; when a dead end is reached the algorithm steps back (backtracks) and tries the next branch.
+
+When to use backtracking:
+- The problem asks to **enumerate all** valid combinations, permutations, or subsets.
+- The problem asks to **find if** a valid arrangement exists (N-Queens, Sudoku, Word Search).
+- The solution space forms a tree and you need to explore branches while respecting constraints.
+- The problem has a **"undo after recursion"** shape — you modify state, recurse, then restore.
+
+<Callout type="cyan" label="Core Insight">
+  Every backtracking problem uses the same three-step template: **choose** (add a candidate to the current path), **explore** (recurse), **unchoose** (remove the candidate and restore state). The art is in deciding which candidates are valid at each step and when to prune. Sorting the candidates before the outer loop is the standard trick to enable duplicate skipping.
+</Callout>
+
+<SectionHeader n={2} title="Key Concepts" />
+
+| Concept | Description |
+|---|---|
+| **Decision tree** | Each level = one choice position; branching factor = number of valid candidates at that level |
+| **Path / current build** | The partial solution built so far — mutated in-place and restored after recursion |
+| **Start index** | For combination problems: pass `start` to avoid revisiting earlier elements |
+| **Used array** | For permutation problems: `used[i]` marks which elements are already in the current path |
+| **Pruning** | Skip branches that cannot produce valid solutions (target exceeded, invalid placement) |
+| **Duplicate skipping** | Sort candidates + `if i > start && candidates[i] == candidates[i-1] { continue }` |
+
+<Callout type="amber" label="Key Constraint">
+  **Combination vs Permutation**: combinations use a `start` index (each element can only appear after the previous pick), while permutations use a `used` boolean array (any unused element can appear at any position). Mixing up these two mechanisms causes either missing results or duplicates.
+</Callout>
+
+<SectionHeader n={3} title="Visualization" />
+
+<BacktrackingTreeDiagram />
+
+<SectionHeader n={4} title="Implementation" />
+
+**Universal backtracking template:**
+
+```swift
+func backtrack(_ path: inout [Int], _ start: Int, /* other params */) {
+    // Base case: path is complete
+    if /* path is a valid solution */ {
+        result.append(path)
+        return
+    }
+
+    for i in start..<candidates.count {
+        // Pruning: skip invalid candidates early
+        if /* candidate is invalid */ { continue }
+
+        path.append(candidates[i])          // choose
+        backtrack(&path, i + 1, /* ... */) // explore (i+1 = no reuse; i = allow reuse)
+        path.removeLast()                   // unchoose
+    }
+}
+```
+
+**Subsets — pick or skip each element:**
+
+```swift
+func subsets(_ nums: [Int]) -> [[Int]] {
+    var result = [[Int]]()
+    var path = [Int]()
+
+    func bt(_ start: Int) {
+        result.append(path)           // every prefix is a valid subset
+        for i in start..<nums.count {
+            path.append(nums[i]); bt(i + 1); path.removeLast()
+        }
+    }
+    bt(0)
+    return result
+}
+```
+
+**Combination Sum — reuse allowed, prune when remaining &lt; 0:**
+
+```swift
+func combinationSum(_ candidates: [Int], _ target: Int) -> [[Int]] {
+    var result = [[Int]]()
+    var path = [Int]()
+    let sorted = candidates.sorted()
+
+    func bt(_ start: Int, _ remaining: Int) {
+        if remaining == 0 { result.append(path); return }
+        for i in start..<sorted.count {
+            if sorted[i] > remaining { break }   // pruning
+            path.append(sorted[i]); bt(i, remaining - sorted[i]); path.removeLast()
+        }
+    }
+    bt(0, target)
+    return result
+}
+```
+
+**Combination Sum II — no reuse, skip duplicates:**
+
+```swift
+func combinationSum2(_ candidates: [Int], _ target: Int) -> [[Int]] {
+    var result = [[Int]]()
+    var path = [Int]()
+    let sorted = candidates.sorted()
+
+    func bt(_ start: Int, _ remaining: Int) {
+        if remaining == 0 { result.append(path); return }
+        for i in start..<sorted.count {
+            if sorted[i] > remaining { break }
+            if i > start && sorted[i] == sorted[i - 1] { continue }  // skip duplicates
+            path.append(sorted[i]); bt(i + 1, remaining - sorted[i]); path.removeLast()
+        }
+    }
+    bt(0, target)
+    return result
+}
+```
+
+**Permutations — used array, any order:**
+
+```swift
+func permute(_ nums: [Int]) -> [[Int]] {
+    var result = [[Int]]()
+    var path = [Int]()
+    var used = Array(repeating: false, count: nums.count)
+
+    func bt() {
+        if path.count == nums.count { result.append(path); return }
+        for i in 0..<nums.count {
+            if used[i] { continue }
+            used[i] = true; path.append(nums[i])
+            bt()
+            path.removeLast(); used[i] = false
+        }
+    }
+    bt()
+    return result
+}
+```
+
+**Word Search — grid DFS with visited marking:**
+
+```swift
+func exist(_ board: [[Character]], _ word: String) -> Bool {
+    let W = Array(word)
+    var grid = board          // mutable copy for marking
+    let rows = board.count, cols = board[0].count
+
+    func dfs(_ r: Int, _ c: Int, _ k: Int) -> Bool {
+        if k == W.count { return true }
+        guard r >= 0, r < rows, c >= 0, c < cols, grid[r][c] == W[k] else { return false }
+        let saved = grid[r][c]
+        grid[r][c] = "#"      // mark visited
+        let found = dfs(r+1,c,k+1) || dfs(r-1,c,k+1) || dfs(r,c+1,k+1) || dfs(r,c-1,k+1)
+        grid[r][c] = saved    // restore
+        return found
+    }
+
+    for r in 0..<rows { for c in 0..<cols { if dfs(r, c, 0) { return true } } }
+    return false
+}
+```
+
+<Callout type="green" label="Swift Notes">
+  Use `inout` arrays for the path to avoid copying on every recursive call — `path.append` / `path.removeLast()` are O(1) amortised. For grid problems, mark cells with a sentinel character (e.g. `"#"`) instead of a separate `visited` matrix — saves O(m*n) space per recursive call. Swift closures capture variables by reference when declared with `var`, so nested `func` inside a method has direct access to `result` and `path` without `inout` for those.
+</Callout>
+
+<SectionHeader n={5} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(2^n) or O(n!)">
+  For **subsets**, there are 2^n possible subsets (each element is either in or out), so time is O(n * 2^n) — n to copy each subset. For **permutations**, there are n! orderings, so time is O(n * n!). For **combination sum**, the complexity depends on the target and candidate values; the pruning `if candidate > remaining { break }` significantly reduces the constant but the worst case is still exponential. Grid **word search** is O(m * n * 4^L) where L is word length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The recursion stack depth equals the length of the path being built — O(n) for combinations/permutations where n is the input size or target depth. The path array itself is O(n). Note that the result array is not counted in auxiliary space; it holds the output which is O(2^n) or O(n!) in total.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: 'Subsets (pick or skip)',            time: 'O(n · 2^n)',  space: 'O(n)', note: '2^n subsets, each copied in O(n)',          highlight: true },
+    { approach: 'Permutations (used array)',          time: 'O(n · n!)',   space: 'O(n)', note: 'n! orderings, each copied in O(n)',          highlight: true },
+    { approach: 'Combination Sum (reuse + prune)',   time: 'O(n^(T/m))',  space: 'O(T/m)', note: 'T = target, m = min candidate; pruning helps' },
+    { approach: 'Word Search (grid DFS)',             time: 'O(m·n·4^L)', space: 'O(L)', note: 'L = word length; 4 directions per step' },
+  ]}
+/>
+
+<SectionHeader n={6} title="When to Use" />
+
+<Callout type="purple" label="Backtracking vs DP — which to choose?">
+  Use **backtracking** when you need to enumerate all solutions or detect existence of a solution — the output is a list of paths. Use **DP** when you need to count solutions or compute an optimal value without enumerating each one. If the problem says "find all valid X" → backtracking. If it says "how many X" or "minimum cost" → DP. Some problems (like palindrome partitioning) admit both, with DP to precompute validity checks that prune the backtracking tree.
+</Callout>
+
+<Callout type="green" label="Rule of Thumb">
+  If you can draw a decision tree where each node is a partial solution and leaves are complete solutions — that is a backtracking problem. The code structure mirrors the tree: outer loop = siblings, recursion = descending, removeLast = ascending (backtrack).
+</Callout>
+
+| Problem shape | Pattern |
+|---|---|
+| All combinations of k from n | start index, no reuse |
+| All subsets | start index, record at every level |
+| All permutations | used array, full length required |
+| Combinations with duplicates | sort + skip `candidates[i] == candidates[i-1]` |
+| Grid path search | visited marking (sentinel char or visited matrix) |
+| Constraint satisfaction (N-Queens, Sudoku) | validity check before recurse (prune hard) |
+
+<SectionHeader n={7} title="Related Problems" />
+
+<ProblemList problems={[
+  { id: 17,  title: "Letter Combinations of a Phone Number", slug: "letter-combinations-of-a-phone-number", category: "backtracking", difficulty: "Medium" },
+  { id: 22,  title: "Generate Parentheses",                  slug: "generate-parentheses",                  category: "backtracking", difficulty: "Medium" },
+  { id: 39,  title: "Combination Sum",                       slug: "combination-sum",                       category: "backtracking", difficulty: "Medium" },
+  { id: 40,  title: "Combination Sum II",                    slug: "combination-sum-ii",                    category: "backtracking", difficulty: "Medium" },
+  { id: 46,  title: "Permutations",                          slug: "permutations",                          category: "backtracking", difficulty: "Medium" },
+  { id: 47,  title: "Permutations II",                       slug: "permutations-ii",                       category: "backtracking", difficulty: "Medium" },
+  { id: 51,  title: "N-Queens",                              slug: "n-queens",                              category: "backtracking", difficulty: "Hard"   },
+  { id: 78,  title: "Subsets",                               slug: "subsets",                               category: "backtracking", difficulty: "Medium" },
+  { id: 79,  title: "Word Search",                           slug: "word-search",                           category: "backtracking", difficulty: "Medium" },
+  { id: 216, title: "Combination Sum III",                   slug: "combination-sum-iii",                   category: "backtracking", difficulty: "Medium" },
+  { id: 784, title: "Letter Case Permutation",               slug: "letter-case-permutation",               category: "backtracking", difficulty: "Medium" },
+]} />
