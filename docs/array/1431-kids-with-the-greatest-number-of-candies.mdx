@@ -123,7 +123,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-  `candies.max()!` force-unwrap is safe because the constraints guarantee n &gt;= 2 (non-empty array). `candies.map { $0 + extraCandies >= max }` returns [Bool] in a single expression — idiomatic Swift. Naming the local variable `max` shadows Swift's global `max(_:_:)` function, which is fine since the global isn't needed here.
+  `candies.max()!` force-unwrap is safe because the constraints guarantee n &gt;= 2 (non-empty array). `candies.map` checking `$0 + extraCandies >= max` returns `[Bool]` in a single expression — idiomatic Swift. Naming the local variable `max` shadows Swift's global `max(_:_:)` function, which is fine since the global isn't needed here.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

@@ -108,7 +108,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-  `accounts.map { $0.reduce(0, +) }.max() ?? 0` — `reduce(0, +)` uses the `+` operator directly as a closure (no need for `{ $0 + $1 }`). `.max()` returns Optional since the array could be empty; `?? 0` provides a safe fallback. The entire expression is a single chain — no intermediate variables needed.
+  `accounts.map` with `reduce(0, +)` then `.max() ?? 0` — `reduce(0, +)` passes the `+` operator directly as the combining function (no explicit closure needed). `.max()` returns Optional since the array could be empty; `?? 0` provides a safe fallback. The entire expression is a single chain — no intermediate variables needed.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

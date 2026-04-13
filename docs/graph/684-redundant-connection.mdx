@@ -168,7 +168,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`UnionFind` is an inner class of `Solution` — a clean way to scope the helper without polluting the module namespace. `(0..<n).map { $0 }` creates `[0, 1, 2, ..., n-1]` idiomatically. `func find` mutates `parent[i]` via path compression — this is safe because `UnionFind` is a class (reference type); if it were a struct the mutation would require `mutating func`.
+`UnionFind` is an inner class of `Solution` — a clean way to scope the helper without polluting the module namespace. `Array(0..&lt;n)` creates `[0, 1, 2, ..., n-1]` idiomatically. `func find` mutates `parent[i]` via path compression — this is safe because `UnionFind` is a class (reference type); if it were a struct the mutation would require `mutating func`.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

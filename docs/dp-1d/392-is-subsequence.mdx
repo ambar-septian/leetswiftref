@@ -99,7 +99,7 @@ We scan t completely to find all characters of s in order. Advancing j on every 
 
 <StepList>
   <StepItem title="Convert to character arrays">
-    `let schars = s.map { $0 }`, `let tchars = t.map { $0 }`.
+    `let schars = Array(s)`, `let tchars = Array(t)` — convert strings to character arrays for O(1) indexing.
   </StepItem>
   <StepItem title="Initialise two pointers">
     `var i = 0` (tracks position in s), `var j = 0` (tracks position in t).
@@ -138,7 +138,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`s.map { $0 }` converts `String` to `[Character]` for O(1) integer indexing — Swift strings are not directly integer-subscriptable. The `while j < tcount, i < scount` condition exits early once all of `s` is matched, avoiding unnecessary scans of the rest of `t`. The empty-string case (`s = ""`) is handled correctly: `i == 0 == scount` is true immediately.
+`Array(s)` converts `String` to `[Character]` for O(1) integer indexing — Swift strings are not directly integer-subscriptable. The `while j < tcount, i < scount` condition exits early once all of `s` is matched, avoiding unnecessary scans of the rest of `t`. The empty-string case (`s = ""`) is handled correctly: `i == 0 == scount` is true immediately.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

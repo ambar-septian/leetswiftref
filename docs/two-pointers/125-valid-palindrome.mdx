@@ -177,7 +177,7 @@ O(n) for the character array conversion in the two-pointer approach (`Array(s)` 
 />
 
 <Callout type="amber" label="When to prefer two pointers vs filter + reverse">
-Use **filter + reverse** for simplicity and readability — `s.filter { $0.isLetter || $0.isNumber }.lowercased()` is concise and produces identical asymptotic complexity. Use **two pointers** when you want to avoid the intermediate string allocations or need early-exit behavior on the first mismatch.
+Use **filter + reverse** for simplicity and readability — filter to alphanumeric characters via `isLetter || isNumber` then call `.lowercased()`. This is concise and produces identical asymptotic complexity. Use **two pointers** when you want to avoid the intermediate string allocations or need early-exit behavior on the first mismatch.
 </Callout>
 
 <SectionHeader n={9} title="Common Pitfalls" />

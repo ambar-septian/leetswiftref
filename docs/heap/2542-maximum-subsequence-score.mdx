@@ -110,7 +110,7 @@ By processing pairs from largest to smallest nums2, we guarantee that when we co
 
 <StepList>
   <StepItem title="Zip and sort">
-    `var pairs = zip(nums1, nums2).sorted { $0.1 > $1.1 }` — sort pairs descending by nums2.
+    Sort `zip(nums1, nums2)` descending by the nums2 component (`.1`) to get pairs in the right processing order.
   </StepItem>
   <StepItem title="Iterate with a min-heap">
     For each `(n1, n2)` in pairs: `sum += n1`, `heap.insert(n1)`. If `heap.count > k`, pop min and subtract from sum.
@@ -126,7 +126,7 @@ By processing pairs from largest to smallest nums2, we guarantee that when we co
 <SectionHeader n={7} title="Code Implementation" />
 
 <Callout type="green" label="Swift Notes">
-  The `Heap` from Swift Collections is used as a min-heap. `zip(nums1, nums2).sorted { $0.1 > $1.1 }` creates `(n1, n2)` pairs sorted by n2 descending — `.1` accesses the second element of each tuple. `heap.popMin() ?? 0` handles the nil case safely (never triggered since `heap.count > k` guarantees a non-empty heap at that point).
+  The `Heap` from Swift Collections is used as a min-heap. `zip(nums1, nums2).sorted(by:)` with comparator `$0.1 > $1.1` creates `(n1, n2)` pairs sorted by n2 descending — `.1` accesses the second element of each tuple. `heap.popMin() ?? 0` handles the nil case safely (never triggered since `heap.count > k` guarantees a non-empty heap at that point).
 </Callout>
 
 ```swift

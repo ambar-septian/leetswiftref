@@ -147,7 +147,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`pattern.map { String($0) }` converts each `Character` to a `String` so both maps share the same `[String: String]` type. Alternatively, keep `charSet` as `[Character: String]` and `wordSet` as `[String: Character]` for slightly tighter typing. `s.components(separatedBy: " ")` is the idiomatic split for a single-character delimiter.
+Mapping `pattern` via `String($0)` converts each `Character` to a `String` so both maps share the same `[String: String]` type. Alternatively, keep `charSet` as `[Character: String]` and `wordSet` as `[String: Character]` for slightly tighter typing. `s.components(separatedBy: " ")` is the idiomatic split for a single-character delimiter.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

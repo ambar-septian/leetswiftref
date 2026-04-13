@@ -36,7 +36,7 @@ rightChild(i)  = 2 * i + 2
 | Root element | Smallest | Largest |
 | Heap property | `parent <= children` | `parent >= children` |
 | Use case | Kth largest, Dijkstra | Kth smallest, scheduling |
-| Priority function | `{ $0 < $1 }` | `{ $0 > $1 }` |
+| Priority function | `$0 < $1` | `$0 > $1` |
 
 <Callout type="amber" label="Key Constraint">
   Swift's standard library does **not** include a heap or priority queue. For LeetCode you have two options: implement a lightweight `Heap` struct (shown below — straightforward and interview-ready), or add the **Swift Collections** package (`import Collections`) which provides `Heap` with a modern API but requires a package dependency. The custom implementation is recommended for interviews.

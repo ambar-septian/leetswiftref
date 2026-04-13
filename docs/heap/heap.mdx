@@ -39,7 +39,7 @@ When to use a heap:
 | Concept | Description |
 |---|---|
 | **Array-backed tree** | `parent(i) = (i-1)/2`, `left(i) = 2i+1`, `right(i) = 2i+2` |
-| **Priority function** | `(Element, Element) -> Bool` — `{ $0 < $1 }` for min-heap, `{ $0 > $1 }` for max-heap |
+| **Priority function** | `(Element, Element) -> Bool` — `$0 < $1` for min-heap, `$0 > $1` for max-heap |
 | **Sift up** | Bubble newly inserted element toward root while it beats its parent |
 | **Sift down** | Push replacement root down toward leaves, always swapping with the higher-priority child |
 | **buildHeap** | Sift down every non-leaf in reverse order — converts any array to a heap in O(n) |
@@ -165,7 +165,7 @@ func findKthLargest(_ nums: [Int], _ k: Int) -> Int {
 ```
 
 <Callout type="green" label="Swift Notes">
-  The priority closure `{ $0 &lt; $1 }` for a min-heap means "element $0 has higher priority if it is smaller than $1" — the root is the smallest. Flip to `{ $0 &gt; $1 }` for a max-heap. The `buildHeap` init converts an unsorted array in O(n) by sifting down every non-leaf from right to left — this is more efficient than inserting n elements one by one (which would be O(n log n)). The `@discardableResult` on `dequeue()` suppresses the "result unused" warning when you just want to pop the top without using the value.
+  Pass `$0 < $1` as the priority closure for a min-heap — the root is the smallest element (element $0 has higher priority if it is smaller than $1). Pass `$0 > $1` for a max-heap. The `buildHeap` init converts an unsorted array in O(n) by sifting down every non-leaf from right to left — this is more efficient than inserting n elements one by one (which would be O(n log n)). The `@discardableResult` on `dequeue()` suppresses the "result unused" warning when you just want to pop the top without using the value.
 
   **Swift Collections alternative:** `import Collections` gives you `Heap` with `insert(_:)`, `min`, `max`, `popMin()`, `popMax()` on a single min-max heap structure. It is well-tested and O(log n) for all operations, but requires adding the `apple/swift-collections` package to your project — not available on LeetCode by default.
 </Callout>

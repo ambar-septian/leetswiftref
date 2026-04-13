@@ -160,7 +160,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`board.map { $0.joined() }` at the base case converts the 2D `[[String]]` board into `[String]` rows in one expression without a for loop. `Array(repeating: Array(repeating: ".", count: n), count: n)` correctly initialises an independent 2D array — each inner array is a separate copy, so mutating one row does not affect others.
+`board.map` with `$0.joined()` at the base case converts the 2D `[[String]]` board into `[String]` rows in one expression without a for loop. `Array(repeating: Array(repeating: ".", count: n), count: n)` correctly initialises an independent 2D array — each inner array is a separate copy, so mutating one row does not affect others.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

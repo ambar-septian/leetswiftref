@@ -126,7 +126,7 @@ func transposeInPlace(_ matrix: inout [[Int]]) {
 ```
 
 <Callout type="green" label="Swift Notes">
-  Use `accounts.map { $0.reduce(0, +) }.max()!` — idiomatic Swift for row sums and global max. For BFS on a grid, store tuples `(Int, Int)` in the queue array — Swift can infer the type. Pass the grid as `inout [[Int]]` for DFS that modifies it in place. Use `grid[r][c] = -1` (sentinel) to mark visited instead of a separate boolean matrix — saves O(m*n) extra space. The direction array `let dirs = [(-1,0),(0,1),(1,0),(0,-1)]` can be defined as `[(Int,Int)]` for type safety.
+  Use `accounts.map` with `reduce(0, +)` then `.max()!` — idiomatic Swift for row sums and global max. For BFS on a grid, store tuples `(Int, Int)` in the queue array — Swift can infer the type. Pass the grid as `inout [[Int]]` for DFS that modifies it in place. Use `grid[r][c] = -1` (sentinel) to mark visited instead of a separate boolean matrix — saves O(m*n) extra space. The direction array `let dirs = [(-1,0),(0,1),(1,0),(0,-1)]` can be defined as `[(Int,Int)]` for type safety.
 </Callout>
 
 <SectionHeader n={5} title="Complexity Analysis" />

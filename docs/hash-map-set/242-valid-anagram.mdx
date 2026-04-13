@@ -97,7 +97,7 @@ Using <code>zip(s, t)</code> processes both strings simultaneously in one loop �
     `var counts = Array(repeating: 0, count: 26)`. For each `(sChar, tChar)` in `zip(s, t)`: increment index for `sChar`, decrement index for `tChar`.
   </StepItem>
   <StepItem title="Verify all zeros">
-    Return `counts.allSatisfy { $0 == 0 }`.
+    Return `counts.allSatisfy` that every element equals zero — all deltas cancel means anagram.
   </StepItem>
 </StepList>
 
@@ -120,7 +120,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`sChar.asciiValue!` is force-unwrapped safely — the problem guarantees lowercase English letters only, so `asciiValue` is always non-nil. `zip(s, t)` on two `String` values produces `(Character, Character)` tuples without needing a manual index. `counts.allSatisfy { $0 == 0 }` is idiomatic for verifying every element meets a condition.
+`sChar.asciiValue!` is force-unwrapped safely — the problem guarantees lowercase English letters only, so `asciiValue` is always non-nil. `zip(s, t)` on two `String` values produces `(Character, Character)` tuples without needing a manual index. `counts.allSatisfy` checking each element equals zero is idiomatic for verifying every delta cancelled out.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

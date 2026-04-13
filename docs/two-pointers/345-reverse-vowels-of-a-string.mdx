@@ -92,7 +92,7 @@ Each iteration handles one of: (1) both are vowels — swap and advance both; (2
 
 <StepList>
   <StepItem title="Convert to character array">
-    `var chars = s.map { $0 }`. Define `let vowels: Set = ["a","A","e","E","i","I","o","O","u","U"]`.
+    `var chars = Array(s)`. Define `let vowels: Set = ["a","A","e","E","i","I","o","O","u","U"]`.
   </StepItem>
   <StepItem title="Initialise two pointers">
     `var left = 0`, `var right = chars.count - 1`.
@@ -135,7 +135,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-`s.map { $0 }` is a concise way to convert a `String` to `[Character]` — equivalent to `Array(s)`. `Set&lt;Character&gt;` lookup is O(1). `chars.swapAt(left, right)` is the idiomatic in-place swap. `String(chars)` converts back from `[Character]` to `String` in O(n).
+`Array(s)` converts a `String` to `[Character]` for O(1) index access. `Set&lt;Character&gt;` lookup is O(1). `chars.swapAt(left, right)` is the idiomatic in-place swap. `String(chars)` converts back from `[Character]` to `String` in O(n).
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />

@@ -112,7 +112,7 @@ Two cars form the same fleet if the trailing car arrives no later than the leadi
     `guard position.count > 1 else { return 1 }`.
   </StepItem>
   <StepItem title="Sort by position descending">
-    `let cars = zip(position, speed).sorted { $0.0 > $1.0 }`.
+    `Array(zip(position, speed))` sorted descending by position — closest to target first.
   </StepItem>
   <StepItem title="Compute arrival times and build stack">
     For each `car`: `let time = Float(target - car.0) / Float(car.1)`. Push `time`. While `stack.count >= 2` and `stack.last! <= stack[stack.count-2]`: pop.
@@ -146,7 +146,7 @@ class Solution {
 ```
 
 <Callout type="green" label="Swift Notes">
-  Use `Array(zip(position, speed)).sorted { $0.0 &gt; $1.0 }` to pair positions with speeds and sort descending by position. Store arrival times as `Float` — `let time = (Float(target) - Float(car.0)) / Float(car.1)`. Comparing `stack[stack.count - 1] &lt;= stack[stack.count - 2]` inside a `while stack.count &gt;= 2` guard is clearer than using `stack.last` for both comparisons.
+  Use `Array(zip(position, speed)).sorted(by:)` with comparator `$0.0 > $1.0` to pair positions with speeds and sort descending by position. Store arrival times as `Float` — `let time = (Float(target) - Float(car.0)) / Float(car.1)`. Comparing `stack[stack.count - 1] &lt;= stack[stack.count - 2]` inside a `while stack.count &gt;= 2` guard is clearer than using `stack.last` for both comparisons.
 </Callout>
 
 <SectionHeader n={8} title="Complexity Analysis" />
