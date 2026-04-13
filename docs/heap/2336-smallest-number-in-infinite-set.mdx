@@ -29,6 +29,10 @@ Implement the `SmallestInfiniteSet` class:
 - `1 <= num <= 1000`
 - At most `1000` calls will be made in total to `popSmallest` and `addBack`.
 
+<Callout type="amber" label="Key Constraint">
+  num is bounded to 1..1000 and at most 1000 total calls are made — the heap and set hold at most 1000 elements. The naive approach of pre-filling a heap with all integers is impossible; model the unmodified range with a counter instead.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ obj.popSmallest();    // returns 4, set = [5, 6, ...]
   answer="Min-heap for added-back elements + counter for the unmodified prefix"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a data structure must support both "take the next smallest" from an infinite set and "put back" specific elements, model the unmodified prefix with a counter and the returned elements with a min-heap.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  The infinite set is modelled with two structures: a counter `nextAvailable` representing [nextAvailable, ∞) (never touched), and a min-heap of elements that were popped and then re-added. The smallest element is always `min(heap.min, nextAvailable)`.
+</Callout>
 
 Represent the infinite set with two structures:
 
@@ -103,8 +115,8 @@ The naive approach pre-fills a heap with 1..1000 at init (O(n) space, O(n log n)
 
 <SectionHeader n={7} title="Code Implementation" />
 
-<Callout type="info" label="Swift Collections Heap">
-The `Heap` used in this solution comes from the [Swift Collections](https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) package. Note that the API might be slightly different if you implement your own heap.
+<Callout type="green" label="Swift Notes">
+  The `Heap` type from Swift Collections is used as a min-heap. `heap.popMin()!` force-unwrap is safe — the `heap.isEmpty` branch comes first so the heap is always non-empty here. The two `guard` statements in `addBack` short-circuit in O(1): the first checks the unmodified range, the second uses `uniqueSet` for O(1) dedup.
 </Callout>
 
 ```swift
@@ -142,6 +154,14 @@ class SmallestInfiniteSet {
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log M) per operation">
+  `popSmallest` from the heap is O(log M); when the heap is empty it is O(1). `addBack` does two O(1) guard checks plus an O(log M) heap insert. M is the current heap size — at most 1000 given the constraints.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(M)">
+  The min-heap and hash set each hold at most M elements, where M is the count of currently re-added elements. M is bounded by the total number of calls (≤ 1000). The counter itself is O(1).
+</Callout>
 
 <ComplexityTable
   rows={[

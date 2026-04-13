@@ -26,6 +26,10 @@ Return the length of the **longest subarray** of `nums` which is either **strict
 - `1 <= nums.length <= 50`
 - `1 <= nums[i] <= 50`
 
+<Callout type="amber" label="Key Constraint">
+  Constraints are tiny (n, values ≤ 50), but the key correctness requirement is handling equal adjacent elements — they break both strict conditions and must reset both streak counters to 1.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Explanation: The whole array is strictly decreasing.
   answer="Dual streak counters — extend on the matching direction, reset the other"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When tracking the longest run satisfying two mutually exclusive conditions, maintain two independent streak counters — extend one and reset the other at each step.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Maintain two independent streak counters (`currentInc`, `currentDec`). On each step: if the direction matches, extend one and reset the other to 1. On equality, reset both. The answer is the maximum streak seen in either counter.
+</Callout>
 
 Initialise `currentInc = 1`, `currentDec = 1`, `maxInc = 1`, `maxDec = 1`. Iterate from index 1. For each pair `(prev, curr)`:
 - If `curr > prev`: extend `currentInc`, reset `currentDec = 1`.
@@ -135,7 +147,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Using four named variables (`currentInc`, `maxInc`, `currentDec`, `maxDec`) is clearer than an array of 2 and avoids indexing errors. `let curr = nums[i], prev = nums[i-1]` caches both values once, keeping all three branches readable.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass from index 1 to n-1. Each step is O(1) — one comparison and up to two counter updates. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Four integer counters and no auxiliary data structures. The input array is not mutated.
+</Callout>
 
 <ComplexityTable
   rows={[

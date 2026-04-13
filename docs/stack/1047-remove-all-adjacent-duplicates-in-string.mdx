@@ -28,6 +28,10 @@ Return the final string after all such duplicate removals have been made. It can
 - `1 <= s.length <= 10^5`
 - `s` consists of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+  Duplicate removal is repeated until no adjacent equal characters remain. Removing one pair can expose a new adjacent pair — the process is cascading. A single O(n) stack pass handles all cascading removals without re-scanning the string.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: "ay"
   answer="Stack — push characters; pop (cancel) when a character matches the stack top"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When adjacent elements cancel each other and cancellations may cascade, a stack handles it in one pass. The stack top always represents the most recent unmatched character — compare against it before deciding to push or pop.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  The stack represents the running result without adjacent duplicates. For each new character: if it matches the stack top, both cancel (pop). If not, it extends the result (push). This single left-to-right pass handles all cascading removals — when a pair is popped, the new top is immediately available for the next comparison.
+</Callout>
 
 Iterate over each character. If the stack top equals the current character, pop the top (both cancel). Otherwise, push the character. After iteration, the stack contains the final string with no adjacent duplicates.
 
@@ -111,7 +123,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `var stack = [Character]()` — a `Character` array is more efficient than building a String character by character. `String(stack)` at the end converts the whole array to a String in O(n) — one allocation. `stack.last` returns `Character?`; use `if let top = stack.last, top == char` to safely check the top before deciding to pop or push.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each character is pushed at most once and popped at most once. Total stack operations across the entire string are bounded by 2n — O(n). The final `String(stack)` conversion is also O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n characters in the worst case (no adjacent duplicates anywhere — all characters are pushed and none popped). The result string adds another O(n). Total auxiliary space: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

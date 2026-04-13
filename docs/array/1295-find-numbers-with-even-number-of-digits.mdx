@@ -24,6 +24,10 @@ Given an array `nums` of integers, return how many of them contain an **even num
 - `1 <= nums.length <= 500`
 - `1 <= nums[i] <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+  All values are at least 1, so `log10` is safe — `log10(0)` is undefined. The digit count formula `Int(log10(Double(num))) + 1` requires `num > 0` to be correct; always verify this constraint before using logarithms.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Explanation: Only 1771 has 4 digits (even).
   answer="Linear scan — count digits with log10"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  To count digits in O(1) without string allocation, use `Int(log10(Double(num))) + 1`. For simple problems over small input sizes, `String(num).count` is equally readable and acceptable.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Digit count can be computed in O(1) using logarithms: a number with d digits satisfies `10^(d-1) &lt;= n &lt; 10^d`, so `floor(log10(n)) + 1 = d`. Check parity with `% 2 == 0`. Alternatively, `String(num).count` is equally correct and more readable for small inputs.
+</Callout>
 
 For each number, compute `Int(log10(Double(num))) + 1` to get the digit count, then check if it is even. For example: `log10(100) = 2`, so `Int(2) + 1 = 3` digits — correct.
 
@@ -109,7 +121,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `import Foundation` is required for `log10` — it is not in the Swift standard library. `Int(log10(Double(num)))` truncates toward zero (floor for positive values). The ternary `result += (digits % 2 == 0 ? 1 : 0)` avoids an `if` branch. Alternatively, `result += digits.isMultiple(of: 2) ? 1 : 0` is idiomatic Swift.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over n elements, with O(1) work per element (logarithm computation and parity check). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only a result counter and a per-iteration digit count variable are used — no auxiliary data structures. O(1) extra space regardless of input size.
+</Callout>
 
 <ComplexityTable
   rows={[

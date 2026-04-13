@@ -26,6 +26,10 @@ Given an array of integers `arr` and two integers `k` and `threshold`, return th
 - `1 <= k <= arr.length`
 - `0 <= threshold <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+  k is always valid (1 &lt;= k &lt;= arr.length), so the first window always exists — no empty-array guard is needed. Compare sum &gt;= threshold * k instead of avg &gt;= threshold to avoid integer division rounding entirely.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Output: 6
   answer="Fixed-size sliding window — slide sum O(1) per step"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When the window size is fixed and you need to test every subarray of that size, use a fixed-size sliding window: O(k) initial fill followed by O(1) per slide instead of O(k) per window. Replace avg &gt;= threshold with sum &gt;= threshold * k to avoid division.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Build the initial window of size k in O(k), then slide: add the incoming element and remove the outgoing element in O(1) per step. Replace avg &gt;= threshold with sum &gt;= threshold * k to avoid integer division and floating-point concerns entirely.
+</Callout>
 
 Build the initial window of size `k`. Then slide one element at a time: add `arr[i]`, remove `arr[i-k]`, and check if `sum / k >= threshold`. Using integer division is safe here since both `sum` and `threshold * k` are integers.
 
@@ -114,7 +126,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `sum / k >= threshold` uses integer division — safe here since both operands are positive integers, but `sum >= threshold * k` avoids division entirely. The slide loop starts at index `k` (not `k-1`) since the initial window covers indices `0..<k`. The initial check `sum / k >= threshold ? 1 : 0` handles the first window inline before the loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  The initial window takes O(k) to build; each subsequent slide is O(1) — one addition and one subtraction. Total: O(k) + O(n-k) = O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only sum and result counters are maintained — no auxiliary array or buffer. O(1) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

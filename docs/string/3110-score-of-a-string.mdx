@@ -26,6 +26,10 @@ Return the **score** of `s`.
 - `2 <= s.length <= 100`
 - `s` consists only of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+  s consists only of lowercase English letters (ASCII 97–122). The max adjacent difference is 25, so the max total score is 99 × 25 = 2,475 — fits in Int. Force-unwrapping `asciiValue!` is safe given this constraint.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: |'z'-'a'| = 25, |'a'-'z'| = 25. Total = 50.
   answer="Single pass — sum abs(ASCII[i] - ASCII[i-1]) for all adjacent pairs"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When the score is a sum of absolute differences between adjacent elements, a single pass accumulating `abs(a - b)` for each adjacent pair is all that is needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Convert the string to a `[Character]` array for O(1) indexed access, then iterate adjacent pairs accumulating `abs(asciiValue[i] - asciiValue[i-1])`. No sorting, no hash map — just a running total.
+</Callout>
 
 Convert `s` to a `[Character]` array for indexed access. Iterate from index 1 to the end. For each index `i`, accumulate `abs(Int(arr[i].asciiValue!) - Int(arr[i-1].asciiValue!))`.
 
@@ -109,7 +121,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `arr[i].asciiValue!` force-unwraps safely — constraints guarantee lowercase English letters (ASCII 97–122). `Int(...)` widens from `UInt8` to `Int` before subtraction to avoid unsigned underflow when computing `arr[i] - arr[i-1]` where the left side is smaller.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  `Array(s)` is O(n). The single pass over n-1 adjacent pairs is O(n). Total: O(n) where n is the string length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  `Array(s)` allocates a Character array of length n. The `result` accumulator is a single Int — O(1) otherwise.
+</Callout>
 
 <ComplexityTable
   rows={[

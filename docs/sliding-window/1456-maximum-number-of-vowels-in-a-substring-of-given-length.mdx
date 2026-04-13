@@ -27,6 +27,10 @@ Vowel letters in English are `'a'`, `'e'`, `'i'`, `'o'`, and `'u'`.
 - `s` consists of lowercase English letters.
 - `1 <= k <= s.length`
 
+<Callout type="amber" label="Key Constraint">
+  k is guaranteed valid (1 &lt;= k &lt;= s.length), so the first window always exists. Lowercase-only input means the vowel set `a, e, i, o, u` covers all possible vowels — no uppercase handling needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: 2
   answer="Fixed-size sliding window — O(1) update per slide"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For a fixed-size window, a single loop with a conditional removal guard (if i &gt;= k) handles both the initial fill and subsequent slides in one pass — no separate initialisation loop needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Only the vowel count matters — not which vowels or their positions. Maintain a single integer curr: add 1 when the entering character is a vowel, subtract 1 when the leaving character (at i-k) is a vowel. O(1) Set lookup drives both operations.
+</Callout>
 
 Slide a window of size `k` across the string. When a new character enters (index `i`), add 1 to `curr` if it is a vowel. When a character leaves (index `i - k`), subtract 1 if it was a vowel. Update `result = max(result, curr)` at each position.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `let vowels: Set&lt;Character&gt; = ["a","e","i","o","u"]` — a Set literal with an explicit type annotation; O(1) lookup. `let chars = Array(s)` converts String to [Character] for O(1) subscript access — Swift String subscript is O(n) due to Unicode. The guard `if i >= k` on the removal avoids a separate initialisation loop, handling both the fill phase and slide phase in one pass.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n characters. Each character triggers one Set lookup for entry and (when i &gt;= k) one for removal — both O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  The vowels Set holds exactly 5 elements — O(1). The chars array is O(n) but counts as the input representation. Only two integer counters (curr, result) are maintained as auxiliary state.
+</Callout>
 
 <ComplexityTable
   rows={[

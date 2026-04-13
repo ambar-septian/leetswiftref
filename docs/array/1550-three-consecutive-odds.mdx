@@ -24,6 +24,10 @@ Given an integer array `arr`, return `true` if there are three consecutive odd n
 - `1 <= arr.length <= 1000`
 - `1 <= arr[i] <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+  All values are positive (arr[i] &gt;= 1), so there are no negative numbers to worry about. The streak counter must not reset once it reaches 3 — guard with else if current &lt; 3 to preserve found streaks.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -51,7 +55,15 @@ Explanation: [5,7,23] are three consecutive odd numbers.
   answer="Linear scan — streak counter"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  To detect a consecutive run of length k sharing a property, use a streak counter: increment on match, reset on mismatch, return true as soon as the counter reaches k — O(n) single pass.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  A streak counter is all that's needed: increment on odd, reset on even (guarded by else if current &lt; 3 to preserve found streaks), and return current &gt;= 3 at the end. Single pass, O(1) space.
+</Callout>
 
 Maintain a counter `current`. Increment on odd numbers; reset to 0 on even numbers. Return `true` as soon as `current >= 3`.
 
@@ -108,7 +120,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `num % 2 != 0` works correctly for all Swift integers including negatives — preferred over `num % 2 == 1` which would fail for negative odd numbers. The `else if current &lt; 3` guard prevents resetting the streak after it reaches 3, preserving the result without needing an early return.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n elements. Each element requires one modulo check and one counter update — O(1) per element. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only one integer counter (current) is maintained. No auxiliary data structures. O(1) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

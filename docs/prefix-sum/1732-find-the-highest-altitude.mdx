@@ -27,6 +27,10 @@ You are given an integer array `gain` of length `n` where `gain[i]` is the **net
 - `1 <= n <= 100`
 - `-100 <= gain[i] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  gain[i] can be negative, so altitudes can decrease at any step. The biker starts at altitude 0, which must be included as a candidate for the maximum — initialise maxAlt = 0, not Int.min.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -54,7 +58,15 @@ Explanation: Altitudes: [0,-4,-7,-9,-10,-6,-3,-1]. Maximum = 0 (the start).
   answer="Prefix Sum — accumulate running sum, track max"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you need the maximum of a running cumulative total, maintain one accumulator and one running maximum in a single pass — no prefix array needed. Include the starting value in the initial maximum.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  altitude[i] = altitude[i-1] + gain[i-1]. Start with sum = 0 and maxAlt = 0 (to include the starting altitude). After each addition, update maxAlt = max(sum, maxAlt). A single accumulator replaces a full prefix array.
+</Callout>
 
 Start with `sum = 0` (altitude at point 0) and `maxAlt = 0`. For each gain value, add it to `sum` and update `maxAlt = max(sum, maxAlt)`.
 
@@ -107,7 +119,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `max(sum, maxAlt)` uses Swift's standard library global function — no import needed. Iterating `for g in gain` (value-type copy) is clean and avoids index arithmetic. An alternative: `gain.reduce(into: (sum: 0, max: 0)) { acc, g in acc.sum += g; acc.max = Swift.max(acc.sum, acc.max) }.max` — but the plain loop is more readable.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n gain values. Each step requires one addition and one max call — both O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only two variables (sum, maxAlt) are maintained. No auxiliary array or data structure. O(1) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

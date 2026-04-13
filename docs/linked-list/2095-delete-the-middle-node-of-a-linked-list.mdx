@@ -32,6 +32,10 @@ The middle node of a linked list of size `n` is the `floor(n/2)`-th node (**0-in
 - The number of nodes in the list is in the range `[1, 10^5]`.
 - `1 <= Node.val <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+  The middle is floor(n/2)-th node (0-indexed) — for even n this is the second of the two middle nodes. A single-node list has its only node as the middle; return nil. The list is never empty (n &gt;= 1).
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -68,7 +72,15 @@ Explanation: n=2, middle=index 1 (val=1). Remove it.
   answer="Fast/slow pointer — stop slow one node before the middle"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  To delete the middle without counting, start fast one step ahead of slow — when fast exhausts, slow lands one before the middle, giving the predecessor pointer needed for deletion in a single pass.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Start slow = head and fast = head.next (one step ahead). When fast becomes nil, slow is exactly one node before the middle — the predecessor needed for deletion. Splice with slow.next = slow.next?.next. Single pass, no count needed.
+</Callout>
 
 Start `slow = head`, `fast = head.next`. Advance `fast` by 2 and `slow` by 1 each iteration. When `fast` becomes `nil`, `slow` is exactly one node before the middle. Splice: `slow.next = slow.next?.next`.
 
@@ -123,7 +135,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var fast = slow?.next` uses optional chaining — safe even if head is nil (though constraints guarantee n &gt;= 1). `guard fast != nil else { return nil }` handles the single-node case before the loop. `fast = fast?.next?.next` chains two optional accesses cleanly — if either is nil, fast becomes nil and the loop exits.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Fast advances approximately n/2 nodes; slow advances approximately n/2 nodes. Total nodes visited: O(n). Single traversal.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only two pointer variables (slow, fast) plus the splice — no extra allocation. O(1) auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

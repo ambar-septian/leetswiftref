@@ -32,6 +32,10 @@ Return a list of lists of the suggested products after each character of `search
 - `1 <= searchWord.length <= 1000`
 - `products[i]` and `searchWord` consist of lowercase English letters only.
 
+<Callout type="amber" label="Key Constraint">
+  At most 3 suggestions are returned per prefix — always the 3 lexicographically smallest. Once the prefix is absent from the trie (a character is missing), all subsequent prefixes must return an empty list.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Output: [["havana"],["havana"],["havana"],["havana"],["havana"],["havana"]]
   answer="Trie — pre-sorted insertion with per-node suggestion cache"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you need the top-k lexicographically smallest matches for every prefix of a query, sort the input first and build a trie that caches up to k results at each node during insertion — lookup then becomes a simple traversal with no per-query sorting.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Sort products before insertion so the first 3 products appended to any trie node are already the lexicographic minimum — no sorting during lookup is needed. During query, follow the searchWord characters through the trie; the current node's cached results array is the answer for that prefix. A nil node means the prefix is absent — all remaining results are empty.
+</Callout>
 
 Sort `products` lexicographically first. Then insert each product into the trie one character at a time. At every node along the path, call `appendResult(product)` — since products are inserted in sorted order, each node naturally accumulates the first (smallest) 3 that share its prefix.
 
@@ -144,7 +156,19 @@ class Node {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var children = [Character: Node]()` uses a dictionary for trie children — O(1) average access. `private(set) var results` exposes read access while restricting writes to `appendResult`. Optional chaining `curr?.children[char]?.results ?? []` cleanly handles a nil node without a crash — once `curr` becomes nil, all subsequent lookups return `[]` naturally.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(M log M + M + N)">
+  Sorting products takes O(M log M) where M = total characters across all products. Trie insertion is O(M) — each character creates or traverses one node. Query traversal is O(N) where N = searchWord length. Each node lookup is O(1).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(M)">
+  The trie stores at most M nodes (one per character across all products). Each node holds a dictionary of children and up to 3 result strings. The result strings themselves take O(M) total space. Query uses O(1) auxiliary space beyond the output.
+</Callout>
 
 <ComplexityTable
   rows={[

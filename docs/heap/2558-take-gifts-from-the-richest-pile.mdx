@@ -30,6 +30,10 @@ Return the number of gifts remaining after `k` seconds.
 - `1 <= gifts[i] <= 10^9`
 - `1 <= k <= 10^3`
 
+<Callout type="amber" label="Key Constraint">
+  gifts[i] can reach 10^9, so the floor square root must be computed carefully — `Int(Double(x).squareRoot())` avoids integer overflow and truncation errors from naive integer arithmetic.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Explanation: Each pile is already 1. sqrt(1)=1. No change after k rounds.
   answer="Max-heap simulation — pop max, push floor(sqrt), repeat k times"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a simulation repeatedly modifies only the current maximum and the result depends on the final sum, use a max-heap — pop, transform, push back in O(log n) per round.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  A max-heap exposes the largest pile in O(log n). Each of the k rounds pops the max, replaces it with its floor square root, and re-inserts. Track a running sum (subtract pop, add replacement) to avoid iterating the heap at the end.
+</Callout>
 
 Build a max-heap from `gifts`. Run `k` rounds: pop the maximum value, compute `floor(sqrt(max))`, push the result back. After `k` rounds, sum all values remaining in the heap.
 
@@ -102,8 +114,8 @@ If the maximum pile is 1, sqrt(1) = 1 — no change. You can stop early once the
 
 <SectionHeader n={7} title="Code Implementation" />
 
-<Callout type="info" label="Swift Collections Heap">
-The `Heap` used in this solution comes from the [Swift Collections](https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) package. Note that the API might be slightly different if you implement your own heap.
+<Callout type="green" label="Swift Notes">
+  The `Heap` from Swift Collections supports `popMax()` directly — no negation trick needed unlike standard min-heap-only libraries. `Int(Double(top).squareRoot())` computes the floor square root. The running sum (subtract pop, add replacement each round) avoids a final O(n) heap iteration to total the remaining gifts.
 </Callout>
 
 ```swift
@@ -151,6 +163,14 @@ class Solution {
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O((n + k) log n)">
+  Building the heap with n inserts is O(n log n). Each of the k rounds performs one popMax and one insert, each O(log n). Total: O(n log n + k log n) = O((n + k) log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The heap holds all n gift pile values. The running sum tracking is O(1). No additional data structures are needed beyond the heap.
+</Callout>
 
 <ComplexityTable
   rows={[

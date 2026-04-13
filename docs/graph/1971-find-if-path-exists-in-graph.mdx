@@ -34,6 +34,10 @@ Given `edges` and the integers `n`, `source`, and `destination`, return `true` i
 - There are no duplicate edges.
 - There are no self-edges.
 
+<Callout type="amber" label="Key Constraint">
+  The graph is bidirectional (undirected) — each edge must be stored in both directions in the adjacency list. source == destination is a valid edge case that should return true immediately before any traversal.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Output: false
   answer="DFS — reachability from source with early exit"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For simple reachability (does a path exist?), DFS with a visited array from source is sufficient — O(V+E). Only upgrade to Union-Find when you need to answer many independent reachability queries on the same graph.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Build an undirected adjacency list (each edge stored both directions). DFS from source: if any neighbor equals destination, return true immediately. Mark nodes visited before recursing to prevent infinite cycles. If DFS exhausts all reachable nodes, return false.
+</Callout>
 
 Build an undirected adjacency list. DFS from `source`. At each step, if a neighbor equals `destination`, return `true`. Otherwise, mark it visited and recurse. If the DFS exhausts all reachable nodes without finding `destination`, return `false`.
 
@@ -120,7 +132,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var visited = Array(repeating: false, count: n)` is faster than Set&lt;Int&gt; — O(1) array lookup with better cache performance for large n. `guard source != destination else { return true }` handles the trivial case before any allocation. The nested `func dfs(_ curr: Int) -> Bool` captures `visited` and `list` by reference from the outer scope — both mutate correctly without inout.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(V + E)">
+  Building the adjacency list takes O(E). DFS visits each vertex at most once and traverses each edge at most twice (undirected). Total: O(V + E).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V + E)">
+  The adjacency list stores O(V + E) entries (2E for undirected edges). The visited array is O(V). The call stack is O(V) in the worst case (a linear graph). Total: O(V + E).
+</Callout>
 
 <ComplexityTable
   rows={[

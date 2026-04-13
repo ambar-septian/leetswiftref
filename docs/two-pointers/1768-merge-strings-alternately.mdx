@@ -26,6 +26,10 @@ Return the merged string.
 - `1 <= word1.length, word2.length <= 100`
 - `word1` and `word2` consist of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+  Both strings are non-empty (length &gt;= 1), so no empty-string guard needed. The longer string's tail is appended verbatim — handle this by looping to max(len1, len2) with per-string bounds checks.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -60,7 +64,15 @@ Output: "apbqcd"
   answer="Single index — take from each string if in bounds"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When interleaving two sequences of unequal length, loop to max(len1, len2) with per-sequence bounds checks — a single loop handles both the interleave phase and the longer tail, eliminating a separate trailing append.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  One index i, two bounds checks: append chars1[i] if i &lt; len1, then chars2[i] if i &lt; len2. Loop to max(len1, len2). This handles both the interleave phase and the longer-string tail in a single loop — no separate append needed.
+</Callout>
 
 Convert both strings to character arrays for O(1) index access. Use a single loop up to `max(len1, len2)`. At each iteration, append `chars1[i]` if `i < len1`, then `chars2[i]` if `i < len2`. A pre-allocated result array avoids repeated string concatenation.
 
@@ -117,7 +129,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `Array(word)` converts String to [Character] for O(1) subscript — Swift String subscript is O(n) due to Unicode. `Array(repeating: Character(" "), count: len1 + len2)` pre-allocates the exact output size, avoiding reallocations. `String(result)` converts [Character] back to String in O(n). Using a write index `j` instead of append avoids the overhead of capacity checks.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n + m)">
+  A single loop up to max(n, m) iterations, each doing at most two array writes — O(1) per step. Two Array(word) conversions add O(n) + O(m). Total: O(n + m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n + m)">
+  The result array of size n+m is required output. The two character arrays (chars1, chars2) add O(n) + O(m). Total auxiliary: O(n + m).
+</Callout>
 
 <ComplexityTable
   rows={[

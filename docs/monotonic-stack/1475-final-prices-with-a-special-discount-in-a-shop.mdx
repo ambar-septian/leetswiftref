@@ -28,6 +28,10 @@ Return an integer array `answer` where `answer[i]` is the final price you will p
 - `1 <= prices.length <= 500`
 - `1 <= prices[i] <= 10^3`
 
+<Callout type="amber" label="Key Constraint">
+  The discount applies when prices[j] &lt;= prices[i] — less than or equal, not strictly less than. Missing equality causes wrong answers for equal-price pairs. The pop condition must use &lt;= not &lt;.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -68,7 +72,15 @@ Output: [9,0,1,6]
   answer="Monotonic stack — next smaller or equal element"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  "Find the next smaller-or-equal element to the right" is the monotonic stack trigger. Maintain a non-decreasing stack of (value, index) pairs; pop and apply the discount when the current price is &lt;= the stack top.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Maintain a stack of (value, index) pairs in non-decreasing order. When a new price arrives that is &lt;= the stack top, it is the discount for all entries at the top — pop and apply. Entries remaining after the full loop received no discount and keep their original price.
+</Callout>
 
 Maintain a stack of `(value, index)` pairs in non-decreasing order. When `prices[i] <= stack.top.value`, the top entry's item receives a discount of `prices[i]`. Pop and apply. Push the current item.
 
@@ -129,7 +141,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var stack = [(value: Int, index: Int)]()` — a named-tuple array for readable .value/.index access without a custom struct. `var result = prices` initialises from prices so items with no discount already hold their correct value — no post-loop cleanup needed. `stack.removeLast()` is O(1), and `while let top = stack.last` safely pattern-matches the optional top without force-unwrap.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each index is pushed onto the stack exactly once and popped at most once. The while loop pops happen across the full iteration, not per element — total pops across all iterations is at most n. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n entries (when prices are strictly increasing and nothing is ever popped). The result array is O(n) but is required output. Auxiliary stack: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

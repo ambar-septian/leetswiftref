@@ -26,6 +26,10 @@ Formally, for subarray `[a, b, c]`: the condition is `a + c == b / 2`.
 - `3 <= nums.length <= 100`
 - `-100 <= nums[i] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  nums[i] can be negative (-100 to 100). The integer form `(a + c) * 2 == b` handles negatives correctly — float division of negative odd numbers would give non-integer results that never match.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -60,7 +64,15 @@ Explanation:
   answer="Fixed window of 3 — slide and count qualifying triples"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For fixed-size window problems, a simple loop `i from 0 to n - windowSize` is all that is needed — no complex sliding window machinery required.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Slide a fixed window of size 3 across the array. For each triple `(a, b, c)`, check `(a + c) * 2 == b` using integer arithmetic to avoid floating-point issues with negative or odd values. Count matches.
+</Callout>
 
 Iterate index `i` from `0` to `nums.count - 3` inclusive. For each triple `(a, b, c) = (nums[i], nums[i+1], nums[i+2])`: check if `(a + c) * 2 == b`. Increment count on match.
 
@@ -112,7 +124,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `nums.count - 2` as the exclusive upper bound ensures the last triple is `(nums[n-3], nums[n-2], nums[n-1])` — the last valid window. Assigning `a`, `b`, `c` to named let constants makes the condition `(a + c) * 2 == b` immediately readable.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Iterates n-2 triples, each checked in O(1). Total: O(n) where n is the array length.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Three named variables per iteration, no auxiliary data structures. The input array is not mutated.
+</Callout>
 
 <ComplexityTable
   rows={[

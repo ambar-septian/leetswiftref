@@ -29,6 +29,10 @@ Note that the integers in the lists may be returned in **any** order.
 - `1 <= nums1.length, nums2.length <= 1000`
 - `-1000 <= nums1[i], nums2[i] <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+  Values can be negative (-1000 &lt;= nums[i] &lt;= 1000) and duplicate values may appear in each array. The output order is arbitrary — return distinct elements in any order.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Output: [[3],[]]
   answer="Set difference — build two sets, collect elements not in the other"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When asked for elements unique to each of two arrays, convert both to sets first — set subtraction gives the answer in O(n + m) with automatic deduplication.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Convert both arrays to sets, then collect elements present in one set but absent from the other. Set membership is O(1), so two linear passes give O(n + m) total with no sorting or explicit deduplication.
+</Callout>
 
 Convert `nums1` and `nums2` to sets. Iterate `set1` and collect elements not in `set2` for `result[0]`. Iterate `set2` and collect elements not in `set1` for `result[1]`.
 
@@ -109,7 +121,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `Set(nums1)` deduplicates in O(n). `set2.contains(s)` is O(1) average. Using `var result: [[Int]] = [[], []]` and appending directly avoids a final `map` or `filter` call on the sets.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n + m)">
+  Building each set is O(n) and O(m). Each pass over a set is O(n) or O(m). All `contains` checks are O(1) average. Total: O(n + m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n + m)">
+  Two sets of sizes n and m hold all distinct elements. The output lists hold at most n + m elements total. No other auxiliary structures are used.
+</Callout>
 
 <ComplexityTable
   rows={[

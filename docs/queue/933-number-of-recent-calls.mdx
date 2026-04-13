@@ -29,6 +29,10 @@ Implement the `RecentCounter` class:
 - Each test case will call `ping` with strictly increasing values of `t`.
 - At most `10^4` calls will be made.
 
+<Callout type="amber" label="Key Constraint">
+  Timestamps are strictly increasing across all calls. This guarantees the pings array is always sorted ascending — the sliding window only ever moves forward, never backward. The window is the inclusive range [t - 3000, t].
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -56,7 +60,15 @@ Explanation:
   answer="Sliding window with a left pointer — advance past timestamps older than t-3000, return window size"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When elements arrive in sorted order and you need a running count within a fixed window, use a pointer (or queue front index) that advances only forward. The window size is always end - front, no re-scanning needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Since timestamps are strictly increasing, all pings are appended in order. A left pointer `currentIndex` advances past any timestamp older than `t - 3000` — the window size is always `pings.count - currentIndex`. Periodic batch removal keeps the array from growing unboundedly.
+</Callout>
 
 Store all ping timestamps in `pings`. Maintain `currentIndex` pointing to the oldest timestamp inside the current window. On each `ping(t)`: advance `currentIndex` while `t - pings[currentIndex] > 3000`. Append `t`. Return `pings.count - currentIndex` (number of elements from `currentIndex` to end inclusive).
 
@@ -120,7 +132,19 @@ class RecentCounter {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `pings.removeFirst(currentIndex)` removes the first `currentIndex` elements — it is O(currentIndex), not O(1). Batching the removal (only when `currentIndex > 1000`) amortises this cost. An alternative is to use a true queue (e.g. a circular buffer or deque from swift-collections) for O(1) per removal. Using `let const = 3000` as an instance property is fine — `const` is not a keyword in Swift (unlike C/Java).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(1) amortised">
+  Each timestamp is appended once and the index advances past it at most once. Periodic `removeFirst` is O(k) where k = currentIndex, but batching ensures this happens at most once every 1000 calls — amortised O(1) per call.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(W)">
+  W = maximum number of pings within any 3000ms window. The pings array is bounded to at most currentIndex + W entries at any time. With at most 10^4 calls, W is at most 10^4 — O(1) in practice given the constraints.
+</Callout>
 
 <ComplexityTable
   rows={[

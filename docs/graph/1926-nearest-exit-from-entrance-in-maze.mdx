@@ -34,6 +34,10 @@ Return the **number of steps** in the shortest path from the entrance to the nea
 - `0 <= entrance[1] < n`
 - `entrance` will always be an empty cell.
 
+<Callout type="amber" label="Key Constraint">
+  The entrance does not count as an exit, even if it is on the border. Movement is 4-directional only (not diagonal). Return -1 if no path to any border exit exists.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -68,7 +72,15 @@ Output: -1
   answer="BFS — level-order, detect exit when a border cell goes out of bounds"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For "nearest X in a grid," BFS is always the right choice — the first time BFS reaches the target, that level count is the minimum steps. Mark cells visited at enqueue time, not dequeue, to prevent duplicate queue entries.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Encode cells as r*cols+c for a single-integer queue. BFS level-order traversal explores cells at distance 1, 2, 3, … — the first border cell reached (excluding the entrance) is the minimum-step exit. Mark cells '+' at enqueue time to prevent duplicate entries. Detect a border cell by checking when a 4-directional move would go out-of-bounds.
+</Callout>
 
 Encode each cell as a single integer `r * cols + c`. BFS from the entrance. For each cell, check all 4 directions. If a direction goes out of bounds AND the current cell is not the entrance, the current cell is a border exit — return the current level count.
 
@@ -137,7 +149,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var maze = maze` copies the [[Character]] value type — in-place marking does not mutate the caller's array. `let evidict = queue.removeFirst()` — r = evidict / cols, c = evidict % cols decodes the encoded index. The guard `entranceIndex != evidict` skips the entrance-as-exit check when expanding from the entrance itself.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m·n)">
+  Each of the m·n cells is enqueued at most once (marked '+' at enqueue). For each cell, 4 neighbors are checked — constant work. Total: O(m·n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m·n)">
+  The BFS queue holds at most m·n encoded cell indices. In-place marking eliminates a separate visited matrix. Total auxiliary: O(m·n) for the queue.
+</Callout>
 
 <ComplexityTable
   rows={[

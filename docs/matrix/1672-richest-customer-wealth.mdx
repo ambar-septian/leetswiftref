@@ -28,6 +28,10 @@ A customer's wealth is the amount of money they have in all their bank accounts.
 - `1 <= m, n <= 50`
 - `1 <= accounts[i][j] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  All values are positive (accounts[i][j] &gt;= 1), so wealth is always positive. m and n are both at least 1 — no empty-row or empty-column guard needed. The maximum wealth fits comfortably in a 32-bit integer (50 * 50 * 100 = 250,000).
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: 17
   answer="Matrix map-reduce — sum each row, return the maximum"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For "find the row with the largest aggregate" problems, use `map` with `reduce(0, +)` then `.max()` — map each row to its sum, then take the maximum. Two chained higher-order functions replace nested loops.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Wealth = sum of one row. Maximum wealth = max of all row sums. Map each row to its sum with reduce(0, +), then call max() — two chained higher-order functions replace nested loops. The result is idiomatic, readable, and O(m·n).
+</Callout>
 
 Use Swift's `map` + `max()` idiom: map each row to its sum with `reduce(0, +)`, then call `max()` on the resulting array.
 
@@ -95,7 +107,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `accounts.map { $0.reduce(0, +) }.max() ?? 0` — `reduce(0, +)` uses the `+` operator directly as a closure (no need for `{ $0 + $1 }`). `.max()` returns Optional since the array could be empty; `?? 0` provides a safe fallback. The entire expression is a single chain — no intermediate variables needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m·n)">
+  map iterates over m rows, and each reduce sums n values — O(m·n) total work. The final max() scans the m row sums — O(m). Total: O(m·n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m)">
+  The intermediate array from map holds m row sums. No other auxiliary data structures. O(m) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -31,6 +31,10 @@ The length of a clear path is the number of visited cells of this path.
 - `1 <= n <= 100`
 - `grid[i][j]` is `0` or `1`
 
+<Callout type="amber" label="Key Constraint">
+  Movement is 8-directional (including diagonals). If `grid[0][0]` or `grid[n-1][n-1]` is `1`, the path is immediately impossible — return `-1` before entering BFS. Path length counts the number of visited cells, so the start cell contributes 1 to the length.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Explanation: grid[0][0] = 1, so start is blocked.
   answer="BFS — 8-directional level-order traversal"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For shortest path on an unweighted grid, BFS is always the right tool — each BFS level equals one step. Always mark cells as visited at enqueue time (not dequeue) to prevent the same cell entering the queue multiple times.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  BFS guarantees the shortest path in an unweighted graph — the first time the destination is reached, it is via the minimum number of steps. Use 8-directional expansion and mark cells visited immediately on enqueue (setting them to 1) to prevent duplicate entries in the queue.
+</Callout>
 
 BFS explores cells in waves: all cells reachable in exactly `k` steps are processed before any cell reachable in `k+1` steps. This guarantees the first time we reach the destination, we have the shortest path.
 
@@ -158,7 +170,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Encode cells as `r * cols + c` (Int) to avoid a `[(Int, Int)]` queue — single-Int arrays are faster. `var grid = grid` copies the value-type `[[Int]]` so in-place marking does not mutate the caller's array. The 8-direction array can be defined as `let directions = [(Int,Int)]` with all 8 tuples — Swift infers the type.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n²)">
+  The grid has n² cells. Each cell is enqueued at most once (marked visited on enqueue). For each cell, 8 neighbors are checked — constant work per cell. Total: O(n²).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n²)">
+  The BFS queue can hold at most n² encoded cell indices. In-place visited marking eliminates the need for a separate boolean matrix — auxiliary space is O(n²) for the queue only.
+</Callout>
 
 <ComplexityTable
   rows={[

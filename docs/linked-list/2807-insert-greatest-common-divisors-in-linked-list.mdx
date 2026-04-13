@@ -28,6 +28,10 @@ The **GCD** of two integers is the largest positive integer that evenly divides 
 - The number of nodes in the list is in the range `[1, 5000]`.
 - `1 <= Node.val <= 1000`
 
+<Callout type="amber" label="Key Constraint">
+  The list has at most 5000 nodes and Node.val ≤ 1000. Each GCD call is O(log 1000) ≈ 10 steps, so the full O(n log V) pass is at most ~50,000 operations — no optimisation beyond the Euclidean algorithm is needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Explanation: Single node — no adjacent pairs to process.
   answer="Walk adjacent pairs, compute GCD via Euclidean algorithm, splice new node"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When inserting a computed value between every adjacent pair in a linked list, always save `next = curr.next` before splicing — then set `curr.next = newNode` and `newNode.next = savedNext` to avoid losing the tail.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Walk with `curr` and `curr.next`. For each pair, compute GCD, splice a new node between them (`curr.next = gcdNode`, `gcdNode.next = next`), then advance `curr` by two to skip the inserted node and land on the original next.
+</Callout>
 
 Walk `curr` from `head`. While `curr.next != nil`: save `next = curr.next`, compute `gcd = GCD(curr.val, next.val)`, create `gcdNode = ListNode(gcd)`, set `curr.next = gcdNode` and `gcdNode.next = next`. Advance `curr = curr.next.next` (skipping over the inserted node to reach the original next node).
 
@@ -132,7 +144,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `current?.next?.next` advances past the inserted GCD node in one expression — two levels of optional chaining. `findGCD` returns a `ListNode` directly, keeping the splice logic concise. The original `head` reference is unaffected by the pointer mutations, so returning `head` is safe.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n log V)">
+  n-1 adjacent pairs are processed, each requiring one GCD call. The Euclidean GCD is O(log min(a, b)) = O(log V) where V is the max node value (1000). Total: O(n log V) ≈ O(n × 10).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  n-1 new ListNode objects are allocated, one per adjacent pair. No auxiliary data structures — the pointer manipulation is in place. Output list length is 2n-1.
+</Callout>
 
 <ComplexityTable
   rows={[

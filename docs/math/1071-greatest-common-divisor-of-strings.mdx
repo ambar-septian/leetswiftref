@@ -24,6 +24,10 @@ For two strings `str1` and `str2`, we say `t` divides `str1` if `str1 = t + t + 
 - `1 <= str1.length, str2.length <= 1000`
 - `str1` and `str2` consist of English uppercase letters only.
 
+<Callout type="amber" label="Key Constraint">
+  A common divisor string only exists if `str1 + str2 == str2 + str1`. This commutativity check is both necessary and sufficient — if it fails, return `""` immediately without computing GCD.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Output: ""
   answer="Math — GCD length prefix"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a string problem involves repeating units, check commutativity of concatenation first. If `str1 + str2 == str2 + str1`, a common tiling unit exists and its length equals the GCD of the two string lengths.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Two strings have a common divisor if and only if `str1 + str2 == str2 + str1`. This single check is both necessary and sufficient. Once confirmed, the longest common divisor has length equal to `gcd(str1.count, str2.count)` — take that prefix from str1 as the answer.
+</Callout>
 
 Two strings share a common divisor if and only if their concatenations commute: `str1 + str2 == str2 + str1`. This is because any repeating unit `t` that tiles both strings must also tile their concatenation regardless of order.
 
@@ -121,7 +133,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `str1 + str2` creates a new String — O(n + m). The `guard` short-circuits immediately if the check fails. `String(str1.prefix(gcdResult))` slices using Swift's `prefix` method which is O(gcdResult). The custom `gcd` helper uses the Euclidean algorithm — Swift's standard library does not expose a GCD function in the language core (it is available via `Foundation`'s `__gcd` but defining your own is cleaner).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n + m)">
+  The commutativity check concatenates and compares two strings: O(n + m). The GCD computation via the Euclidean algorithm is O(log(min(n, m))). Taking the prefix is O(gcd). Dominant cost: O(n + m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n + m)">
+  The two concatenated strings `str1 + str2` and `str2 + str1` each take O(n + m) space. The result prefix is O(gcd). Total auxiliary space: O(n + m).
+</Callout>
 
 <ComplexityTable
   rows={[

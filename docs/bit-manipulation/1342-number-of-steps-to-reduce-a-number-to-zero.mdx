@@ -25,6 +25,10 @@ In one step, if the current number is even, you have to divide it by 2; otherwis
 **Constraints:**
 - `0 <= num <= 10^6`
 
+<Callout type="amber" label="Key Constraint">
+  num can be 0 — the while loop never executes and correctly returns 0. In-place simulation handles this naturally without a special-case guard.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -66,7 +70,15 @@ Output: 12
   answer="Simulation — halve even, decrement odd"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a number is repeatedly halved or decremented, recognise it as bit-by-bit simulation — each step removes exactly one bit from the binary representation. The total steps equals (number of bits - 1) + (number of set bits), but simulation is simpler and equally O(log n).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Each step processes exactly one bit of num's binary representation: dividing by 2 removes a trailing 0 (right shift), and subtracting 1 clears a trailing 1-bit. Simulate directly — O(log n) iterations since each division halves the number.
+</Callout>
 
 Simulate the process directly: while `current != 0`, apply the appropriate operation and count steps. This is O(log n) because each division by 2 halves the number.
 
@@ -119,7 +131,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `current % 2 == 0` is Swift's parity check; the ternary `current = current % 2 == 0 ? current / 2 : current - 1` condenses both branches into one assignment. `current / 2` is integer division in Swift — exact and no floating-point needed. The loop condition `while current != 0` naturally handles num = 0 by never executing.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log n)">
+  Each division by 2 halves the current value, so the loop runs at most log2(num) times. Subtraction steps (odd case) do not add more than one iteration per bit. Total: O(log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only two variables are used — current and result. No auxiliary data structures. O(1) extra space regardless of num.
+</Callout>
 
 <ComplexityTable
   rows={[

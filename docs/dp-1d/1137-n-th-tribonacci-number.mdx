@@ -31,6 +31,10 @@ Given `n`, return the value of T(n).
 - `0 <= n <= 37`
 - The answer is guaranteed to fit within a 32-bit integer, i.e., `answer <= 2^31 - 1`.
 
+<Callout type="amber" label="Key Constraint">
+  Base cases are T(0) = 0, T(1) = 1, T(2) = 1. Without explicit handling of all three, the recursion bottoms out incorrectly. n can be 0 — return 0 immediately for that case.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -59,7 +63,15 @@ Output: 1389537
   answer="Dynamic Programming — Top-down memoization or bottom-up rolling window"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a recurrence depends only on the last k values, you need only k variables — not a full array. For Tribonacci, three rolling variables replace an O(n) dp array, reducing space to O(1).
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Tribonacci is a pure DP recurrence: T(n) = T(n-1) + T(n-2) + T(n-3). Top-down memoization stores each subproblem result once, reducing exponential recursion to O(n). The bottom-up rolling-window variant eliminates the cache entirely by keeping only the last 3 values — O(1) space.
+</Callout>
 
 The recursive structure mirrors Fibonacci but sums three predecessors. A top-down approach with a dictionary cache eliminates redundant computation: once T(k) is computed, it is stored and never recomputed.
 
@@ -115,7 +127,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Use `var cache = [Int: Int]()` as an instance property so it persists across the single call (the recursive calls share it). Check `if let c = cache[n] { return c }` before base-case guards to short-circuit immediately. For the rolling-window variant: `(a, b, c) = (b, c, a + b + c)` in Swift is a clean tuple swap — no temporary variable needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  With memoization, each subproblem T(k) is computed exactly once for k in 0..n. The cache lookup is O(1). Total: O(n) calls. The bottom-up rolling window is also O(n) with n iterations.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n) memoization / O(1) rolling">
+  Memoization stores n + 1 entries in the cache dictionary — O(n). The call stack adds another O(n) in the worst case. The bottom-up rolling-window variant uses only 3 variables — O(1) space.
+</Callout>
 
 <ComplexityTable
   rows={[

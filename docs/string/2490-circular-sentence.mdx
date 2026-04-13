@@ -38,6 +38,10 @@ Given a string `sentence`, return `true` if it is **circular**, otherwise return
 - The words in `sentence` are separated by a single space.
 - There are no leading or trailing spaces.
 
+<Callout type="amber" label="Key Constraint">
+  Words are separated by exactly one space with no leading or trailing spaces — `components(separatedBy: " ")` produces a clean word array with no empty strings at boundaries.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -78,7 +82,15 @@ Explanation: last of "is" = 's', first of "cool" = 'c'. 's' != 'c'.
   answer="Split on spaces, then check each adjacent boundary plus the wrap-around"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  For circular/wrap-around string conditions, handle the wrap-around as a separate explicit check rather than folding it into the adjacency loop — it is cleaner and harder to get wrong.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  After splitting, circularity reduces to two O(1)-per-boundary checks: (1) last character of the last word equals first character of the first word (wrap-around), and (2) for each adjacent pair, the last character of the left word equals the first character of the right word.
+</Callout>
 
 Split `sentence` by spaces into `words`. Check the wrap-around condition first: `words.last.last == words.first.first`. Then for each consecutive pair `(words[i], words[i+1])`, verify `words[i].last == words[i+1].first`. Return `false` on any mismatch, `true` if all pass.
 
@@ -139,7 +151,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `words[i].last` and `words[i+1].first` return `Character?` (optional). Swift's `==` on `Optional&lt;Character&gt;` is value-safe — two nils compare equal, but since words are guaranteed non-empty, these are always non-nil. No force-unwrap is needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  `components(separatedBy:)` is O(n) where n is the sentence length. The adjacency scan visits each word boundary once — O(w) where w is the word count, bounded by n. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The `words` array stores all substrings, whose total character count equals n. No additional auxiliary structures are used beyond the words array.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -32,6 +32,10 @@ It's guaranteed that each city can reach city 0 after reordering.
 - `0 <= connections[i][0], connections[i][1] <= n - 1`
 - `connections[i][0] != connections[i][1]`
 
+<Callout type="amber" label="Key Constraint">
+  The graph is a tree (n nodes, n-1 edges) — exactly one path exists between any two nodes. This guarantees DFS from city 0 visits all nodes exactly once with no cycle risk. The problem guarantees a solution exists.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -60,7 +64,15 @@ Output: 2
   answer="DFS on undirected view — count original edges traversed away from city 0"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a directed tree must be reoriented toward a root, build an undirected adjacency list with direction flags and DFS from the root — every original edge traversed outward from the root needs reversal.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Build an undirected adjacency list where each original edge [a, b] is stored as (b, isOriginal: true) in neighbors[a] and (a, isOriginal: false) in neighbors[b]. DFS from city 0 traverses outward — every original (outward) edge must be reversed; reversed (inward) edges are already correct.
+</Callout>
 
 Build an undirected adjacency list where each edge is stored in both directions with a flag: `isOriginal = true` means the original direction goes away from city 0 (it needs reversal when we traverse it during DFS from 0).
 
@@ -118,7 +130,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var neighbors = [Int: [(node: Int, isOriginal: Bool)]]()` uses a dictionary of named-tuple arrays — readable .node and .isOriginal access without a custom struct. `neighbors[c[0], default: []].append(...)` avoids force-unwrap. The nested `func dfs(_ city: Int)` captures `result` and `visited` by reference from the outer scope — both are `var` and mutate correctly without inout parameters.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Building the adjacency list takes O(n-1) = O(n) for n-1 edges. DFS visits each node exactly once and processes each edge twice (once in each direction). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The adjacency list holds 2*(n-1) entries. The visited Set holds at most n entries. The call stack is O(n) in the worst case (linear tree). Total: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

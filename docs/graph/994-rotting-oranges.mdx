@@ -34,6 +34,10 @@ Return the minimum number of minutes that must elapse until no cell has a fresh 
 - `1 <= m, n <= 10`
 - `grid[i][j]` is `0`, `1`, or `2`.
 
+<Callout type="amber" label="Key Constraint">
+  All rotten oranges spread simultaneously each minute — this is a multi-source BFS problem. Seeding the queue with only one rotten orange would give a wrong answer. If any fresh orange is unreachable from all rotten sources, the answer is -1.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -69,7 +73,15 @@ Output: 0
   answer="Multi-source BFS — seed with all rotten cells, spread level by level, count levels with new rot"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a process spreads from multiple sources simultaneously and you need the minimum time to completion, use multi-source BFS: seed the queue with all sources at once, process level by level, and count levels where actual spread occurs.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Model the grid as a graph where each cell is a node and 4-directional adjacency defines edges. Seeding BFS with all initially rotten cells lets rot spread in parallel — each BFS level represents one minute. Count only levels where at least one new orange rots. After BFS, if any fresh orange remains it was isolated — return -1.
+</Callout>
 
 Seed the BFS queue with all initially rotten cells (encoded as `r * cols + c`). Count `freshCount`. Process BFS level by level: for each level, process all current queue entries, spreading rot to adjacent fresh oranges (mark as 2, decrement freshCount, enqueue). If any new rot occurred in a level, increment `results`. After BFS, return `freshCount == 0 ? results : -1`.
 
@@ -153,7 +165,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Encode `(r, c)` as `r * cols + c` (a single Int) to avoid tuple arrays — Swift arrays of Int are faster than arrays of `(Int, Int)`. `queue.removeFirst()` is O(n); for performance-sensitive code, use an index pointer `var front = 0` and advance it instead of removing. `var grid = grid` creates a mutable copy of the value-type `[[Int]]` array — mutations do not affect the original.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(m·n)">
+  Each cell is enqueued at most once (cells are marked as rotten immediately on enqueue). Each cell's 4 neighbors are checked — constant work per cell. Total: O(m·n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m·n)">
+  The queue holds at most m·n cell indices in the worst case (all cells rotten at once). The in-place grid modification avoids a separate visited array, keeping auxiliary space to O(m·n) for the queue only.
+</Callout>
 
 <ComplexityTable
   rows={[

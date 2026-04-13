@@ -29,6 +29,10 @@ Build the result list and return its head.
 - `1 <= a <= b < list1.length - 1`
 - `1 <= list2.length <= 10^4`
 
+<Callout type="amber" label="Key Constraint">
+  a and b are guaranteed valid (1 &lt;= a &lt;= b &lt; list1.length - 1), so nodeBeforeA and nodeAfterB always exist within list1 — no nil guards needed for the traversal endpoints.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -55,7 +59,15 @@ Output: [0,1,1000000,1000001,1000002,6]
   answer="Pointer traversal — find splice points, connect"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  To splice a segment out of a linked list and insert another list, locate the node before the removal start (index a-1) and the node after the removal end (index b+1), find the insert list's tail, then make exactly two pointer assignments.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Reuse a single pointer: walk to index a-1 to get nodeBeforeA, continue walking from there to index b+1 to get nodeAfterB. Walk list2 to its tail. Then just two pointer assignments — nodeBeforeA.next = list2 and list2Tail.next = nodeAfterB — complete the splice.
+</Callout>
 
 Walk list1 to index `a-1` to get `nodeBeforeA`. Continue walking from there to index `b+1` to get `nodeAfterB`. Walk list2 to its tail. Connect: `nodeBeforeA.next = list2.head` and `list2Tail.next = nodeAfterB`.
 
@@ -129,7 +141,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  Optional chaining `curr?.next` is used throughout since ListNode parameters arrive as ListNode?. `nodeBeforeA = curr` captures the reference before advancing — Swift's reference semantics ensure this points to the actual node. The second walk reuses `nodeAfterB = nodeBeforeA` and advances it, avoiding a separate second traversal from the head.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n + m)">
+  Walking list1 to index b+1 is O(b+1) ≤ O(n). Walking list2 to its tail is O(m). Two constant-time pointer assignments complete the splice. Total: O(n + m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only a handful of pointer variables are used — head, curr, nodeBeforeA, nodeAfterB, list2Tail. No extra allocation. O(1) auxiliary space.
+</Callout>
 
 <ComplexityTable
   rows={[

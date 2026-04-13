@@ -26,6 +26,10 @@ Return the number of good nodes in the binary tree.
 - The number of nodes in the binary tree is in the range `[1, 10^5]`.
 - Each node's value is between `-10^4` and `10^4`.
 
+<Callout type="amber" label="Key Constraint">
+  Node values can be negative (down to -10^4). Initialise maxSoFar as Int.min, not 0 — otherwise a negative root node is incorrectly marked non-good. The root is always a good node.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Output: 1
   answer="DFS — top-down, pass maxSoFar as parameter"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When each node needs context from all its ancestors (path max, path sum, path product), use top-down DFS and pass that state as a parameter — not bottom-up, which only aggregates from leaves upward.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  A node is good if its value is &gt;= the maximum on the root-to-node path. Pass this running max top-down via DFS parameters, updating it at each level with max(node.val, prev). Initialize with Int.min so the root is always counted as good.
+</Callout>
 
 Perform a DFS from the root, passing the maximum value seen so far on the current root-to-node path. At each node: if `node.val >= maxSoFar`, it is a good node (count 1); otherwise count 0. Update `maxSoFar = max(node.val, maxSoFar)` before recursing into children.
 
@@ -113,7 +125,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `func dfs(_ root: TreeNode?, _ prev: Int) -> Int` is a nested function capturing nothing from the outer scope — clean and avoids a class-level variable. `guard let root else { return 0 }` handles the nil base case idiomatically. The single return `current + dfs(root.left, maxVal) + dfs(root.right, maxVal)` computes both subtrees inline. `Int.min` as the initial prev ensures the root node always passes the &gt;= check.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  DFS visits every node exactly once. At each node, constant work is done — one comparison, one max call, two recursive calls. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(h)">
+  The call stack depth equals the tree height h. For a balanced tree h = O(log n); for a skewed tree h = O(n). No auxiliary data structures beyond the call stack.
+</Callout>
 
 <ComplexityTable
   rows={[

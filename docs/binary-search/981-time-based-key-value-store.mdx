@@ -34,6 +34,10 @@ It is guaranteed that, for all calls to `set`, the timestamps are strictly incre
 - All the timestamps of `set` are strictly increasing.
 - At most `2 * 10^5` calls will be made to `set` and `get`.
 
+<Callout type="amber" label="Key Constraint">
+  Timestamps for `set` calls are strictly increasing. This means the list of entries per key is already sorted by timestamp — no explicit sort is needed after insertion. `get` must return the value with the largest timestamp that does not exceed the query timestamp.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Explanation:
   answer="Binary search on the sorted timestamp list per key — find largest timestamp less than or equal to query"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you need the rightmost entry satisfying a condition in a sorted list, use upper-bound binary search: save the midpoint value when the condition holds and advance left to search for an even better match.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  The strictly-increasing timestamp guarantee means each key's entry list is always sorted. `set` is O(1) — just append. `get` uses upper-bound binary search: when `entries[mid].timestamp &lt;= query`, save the value and move left forward to find a later valid entry. The final saved value is the answer.
+</Callout>
 
 `set`: append `Entry(value, timestamp)` to `entries[key]`. `get`: retrieve the entry list for `key`. Binary search: maintain `l = 0`, `r = count - 1`, `result = ""`. Each iteration: compute `mid`. If `entries[mid].timestamp <= timestamp`, save `result = entries[mid].value` and move `l = mid + 1`. Else move `r = mid - 1`. Return `result`.
 
@@ -145,7 +157,19 @@ class TimeMap {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `entries[key, default: []].append(...)` is idiomatic Swift — it inserts an empty array for a new key and appends in one expression. Define `Entry` as a struct (value type) — it gets stored by value in the array, which is correct here. `guard let existingEntries = entries[key]` safely unwraps the optional array before binary search.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(log m) per get()">
+  `set` appends in O(1). `get` binary-searches a sorted list of m entries for the given key — O(log m). Over all calls, total time is O(S + G log M) where S = set calls, G = get calls, M = max entries per key.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  n = total number of `set` calls (total entries across all keys). Each entry stores one (value, timestamp) pair. The dictionary adds O(keys) overhead. Total space is O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

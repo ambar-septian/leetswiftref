@@ -30,6 +30,10 @@ Given the `head` of a linked list with even length, return the **maximum twin su
 - The number of nodes in the list is an **even** integer in the range `[2, 10^5]`.
 - `1 <= Node.val <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+  n is always even (guaranteed) — twin i pairs with n-1-i, meaning the first half pairs with the second half in reverse order. The list has at least 2 nodes, so there is always at least one twin pair.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Output: 100001
   answer="Fast/slow to find midpoint, stack to reverse first half"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When pairing front and back halves of a linked list, push the first half onto a stack and pop while walking the second half — LIFO order gives the correct reverse pairing without random access or list mutation.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Fast/slow pointers locate the midpoint in O(n). Push the first half onto a stack (LIFO reversal). Walk the second half, popping each twin value — the stack's reverse order perfectly pairs node i with node n-1-i. Track the maximum twin sum across all pairs.
+</Callout>
 
 Use fast/slow pointers to locate the midpoint. Walk from head to the node after slow, pushing values onto a stack. Then walk the second half, popping from the stack to get the twin value, computing `curr.val + popped` and tracking the maximum.
 
@@ -131,7 +143,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `curr === slow?.next` uses reference identity (===) to detect when curr enters the second half — safer than value equality, which fails on duplicate node values. `stack.removeLast()` is O(1) for [Int] arrays. `passMiddle` is a flag that avoids re-checking the identity condition every iteration after the midpoint is passed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Fast/slow midpoint traversal is O(n). The combined push-and-pop pass visits each node exactly once — O(n). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n/2)">
+  The stack holds exactly n/2 values (the first half). No other auxiliary data structures. O(n/2) = O(n) in asymptotic terms, but the constant factor is half that of storing the full list.
+</Callout>
 
 <ComplexityTable
   rows={[

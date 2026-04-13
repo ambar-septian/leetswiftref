@@ -2659,7 +2659,7 @@
       "status": "done",
       "slug": "number-of-recent-calls",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 981,
@@ -2680,7 +2680,7 @@
       "status": "done",
       "slug": "time-based-key-value-store",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 994,
@@ -2701,7 +2701,7 @@
       "status": "done",
       "slug": "rotting-oranges",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1047,
@@ -2720,7 +2720,7 @@
       "status": "done",
       "slug": "remove-all-adjacent-duplicates-in-string",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1071,
@@ -2739,7 +2739,7 @@
       "status": "done",
       "slug": "greatest-common-divisor-of-strings",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1091,
@@ -2760,7 +2760,7 @@
       "status": "done",
       "slug": "shortest-path-in-binary-matrix",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1137,
@@ -2780,7 +2780,7 @@
       "status": "done",
       "slug": "n-th-tribonacci-number",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1161,
@@ -2802,7 +2802,7 @@
       "status": "done",
       "slug": "maximum-level-sum-of-a-binary-tree",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1268,
@@ -2826,7 +2826,7 @@
       "status": "done",
       "slug": "search-suggestions-system",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1295,
@@ -2845,7 +2845,7 @@
       "status": "done",
       "slug": "find-numbers-with-even-number-of-digits",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1342,
@@ -2864,7 +2864,7 @@
       "status": "done",
       "slug": "number-of-steps-to-reduce-a-number-to-zero",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1343,
@@ -2883,7 +2883,7 @@
       "status": "done",
       "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1431,
@@ -2901,7 +2901,7 @@
       "status": "done",
       "slug": "kids-with-the-greatest-number-of-candies",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1448,
@@ -2923,7 +2923,7 @@
       "status": "done",
       "slug": "count-good-nodes-in-binary-tree",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1456,
@@ -2942,7 +2942,7 @@
       "status": "done",
       "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1466,
@@ -2963,7 +2963,7 @@
       "status": "done",
       "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1475,
@@ -2983,7 +2983,7 @@
       "status": "done",
       "slug": "final-prices-with-a-special-discount-in-a-shop",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1480,
@@ -3002,7 +3002,7 @@
       "status": "done",
       "slug": "running-sum-of-1d-array",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1550,
@@ -3020,7 +3020,7 @@
       "status": "done",
       "slug": "three-consecutive-odds",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1557,
@@ -3039,7 +3039,7 @@
       "status": "done",
       "slug": "minimum-number-of-vertices-to-reach-all-nodes",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1669,
@@ -3058,7 +3058,7 @@
       "status": "done",
       "slug": "merge-in-between-linked-lists",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1672,
@@ -3078,7 +3078,7 @@
       "status": "done",
       "slug": "richest-customer-wealth",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1732,
@@ -3097,7 +3097,7 @@
       "status": "done",
       "slug": "find-the-highest-altitude",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1752,
@@ -3115,7 +3115,7 @@
       "status": "done",
       "slug": "check-if-array-is-sorted-and-rotated",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1768,
@@ -3134,7 +3134,7 @@
       "status": "done",
       "slug": "merge-strings-alternately",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1920,
@@ -3153,7 +3153,7 @@
       "status": "done",
       "slug": "build-array-from-permutation",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1926,
@@ -3174,7 +3174,7 @@
       "status": "done",
       "slug": "nearest-exit-from-entrance-in-maze",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 1971,
@@ -3196,7 +3196,7 @@
       "status": "done",
       "slug": "find-if-path-exists-in-graph",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2095,
@@ -3216,7 +3216,7 @@
       "status": "done",
       "slug": "delete-the-middle-node-of-a-linked-list",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2130,
@@ -3237,7 +3237,7 @@
       "status": "done",
       "slug": "maximum-twin-sum-of-a-linked-list",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2176,
@@ -3255,7 +3255,7 @@
       "status": "done",
       "slug": "count-equal-and-divisible-pairs-in-an-array",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2181,
@@ -3275,7 +3275,7 @@
       "status": "done",
       "slug": "merge-nodes-in-between-zeros",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2215,
@@ -3294,7 +3294,7 @@
       "status": "done",
       "slug": "find-the-difference-of-two-arrays",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2300,
@@ -3315,7 +3315,7 @@
       "status": "done",
       "slug": "successful-pairs-of-spells-and-potions",
       "submittedAt": "2026-04-05T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2336,
@@ -3335,7 +3335,7 @@
       "status": "done",
       "slug": "smallest-number-in-infinite-set",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2390,
@@ -3354,7 +3354,7 @@
       "status": "done",
       "slug": "removing-stars-from-a-string",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2487,
@@ -3375,7 +3375,7 @@
       "status": "done",
       "slug": "remove-nodes-from-linked-list",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2490,
@@ -3392,7 +3392,7 @@
       "status": "done",
       "slug": "circular-sentence",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2542,
@@ -3412,7 +3412,7 @@
       "status": "done",
       "slug": "maximum-subsequence-score",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2558,
@@ -3431,7 +3431,7 @@
       "status": "done",
       "slug": "take-gifts-from-the-richest-pile",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2807,
@@ -3451,7 +3451,7 @@
       "status": "done",
       "slug": "insert-greatest-common-divisors-in-linked-list",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2900,
@@ -3471,7 +3471,7 @@
       "status": "done",
       "slug": "longest-unequal-adjacent-groups-subsequence-i",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 2942,
@@ -3489,7 +3489,7 @@
       "status": "done",
       "slug": "find-words-containing-character",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 3105,
@@ -3506,7 +3506,7 @@
       "status": "done",
       "slug": "longest-strictly-increasing-or-strictly-decreasing-subarray",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 3110,
@@ -3523,7 +3523,7 @@
       "status": "done",
       "slug": "score-of-a-string",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 3151,
@@ -3540,7 +3540,7 @@
       "status": "done",
       "slug": "special-array-i",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     },
     {
       "id": 3392,
@@ -3557,7 +3557,7 @@
       "status": "done",
       "slug": "count-subarrays-of-length-three-with-a-condition",
       "submittedAt": "2026-04-06T00:00:00.000Z",
-      "enriched": false
+      "enriched": true
     }
   ]
 }

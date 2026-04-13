@@ -31,6 +31,10 @@ Note: vertices with **no incoming edges** (in-degree 0) cannot be reached by any
 - `0 <= from_i, to_i < n`
 - All pairs `(from_i, to_i)` are distinct.
 
+<Callout type="amber" label="Key Constraint">
+  The graph is a DAG (no cycles) with a guaranteed unique solution. Nodes with in-degree 0 are exactly the required minimum starting set — no DFS or reachability traversal is needed to verify this.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Output: [0,2,3]
   answer="Graph in-degree analysis — collect nodes with no incoming edges"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  In a DAG, nodes with in-degree 0 are unreachable from any other node — they must always be in the minimum starting set. Collect all destination nodes in a set, then return every node not in that set.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  A node with in-degree &gt; 0 has at least one incoming edge — it can be reached from another node and need not be in the starting set. Only in-degree-0 nodes (never appearing as a destination) are required. No DFS or reachability check needed: collect all destination nodes, then find which nodes are never a destination.
+</Callout>
 
 Collect all nodes that appear as edge destinations (non-zero in-degree). Remove them from the full node set. The remaining nodes have in-degree 0 and form the minimum starting set.
 
@@ -109,7 +121,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var sources = Set&lt;Int&gt;()` accumulates source nodes with O(1) average insert/remove. `sources.remove(dest)` silently does nothing if dest was never a source — no guard needed. `Array(sources)` at the end converts without sorting, which is fine since the problem accepts any order.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(E)">
+  One pass over all E edges to build the sources Set and destinations list. One pass over destinations to remove entries from sources. Each Set insert/remove is O(1) average. Total: O(E).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The sources Set holds at most n entries (one per node). The destinations list holds E entries but is processed in one pass. Total auxiliary: O(n + E), dominated by O(n) for the sources Set.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -30,6 +30,10 @@ Return any valid longest alternating subsequence.
 - `groups.length == n`
 - `groups[i]` is either `0` or `1`.
 
+<Callout type="amber" label="Key Constraint">
+  Groups are strictly binary (0 or 1) and n ≤ 10. The binary constraint makes greedy optimal — with only two values, any skippable eligible word cannot contribute to a longer sequence than taking it immediately.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Explanation: Select indices 0,1,2: groups (1,0,1) are alternating.
   answer="Greedy — include a word whenever its group differs from the last selected"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When groups are binary and you need the longest alternating subsequence, use a greedy pass — include every element whose group differs from the last selected. With two values, this is always optimal.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  With only two group values, any eligible word whose group differs from the last selected should be taken immediately — skipping it cannot enable a longer sequence. A single pass with a `prev` tracker yields the optimal result.
+</Callout>
 
 Track the previously selected group (`prev`). Initialise it to `nil`. Iterate `words` with their `groups`. If `groups[i] != prev`, append `words[i]` to the result and update `prev = groups[i]`.
 
@@ -114,7 +126,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var prev: Int? = nil` starts as nil so the first element is always included without a special case. `prev == nil || groups[i] != prev!` is evaluated left-to-right — the `nil` guard short-circuits, making the force-unwrap `prev!` always safe on the right side.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass through n elements, each with O(1) comparison and optional append. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The result array holds at most n words (when all groups alternate). The `prev` variable is O(1). No auxiliary structures beyond the output.
+</Callout>
 
 <ComplexityTable
   rows={[

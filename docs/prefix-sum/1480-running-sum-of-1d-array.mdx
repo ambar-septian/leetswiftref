@@ -26,6 +26,10 @@ Return the running sum of `nums`.
 - `1 <= nums.length <= 1000`
 - `-10^6 <= nums[i] <= 10^6`
 
+<Callout type="amber" label="Key Constraint">
+  nums[i] can be negative (-10^6), so the running sum may decrease at any point. The output is not necessarily monotonically increasing.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -58,7 +62,15 @@ Output: [3,4,6,16,17]
   answer="Prefix Sum — accumulate running total"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When each output element depends only on the previous output and the current input, a single running accumulator replaces an explicit prefix array — O(1) space for the state, O(n) for the output.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  runningSum[i] = runningSum[i-1] + nums[i]. A single integer accumulator temp replaces an explicit prefix array for the computation — add each element to temp and append to results in one pass.
+</Callout>
 
 Maintain a running total `temp`. For each element in `nums`, add it to `temp` and append `temp` to the result array.
 
@@ -106,7 +118,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var results = [Int]()` with `results.append(temp)` grows the array dynamically — Swift amortises append to O(1). An alternative functional style: `nums.reduce(into: [Int]()) { acc, x in acc.append((acc.last ?? 0) + x) }` is more idiomatic but less readable. The simple loop is preferred here.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n elements. Each element requires one addition and one append — both O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The output array of size n is required. Only one extra variable (temp) beyond the output. O(n) total.
+</Callout>
 
 <ComplexityTable
   rows={[

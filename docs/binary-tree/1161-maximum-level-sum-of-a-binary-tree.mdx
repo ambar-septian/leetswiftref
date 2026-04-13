@@ -26,6 +26,10 @@ Return the **smallest** level `x` such that the sum of all the values of nodes a
 - The number of nodes in the tree is in the range `[1, 10^4]`.
 - `-10^5 <= Node.val <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+  Node values can be negative, so a level with fewer nodes may have a larger sum than a full level. The result must be the **smallest** level number when multiple levels share the maximum sum — update only on strict improvement (`sum > maxVal`), not on ties.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Output: 2
   answer="BFS — Level-order sum with running max"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you need to aggregate a per-level statistic across a binary tree, BFS with a level snapshot (capture queue.count before the inner loop) gives you clean level boundaries. Use strict `>` for max comparison to keep the smallest level on ties.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  BFS with a level snapshot (capture `queue.count` at the start of each iteration) cleanly separates levels. Sum all node values in the current level, then compare with the running maximum using strict `>` — this automatically picks the smallest level number when ties occur.
+</Callout>
 
 BFS processes the tree level by level. For each level, we sum all node values and compare against the running maximum. We update the result only on a strict improvement (`sum > maxVal`), which automatically gives the smallest level in case of ties.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `var queue = [root]` initialises with the unwrapped root (already guarded above). `queue.removeFirst()` is O(n) — for large trees, use an index pointer instead. `Int.min` as the initial `maxVal` handles trees where all node values are negative. Initialise `currentLevel = 0` and increment inside the loop so the first level becomes 1.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  BFS visits every node exactly once. For each node, we add its value to the level sum and enqueue at most 2 children — constant work per node. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The queue holds at most one full level of the tree at a time. In the worst case (a perfect binary tree), the last level has n/2 nodes — O(n) queue space. Total auxiliary space: O(n).
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -26,6 +26,10 @@ You are given an array of integers `nums`. Return `true` if `nums` is **special*
 - `1 <= nums.length <= 100`
 - `1 <= nums[i] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  A single-element array is trivially special — `1..<1` is an empty range so the loop produces no iterations and `true` is returned immediately. No explicit edge-case guard is needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -67,7 +71,15 @@ Explanation:
   answer="Single pass — return false if any adjacent pair has the same parity"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When validating a property that must hold for every adjacent pair, use early exit on the first violation — the loop terminates immediately rather than scanning the entire array.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Check each adjacent pair for matching parity (`% 2`). Return `false` immediately on the first violation. The loop `1..<nums.count` naturally handles the single-element edge case — `1..<1` is an empty range that returns `true` without executing.
+</Callout>
 
 Iterate from index 1. For each pair `(nums[i-1], nums[i])`, check if they have the same parity: `nums[i-1] % 2 == nums[i] % 2`. If so, return `false`. If the loop completes, return `true`.
 
@@ -114,7 +126,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `nums[i] % 2 == nums[i-1] % 2` unifies both same-parity cases (both even or both odd) into a single condition. The `1..<nums.count` range produces an empty sequence when `nums.count == 1`, so no explicit edge-case guard is needed.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n) worst case">
+  O(n) worst case — all elements alternate so the full array is scanned. Best case O(1) — the first adjacent pair violates the condition and the loop exits immediately.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  No auxiliary data structures. Only index variables are used. The input array is not mutated.
+</Callout>
 
 <ComplexityTable
   rows={[

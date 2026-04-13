@@ -28,6 +28,10 @@ Return the `head` of the modified linked list.
 - The number of nodes in the list is in the range `[1, 10^5]`.
 - `1 <= Node.val <= 10^5`
 
+<Callout type="amber" label="Key Constraint">
+  Node values can repeat (1 &lt;= Node.val &lt;= 10^5) and the list can have up to 10^5 nodes. The pop condition must use strictly greater-than (not greater-or-equal) to preserve equal-value nodes.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Explanation: No node has a strictly greater value to its right.
   answer="Monotonic decreasing stack — pop dominated nodes, rebuild list from stack"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When you must remove elements dominated by any later greater value, use a monotonic decreasing stack — pop everything strictly smaller than the current element before pushing.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Walk left-to-right and maintain a monotonic decreasing stack. When a node with value v arrives, pop all stack entries with value less than v — those nodes have a greater value to their right and must be removed. The stack holds survivors in left-to-right order.
+</Callout>
 
 Use a monotonic **decreasing** stack of `ListNode?`. Walk left-to-right. Before pushing the current node, pop all stack entries whose value is strictly less than the current node's value — these nodes have a greater value to their right and must be removed.
 
@@ -130,7 +142,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `stack.last??.val` applies optional chaining twice: `stack.last` returns `Optional&lt;ListNode?&gt;`, then `?` unwraps to `ListNode?`, then `.val` unwraps the inner optional. `curr?.next = nil` after rebuilding is critical — stack nodes retain their original `next` pointers and must be explicitly terminated.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each node is pushed onto the stack exactly once and popped at most once (total across all iterations — not per iteration). The rebuild pass over the stack is also O(n). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The stack holds at most n node references (when the list is non-increasing, no node is ever popped before all nodes are pushed). The rebuilt list reuses the same node objects.
+</Callout>
 
 <ComplexityTable
   rows={[

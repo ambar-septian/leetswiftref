@@ -33,6 +33,10 @@ Return the string after **all** stars have been removed.
 - `s` consists of lowercase English letters and stars `*`.
 - The operation above can be always performed on the input.
 
+<Callout type="amber" label="Key Constraint">
+  The input guarantees the operation is always possible — there are never more stars than preceding non-star characters. `removeLast()` on the character stack is always safe without an empty-check.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -63,7 +67,15 @@ Output: ""
   answer="Stack — push letters, pop on star"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a character cancels the most recent character to its left, use a stack — push on normal characters, pop on the cancellation character.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Model the result as a character stack. A star always removes the most recently added letter — exactly the LIFO behaviour of a stack. One left-to-right scan: push on letter, pop on star, join at the end.
+</Callout>
 
 Use a character array as a stack. Iterate left to right:
 - If the character is `*`, call `removeLast()` to undo the most recently added letter.
@@ -131,7 +143,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `result.reserveCapacity(s.count)` pre-allocates the backing buffer to avoid repeated O(log n) reallocations during `append`. `String(result)` at the end is a single O(n) encoding pass — faster than building a `String` character-by-character during the loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Each character is visited once. Each `append` and `removeLast` is O(1) amortised. The final `String(result)` join is O(n). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The character array holds at most n characters (when there are no stars). `reserveCapacity(s.count)` preallocates this worst-case size upfront to eliminate reallocations.
+</Callout>
 
 <ComplexityTable
   rows={[

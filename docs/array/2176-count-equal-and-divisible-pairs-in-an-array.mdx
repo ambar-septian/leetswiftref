@@ -25,6 +25,10 @@ Given a **0-indexed** integer array `nums` of length `n` and an integer `k`, ret
 - `1 <= nums[i] <= 100`
 - `1 <= k <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  n &lt;= 100, so O(n²) = 10,000 operations is acceptable. k &gt;= 1, so when k = 1, (i * j) % 1 == 0 is always true for any pair with equal values.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Explanation: No two elements are equal.
   answer="Hash map — group indices by value, check divisibility for each pair"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When counting pairs where elements are equal and an index condition holds, group indices by value — then only check the condition within each group, skipping cross-value pairs entirely.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Fix `j` as the current index and look back through prior indices with the same value. Grouping by value means cross-value pairs are never checked — only pairs that can satisfy `nums[i] == nums[j]` are tested for divisibility.
+</Callout>
 
 Maintain a dictionary mapping each value to its list of seen indices. For each new index `i`, look up prior indices `j` with the same value and count pairs where `(i * j) % k == 0`. Then append `i` to the list.
 
@@ -110,7 +122,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `dict[num]!.append(i)` uses force-unwrap safely — we only reach that branch when `dict[num]` already exists (inside the `if let existing` guard). The `[Int: [Int]]` dictionary with lazy append avoids sorting and works well for small n (≤ 100).
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n²) worst case">
+  When all n elements are equal, every new index j must be paired against all i &lt; j — up to n²/2 checks. With n ≤ 100 this is at most 10,000 operations. Grouping by value eliminates cross-value pairs, reducing the constant factor in practice.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The dictionary maps each distinct value to its list of prior indices. In the worst case (all equal), the single list grows to length n — O(n) total storage.
+</Callout>
 
 <ComplexityTable
   rows={[

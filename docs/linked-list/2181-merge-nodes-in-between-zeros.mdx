@@ -30,6 +30,10 @@ Return the `head` of the modified linked list.
 - There are **no** two consecutive nodes with `Node.val == 0`.
 - The **beginning** and **end** of the linked list have `Node.val == 0`.
 
+<Callout type="amber" label="Key Constraint">
+  The list always begins and ends with 0, and no two consecutive zeros exist — every segment between zeros has at least one non-zero node. Loop while current?.next != nil (not current != nil) to stop before the trailing zero.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -57,7 +61,15 @@ Output: [1,3,4]
   answer="Simulation — accumulate into dummy nodes at each zero boundary"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When a linked list is partitioned by sentinel zeros, reuse the sentinel nodes as output nodes — mutate their values to the segment sum and chain them forward to avoid extra allocation.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Reuse the existing zero nodes as output nodes: accumulate non-zero values into `dummy.val`, and on each zero boundary (except the trailing zero), advance `dummy` to the next zero node and begin accumulating into it. One pass, no extra allocation.
+</Callout>
 
 Use a dummy node pointer that starts at the result head. Walk `current` from `head.next` (skipping the first 0). For non-zero nodes, add to `dummy.val`. When a zero node is found and `current.next != nil` (not the trailing zero), move dummy to a new zero node and continue.
 
@@ -107,7 +119,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `dummy?.val += current!.val` force-unwraps `current` safely — the loop condition `current?.next != nil` guarantees `current` is non-nil at every iteration. `let result = dummy` captures the head reference before any pointer mutations, preserving the return value throughout the loop.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  Every node is visited exactly once in the single while loop. The loop condition and pointer advance ensure no node is revisited. Total: O(n) where n is the total number of nodes.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(k)">
+  The output list reuses existing ListNode objects — the zero-boundary nodes are mutated in place. k is the number of non-zero segments. No new ListNode objects are allocated during the simulation.
+</Callout>
 
 <ComplexityTable
   rows={[

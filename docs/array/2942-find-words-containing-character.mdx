@@ -30,6 +30,10 @@ Return an array of **indices** representing the words that contain the character
 - `x` is a lowercase English letter.
 - `words[i]` consists only of lowercase English letters.
 
+<Callout type="amber" label="Key Constraint">
+  Both `words.length` and `words[i].length` are at most 50 — the O(n × m) brute-force scan is at most 2,500 operations. No preprocessing or hash structure is needed.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Output: []
   answer="Linear scan — collect indices of words that contain x"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When collecting indices of elements satisfying a simple membership condition, a single linear scan with `enumerated()` is all that is needed — no hash map or preprocessing required.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Iterate words with `enumerated()` to get both the index and the word in one expression. For each word, `word.contains(x)` does a linear scan — O(m) per word. Collect the index on a match. One pass, no extra data structure.
+</Callout>
 
 Iterate `words` with their indices. For each word, check `word.contains(x)`. If true, append the index to the result array.
 
@@ -117,7 +129,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `words.enumerated()` yields `(offset: Int, element: String)` tuples — destructured as `(i, word)` in the for-in binding. `word.contains(x)` where `x` is a `Character` does a linear scan. For inputs this small (n, m ≤ 50) there is no benefit to building a `Set&lt;Character&gt;` per word.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n · m)">
+  n words, each `contains` call is O(m) where m is the word length. With n, m ≤ 50 this is at most 2,500 operations. Total: O(n · m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(k)">
+  The result array holds k matching indices where k ≤ n. No auxiliary data structures beyond the output array.
+</Callout>
 
 <ComplexityTable
   rows={[

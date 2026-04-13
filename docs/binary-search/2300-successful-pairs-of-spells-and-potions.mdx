@@ -31,6 +31,10 @@ Return an integer array `pairs` of length `n` where `pairs[i]` is the number of 
 - `1 <= spells[i], potions[j] <= 10^5`
 - `1 <= success <= 10^10`
 
+<Callout type="amber" label="Key Constraint">
+  success can be up to 10^10, requiring 64-bit integers. Swift's Int is 64-bit on modern platforms, so spell * potion (max 10^10) fits without overflow. O(n·m) brute force = 10^10 ops — binary search is required.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -61,7 +65,15 @@ Output: [2,0,2]
   answer="Sort potions + binary search leftmost valid index per spell"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When counting how many sorted elements satisfy a threshold condition per query, sort once and binary-search for the leftmost valid index — count is `length - leftmost_index`.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Sort potions ascending once. For each spell, binary-search for the first potion index where `spell * potion &gt;= success`. All potions from that index onward qualify, so the count is `m - l` without scanning them individually.
+</Callout>
 
 Sort `potions` ascending. For each spell, binary search for the leftmost index `l` where `spell * potions[l] >= success`. The count of valid potions is `m - l`.
 
@@ -124,7 +136,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `let m = l + (r - l) / 2` avoids integer overflow compared to `(l + r) / 2`. Using `r = sorted.count` (not `sorted.count - 1`) as the initial upper bound means `l` naturally lands at `sorted.count` when no potion qualifies, giving a count of 0 without a special case.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O((n + m) log m)">
+  Sorting potions takes O(m log m). Each of the n spells triggers one binary search over m potions costing O(log m). Total: O(m log m + n log m) = O((n + m) log m).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(m)">
+  The sorted copy of potions requires O(m) extra space. The result array is O(n). The input arrays are not mutated.
+</Callout>
 
 <ComplexityTable
   rows={[

@@ -28,6 +28,10 @@ Note: An array `A` rotated by `x` positions results in an array `B` where `A[i] 
 - `1 <= nums.length <= 100`
 - `1 <= nums[i] <= 100`
 
+<Callout type="amber" label="Key Constraint">
+  Duplicates are allowed — the original array is non-decreasing (not strictly increasing), so equal adjacent values are valid. Any array of length 1 or 2 is trivially a valid sorted rotation.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Explanation: Already sorted — rotated 0 positions.
   answer="Linear scan — allow at most one descent, verify wrap-around"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  A sorted-and-rotated array has at most one circular descent — one position where nums[i] &gt; nums[(i+1) % n]. Count circular descents; if the count exceeds 1, return false.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  A sorted-and-rotated array has at most one position where nums[i] &lt; nums[i-1] (the rotation point). After that point, every element must also be &lt;= nums[0] to satisfy the circular non-decreasing property. Two violations in either condition mean the array is not a valid rotation.
+</Callout>
 
 Scan for descents (positions where `nums[i] < nums[i-1]`). A valid sorted-and-rotated array has at most one such descent. Additionally, at any descent point, `nums[i]` must be less than or equal to `nums[0]` to maintain the circular non-decreasing property.
 
@@ -134,7 +146,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `let curr = nums[i]` and `let prev = nums[i-1]` improve readability over inline indexing. The `reset` boolean tracks whether a descent has been seen — a single Bool is all the state needed. The early return `if count &lt;= 2 { return true }` avoids out-of-bounds when accessing nums[0] in the wrap check.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n elements. Each element requires one comparison and at most one additional check — O(1) per element. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(1)">
+  Only a boolean flag (reset) and a loop index are maintained. No auxiliary data structures. O(1) extra space.
+</Callout>
 
 <ComplexityTable
   rows={[

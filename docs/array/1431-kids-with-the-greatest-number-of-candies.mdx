@@ -30,6 +30,10 @@ Note that **multiple** kids can have the greatest number of candies.
 - `1 <= candies[i] <= 100`
 - `1 <= extraCandies <= 50`
 
+<Callout type="amber" label="Key Constraint">
+  Multiple kids can share the greatest count — use &gt;= not &gt; when comparing against the current max. The array is guaranteed non-empty (n &gt;= 2), so candies.max()! is always safe.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -62,7 +66,15 @@ Output: [true,false,false,false,false]
   answer="Two-pass linear scan — find max, then compare"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When the question is "could element i reach the global maximum if augmented by a fixed amount?", find the current max once in O(n), then check each element with candies[i] + extra &gt;= max — no sorting or priority queue needed.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Only one kid receives the extra candies at a time, and other kids' counts don't change. So the only comparison needed is candies[i] + extraCandies &gt;= currentMax. Find currentMax once in O(n), then map each element in O(n) — two passes total.
+</Callout>
 
 Find the current maximum with `candies.max()!`. Then for each kid, check if `candies[i] + extraCandies >= max`. If so, they can have the greatest number of candies.
 
@@ -110,7 +122,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `candies.max()!` force-unwrap is safe because the constraints guarantee n &gt;= 2 (non-empty array). `candies.map { $0 + extraCandies >= max }` returns [Bool] in a single expression — idiomatic Swift. Naming the local variable `max` shadows Swift's global `max(_:_:)` function, which is fine since the global isn't needed here.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  One pass to find the maximum via candies.max() and one pass via map to build the result array. Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The output boolean array of size n is required. Only one extra variable (max) beyond the output. O(n) total.
+</Callout>
 
 <ComplexityTable
   rows={[

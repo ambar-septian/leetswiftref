@@ -27,6 +27,10 @@ A zero-based permutation `nums` is an array of distinct integers from `0` to `nu
 - `0 <= nums[i] < nums.length`
 - The elements in `nums` are distinct.
 
+<Callout type="amber" label="Key Constraint">
+  nums is a zero-based permutation — nums[i] is always a valid index (0 &lt;= nums[i] &lt; n). No bounds check is needed inside the loop. Elements are distinct, so no aliasing issues.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -53,7 +57,15 @@ Output: [4,5,0,1,2,3]
   answer="Simulation — single pass double-index lookup"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When ans[i] = nums[nums[i]] (one level of indirection on a permutation), a single pass with a separate result array is the straightforward O(n) solution. In-place variants exist but sacrifice readability.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  ans[i] = nums[nums[i]] — one level of indirection. Since nums is a permutation, nums[i] is always a valid index. A single pass with a separate result array is both correct and O(n) — no sorting, hashing, or multi-pass needed.
+</Callout>
 
 For each index `i`, append `nums[nums[i]]` to the result. The permutation guarantee ensures `nums[i]` is always a valid index.
 
@@ -97,7 +109,19 @@ class Solution {
 }
 ```
 
+<Callout type="green" label="Swift Notes">
+  `results.append(nums[nums[i]])` is idiomatic and safe — nums[i] is guaranteed in bounds by the permutation constraint. An O(1) space in-place variant encodes both values as `nums[i] += n * (nums[nums[i]] % n)` then decodes with `nums[i] /= n`, but the two-array approach is simpler and preferred for readability.
+</Callout>
+
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n)">
+  A single pass over all n indices. Each iteration performs two array lookups and one append — all O(1). Total: O(n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n)">
+  The result array of size n is required output. No auxiliary data structures beyond the result. O(n) total.
+</Callout>
 
 <ComplexityTable
   rows={[

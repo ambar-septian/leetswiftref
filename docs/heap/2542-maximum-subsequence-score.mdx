@@ -33,6 +33,10 @@ Return the **maximum** possible score.
 - `0 <= nums1[i], nums2[i] <= 10^5`
 - `1 <= k <= n`
 
+<Callout type="amber" label="Key Constraint">
+  n can reach 10^5 and k can equal n, so an O(n²) or brute-force subsequence approach is infeasible. The sort + O(n log k) heap approach is required.
+</Callout>
+
 <SectionHeader n={2} title="Examples" />
 
 #### Example 1
@@ -65,7 +69,15 @@ Explanation: Choose index 2 → sum=3, min=10. Score=30.
   answer="Sort by nums2 descending, maintain top-k nums1 sum with a min-heap"
 />
 
+<Callout type="green" label="Rule of Thumb">
+  When the score is a sum multiplied by a minimum, sort by the minimum descending and maintain the top-k sum with a min-heap — the current element's value IS the minimum for every valid selection that includes it.
+</Callout>
+
 <SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  By sorting pairs descending by nums2, when we process pair i, nums2[i] is the minimum multiplier for any selection containing index i. A min-heap of size k tracks the top-k nums1 values seen so far, letting us compute the best sum for that multiplier in O(log k) per step.
+</Callout>
 
 Zip `nums1` and `nums2` into pairs. Sort descending by `nums2`. Iterate the sorted pairs:
 - Add `nums1[i]` to the sum and push it into a min-heap.
@@ -113,8 +125,8 @@ By processing pairs from largest to smallest nums2, we guarantee that when we co
 
 <SectionHeader n={7} title="Code Implementation" />
 
-<Callout type="info" label="Swift Collections Heap">
-The `Heap` used in this solution comes from the [Swift Collections](https://github.com/apple/swift-collections/tree/main?tab=readme-ov-file#heapmodule-module) package. Note that the API might be slightly different if you implement your own heap.
+<Callout type="green" label="Swift Notes">
+  The `Heap` from Swift Collections is used as a min-heap. `zip(nums1, nums2).sorted { $0.1 > $1.1 }` creates `(n1, n2)` pairs sorted by n2 descending — `.1` accesses the second element of each tuple. `heap.popMin() ?? 0` handles the nil case safely (never triggered since `heap.count > k` guarantees a non-empty heap at that point).
 </Callout>
 
 ```swift
@@ -146,6 +158,14 @@ class Solution {
 ```
 
 <SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n log n)">
+  Sorting the n pairs is O(n log n). Each of the n iterations does a heap insert and at most one heap pop, each O(log k). Since k ≤ n, log k ≤ log n, so the loop is O(n log n). Total: O(n log n).
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n + k)">
+  The sorted pairs array takes O(n). The heap holds at most k + 1 elements before the pop reduces it back to k — O(k). Total: O(n + k). Since k ≤ n this simplifies to O(n).
+</Callout>
 
 <ComplexityTable
   rows={[
