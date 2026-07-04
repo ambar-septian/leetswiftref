@@ -1,0 +1,4 @@
+{
+  "session": "YOUR_LEETCODE_SESSION_COOKIE",
+  "csrfToken": "YOUR_CSRF_TOKEN"
+}
