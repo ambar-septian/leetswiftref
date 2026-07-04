@@ -239,7 +239,7 @@ class Solution {
     {
       title: "Forgetting bounds checks on all four directions",
       body: "Grid traversal without checking `newR`/`newC` against `0` and `rows`/`cols` causes an out-of-bounds array access crash.",
-      fix: "Guard all four conditions (`>= 0` and `< rows`/`cols`) before indexing into `grid` or `maxElevations`.",
+      fix: "Guard all four conditions (`&gt;= 0` and `&lt; rows`/`cols`) before indexing into `grid` or `maxElevations`.",
     },
   ]}
 />

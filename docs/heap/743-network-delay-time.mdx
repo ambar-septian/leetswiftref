@@ -87,7 +87,7 @@ Build an adjacency list from `times`. Push `(k, 0)` onto a min-heap ordered by d
   input="times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2"
   expected="2"
   steps={[
-    { label: "Init",   text: "heap = [(2,0)]. adjList: 2 -> [(1,1),(3,1)], 3 -> [(4,1)]", state: "visited={}" },
+    { label: "Init",   text: "heap = [(2,0)]. adjList: 2 -&gt; [(1,1),(3,1)], 3 -&gt; [(4,1)]", state: "visited={}" },
     { label: "Pop 2",  text: "Pop (2,0). Mark visited. result=0. Push (1,1) and (3,1).", state: "visited={2}" },
     { label: "Pop 1",  text: "Pop (1,1). Mark visited. result=1. Node 1 has no outgoing edges.", state: "visited={2,1}" },
     { label: "Pop 3",  text: "Pop (3,1). Mark visited. result=1. Push (4,2).", state: "visited={2,1,3}" },
@@ -219,7 +219,7 @@ class Solution {
     {
       title: "Using a max-heap or forgetting comparator direction",
       body: "Dijkstra requires always expanding the currently smallest-distance node. Using `popMax()` or a max-heap comparator would expand the farthest node first, producing an incorrect result.",
-      fix: "Ensure `Node`'s `<` compares by `weight` ascending, and use `popMin()`.",
+      fix: "Ensure `Node`'s `&lt;` compares by `weight` ascending, and use `popMin()`.",
     },
   ]}
 />

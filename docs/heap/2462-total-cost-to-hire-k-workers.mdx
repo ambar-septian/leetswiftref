@@ -93,9 +93,9 @@ If `candidates * 2 >= costs.count`, the two candidate windows already cover the 
   expected="11"
   steps={[
     { label: "Init",   text: "l=4, r=5. Heap seeded with left indices 0-3 (17,12,10,2) and right indices 8,7,6,5 (8,20,11,2).", state: "heap has 8 items" },
-    { label: "Round 1", text: "Pop min cost=2 — tie between idx 3 and idx 5, smaller index 3 wins. idx 3 < l(4) → refill from left: push costs[4]=7, l becomes 5.", state: "result=2, l=5, r=5" },
-    { label: "Round 2", text: "Pop min cost=2 (idx 5). l(5) >= r(5), so no refill even though idx 5 came from the right.", state: "result=4, l=5, r=5" },
-    { label: "Round 3", text: "Pop min cost=7 (idx 4, pushed in round 1). l >= r, no refill.", state: "result=11" },
+    { label: "Round 1", text: "Pop min cost=2 — tie between idx 3 and idx 5, smaller index 3 wins. idx 3 &lt; l(4) → refill from left: push costs[4]=7, l becomes 5.", state: "result=2, l=5, r=5" },
+    { label: "Round 2", text: "Pop min cost=2 (idx 5). l(5) &gt;= r(5), so no refill even though idx 5 came from the right.", state: "result=4, l=5, r=5" },
+    { label: "Round 3", text: "Pop min cost=7 (idx 4, pushed in round 1). l &gt;= r, no refill.", state: "result=11" },
     { label: "Done",   text: "After k=3 rounds, return result = 11.", state: "return 11" },
   ]}
 />
@@ -217,8 +217,8 @@ class Solution {
   pitfalls={[
     {
       title: "Skipping the overlapping-window edge case",
-      body: "If candidates * 2 >= costs.count and the two-pointer simulation is run anyway, the left and right windows can overlap or double-count workers, corrupting the heap state.",
-      fix: "Check `candidates * 2 >= costs.count` first and handle it by sorting and summing the k smallest directly.",
+      body: "If candidates * 2 &gt;= costs.count and the two-pointer simulation is run anyway, the left and right windows can overlap or double-count workers, corrupting the heap state.",
+      fix: "Check `candidates * 2 &gt;= costs.count` first and handle it by sorting and summing the k smallest directly.",
     },
     {
       title: "Not breaking ties by index",
@@ -227,8 +227,8 @@ class Solution {
     },
     {
       title: "Refilling from the wrong side after l and r meet",
-      body: "Continuing to push from `costs[l]` or `costs[r]` after `l >= r` can insert a worker that has already been counted or is out of the valid remaining range.",
-      fix: "Guard with `if l >= r { continue }` before attempting to refill the heap.",
+      body: "Continuing to push from `costs[l]` or `costs[r]` after `l &gt;= r` can insert a worker that has already been counted or is out of the valid remaining range.",
+      fix: "Guard with `if l &gt;= r { continue }` before attempting to refill the heap.",
     },
   ]}
 />

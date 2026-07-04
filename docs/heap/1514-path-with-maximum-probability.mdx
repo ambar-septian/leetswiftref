@@ -92,10 +92,10 @@ Build an undirected adjacency list — each edge is added in both directions sin
   input="n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.2], start = 0, end = 2"
   expected="0.25000"
   steps={[
-    { label: "Init",   text: "heap = [(0, prob=1.0)]. adjList: 0<->1 (0.5), 1<->2 (0.5), 0<->2 (0.2)", state: "visited={}" },
+    { label: "Init",   text: "heap = [(0, prob=1.0)]. adjList: 0&lt;-&gt;1 (0.5), 1&lt;-&gt;2 (0.5), 0&lt;-&gt;2 (0.2)", state: "visited={}" },
     { label: "Pop 0",  text: "Pop (0, 1.0). Not end. Mark visited. Push (1, 0.5) and (2, 0.2).", state: "visited={0}" },
     { label: "Pop 1",  text: "Pop (1, 0.5) — highest remaining. Not end. Mark visited. Push (2, 0.5*0.5=0.25) and (0, skip visited).", state: "visited={0,1}" },
-    { label: "Pop 2",  text: "Pop (2, 0.25) — now the max in heap (0.25 > 0.2). This is end → return 0.25.", state: "return 0.25" },
+    { label: "Pop 2",  text: "Pop (2, 0.25) — now the max in heap (0.25 &gt; 0.2). This is end → return 0.25.", state: "return 0.25" },
   ]}
 />
 
@@ -213,7 +213,7 @@ class Solution {
     {
       title: "Using a min-heap instead of a max-heap",
       body: "Popping the smallest probability first would explore the least-promising paths, and the greedy 'once popped, finalized' argument breaks down — the algorithm needs to always expand the currently highest-probability node.",
-      fix: "Use `popMax()` and ensure `Node`'s `<` operator compares `probability` in the natural ascending direction (required for the max-heap's internal ordering).",
+      fix: "Use `popMax()` and ensure `Node`'s `&lt;` operator compares `probability` in the natural ascending direction (required for the max-heap's internal ordering).",
     },
     {
       title: "Forgetting the undirected edge insertion",
