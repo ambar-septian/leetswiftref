@@ -1,0 +1,234 @@
+---
+id: 2462-total-cost-to-hire-k-workers
+title: "Total Cost to Hire K Workers"
+sidebar_label: "2462 · Total Cost to Hire K Workers"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={2462}
+  title="Total Cost to Hire K Workers"
+  difficulty="Medium"
+  pattern="Min-Heap — Two-Pointer Candidate Window Simulation"
+  tags={["Array", "Two Pointers", "Heap (Priority Queue)", "Simulation"]}
+  leetcodeUrl="https://leetcode.com/problems/total-cost-to-hire-k-workers/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a 0-indexed integer array `costs` where `costs[i]` is the cost of hiring the `i`th worker.
+
+You are also given two integers `k` and `candidates`. We want to hire exactly `k` workers according to the following rules:
+
+- You will run `k` sessions and hire exactly one worker in each session.
+- In each hiring session, choose the worker with the **lowest** cost from either the first `candidates` workers or the last `candidates` workers. Break the tie by the smallest index. If there are fewer than `candidates` workers remaining in both the first and last parts, consider all remaining workers as candidates.
+- If two workers with the same lowest cost were chosen from the first and last parts, choose the one with the smallest index.
+
+Return the total cost to hire exactly `k` workers.
+
+**Constraints:**
+- `1 <= costs.length <= 10^5`
+- `1 <= costs[i] <= 10^5`
+- `1 <= k, candidates <= costs.length`
+
+<Callout type="amber" label="Key Constraint">
+  The candidate pool is always the union of the current first `candidates` workers and the current last `candidates` workers — once one side is exhausted or the two windows meet, **all** remaining workers become the candidate pool. This edge case (`candidates * 2 >= costs.count`) must be handled separately from the two-window simulation.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: costs = [17,12,10,2,7,2,11,20,8], k = 3, candidates = 4
+Output: 11
+Explanation: We hire 3 workers in total. The total cost is initially 0.
+- In the first hiring round we choose the worker from [17,12,10,2] or [7,2,11,20,8]. The lowest cost is 2, and we choose the first worker among the two candidates with the same cost, which is worker 3. The total cost = 0 + 2 = 2.
+- In the second hiring round we choose the worker from [17,12,10,7] or [7,11,20,8]. The lowest cost is 7, but we have to choose the one with the smallest index; both are at index 4, so we choose worker 4 (the one from the first window, appearing first). The total cost = 2 + 7 = 9.
+- In the third hiring round, we choose from [17,12,10] or [11,20,8]. The lowest cost is 8, so we choose worker 8. The total cost = 9 + 2 = 11.
+The total hiring cost is 11.
+```
+
+#### Example 2
+
+```
+Input: costs = [1,2,4,1], k = 3, candidates = 3
+Output: 4
+Explanation: We hire 3 workers in total. The total cost is initially 0.
+- In the first hiring round, the candidates are the first 3 and the last 3 workers, i.e. workers [1,2,4,1]. The lowest cost is 1, and in case of a tie, we choose the smallest index, which is worker 0. The total cost = 0 + 1 = 1.
+- In the second hiring round, the remaining workers are [2,4,1]. The candidates are the first 3 and last 3 workers, which are all remaining workers. The lowest cost is 1, worker 2. The total cost = 1 + 1 = 2.
+- In the third hiring round, the remaining worker is [2,4]. The lowest cost is 2, worker 1. The total cost = 2 + 2 = 4.
+The total hiring cost is 4.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do we repeatedly need the minimum cost from a shrinking candidate window?", verdict: "yes", reason: "Each round picks the cheapest from the union of two shrinking windows — a min-heap gives O(log n) access to the current minimum." },
+    { question: "Can the two windows be tracked with two pointers?", verdict: "yes", reason: "The 'first candidates' and 'last candidates' windows shrink from the outside in as workers are hired, which two pointers l and r track naturally." },
+    { question: "Does the special case where windows overlap need separate handling?", verdict: "yes", reason: "When candidates * 2 >= costs.count, the two windows cover the entire array, so we can just sort and take the k cheapest directly." },
+  ]}
+  answer="Single min-heap seeded from both ends + two pointers, refilling from whichever side a hired worker came from"
+/>
+
+<Callout type="green" label="Rule of Thumb">
+  When a simulation repeatedly needs the minimum (or maximum) from a window that shrinks from both ends, seed a single heap with both ends' initial elements and refill it from whichever side loses an element — avoids re-scanning either window each round.
+</Callout>
+
+<SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Maintain a min-heap seeded with the initial `candidates` workers from the left and `candidates` workers from the right, tagged with their original index. Each round, pop the cheapest; based on whether its index belongs to the left window or the right window, advance the corresponding pointer (`l` forward or `r` backward) and push the next worker from that side into the heap — keeping exactly the current candidate pool represented in the heap at all times.
+</Callout>
+
+If `candidates * 2 >= costs.count`, the two candidate windows already cover the whole array — sort `costs` and sum the smallest `k` directly. Otherwise, seed the heap with `costs[0..<candidates]` and `costs[costs.count-candidates..<costs.count]`, tagging each with its index. Track pointers `l = candidates` and `r = costs.count - candidates`. For each of `k` rounds: pop the minimum-cost worker, add its cost to `result`. If `l < r`, refill the heap from whichever side (`l` if the popped worker's index was `< l`, else `r`) the hired worker came from, advancing that pointer.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="costs = [17,12,10,2,7,2,11,20,8], k = 3, candidates = 4"
+  expected="11"
+  steps={[
+    { label: "Init",   text: "l=4, r=5. Heap seeded with left indices 0-3 (17,12,10,2) and right indices 8,7,6,5 (8,20,11,2).", state: "heap has 8 items" },
+    { label: "Round 1", text: "Pop min cost=2 — tie between idx 3 and idx 5, smaller index 3 wins. idx 3 < l(4) → refill from left: push costs[4]=7, l becomes 5.", state: "result=2, l=5, r=5" },
+    { label: "Round 2", text: "Pop min cost=2 (idx 5). l(5) >= r(5), so no refill even though idx 5 came from the right.", state: "result=4, l=5, r=5" },
+    { label: "Round 3", text: "Pop min cost=7 (idx 4, pushed in round 1). l >= r, no refill.", state: "result=11" },
+    { label: "Done",   text: "After k=3 rounds, return result = 11.", state: "return 11" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Handle the overlapping-window edge case">
+    If `candidates * 2 >= costs.count`, sort all costs ascending and sum the first `k` — the two windows already cover everything.
+  </StepItem>
+  <StepItem title="Seed the heap from both ends">
+    Insert `costs[0..<candidates]` (tagged with their index) and `costs[costs.count-candidates..<costs.count]` (also tagged, inserted in reverse so ties resolve toward smaller index) into a single min-heap.
+  </StepItem>
+  <StepItem title="Track two pointers">
+    `l = candidates` marks the next unconsidered worker from the left; `r = costs.count - candidates` marks the next unconsidered worker from the right (exclusive).
+  </StepItem>
+  <StepItem title="Run k hiring rounds">
+    Pop the cheapest `HeapItem`. Add its cost to `result`. If `l < r`, refill: if the popped worker's index was `< l`, push `costs[l]` and increment `l`; otherwise decrement `r` and push `costs[r]`.
+  </StepItem>
+  <StepItem title="Return the total">
+    After `k` rounds, `result` holds the total hiring cost.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+<Callout type="green" label="Swift Notes">
+  `Heap` from [swift-collections](https://github.com/apple/swift-collections) (`import Collections`) is used via `popMin()`. `HeapItem`'s `Comparable` conformance first compares `cost`, then falls back to `position` (index) to break ties toward the smaller index, matching the problem's tie-break rule exactly. The `l >= r` check inside the loop stops refilling once the two windows have met, so the heap simply drains its remaining seeded items for the rest of the rounds.
+</Callout>
+
+```swift
+import Collections
+
+class Solution {
+    struct HeapItem: Comparable {
+        let cost: Int
+        let position: Int
+
+        init(_ cost: Int, _ position: Int) {
+            self.cost = cost
+            self.position = position
+        }
+
+        static func < (_ lhs: Self, _ rhs: Self) -> Bool {
+            if lhs.cost == rhs.cost {
+                return lhs.position < rhs.position
+            }
+            return lhs.cost < rhs.cost
+        }
+    }
+
+    func totalCost(_ costs: [Int], _ k: Int, _ candidates: Int) -> Int {
+        if candidates * 2 >= costs.count {
+            let res = costs.sorted(by: <).prefix(k).reduce(0, +)
+            return res
+        }
+
+        var result = 0
+        var heap = Heap<HeapItem>()
+
+        for i in 0..<candidates {
+            heap.insert(HeapItem(costs[i], i))
+        }
+
+        for i in (costs.count - candidates..<costs.count).reversed() {
+            heap.insert(HeapItem(costs[i], i))
+        }
+
+        var l = candidates
+        var r = costs.count - candidates
+        for _ in 0..<k {
+            guard let item = heap.popMin() else {
+                continue
+            }
+
+            result += item.cost
+
+            if l >= r {
+                continue
+            } else if item.position < l { // worker coming (heap) from the left
+                heap.insert(HeapItem(costs[l], l))
+                l += 1
+
+            } else { // worker coming (heap) from the right
+                r -= 1
+                heap.insert(HeapItem(costs[r], r))
+            }
+        }
+
+        return result
+    }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O((candidates + k) log candidates)">
+  Seeding the heap costs `O(candidates log candidates)`. Each of the `k` rounds pops once and inserts at most once, each `O(log candidates)` since the heap never holds more than `2 * candidates` items. Total: `O((candidates + k) log candidates)`.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(candidates)">
+  The heap holds at most `2 * candidates` items at any time; the two pointers `l` and `r` are O(1) auxiliary state.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: "Sort entire array", time: "O(n log n)", space: "O(n)", note: "Simple, and required anyway when candidates*2 >= n" },
+    { approach: "Two-pointer + single min-heap", time: "O((candidates + k) log candidates)", space: "O(candidates)", note: "Avoids sorting the whole array when candidates is much smaller than n", highlight: true },
+  ]}
+/>
+
+<Callout type="amber" label="When to prefer the two-pointer heap approach">
+  Prefer the heap simulation when `candidates` is small relative to `costs.count` — it avoids the full `O(n log n)` sort. When `candidates * 2 >= costs.count`, sorting directly is simpler and asymptotically the same, so the code falls back to it.
+</Callout>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Skipping the overlapping-window edge case",
+      body: "If candidates * 2 >= costs.count and the two-pointer simulation is run anyway, the left and right windows can overlap or double-count workers, corrupting the heap state.",
+      fix: "Check `candidates * 2 >= costs.count` first and handle it by sorting and summing the k smallest directly.",
+    },
+    {
+      title: "Not breaking ties by index",
+      body: "The problem requires choosing the smallest index when two candidates share the same minimum cost — comparing only by cost can pick the wrong worker and diverge from the expected simulation order (though the total sum is often still correct for cost purposes, the position-based refill logic depends on correct tie-breaking).",
+      fix: "Make `HeapItem`'s `Comparable` conformance fall back to comparing `position` when `cost` is equal.",
+    },
+    {
+      title: "Refilling from the wrong side after l and r meet",
+      body: "Continuing to push from `costs[l]` or `costs[r]` after `l >= r` can insert a worker that has already been counted or is out of the valid remaining range.",
+      fix: "Guard with `if l >= r { continue }` before attempting to refill the heap.",
+    },
+  ]}
+/>

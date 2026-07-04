@@ -1,0 +1,245 @@
+---
+id: 778-swim-in-rising-water
+title: "Swim in Rising Water"
+sidebar_label: "778 · Swim in Rising Water"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={778}
+  title="Swim in Rising Water"
+  difficulty="Hard"
+  pattern="Dijkstra-Style Min-Heap — Minimize Path Maximum"
+  tags={["Array", "Binary Search", "Depth-First Search", "Breadth-First Search", "Union-Find", "Heap (Priority Queue)", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/swim-in-rising-water/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an `n x n` integer matrix `grid` where each value `grid[i][j]` represents the elevation at that point `(i, j)`.
+
+The rain starts to fall. At time `t`, the depth of the water everywhere is `t`. You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most `t`. You can swim infinite distances in zero time. Of course, you must stay within the boundaries of the grid during your swim.
+
+Return the least time until you can reach the bottom right square `(n - 1, n - 1)` if you start at the top left square `(0, 0)`.
+
+**Constraints:**
+- `n == grid.length == grid[i].length`
+- `1 <= n <= 50`
+- `0 <= grid[i][j] < n^2`
+- Each value `grid[i][j]` is **unique**.
+
+<Callout type="amber" label="Key Constraint">
+  All elevation values are unique, ranging from `0` to `n^2 - 1` — this guarantees `grid` is a permutation of `0..n^2-1`, so there is no ambiguity when comparing path bottlenecks. The answer is not the sum of elevations along a path, but the **maximum single elevation** you are forced to step on.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: grid = [[0,2],[1,3]]
+Output: 3
+Explanation:
+  At time 0, you are in grid location (0, 0).
+  You cannot go anywhere else because 4-directionally adjacent
+  neighbors have a higher elevation than t = 0.
+  You cannot reach point (1, 1) until time 3.
+  When the depth of water is 3, we can swim anywhere inside the grid.
+```
+
+#### Example 2
+
+```
+Input: grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]
+Output: 16
+Explanation: The final route is shown.
+We need to wait until time 16 so that (0, 0) and (4, 4) are connected.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the path cost bottleneck (take the max) rather than accumulate (sum)?", verdict: "yes", reason: "Reaching a cell requires waiting until t is at least as large as every elevation visited so far — the path cost is the max elevation on the path, not a sum." },
+    { question: "Is this a grid shortest-path variant?", verdict: "yes", reason: "We minimize the bottleneck value to reach (n-1, n-1) from (0, 0) — a Dijkstra variant where 'distance' is redefined as running maximum." },
+    { question: "Could binary search on the answer plus BFS/Union-Find work instead?", verdict: "yes", reason: "Binary search the time t, then flood-fill or union cells with elevation <= t to check connectivity — also O(n² log n)." },
+  ]}
+  answer="Dijkstra-style min-heap — track min possible max-elevation to reach each cell, pop smallest first"
+/>
+
+<Callout type="green" label="Rule of Thumb">
+  When a grid problem asks to minimize the "worst step" along a path rather than the total path cost, redefine the Dijkstra distance as a running maximum instead of a running sum — the min-heap logic is otherwise identical.
+</Callout>
+
+<SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Treat this as Dijkstra where the "distance" to a cell is the minimum possible value of the maximum elevation seen along any path to it. Push cells onto a min-heap ordered by this bottleneck value. Popping the destination `(n-1, n-1)` for the first time guarantees the smallest possible bottleneck, because the heap always expands the frontier with the currently lowest bottleneck first.
+</Callout>
+
+Push `(grid[0][0], 0, 0)` onto a min-heap. Maintain a `maxElevations` grid tracking the best (lowest) bottleneck found so far for each cell, initialized to `Int.max`. Pop the smallest-bottleneck cell; if it's the destination, return its value immediately — this is the early-exit optimization. Otherwise, for each neighbor, compute `newElev = max(currentElev, neighborElevation)` and push it only if it improves on the neighbor's recorded best.
+
+<Callout type="purple" label="Dijkstra vs Binary Search + BFS — which to choose?">
+  Prefer the **Dijkstra min-heap** approach for a single clean pass with an early-exit once the destination is popped — no need to guess or binary-search a threshold. Prefer **Binary Search + BFS/Union-Find** when you want a simpler mental model: binary search on `t`, then check if `(0,0)` and `(n-1,n-1)` are connected using only cells with elevation `<= t`. Both are `O(n² log n)`.
+</Callout>
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="grid = [[0,2],[1,3]]"
+  expected="3"
+  steps={[
+    { label: "Init",   text: "Push (0, r=0, c=0). maxElevations[0][0]=0.", state: "heap=[(0,0,0)]" },
+    { label: "Pop 0",  text: "Pop (0,0,0). Not destination. Neighbors: (2,0,1) and (1,1,0), both new max = max(0, val).", state: "heap=[(1,1,0),(2,0,1)]" },
+    { label: "Pop 1",  text: "Pop (1,1,0). Not destination. Neighbor (1,1) has grid value 3 → newElev = max(1,3) = 3.", state: "heap=[(2,0,1),(3,1,1)]" },
+    { label: "Pop 2",  text: "Pop (2,0,1). Not destination. Neighbor (1,1) has grid value 3 → newElev = max(2,3) = 3, not better than existing 3.", state: "heap=[(3,1,1)]" },
+    { label: "Pop 3",  text: "Pop (3,1,1). This is the destination (n-1, n-1) → return 3.", state: "return 3" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialize the heap and tracking grid">
+    Push `Elevation(grid[0][0], 0, 0)` onto the min-heap. Set `maxElevations[0][0] = grid[0][0]`; all other cells start at `Int.max`.
+  </StepItem>
+  <StepItem title="Pop the lowest-bottleneck cell">
+    While the heap is non-empty, pop the cell with the smallest tracked value. If it is `(rows-1, cols-1)`, return its value immediately.
+  </StepItem>
+  <StepItem title="Skip stale entries">
+    If the popped value is greater than the best recorded value for that cell, a better path was already found — skip it.
+  </StepItem>
+  <StepItem title="Relax the four neighbors">
+    For each in-bounds neighbor, compute `newElev = max(currentElev, grid[neighbor])`. If it improves the neighbor's recorded best, push it and update the tracking grid.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+<Callout type="green" label="Swift Notes">
+  `Heap` from [swift-collections](https://github.com/apple/swift-collections) (`import Collections`) is used as a min-heap via `popMin()`. The `Elevation` struct's `Comparable` conformance compares only `value`, so the heap always surfaces the cell with the smallest bottleneck elevation next — the same lazy-deletion pattern as classic Dijkstra, checking `elev.value > maxElevations[elev.r][elev.c]` to discard stale heap entries instead of using a decrease-key operation.
+</Callout>
+
+```swift
+import Collections
+
+class Solution {
+    struct Elevation: Comparable {
+        let value: Int
+        let r: Int
+        let c: Int
+
+        init(_ value: Int, _ r: Int, _ c: Int) {
+            self.value = value
+            self.r = r
+            self.c = c
+        }
+
+        static func < (_ lhs: Self, _ rhs: Self) -> Bool {
+            lhs.value < rhs.value
+        }
+    }
+
+    func swimInWater(_ grid: [[Int]]) -> Int {
+        let rows = grid.count
+        let cols = grid[0].count
+        let dirs = [(0,1), (0, -1), (1, 0), (-1, 0)]
+
+        // Setup heap and destionation with max value
+        var heap = Heap<Elevation>()
+        var maxElevations = Array(repeating: Array(repeating: Int.max, count: cols), count: rows)
+
+        // Starting condition, set the first elevation with the current value
+        heap.insert(Elevation(grid[0][0], 0, 0))
+        maxElevations[0][0] = grid[0][0]
+
+        while !heap.isEmpty {
+            guard let elev = heap.popMin() else {
+                break
+            }
+
+            // Early exit: when reach destination, we can return immediatedly and it is guaranted minimum
+            if elev.r == rows - 1, elev.c == cols - 1 {
+                return elev.value
+            }
+
+             // Optimisation: If the current is bigger, then we skip it
+            if elev.value > maxElevations[elev.r][elev.c] {
+                continue
+            }
+
+            for dir in dirs {
+                let newR = elev.r + dir.0
+                let newC = elev.c + dir.1
+
+                guard newR >= 0, 
+                    newC >= 0,
+                    newR < rows,
+                    newC < cols else {
+                    continue
+                }
+
+                 // Calculate new maximum elevation from the current to next one
+                let newElev = max(grid[newR][newC], elev.value)
+
+                // Only insert the path if it is better than we have stored
+                guard newElev < maxElevations[newR][newC] else {
+                    continue
+                }
+                heap.insert(Elevation(newElev, newR, newC))
+
+                // Update the maximum elevation for this position
+                maxElevations[newR][newC] = newElev
+            }
+        }
+
+
+        return 0
+    }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(n² log n)">
+  There are `n²` cells, each with 4 neighbors, so up to `O(n²)` heap insertions occur, each costing `O(log n²) = O(log n)`. Total: `O(n² log n)`.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(n²)">
+  The `maxElevations` tracking grid and the heap both hold up to `O(n²)` entries in the worst case.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: "Binary Search + BFS/Union-Find", time: "O(n² log n)", space: "O(n²)", note: "Binary search on t, flood-fill or union cells with elevation <= t each iteration" },
+    { approach: "Dijkstra-style min-heap", time: "O(n² log n)", space: "O(n²)", note: "Single pass, early exit on reaching destination", highlight: true },
+  ]}
+/>
+
+<Callout type="amber" label="When to prefer the min-heap approach">
+  The min-heap approach avoids re-scanning the grid at each binary-search iteration and can exit as soon as the destination is popped, which is often faster in practice even though both approaches share the same asymptotic bound.
+</Callout>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Summing elevations instead of tracking the maximum",
+      body: "Unlike classic Dijkstra where distance accumulates by addition, here the 'distance' to a cell is the maximum elevation seen so far — treating it as a sum produces a value with no meaning to the problem.",
+      fix: "Compute `newElev = max(currentElev, grid[neighbor])`, never `currentElev + grid[neighbor]`.",
+    },
+    {
+      title: "Not exiting early at the destination",
+      body: "Continuing to drain the entire heap after reaching (n-1, n-1) wastes time, since the first pop of the destination is already guaranteed optimal by the min-heap ordering.",
+      fix: "Return immediately when the popped cell equals `(rows - 1, cols - 1)`.",
+    },
+    {
+      title: "Forgetting bounds checks on all four directions",
+      body: "Grid traversal without checking `newR`/`newC` against `0` and `rows`/`cols` causes an out-of-bounds array access crash.",
+      fix: "Guard all four conditions (`>= 0` and `< rows`/`cols`) before indexing into `grid` or `maxElevations`.",
+    },
+  ]}
+/>

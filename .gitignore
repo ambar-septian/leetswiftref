@@ -44,3 +44,7 @@ Desktop.ini
 # --- AI ---
 .claude/
 .envrc
+
+# --- Secrets (LeetCode auth) ---
+configs/.leetcode-auth
+*.local.bak

@@ -3558,6 +3558,118 @@
       "slug": "count-subarrays-of-length-three-with-a-condition",
       "submittedAt": "2026-04-06T00:00:00.000Z",
       "enriched": true
+    },
+    {
+      "id": 743,
+      "leetcodeUrl": "https://leetcode.com/problems/network-delay-time/description/",
+      "tags": [
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Graph Theory",
+        "Heap (Priority Queue)",
+        "Shortest Path"
+      ],
+      "files": [
+        "queue/743.md",
+        "docs/heap/743-network-delay-time.mdx"
+      ],
+      "title": "Network Delay Time",
+      "difficulty": "Medium",
+      "category": "heap",
+      "status": "done",
+      "slug": "network-delay-time",
+      "enriched": false,
+      "submittedAt": "2026-07-04T00:00:00.000Z"
+    },
+    {
+      "id": 778,
+      "leetcodeUrl": "https://leetcode.com/problems/swim-in-rising-water/description/",
+      "tags": [
+        "Array",
+        "Binary Search",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Heap (Priority Queue)",
+        "Matrix"
+      ],
+      "files": [
+        "queue/778.md",
+        "docs/heap/778-swim-in-rising-water.mdx"
+      ],
+      "title": "Swim in Rising Water",
+      "difficulty": "Hard",
+      "category": "heap",
+      "status": "done",
+      "slug": "swim-in-rising-water",
+      "enriched": false,
+      "submittedAt": "2026-07-04T00:00:00.000Z"
+    },
+    {
+      "id": 1514,
+      "leetcodeUrl": "https://leetcode.com/problems/path-with-maximum-probability/description/",
+      "tags": [
+        "Array",
+        "Graph Theory",
+        "Heap (Priority Queue)",
+        "Shortest Path"
+      ],
+      "files": [
+        "queue/1514.md",
+        "docs/heap/1514-path-with-maximum-probability.mdx"
+      ],
+      "title": "Path with Maximum Probability",
+      "difficulty": "Medium",
+      "category": "heap",
+      "status": "done",
+      "slug": "path-with-maximum-probability",
+      "enriched": false,
+      "submittedAt": "2026-07-04T00:00:00.000Z"
+    },
+    {
+      "id": 1631,
+      "leetcodeUrl": "https://leetcode.com/problems/path-with-minimum-effort/description/",
+      "tags": [
+        "Array",
+        "Binary Search",
+        "Depth-First Search",
+        "Breadth-First Search",
+        "Union-Find",
+        "Heap (Priority Queue)",
+        "Matrix"
+      ],
+      "files": [
+        "queue/1631.md",
+        "docs/heap/1631-path-with-minimum-effort.mdx"
+      ],
+      "title": "Path With Minimum Effort",
+      "difficulty": "Medium",
+      "category": "heap",
+      "status": "done",
+      "slug": "path-with-minimum-effort",
+      "enriched": false,
+      "submittedAt": "2026-07-04T00:00:00.000Z"
+    },
+    {
+      "id": 2462,
+      "leetcodeUrl": "https://leetcode.com/problems/total-cost-to-hire-k-workers/description/",
+      "tags": [
+        "Array",
+        "Two Pointers",
+        "Heap (Priority Queue)",
+        "Simulation"
+      ],
+      "files": [
+        "queue/2462.md",
+        "docs/heap/2462-total-cost-to-hire-k-workers.mdx"
+      ],
+      "title": "Total Cost to Hire K Workers",
+      "difficulty": "Medium",
+      "category": "heap",
+      "status": "done",
+      "slug": "total-cost-to-hire-k-workers",
+      "enriched": false,
+      "submittedAt": "2026-07-04T00:00:00.000Z"
     }
   ]
 }

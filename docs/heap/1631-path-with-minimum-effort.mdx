@@ -1,0 +1,249 @@
+---
+id: 1631-path-with-minimum-effort
+title: "Path With Minimum Effort"
+sidebar_label: "1631 · Path With Minimum Effort"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1631}
+  title="Path With Minimum Effort"
+  difficulty="Medium"
+  pattern="Dijkstra-Style Min-Heap — Minimize Path Maximum"
+  tags={["Array", "Binary Search", "Depth-First Search", "Breadth-First Search", "Union-Find", "Heap (Priority Queue)", "Matrix"]}
+  leetcodeUrl="https://leetcode.com/problems/path-with-minimum-effort/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are a hiker preparing for an upcoming hike. You are given `heights`, a 2D array of size `rows x columns`, where `heights[row][col]` represents the height of cell `(row, col)`. You are situated in the top-left cell, `(0, 0)`, and you hope to travel to the bottom-right cell, `(rows-1, columns-1)` (i.e., 0-indexed). You can move up, down, left, or right, and you wish to find a route that requires the minimum **effort**.
+
+A route's **effort** is the **maximum absolute difference** in heights between two consecutive cells of the route.
+
+Return the minimum effort required to travel from the top-left cell to the bottom-right cell.
+
+**Constraints:**
+- `rows == heights.length`
+- `columns == heights[i].length`
+- `1 <= rows, columns <= 100`
+- `1 <= rows * columns <= 10^4`
+- `0 <= heights[i][j] <= 10^6`
+
+<Callout type="amber" label="Key Constraint">
+  Effort is defined as the **maximum** absolute height difference along the route, not the sum of differences. This means the "cost" of extending a path is `max(currentEffort, abs(heightDiff))`, not addition — the same running-maximum pattern as minimizing a path's bottleneck value.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: heights = [[1,2,2],[3,8,2],[5,3,5]]
+Output: 2
+Explanation: The route of [1,3,5,3,5] has a maximum absolute difference of 2 in consecutive cells.
+This is better than the route of [1,2,2,2,5], where the maximum absolute difference is 3.
+```
+
+#### Example 2
+
+```
+Input: heights = [[1,2,3],[3,8,4],[5,3,5]]
+Output: 1
+Explanation: The route of [1,2,3,4,5] has a maximum absolute difference of 1 in consecutive cells,
+which is better than route [1,3,5,3,5].
+```
+
+#### Example 3
+
+```
+Input: heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]
+Output: 0
+Explanation: This route does not require any effort.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Does the path cost bottleneck (take the max) rather than accumulate (sum)?", verdict: "yes", reason: "Effort is explicitly defined as the maximum consecutive-cell difference along the route, not a sum of differences." },
+    { question: "Is this a grid shortest-path variant?", verdict: "yes", reason: "We minimize the bottleneck effort to reach (rows-1, cols-1) from (0, 0) — structurally identical to LeetCode 778 (Swim in Rising Water)." },
+    { question: "Could binary search on the answer plus BFS/Union-Find work instead?", verdict: "yes", reason: "Binary search the effort threshold, then check connectivity between (0,0) and (rows-1, cols-1) using only edges with diff <= threshold." },
+  ]}
+  answer="Dijkstra-style min-heap — track min possible max-diff to reach each cell, pop smallest first"
+/>
+
+<Callout type="green" label="Rule of Thumb">
+  Any grid problem that minimizes the largest single step-cost along a path (not the total cost) is a running-maximum Dijkstra variant — swap the usual `+` relaxation for `max(...)`.
+</Callout>
+
+<SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Run Dijkstra where the "distance" to a cell is the minimum possible value of the maximum height difference seen along any path to it. A min-heap always expands the frontier cell with the currently smallest bottleneck first, guaranteeing that popping the destination `(rows-1, cols-1)` yields the true minimum effort — the same greedy correctness argument as classic Dijkstra, just with `max` in place of `+`.
+</Callout>
+
+Push `(0, 0, 0)` onto a min-heap keyed by effort. Maintain a `destinations` grid tracking the best (lowest) effort found so far for each cell, initialized to `Int.max` except the start. Pop the smallest-effort cell; if it's the destination, return its value immediately. Otherwise, for each of the four neighbors, compute `newDiff = max(currentDiff, abs(heights[neighbor] - heights[current]))` and push it only if it improves the neighbor's recorded best.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="heights = [[1,2,2],[3,8,2],[5,3,5]]"
+  expected="2"
+  steps={[
+    { label: "Init",   text: "Push (0, r=0, c=0). destinations[0][0]=0.", state: "heap=[(0,0,0)]" },
+    { label: "Pop (0,0) diff=0",  text: "Not destination. Neighbors (0,1)=2 → diff=1; (1,0)=3 → diff=2.", state: "heap=[(1,0,1),(2,1,0)]" },
+    { label: "Pop (0,1) diff=1",  text: "Not destination. Neighbor (0,2)=2 → diff=max(1,0)=1; (1,1)=8 → diff=max(1,6)=6.", state: "heap=[(1,0,2),(2,1,0),(6,1,1)]" },
+    { label: "Pop (0,2) diff=1",  text: "Not destination. Neighbor (1,2)=2 → diff=max(1,0)=1.", state: "heap=[(1,1,2),(2,1,0),(6,1,1)]" },
+    { label: "Pop (1,2) diff=1",  text: "Not destination. Neighbor (2,2)=5 → diff=max(1,3)=3 — a first (non-optimal) route to the destination.", state: "heap=[(2,1,0),(3,2,2),(6,1,1)]" },
+    { label: "Pop (1,0) diff=2",  text: "Not destination. Neighbor (1,1)=8 → diff=max(2,5)=5, improving the stale (6,1,1); neighbor (2,0)=5 → diff=max(2,2)=2.", state: "heap=[(2,2,0),(3,2,2),(5,1,1),(6,1,1)‡]" },
+    { label: "Pop (2,0) diff=2",  text: "Not destination. Neighbor (2,1)=3 → diff=max(2,2)=2.", state: "heap=[(2,2,1),(3,2,2),(5,1,1),(6,1,1)‡]" },
+    { label: "Pop (2,1) diff=2",  text: "Not destination. Neighbor (2,2)=5 → diff=max(2,2)=2, improving the earlier (3,2,2) entry.", state: "heap=[(2,2,2),(3,2,2)‡,(5,1,1),(6,1,1)‡]" },
+    { label: "Pop (2,2) diff=2",  text: "This is the destination (rows-1, cols-1) → return 2. (‡ marks stale heap entries that are never popped as the answer.)", state: "return 2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Initialize the heap and tracking grid">
+    Push `Grid(0, 0, 0)` onto the min-heap. Set `destinations[0][0] = 0`; all other cells start at `Int.max`.
+  </StepItem>
+  <StepItem title="Pop the lowest-effort cell">
+    While the heap is non-empty, pop the cell with the smallest tracked effort. If it is `(rows-1, cols-1)`, return its value immediately.
+  </StepItem>
+  <StepItem title="Skip stale entries">
+    If the popped effort exceeds the best recorded value for that cell, a better path was already found — skip it.
+  </StepItem>
+  <StepItem title="Relax the four neighbors">
+    For each in-bounds neighbor, compute `newDiff = max(currentDiff, abs(heights[neighbor] - heights[current]))`. Push it and update the tracking grid only if it improves the neighbor's recorded best.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+<Callout type="green" label="Swift Notes">
+  `Heap` from [swift-collections](https://github.com/apple/swift-collections) (`import Collections`) is used via `popMin()`. The `Grid` struct's `Comparable` conformance compares only `diff`, so the heap surfaces the cell with the smallest bottleneck effort next. Checking `grid.diff > destinations[grid.r][grid.c]` before expanding is the same lazy-deletion trick used to discard stale heap entries without a decrease-key operation.
+</Callout>
+
+```swift
+import Collections
+
+class Solution {
+    struct Grid: Comparable {
+        let diff: Int
+        let r: Int
+        let c: Int
+
+        init(_ diff: Int, _ r: Int, _ c: Int) {
+            self.diff = diff
+            self.r = r
+            self.c = c
+        }
+
+        static func < (_ lhs: Self, _ rhs: Self) -> Bool {
+            return lhs.diff < rhs.diff
+        }
+    }
+
+    func minimumEffortPath(_ heights: [[Int]]) -> Int {
+        let dirs = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+        let rows = heights.count
+        let cols = heights[0].count
+
+        // Setup heap and destionation with max value
+        var heap = Heap<Grid>() 
+        var destinations = Array(repeating: Array(repeating: Int.max, count: cols), count: rows)
+
+        // Starting condition, reset the destination for the first item
+        heap.insert(Grid(0, 0, 0))
+        destinations[0][0] = 0
+
+        while !heap.isEmpty {
+            guard let grid = heap.popMin() else {
+                break
+            } 
+
+            // Early exit: when reach destination, we can return immediatedly and it is guaranted minimum
+            if grid.r == rows - 1 && grid.c == cols - 1 {    
+                return grid.diff      
+            }
+
+            // Optimisation: If the current is bigger, then we skip it
+            if grid.diff > destinations[grid.r][grid.c] {
+                continue
+            }
+
+            for dir in dirs {
+                let newR = grid.r + dir.0
+                let newC = grid.c + dir.1
+
+                guard newR < rows,
+                    newC < cols,
+                    newR >= 0,
+                    newC >= 0 else {
+                        continue
+                    }
+                
+                // Calculate new diff / effort from the current to next one
+                let newDiff = max(grid.diff, abs(heights[newR][newC] - heights[grid.r][grid.c]))
+                
+                // Only insert the path if it is better than we have stored
+                guard newDiff < destinations[newR][newC] else { continue }
+                heap.insert(Grid(newDiff, newR, newC))
+
+                // Update the maximum diffing for this position
+                destinations[newR][newC] = newDiff
+                
+            }
+
+        }
+
+        return 0
+    }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(rows · cols · log(rows · cols))">
+  There are `rows * cols` cells, each with up to 4 neighbors, so at most `O(rows * cols)` heap insertions occur, each costing `O(log(rows * cols))`.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(rows · cols)">
+  The `destinations` tracking grid and the heap both hold up to `O(rows * cols)` entries in the worst case.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: "Binary Search + BFS/Union-Find", time: "O(rows·cols·log(max height))", space: "O(rows·cols)", note: "Binary search the effort threshold, check connectivity each iteration" },
+    { approach: "Dijkstra-style min-heap", time: "O(rows·cols·log(rows·cols))", space: "O(rows·cols)", note: "Single pass, early exit on reaching destination", highlight: true },
+  ]}
+/>
+
+<Callout type="amber" label="When to prefer the min-heap approach">
+  The min-heap approach is a single clean pass with an early exit, avoiding the repeated connectivity checks of binary search — prefer it when you want one straightforward implementation rather than tuning a binary-search predicate.
+</Callout>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Summing height differences instead of tracking the maximum",
+      body: "Effort is defined as the single largest step, not the cumulative sum — adding differences instead of taking `max` produces a value with no meaning to the problem.",
+      fix: "Compute `newDiff = max(currentDiff, abs(heights[newR][newC] - heights[r][c]))`, never `+`.",
+    },
+    {
+      title: "Not exiting early at the destination",
+      body: "Continuing to process the heap after popping `(rows-1, cols-1)` wastes time, since that pop is already guaranteed optimal by the min-heap ordering.",
+      fix: "Return immediately when the popped cell equals `(rows - 1, cols - 1)`.",
+    },
+    {
+      title: "Missing the absolute value on height differences",
+      body: "Height can decrease as well as increase between adjacent cells; using a signed difference instead of `abs(...)` can produce a negative effort, which is never a valid answer.",
+      fix: "Always wrap the height difference in `abs(...)` before taking the max.",
+    },
+  ]}
+/>

@@ -1,0 +1,224 @@
+---
+id: 1514-path-with-maximum-probability
+title: "Path with Maximum Probability"
+sidebar_label: "1514 · Path with Maximum Probability"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={1514}
+  title="Path with Maximum Probability"
+  difficulty="Medium"
+  pattern="Dijkstra's Algorithm — Max-Heap"
+  tags={["Array", "Graph Theory", "Heap (Priority Queue)", "Shortest Path"]}
+  leetcodeUrl="https://leetcode.com/problems/path-with-maximum-probability/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given an undirected weighted graph of `n` nodes (0-indexed), represented by an edge list where `edges[i] = [a, b]` is an undirected edge connecting the nodes `a` and `b` with a probability of success of traversing that edge `succProb[i]`.
+
+Given two nodes `start` and `end`, find the path with the maximum probability of success to go from `start` to `end` and return its success probability.
+
+If there is no path from `start` to `end`, return `0`. Your answer will be accepted if it differs from the correct answer by at most `1e-5`.
+
+**Constraints:**
+- `2 <= n <= 10^4`
+- `0 <= edges.length <= 2 * 10^4`
+- `edges[i].length == 2`
+- `0 <= a, b < n`
+- `a != b`
+- `0 <= succProb.length == edges.length <= 2 * 10^4`
+- `0 <= succProb[i] <= 1`
+- There is at most one edge between every two nodes.
+
+<Callout type="amber" label="Key Constraint">
+  Probabilities multiply along a path (they are not additive), and each individual probability is between 0 and 1 — so the "best" path is the one that **maximizes** the product, not minimizes it. This inverts the usual Dijkstra direction: use a max-heap instead of a min-heap.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.2], start = 0, end = 2
+Output: 0.25000
+Explanation: There are two paths from start to end, one having a probability of success = 0.2 and the other has 0.5 * 0.5 = 0.25.
+```
+
+#### Example 2
+
+```
+Input: n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.3], start = 0, end = 2
+Output: 0.30000
+```
+
+#### Example 3
+
+```
+Input: n = 3, edges = [[0,1]], succProb = [0.5], start = 0, end = 2
+Output: 0.00000
+Explanation: There is no path between 0 and 2.
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Do path weights combine by multiplication rather than addition?", verdict: "yes", reason: "Success probability along a path is the product of individual edge probabilities." },
+    { question: "Are we maximizing rather than minimizing the combined weight?", verdict: "yes", reason: "We want the highest-probability path, not the lowest — this flips a standard shortest-path search into a 'longest' (highest-probability) path search." },
+    { question: "Are all edge weights within a fixed positive range (no negative log-weights)?", verdict: "yes", reason: "0 <= succProb[i] <= 1 guarantees products only shrink or stay the same, so Dijkstra's greedy expansion still finds the true maximum first." },
+  ]}
+  answer="Dijkstra's Algorithm with a max-heap, combining edge weights by multiplication instead of addition"
+/>
+
+<Callout type="green" label="Rule of Thumb">
+  When a graph problem asks to maximize a product of edge weights along a path (probabilities, success rates), run Dijkstra with a max-heap and multiply weights instead of adding them.
+</Callout>
+
+<SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  This is Dijkstra's algorithm with two twists: the heap is a max-heap (we want the largest probability, not the smallest distance), and edge relaxation multiplies probabilities instead of adding distances. Because multiplying by a value in `[0, 1]` never increases the probability, popping the max-probability node first still guarantees that once a node is finalized, no later path can beat it — the same greedy correctness argument as standard Dijkstra applies.
+</Callout>
+
+Build an undirected adjacency list — each edge is added in both directions since the graph is undirected. Push `(start, probability=1)` onto a max-heap. Pop the highest-probability node; if it's `end`, return its probability immediately. Otherwise, if not visited, mark it visited and relax all neighbors by pushing `(neighbor, probability * edgeProbability)`.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.2], start = 0, end = 2"
+  expected="0.25000"
+  steps={[
+    { label: "Init",   text: "heap = [(0, prob=1.0)]. adjList: 0<->1 (0.5), 1<->2 (0.5), 0<->2 (0.2)", state: "visited={}" },
+    { label: "Pop 0",  text: "Pop (0, 1.0). Not end. Mark visited. Push (1, 0.5) and (2, 0.2).", state: "visited={0}" },
+    { label: "Pop 1",  text: "Pop (1, 0.5) — highest remaining. Not end. Mark visited. Push (2, 0.5*0.5=0.25) and (0, skip visited).", state: "visited={0,1}" },
+    { label: "Pop 2",  text: "Pop (2, 0.25) — now the max in heap (0.25 > 0.2). This is end → return 0.25.", state: "return 0.25" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build the undirected adjacency list">
+    For each edge `(u, v)` with probability `p`, add `Node(v, p)` to `adjList[u]` and `Node(u, p)` to `adjList[v]`.
+  </StepItem>
+  <StepItem title="Seed the max-heap">
+    Push `Node(start, 1)` — probability of being at the start node is trivially 1.
+  </StepItem>
+  <StepItem title="Pop the highest-probability node repeatedly">
+    While the heap is non-empty, pop via `popMax()`. If already visited, skip. If it equals `end`, return the probability immediately.
+  </StepItem>
+  <StepItem title="Relax neighbors by multiplication">
+    For each unvisited neighbor, push `Node(neighbor, currentProbability * edgeProbability)`.
+  </StepItem>
+  <StepItem title="Handle unreachable end">
+    If the heap empties without ever popping `end`, return the default `result = 0`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+<Callout type="green" label="Swift Notes">
+  `Heap` from [swift-collections](https://github.com/apple/swift-collections) is used here via `popMax()` for max-heap behavior — no negation trick needed. `Node.probability` is a `Double`, and `Comparable` conformance orders by that field so `popMax()` always returns the currently most-probable frontier node. Returning inside the `while` loop the moment `end` is popped is both correct and an important early-exit optimization.
+</Callout>
+
+```swift
+import Collections
+
+class Solution {
+    struct Node: Comparable {
+        let destination: Int
+        let probability: Double
+
+        init(_ destination: Int, _ probability: Double) {
+            self.destination = destination
+            self.probability = probability
+        }
+
+        static func < (_ lhs: Self, _ rhs: Self) -> Bool {
+            lhs.probability < rhs.probability
+        }
+    }
+
+    func maxProbability(_ n: Int, _ edges: [[Int]], _ succProb: [Double], _ start_node: Int, _ end_node: Int) -> Double {
+       var adjList = [Int: [Node]]()
+
+       for i in 0..<edges.count {
+            let edge = edges[i]
+            adjList[edge[0], default: []].append(Node(edge[1], succProb[i]))
+            adjList[edge[1], default: []].append(Node(edge[0], succProb[i]))
+       }
+
+        var visited = Set<Int>()
+        var heap = Heap<Node>()
+        heap.insert(Node(start_node, 1))
+        var result: Double = 0
+
+        while !heap.isEmpty {
+            guard let node = heap.popMax(), !visited.contains(node.destination) else {
+                continue
+            }
+
+            if node.destination == end_node {
+                result = max(result, node.probability)
+                return result
+            }
+
+            visited.insert(node.destination)
+
+            let neighbors = adjList[node.destination, default: []]
+            for neighbor in neighbors {
+                guard !visited.contains(neighbor.destination) else { continue }
+                heap.insert(Node(neighbor.destination, node.probability * neighbor.probability))
+            }
+        }
+       return result
+    }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(E log E)">
+  Since the graph is undirected, each of the `E` edges contributes two adjacency-list entries. Each edge can trigger at most one heap insertion when its source is finalized, so the heap holds up to `O(E)` entries, giving `O(E log E)` total for all inserts and pops.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V + E)">
+  The adjacency list stores `O(E)` entries (twice per edge for the undirected graph), the heap holds up to `O(E)` entries, and `visited` holds up to `V` nodes.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: "Bellman-Ford (with log-probabilities)", time: "O(V · E)", space: "O(V)", note: "Converting to -log(p) turns this into a min-sum problem, but is slower and adds floating-point log overhead" },
+    { approach: "Dijkstra (max-heap)", time: "O(E log E)", space: "O(V + E)", note: "Direct multiplication, no log conversion needed", highlight: true },
+  ]}
+/>
+
+<Callout type="amber" label="When to prefer Dijkstra with direct multiplication">
+  Since all probabilities are non-negative and in `[0, 1]`, multiplying directly is both simpler and numerically safer than converting to a `-log(p)` sum — reach for the max-heap approach whenever weights are multiplicative and bounded in `[0, 1]`.
+</Callout>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Adding probabilities instead of multiplying",
+      body: "Treating this like standard Dijkstra and summing edge weights produces a value with no probabilistic meaning — probabilities along a path compose by multiplication, not addition.",
+      fix: "Relax edges with `currentProbability * edgeProbability`, never `+`.",
+    },
+    {
+      title: "Using a min-heap instead of a max-heap",
+      body: "Popping the smallest probability first would explore the least-promising paths, and the greedy 'once popped, finalized' argument breaks down — the algorithm needs to always expand the currently highest-probability node.",
+      fix: "Use `popMax()` and ensure `Node`'s `<` operator compares `probability` in the natural ascending direction (required for the max-heap's internal ordering).",
+    },
+    {
+      title: "Forgetting the undirected edge insertion",
+      body: "Adding the edge only in one direction silently turns the graph directed, making some valid paths unreachable.",
+      fix: "Insert both `adjList[u].append(Node(v, p))` and `adjList[v].append(Node(u, p))` for every edge.",
+    },
+  ]}
+/>

@@ -1,0 +1,225 @@
+---
+id: 743-network-delay-time
+title: "Network Delay Time"
+sidebar_label: "743 · Network Delay Time"
+hide_table_of_contents: true
+---
+
+import { ProblemHeader, SectionHeader, ComplexityTable, PatternFlowchart, Walkthrough, StepList, StepItem, CommonPitfalls, Callout } from '@site/src/components/DSA';
+
+<ProblemHeader
+  number={743}
+  title="Network Delay Time"
+  difficulty="Medium"
+  pattern="Dijkstra's Algorithm — Min-Heap"
+  tags={["Depth-First Search", "Breadth-First Search", "Graph Theory", "Heap (Priority Queue)", "Shortest Path"]}
+  leetcodeUrl="https://leetcode.com/problems/network-delay-time/description/"
+/>
+
+<SectionHeader n={1} title="Problem Overview" />
+
+You are given a network of `n` nodes, labeled from `1` to `n`. You are also given `times`, a list of travel times as directed edges `times[i] = (u_i, v_i, w_i)`, where `u_i` is the source node, `v_i` is the target node, and `w_i` is the time it takes for a signal to travel from source to target.
+
+We will send a signal from a given node `k`. Return the **minimum** time it takes for all the `n` nodes to receive the signal. If it is impossible for all the `n` nodes to receive the signal, return `-1`.
+
+**Constraints:**
+- `1 <= k <= n <= 100`
+- `1 <= times.length <= 6000`
+- `times[i].length == 3`
+- `1 <= u_i, v_i <= n`
+- `u_i != v_i`
+- `0 <= w_i <= 100`
+- All the pairs `(u_i, v_i)` are unique (i.e., no multiple edges).
+
+<Callout type="amber" label="Key Constraint">
+  Edge weights are non-negative (`0 <= w_i <= 100`). This is exactly the precondition Dijkstra's algorithm requires — negative weights would need Bellman-Ford instead. The graph is directed, so an edge `u -> v` does not imply `v -> u` is reachable.
+</Callout>
+
+<SectionHeader n={2} title="Examples" />
+
+#### Example 1
+
+```
+Input: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
+Output: 2
+```
+
+#### Example 2
+
+```
+Input: times = [[1,2,1]], n = 2, k = 1
+Output: 1
+```
+
+#### Example 3
+
+```
+Input: times = [[1,2,1]], n = 2, k = 2
+Output: -1
+```
+
+<SectionHeader n={3} title="Pattern Recognition" />
+
+<PatternFlowchart
+  steps={[
+    { question: "Is this a shortest-path problem from a single source?", verdict: "yes", reason: "We need the time for the signal to reach every node from node k — that is single-source shortest paths." },
+    { question: "Are all edge weights non-negative?", verdict: "yes", reason: "0 <= w_i <= 100 guarantees no negative weights, so Dijkstra's algorithm applies directly." },
+    { question: "Does the answer depend on the shortest distance to every node, not just one?", verdict: "yes", reason: "The answer is the maximum shortest distance across all n nodes — the last node to receive the signal." },
+  ]}
+  answer="Dijkstra's Algorithm — min-heap of (distance, node), answer is the max distance popped"
+/>
+
+<Callout type="green" label="Rule of Thumb">
+  Whenever a problem asks for shortest time/cost/distance from one starting point across a weighted graph with non-negative weights, reach for Dijkstra's algorithm with a min-heap.
+</Callout>
+
+<SectionHeader n={4} title="Approach" />
+
+<Callout type="cyan" label="Core Insight">
+  Dijkstra's algorithm greedily expands the closest unvisited node first, using a min-heap to always pop the node with the smallest known distance. Once a node is popped and marked visited, its distance is final — later, worse paths to it are simply discarded. The answer is the maximum finalized distance across all nodes (the last node to hear the signal), or -1 if any node is unreachable.
+</Callout>
+
+Build an adjacency list from `times`. Push `(k, 0)` onto a min-heap ordered by distance. Repeatedly pop the smallest-distance node; if already visited, skip it (a shorter path was already found). Otherwise mark it visited, track the maximum distance seen, and relax all its outgoing edges by pushing `(neighbor, distance + weight)`. After the heap empties, if every node was visited, return the maximum distance; otherwise return -1.
+
+<SectionHeader n={5} title="Interactive Walkthrough" />
+
+<Walkthrough
+  input="times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2"
+  expected="2"
+  steps={[
+    { label: "Init",   text: "heap = [(2,0)]. adjList: 2 -> [(1,1),(3,1)], 3 -> [(4,1)]", state: "visited={}" },
+    { label: "Pop 2",  text: "Pop (2,0). Mark visited. result=0. Push (1,1) and (3,1).", state: "visited={2}" },
+    { label: "Pop 1",  text: "Pop (1,1). Mark visited. result=1. Node 1 has no outgoing edges.", state: "visited={2,1}" },
+    { label: "Pop 3",  text: "Pop (3,1). Mark visited. result=1. Push (4,2).", state: "visited={2,1,3}" },
+    { label: "Pop 4",  text: "Pop (4,2). Mark visited. result=2.", state: "visited={2,1,3,4}" },
+    { label: "Done",   text: "All 4 nodes visited → return max distance = 2.", state: "return 2" },
+  ]}
+/>
+
+<SectionHeader n={6} title="Step-by-Step Solution" />
+
+<StepList>
+  <StepItem title="Build the adjacency list">
+    For each `(u, v, w)` in `times`, append `Node(v, w)` to `adjList[u]`.
+  </StepItem>
+  <StepItem title="Seed the heap">
+    Push `Node(k, 0)` onto a min-heap ordered by weight (accumulated distance).
+  </StepItem>
+  <StepItem title="Pop the closest node repeatedly">
+    While the heap is non-empty: pop the smallest-distance node. If it's already visited, skip (a shorter path already finalized it). Otherwise mark it visited and update `result = max(result, distance)`.
+  </StepItem>
+  <StepItem title="Relax outgoing edges">
+    For every neighbor not yet visited, push `Node(neighbor, distance + weight)` onto the heap.
+  </StepItem>
+  <StepItem title="Check reachability">
+    After the heap empties, if `visited.count != n`, some node was never reached — return `-1`. Otherwise return `result`.
+  </StepItem>
+</StepList>
+
+<SectionHeader n={7} title="Code Implementation" />
+
+<Callout type="green" label="Swift Notes">
+  `Heap` comes from the [swift-collections](https://github.com/apple/swift-collections) package (`import Collections`). The `Node` struct conforms to `Comparable` by comparing only `weight`, so `popMin()` always returns the currently-closest node. The `guard let node = heap.popMin(), !visited.contains(node.destination) else { continue }` line does double duty — it unwraps the optional pop and skips already-finalized nodes in one line, which is the "lazy deletion" trick that avoids needing a decrease-key operation.
+</Callout>
+
+```swift
+import Collections
+
+class Solution {
+    struct Node: Comparable {
+        let destination: Int
+        let weight: Int
+
+        init(_ destination: Int, _ weight: Int) {
+            self.destination = destination
+            self.weight = weight
+        }
+
+        static func < (_ lhs: Self, _ rhs: Self) -> Bool {
+            lhs.weight < rhs.weight
+        }
+    }
+
+    func networkDelayTime(_ times: [[Int]], _ n: Int, _ k: Int) -> Int {
+        var adjList = [Int: [Node]]()
+
+        for time in times {
+            adjList[time[0], default: []].append(Node(time[1], time[2]))
+        }
+
+        var heap = Heap<Node>()
+        heap.insert(Node(k, 0))
+
+        var result = 0
+        var visited = Set<Int>()
+
+        while !heap.isEmpty {
+            guard let node = heap.popMin(), !visited.contains(node.destination) else {
+                continue
+            }
+
+            visited.insert(node.destination)
+            result = max(result, node.weight)
+
+            let neighbors = adjList[node.destination, default: []]
+            for neighbor in neighbors {
+                if visited.contains(neighbor.destination) {
+                    continue
+                }
+
+                heap.insert(Node(neighbor.destination, node.weight + neighbor.weight))
+            }
+        }
+
+        if visited.count != n {
+            return -1
+        }
+
+        return result
+    }
+}
+```
+
+<SectionHeader n={8} title="Complexity Analysis" />
+
+<Callout type="cyan" label="Time Complexity — O(E log E)">
+  Each edge can be pushed onto the heap at most once when its source node is finalized, so up to `E` inserts and pops occur, each costing `O(log E)`. Building the adjacency list is `O(E)`. Total: `O(E log E)`, which is equivalent to the standard `O((V + E) log V)` Dijkstra bound since `E >= V - 1` for a connected graph.
+</Callout>
+
+<Callout type="green" label="Space Complexity — O(V + E)">
+  The adjacency list stores all `E` edges. The heap can hold up to `O(E)` entries in the worst case (before lazy deletion discards stale ones), and the `visited` set holds up to `V` nodes.
+</Callout>
+
+<ComplexityTable
+  rows={[
+    { approach: "Bellman-Ford", time: "O(V · E)", space: "O(V)", note: "Works with negative weights, but slower here since weights are non-negative" },
+    { approach: "Dijkstra (min-heap)", time: "O(E log E)", space: "O(V + E)", note: "Optimal for non-negative weights", highlight: true },
+    { approach: "Floyd-Warshall", time: "O(V³)", space: "O(V²)", note: "Overkill for single-source; useful only for all-pairs shortest paths" },
+  ]}
+/>
+
+<Callout type="amber" label="When to prefer Dijkstra">
+  Prefer Dijkstra whenever weights are guaranteed non-negative and you only need shortest paths from a single source — it is asymptotically better than Bellman-Ford and far better than Floyd-Warshall for this shape of problem.
+</Callout>
+
+<SectionHeader n={9} title="Common Pitfalls" />
+
+<CommonPitfalls
+  pitfalls={[
+    {
+      title: "Forgetting the visited check after popping",
+      body: "Without skipping already-visited nodes, the algorithm re-processes stale, longer paths that were superseded by an earlier shorter pop, wasting time and potentially producing wrong results if not carefully bounded.",
+      fix: "Always guard on `!visited.contains(node.destination)` immediately after popping, before doing any relaxation.",
+    },
+    {
+      title: "Returning result before verifying all nodes are reached",
+      body: "If node k cannot reach every other node, some nodes never get popped from the heap, and the loop simply ends — returning the wrong (partial) maximum instead of -1.",
+      fix: "Check `visited.count != n` after the heap empties, and return -1 in that case.",
+    },
+    {
+      title: "Using a max-heap or forgetting comparator direction",
+      body: "Dijkstra requires always expanding the currently smallest-distance node. Using `popMax()` or a max-heap comparator would expand the farthest node first, producing an incorrect result.",
+      fix: "Ensure `Node`'s `<` compares by `weight` ascending, and use `popMin()`.",
+    },
+  ]}
+/>
